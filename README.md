@@ -1,4 +1,4 @@
-# Polytexnic::Core
+# polytexnic-core
 
 TODO: Write a gem description
 
