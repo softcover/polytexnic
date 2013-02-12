@@ -8,7 +8,7 @@ module Polytexnic
     def self.polytex_to_html_fragment(polytex)
       tralics = `which tralics`.strip
       file = Tempfile.new(['polytex', '.tex'])
-      file.write(polytex)
+      file.write(preprocess(polytex))
       file.close
       system("#{tralics} -nomathml #{file.path} > /dev/null")
       dirname = File.dirname(file.path)
@@ -16,6 +16,10 @@ module Polytexnic
       xml_to_html(File.read(File.join(dirname, xml_filename)))
     ensure
        file.unlink
+    end
+
+    def self.preprocess(polytex)
+      polytex
     end
 
     def self.xml_to_html(xml)
