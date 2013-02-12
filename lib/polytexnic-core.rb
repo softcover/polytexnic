@@ -24,9 +24,10 @@ module Polytexnic
 
     def self.xml_to_html(xml)
       doc = Nokogiri::XML(xml)
-      node = doc.xpath('//hi[@rend="it"]').first
-      node.name = 'em'
-      node.xpath('//@rend').remove
+      doc.xpath('//hi[@rend="it"]').each do |node|
+        node.name = 'em'
+        node.xpath('//@rend').remove
+      end
       doc.to_html
     end
   end
