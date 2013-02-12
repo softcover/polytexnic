@@ -1,6 +1,5 @@
 require "polytexnic-core/version"
 require 'tempfile'
-require 'open3'
 require 'nokogiri'
 
 module Polytexnic
