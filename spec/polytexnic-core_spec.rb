@@ -8,7 +8,7 @@ describe Polytexnic::Core do
 
     describe "italics conversion" do
       let(:polytex) { '\emph{foo bar}' }
-      it { should =~ /foo bar/ }
+      it { should =~ /<em>foo bar<\/em>/ }
     end
   end
 end
