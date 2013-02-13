@@ -27,12 +27,6 @@ describe Polytexnic::Core do
         let(:polytex) { "``foo bar''" }
         it { should =~ /“foo bar”/ }
       end
-
-      context "with double quote" do
-        let(:polytex) { '``foo bar"' }
-        it { should =~ /“foo bar\"/ }
-      end
     end
-
   end
 end
