@@ -1,3 +1,5 @@
+# encoding=utf-8
+
 require 'spec_helper'
 
 describe Polytexnic::Core do
@@ -18,6 +20,13 @@ describe Polytexnic::Core do
 
       it { should =~ /<em>foo bar<\/em>/ }
       it { should =~ /<em>baz quux<\/em>/ }
+    end
+
+    describe "quoted strings" do
+      context "with single quotes" do
+        let(:polytex) { "``foo bar''" }
+        it { should =~ /“foo bar”/ }
+      end
     end
   end
 end
