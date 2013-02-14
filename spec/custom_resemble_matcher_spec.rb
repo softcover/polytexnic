@@ -5,18 +5,18 @@ describe String do
   let(:compressed_string) { "foo bar\n\nbaz quux\nderp" }
   subject { string }
 
-  it { should respond_to(:compress_whitespace) }
-  it { should respond_to(:compress_whitespace!) }
+  it { should respond_to(:compress) }
+  it { should respond_to(:compress!) }
 
-  describe '#compress_whitespace' do
-    subject { string.compress_whitespace }
+  describe '#compress' do
+    subject { string.compress }
     it { should eq(compressed_string) }
   end
 
-  describe '#compress_whitespace!' do
-    it "should replace the string with the string.compress_whitespace" do
+  describe '#compress!' do
+    it "should replace the string with the string.compress" do
       expect(string).not_to eq(compressed_string)
-      string.compress_whitespace!
+      string.compress!
       expect(string).to eq(compressed_string)      
     end
   end
@@ -30,5 +30,9 @@ describe "custom 'resemble' matcher" do
   
   it "should work for regexes" do
     expect("foo 628_tau bar").to resemble(/foo \d+\w*        bar/)
+  end
+
+  it "should work if the actual string contains the right substring" do
+    expect("baz quux foo      bar derp").to resemble(" foo   \t\tbar ")    
   end
 end
