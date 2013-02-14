@@ -18,12 +18,7 @@ end
 
 RSpec::Matchers.define :resemble do |expected|
   match do |actual|
-    if expected.is_a?(String)
-      expect(actual.compress_whitespace).to eq(expected.compress_whitespace)    
-    elsif expected.is_a?(Regexp)
-      regexp = %r{#{expected.to_s.compress_whitespace}}
-      expect(actual.compress_whitespace).to match_regex(regexp)
-    end
+    expect(actual.compress).to match_regex(expected.to_s.compress)
   end
 end
 
@@ -31,14 +26,14 @@ class String
 
   # Compress whitespace
   # Eliminates repeating whitespace (apart from newlines)
-  # >> "foo\t    bar\n\nbaz    quux\nderp".compress_whitespace
+  # >> "foo\t    bar\n\nbaz    quux\nderp".compress
   # => "foo bar\n\nbaz quux\nderp"
-  def compress_whitespace
+  def compress
     self.strip.gsub(/[ \t]{2,}/, ' ')
   end
 
-  def compress_whitespace!
-    replace(self.compress_whitespace)
+  def compress!
+    replace(self.compress)
   end
 
 end
