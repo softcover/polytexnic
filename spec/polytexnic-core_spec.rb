@@ -8,7 +8,7 @@ describe Polytexnic::Core do
 
     describe "italics conversion" do
       let(:polytex) { '\emph{foo bar}' }
-      it { should match(/<em>foo bar<\/em>/) }
+      it { should resemble('<em>foo bar</em>') }
     end
 
     describe "with multiple instances" do
@@ -16,8 +16,8 @@ describe Polytexnic::Core do
         '\emph{foo bar} and also \emph{baz quux}'
       end
 
-      it { should match(/<em>foo bar<\/em>/)}
-      it { should match(/<em>baz quux<\/em>/) }
+      it { should resemble('<em>foo bar</em>') }
+      it { should resemble('<em>baz quux</em>') }
     end
   end
 end
