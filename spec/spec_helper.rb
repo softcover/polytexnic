@@ -15,3 +15,30 @@ RSpec.configure do |config|
   #     --seed 1234
   config.order = 'random'
 end
+
+RSpec::Matchers.define :resemble do |expected|
+  match do |actual|
+    if expected.is_a?(String)
+      expect(actual.compress_whitespace).to eq(expected.compress_whitespace)    
+    elsif expected.is_a?(Regexp)
+      regexp = %r{#{expected.to_s.compress_whitespace}}
+      expect(actual.compress_whitespace).to match_regex(regexp)
+    end
+  end
+end
+
+class String
+
+  # Compress whitespace
+  # Eliminates repeating whitespace (apart from newlines)
+  # >> "foo\t    bar\n\nbaz    quux\nderp".compress_whitespace
+  # => "foo bar\n\nbaz quux\nderp"
+  def compress_whitespace
+    self.strip.gsub(/[ \t]{2,}/, ' ')
+  end
+
+  def compress_whitespace!
+    replace(self.compress_whitespace)
+  end
+
+end
