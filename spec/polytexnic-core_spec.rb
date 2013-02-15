@@ -10,7 +10,7 @@ describe Polytexnic::Core do
 
     describe "italics conversion" do
       let(:polytex) { '\emph{foo bar}' }
-      it { should =~ /<em>foo bar<\/em>/ }
+      it { should resemble('<em>foo bar</em>') }
     end
 
     describe "with multiple instances" do
@@ -18,8 +18,8 @@ describe Polytexnic::Core do
         '\emph{foo bar} and also \emph{baz quux}'
       end
 
-      it { should =~ /<em>foo bar<\/em>/ }
-      it { should =~ /<em>baz quux<\/em>/ }
+      it { should resemble('<em>foo bar</em>') }
+      it { should resemble('<em>baz quux</em>') }
     end
 
     describe "quoted strings" do
@@ -27,6 +27,19 @@ describe Polytexnic::Core do
         let(:polytex) { "``foo bar''" }
         it { should =~ /“foo bar”/ }
       end
+    end
+
+    describe "verbatim environments" do
+       let(:polytex) do <<-'EOS' 
+\begin{verbatim}
+  \emph{foo bar}
+\end{verbatim}
+         EOS
+       end
+
+      let(:output) { '\emph{foo bar}' }
+
+      it { should resemble(output) }
     end
   end
 end
