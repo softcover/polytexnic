@@ -1,5 +1,4 @@
 # encoding=utf-8
-
 require 'spec_helper'
 
 describe Polytexnic::Core do
@@ -40,6 +39,7 @@ describe Polytexnic::Core do
       let(:output) { '\emph{foo bar}' }
 
       it { should resemble(output) }
+      it { should resemble('<span class="verbatim">') }
     end
   end
 end
