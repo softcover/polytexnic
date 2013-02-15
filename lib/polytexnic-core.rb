@@ -16,9 +16,10 @@ module Polytexnic
       system("#{tralics} -nomathml #{file.path} > /dev/null")
       dirname = File.dirname(file.path)
       xml_filename = File.basename(file.path, '.tex') + '.xml'
-      xml = File.read(File.join(dirname, xml_filename))
+      raw_xml = File.read(File.join(dirname, xml_filename))
+      xml = Nokogiri::XML(raw_xml).at_css('p').to_xml
       html = xml_to_html(postprocess(xml))
-      Nokogiri::HTML(html).at_css('p').to_html
+      Nokogiri::HTML(html).to_html
     ensure
        file.unlink
     end
@@ -72,7 +73,7 @@ module Polytexnic
         node.xpath('//@rend').remove
       end
       doc.xpath('//verbatim').each do |node|
-        node.name = 'span'
+        node.name = 'pre'
         node['class'] = 'verbatim'
       end
       doc.to_html

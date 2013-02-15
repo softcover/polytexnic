@@ -24,7 +24,7 @@ describe Polytexnic::Core do
     describe "quoted strings" do
       context "with single quotes" do
         let(:polytex) { "``foo bar''" }
-        it { should =~ /“foo bar”/ }
+        it { should =~ /&#8220;foo bar&#8221;/ }
       end
     end
 
@@ -39,7 +39,7 @@ describe Polytexnic::Core do
       let(:output) { '\emph{foo bar}' }
 
       it { should resemble(output) }
-      it { should resemble('<span class="verbatim">') }
+      it { should resemble('<pre class="verbatim">') }
       it { should_not resemble('\begin{verbatim}') }
       
       describe "with nesting" do
