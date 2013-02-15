@@ -61,6 +61,18 @@ describe Polytexnic::Core do
 
         it { should resemble(output) }
       end
+
+      describe 'with missing \end{verbatim}' do
+        let(:polytex) do <<-'EOS' 
+\begin{verbatim}
+  \emph{foo bar}
+         EOS
+        end        
+
+        it "should raise an error" do
+          expect { subject }.to raise_error
+        end
+      end
     end
   end
 end

@@ -44,6 +44,7 @@ module Polytexnic
             end
             verbatim_text << line if verbatim_count > 0
           end
+          raise 'Missing \end{verbatim}' if verbatim_count != 0
           content = verbatim_text.join("\n")
           key = self.digest(content)
           $verbatim_cache[key] = content
