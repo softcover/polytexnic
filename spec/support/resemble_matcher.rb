@@ -1,6 +1,11 @@
 RSpec::Matchers.define :resemble do |expected|
   match do |actual|
-    expect(actual.compress).to match_regex(expected.to_s.compress)
+    if expected.is_a?(String)
+      regex = Regexp.escape(expected.compress)
+    elsif expected.is_a?(Regexp)
+      regex = %r{#{expected.to_s.compress}}
+    end
+    expect(actual.compress).to match_regex(regex)
   end
 end
 
