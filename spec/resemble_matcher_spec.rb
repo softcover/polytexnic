@@ -35,4 +35,8 @@ describe "custom 'resemble' matcher" do
   it "should work if the actual string contains the right substring" do
     expect("baz quux foo      bar derp").to resemble(" foo   \t\tbar ")    
   end
+
+  it "should work with backslashes" do
+    expect('\emph{foo bar}').to resemble('\emph{foo bar}')
+  end
 end
