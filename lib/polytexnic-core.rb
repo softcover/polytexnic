@@ -32,10 +32,10 @@ module Polytexnic
       lines = polytex.split("\n")
       lines.each do |line|
         if line =~ /^\s*\\begin{verbatim}\s*$/
-          verbatim_count = 1
-          verbatim_text = []
           output << '\begin{xmlelement}{verbatim}'
           lines.shift
+          verbatim_count = 1
+          verbatim_text = []
           while (line = lines.shift)
             verbatim_count += 1 if line =~ /^\s*\\begin{verbatim}\s*$/
             verbatim_count -= 1 if line =~ /^\s*\\end{verbatim}\s*$/

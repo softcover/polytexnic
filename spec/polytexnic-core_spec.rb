@@ -50,7 +50,13 @@ describe Polytexnic::Core do
 \end{verbatim}
          EOS
         end
-        let(:output) { '\end{verbatim}' }
+
+        let(:output) do <<-'EOS' 
+  \begin{verbatim}
+  \emph{foo bar}
+  \end{verbatim}
+         EOS
+        end
 
         it { should resemble(output) }
       end
