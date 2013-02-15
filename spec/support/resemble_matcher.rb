@@ -14,11 +14,11 @@ end
 class String
 
   # Compress whitespace
-  # Eliminates repeating whitespace (spaces or tabs)
+  # Eliminates repeating whitespace (spaces, tabs, or Unicode nbsp),
+  # converting everthing to ordinary spaces.
   # >> "foo\t    bar\n\nbaz    quux\nderp".compress
   # => "foo bar\n\nbaz quux\nderp"
   def compress
-    # Includes the Unicode nonbreak space
     unicode_nbsp = ' '
     self.gsub(unicode_nbsp, ' ').strip.gsub(/[ \t]{2,}/, ' ')
   end

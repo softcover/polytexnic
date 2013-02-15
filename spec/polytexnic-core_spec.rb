@@ -28,5 +28,18 @@ describe Polytexnic::Core do
         it { should =~ /“foo bar”/ }
       end
     end
+
+    describe "verbatim environments" do
+       let(:polytex) do <<-'EOS' 
+\begin{verbatim}
+  \emph{foo bar}
+\end{verbatim}
+         EOS
+       end
+
+      let(:output) { '\emph{foo bar}' }
+
+      it { should resemble(output) }
+    end
   end
 end

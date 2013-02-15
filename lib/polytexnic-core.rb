@@ -12,7 +12,8 @@ module Polytexnic
       system("#{tralics} -nomathml #{file.path} > /dev/null")
       dirname = File.dirname(file.path)
       xml_filename = File.basename(file.path, '.tex') + '.xml'
-      xml_to_html(File.read(File.join(dirname, xml_filename)))
+      html = xml_to_html(File.read(File.join(dirname, xml_filename)))
+      Nokogiri::HTML(html).at_css('p').to_html
     ensure
        file.unlink
     end
