@@ -1,3 +1,5 @@
+# encoding=utf-8
+
 RSpec::Matchers.define :resemble do |expected|
   match do |actual|
     if expected.is_a?(String)
@@ -16,7 +18,9 @@ class String
   # >> "foo\t    bar\n\nbaz    quux\nderp".compress
   # => "foo bar\n\nbaz quux\nderp"
   def compress
-    self.strip.gsub(/[ \t]{2,}/, ' ')
+    # Includes the Unicode nonbreak space
+    unicode_nbsp = ' '
+    self.gsub(unicode_nbsp, ' ').strip.gsub(/[ \t]{2,}/, ' ')
   end
 
   def compress!

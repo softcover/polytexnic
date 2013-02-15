@@ -1,3 +1,4 @@
+# encoding=utf-8
 require 'spec_helper'
 
 describe String do
@@ -38,5 +39,11 @@ describe "custom 'resemble' matcher" do
 
   it "should work with backslashes" do
     expect('\emph{foo bar}').to resemble('\emph{foo bar}')
+  end
+
+  let(:nbsp) { ' ' }
+
+  it "should work with Unicode nonbreak spaces" do
+    expect('foo' + nbsp + nbsp + 'bar').to resemble('foo bar')
   end
 end
