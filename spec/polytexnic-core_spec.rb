@@ -40,6 +40,20 @@ describe Polytexnic::Core do
 
       it { should resemble(output) }
       it { should resemble('<span class="verbatim">') }
+      
+      describe "with nesting" do
+        let(:polytex) do <<-'EOS' 
+\begin{verbatim}
+  \begin{verbatim}
+  \emph{foo bar}
+  \end{verbatim}
+\end{verbatim}
+         EOS
+        end
+        let(:output) { '\end{verbatim}' }
+
+        it { should resemble(output) }
+      end
     end
   end
 end

@@ -28,16 +28,18 @@ module Polytexnic
     end
 
     def self.preprocess(polytex)
-      verbatim_count = 0
       output = []
       lines = polytex.split("\n")
       lines.each do |line|
         if line =~ /^\s*\\begin{verbatim}\s*$/
-          verbatim_count += 1
+          verbatim_count = 1
           verbatim_text = []
           output << '\begin{xmlelement}{verbatim}'
           lines.shift
-          while (line = lines.shift) !~ /^\s*\\end{verbatim}\s*$/
+          while (line = lines.shift)
+            verbatim_count += 1 if line =~ /^\s*\\begin{verbatim}\s*$/
+            verbatim_count -= 1 if line =~ /^\s*\\end{verbatim}\s*$/
+            break if line =~ /^\s*\\end{verbatim}\s*$/ && verbatim_count == 0
             verbatim_text << line
           end
           content = verbatim_text.join("\n")
