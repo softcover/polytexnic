@@ -70,7 +70,8 @@ describe Polytexnic::Core do
         end        
 
         it "should raise an error" do
-          expect { subject }.to raise_error end
+          expect { subject }.to raise_error
+        end
       end
     end
   end
