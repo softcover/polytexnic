@@ -47,7 +47,7 @@ describe "custom 'resemble' matcher" do
     expect('foo' + nbsp + nbsp + 'bar').to resemble('foo bar')
   end
 
-  it "should work with multiline string" do
+  it "should work with multiline strings" do
     foo = <<-'EOS'
   <ul>
     <li>alpha</li>
