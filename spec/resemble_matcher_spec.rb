@@ -15,7 +15,7 @@ describe String do
   end
 
   describe '#compress!' do
-    it "should replace the string with the string.compress" do
+    it "should replace the string with string.compress" do
       expect(string).not_to eq(compressed_string)
       string.compress!
       expect(string).to eq(compressed_string)      
@@ -45,5 +45,24 @@ describe "custom 'resemble' matcher" do
 
   it "should work with Unicode nonbreak spaces" do
     expect('foo' + nbsp + nbsp + 'bar').to resemble('foo bar')
+  end
+
+  it "should work with multiline string" do
+    foo = <<-'EOS'
+  <ul>
+    <li>alpha</li>
+    <li>bravo</li>
+    <li>charlie</li>
+  </ul>
+    EOS
+    bar = <<-'EOS'
+<ul>
+<li>alpha</li>
+<li>bravo</li>
+<li>charlie</li>
+</ul>
+    EOS
+
+    expect(foo).to resemble(bar)
   end
 end
