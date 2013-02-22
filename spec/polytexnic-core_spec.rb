@@ -28,8 +28,22 @@ describe Polytexnic::Core do
       end
     end
 
+    describe "footnotes" do
+      let(:polytex) { '\footnote{Foo}' }
+      it do
+        should resemble('<a class="footnote-number" href="#footnote-1">1</a>')
+      end
+      it do
+        should resemble(
+          '<div id="footnotes">' +
+            '<div id="footnote-1" class="footnote">Foo</div>' +
+          '</div>'
+        )
+      end
+    end
+
     describe "verbatim environments" do
-       let(:polytex) do <<-'EOS' 
+       let(:polytex) do <<-'EOS'
 \begin{verbatim}
   \emph{foo bar}
 \end{verbatim}
@@ -41,9 +55,9 @@ describe Polytexnic::Core do
       it { should resemble(output) }
       it { should resemble('<pre class="verbatim">') }
       it { should_not resemble('\begin{verbatim}') }
-      
+
       describe "with nesting" do
-        let(:polytex) do <<-'EOS' 
+        let(:polytex) do <<-'EOS'
 \begin{verbatim}
   \begin{verbatim}
   \emph{foo bar}
@@ -52,7 +66,7 @@ describe Polytexnic::Core do
          EOS
         end
 
-        let(:output) do <<-'EOS' 
+        let(:output) do <<-'EOS'
   \begin{verbatim}
   \emph{foo bar}
   \end{verbatim}
@@ -63,11 +77,11 @@ describe Polytexnic::Core do
       end
 
       describe 'with missing \end{verbatim}' do
-        let(:polytex) do <<-'EOS' 
+        let(:polytex) do <<-'EOS'
 \begin{verbatim}
   \emph{foo bar}
          EOS
-        end        
+        end
 
         it "should raise an error" do
           expect { subject }.to raise_error

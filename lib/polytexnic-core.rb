@@ -63,6 +63,7 @@ module Polytexnic
       $verbatim_cache.each do |key, value|
         xml.gsub!(key, value)
       end
+
       xml
     end
 
@@ -76,6 +77,32 @@ module Polytexnic
         node.name = 'pre'
         node['class'] = 'verbatim'
       end
+
+      # handle footnotes
+      footnotes_node = nil
+      doc.xpath('//note[@place="foot"]').each_with_index do |node, i|
+        # should we wrap in a 'sup' tag?
+        n = i + 1
+        note = Nokogiri::XML::Node.new('div',doc)
+        note['id'] = "footnote-#{n}"
+        note['class'] = 'footnote'
+        note.content = node.content
+
+        unless footnotes_node
+          footnotes_node = Nokogiri::XML::Node.new('div',doc)
+          footnotes_node['id'] = 'footnotes'
+          doc.root.add_child footnotes_node
+        end
+
+        footnotes_node.add_child note
+
+        node.name = 'a'
+        %w{id-text id place}.each {|a| node.remove_attribute a }
+        node['class'] = 'footnote-number'
+        node['href'] = "#footnote-#{n}"
+        node.content = n.to_s
+      end
+
       doc.to_html
     end
   end

@@ -5,3 +5,7 @@ gem 'nokogiri', '~> 1.5.0'
 
 # Specify your gem's dependencies in polytexnic-core.gemspec
 gemspec
+
+group :test do
+  gem 'debugger'
+end
