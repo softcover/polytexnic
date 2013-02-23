@@ -57,6 +57,11 @@ describe Polytexnic::Core do
       it { should resemble('foo.&#160;&#160;Bar') }
     end
 
+    describe 'unbreakable interword space' do
+      let(:polytex) { 'foo~bar' }
+      it { should resemble('foo&#160;bar') }
+    end
+
     describe "verbatim environments" do
        let(:polytex) do <<-'EOS'
 \begin{verbatim}

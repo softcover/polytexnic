@@ -52,7 +52,7 @@ module Polytexnic
             key
           end
         elsif line =~ /\\@/
-          output << line.gsub(/\\@(.{1})/, '\1' + xmlelement(:nbsp))
+          output << line.gsub(/\\@(.{1})/, '\1~~')
         else
           output << line
         end
@@ -72,7 +72,6 @@ module Polytexnic
         xml.gsub!(key, value)
       end
 
-      xml.gsub! /<nbsp\/>/, '&#160;&#160;'
       xml
     end
 
