@@ -103,6 +103,12 @@ module Polytexnic
         node.content = n.to_s
       end
 
+      # LaTeX logo
+      doc.xpath('//LaTeX').each do |node|
+        node.name = 'span'
+        node['class'] = 'LaTeX'
+      end
+
       doc.to_html
     end
   end

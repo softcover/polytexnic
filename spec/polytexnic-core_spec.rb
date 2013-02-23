@@ -42,6 +42,11 @@ describe Polytexnic::Core do
       end
     end
 
+    describe "LaTeX logo" do
+      let(:polytex) { '\LaTeX' }
+      it { should resemble('<span class="LaTeX"></span>') }
+    end
+
     describe "verbatim environments" do
        let(:polytex) do <<-'EOS'
 \begin{verbatim}
