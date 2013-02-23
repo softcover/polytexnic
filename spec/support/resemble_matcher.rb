@@ -2,17 +2,12 @@
 
 RSpec::Matchers.define :resemble do |expected|
   match do |actual|
-    regex = Regexp.new begin
-      if expected.is_a?(String)
-        Regexp.escape(expected.compress)
-      elsif expected.is_a?(Regexp)
-        expected.to_s.compress
-      else
-        raise "resemble matcher requires String or Regexp"
-      end
+    if expected.is_a?(String)
+      regex = Regexp.escape(expected.compress)
+    elsif expected.is_a?(Regexp)
+      regex = %r{#{expected.to_s.compress}}
     end
-
-    actual.compress =~ regex
+    expect(actual.compress).to match_regex(regex)
   end
 end
 

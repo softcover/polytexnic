@@ -33,24 +33,26 @@ module Polytexnic
       lines = polytex.split("\n")
       while (line = lines.shift)
         if line =~ /^\s*\\begin{verbatim}\s*$/
-          output << '\begin{xmlelement}{verbatim}'
-          verbatim_count = 1
-          verbatim_text = []
-          while (line = lines.shift)
-            if line =~ /^\s*\\begin{verbatim}\s*$/
-              verbatim_count += 1
-            elsif line =~ /^\s*\\end{verbatim}\s*$/
-              verbatim_count -= 1
-              break if verbatim_count == 0
+          output << xmlelement(:verbatim) do
+            verbatim_count = 1
+            verbatim_text = []
+            while (line = lines.shift)
+              if line =~ /^\s*\\begin{verbatim}\s*$/
+                verbatim_count += 1
+              elsif line =~ /^\s*\\end{verbatim}\s*$/
+                verbatim_count -= 1
+                break if verbatim_count == 0
+              end
+              verbatim_text << line if verbatim_count > 0
             end
-            verbatim_text << line if verbatim_count > 0
+            raise 'Missing \end{verbatim}' if verbatim_count != 0
+            content = verbatim_text.join("\n")
+            key = self.digest(content)
+            $verbatim_cache[key] = content
+            key
           end
-          raise 'Missing \end{verbatim}' if verbatim_count != 0
-          content = verbatim_text.join("\n")
-          key = self.digest(content)
-          $verbatim_cache[key] = content
-          output << key
-          output << '\end{xmlelement}'
+        elsif line =~ /\\@/
+          output << line.gsub(/\\@(.{1})/, '\1' + xmlelement(:nbsp))
         else
           output << line
         end
@@ -59,11 +61,18 @@ module Polytexnic
       output.join("\n")
     end
 
+    def self.xmlelement(name)
+      output = "\\begin{xmlelement}{#{name}}"
+      output << yield if block_given?
+      output << "\\end{xmlelement}"
+    end
+
     def self.postprocess(xml)
       $verbatim_cache.each do |key, value|
         xml.gsub!(key, value)
       end
 
+      xml.gsub! /<nbsp\/>/, '&#160;&#160;'
       xml
     end
 

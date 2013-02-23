@@ -47,6 +47,16 @@ describe Polytexnic::Core do
       it { should resemble('<span class="LaTeX"></span>') }
     end
 
+    describe '\ldots' do
+      let(:polytex) { '\ldots' }
+      it { should resemble('...') }
+    end
+
+    describe 'end-of-sentence punctuation' do
+      let(:polytex) { 'foo\@.Bar' }
+      it { should resemble('foo.&#160;&#160;Bar') }
+    end
+
     describe "verbatim environments" do
        let(:polytex) do <<-'EOS'
 \begin{verbatim}
