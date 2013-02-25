@@ -31,7 +31,7 @@ describe Polytexnic::Core do
     describe "footnotes" do
       let(:polytex) { '\footnote{Foo}' }
       it do
-        should resemble('<a class="footnote-number" href="#footnote-1">1</a>')
+        should resemble('<sup class="footnote"><a href="#footnote-1">1</a></sup>')
       end
       it do
         should resemble(
