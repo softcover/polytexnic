@@ -51,8 +51,6 @@ module Polytexnic
             $verbatim_cache[key] = content
             key
           end
-        elsif line =~ /\\@/
-          output << line.gsub(/\\@(.{1})/, '\1~~')
         else
           output << line
         end

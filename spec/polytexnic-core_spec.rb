@@ -53,8 +53,8 @@ describe Polytexnic::Core do
     end
 
     describe 'end-of-sentence punctuation' do
-      let(:polytex) { 'foo\@.Bar' }
-      it { should resemble('foo.&#160;&#160;Bar') }
+      let(:polytex) { 'Superman II\@. Lorem ipsum.' }
+      it { should resemble('Superman II. Lorem ipsum.') }
     end
 
     describe 'unbreakable interword space' do
