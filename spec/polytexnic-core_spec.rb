@@ -49,7 +49,7 @@ describe Polytexnic::Core do
 
     describe '\ldots' do
       let(:polytex) { '\ldots' }
-      it { should resemble('...') }
+      it { should resemble('&#133;') }
     end
 
     describe 'end-of-sentence punctuation' do
