@@ -3,11 +3,11 @@
 
 ### Inline math
 
-    pandoc --standalone inline_math.tex --mathjax -o inline_math.html
+	pandoc -s spec/fixtures/inline_math.tex --mathjax -o tmp/inline_math.html
 
 ### Math environments
 
-    pandoc --standalone inline_math.tex --mathjax -o inline_math.html
+    pandoc -s spec/fixtures/math_environments --mathjax -o tmp/math_environments.html
 
 Pandoc handles equation environments wrong; it converts
 
@@ -21,11 +21,11 @@ into the non-equivalent
       \varphi^2 = \varphi + 1.
     \]
 
-This means we will have to pre-process equation environments and their ilk. This is really just subset of handling verbatim environments.
+This means we will have to pre-process `equation` and its ilk (`equation*`, `align`, etc.). This is really just subset of handling verbatim environments.
 
 ## Verbatim environments
 
-Pandoc does well with inline verbatim text, but it doesn't handle nested verbatim environments properly. In particular, it chokes on
+Pandoc does well with inline verbatim text like `\verb+$x$+`, but it doesn't handle nested verbatim environments properly. In particular, it chokes on
 
     \begin{verbatim}
       \begin{verbatim}
@@ -44,3 +44,8 @@ to
     <pre><code>
       foo bar
     </pre></code>
+    
+## Tables
+
+Pandoc doesn't handle tables at all.
+
