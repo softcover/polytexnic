@@ -21,7 +21,6 @@ into the non-equivalent
       \varphi^2 = \varphi + 1.
     \]
 
-This means we will have to pre-process `equation` and its ilk (`equation*`, `align`, etc.). This is really just subset of handling verbatim environments.
 
 ## Verbatim environments
 
@@ -32,18 +31,6 @@ Pandoc does well with inline verbatim text like `\verb+$x$+`, but it doesn't han
         This is verbatim text.
       \end{verbatim}
     \end{verbatim}
-
-That's OK; we already have the code to handle this case properly. We'll probably want to match Pandoc's convention of converting
-
-    \begin{verbatim}
-      foo bar
-    \end{verbatim}
-
-to
-
-    <pre><code>
-      foo bar
-    </pre></code>
     
 ## Tables
 
