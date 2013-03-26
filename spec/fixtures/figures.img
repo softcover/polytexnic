@@ -1,0 +1,2 @@
+# images info, 1=ps, 2=eps, 4=epsi, 8=epsf, 16=pdf, 32=png, 64=gif
+see_image("images/figures/editor_shell",0,1);

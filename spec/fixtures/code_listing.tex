@@ -1,0 +1,14 @@
+We can include code listings, as seen in Listing~\ref{code:foo}.
+
+\begin{codelisting}
+\label{code:foo}
+Defining a foo function.
+%= ruby
+\begin{code}
+def foo
+  "bar"
+end
+\end{code}
+\end{codelisting}
+
+Including the type of source code (in this case, Ruby) should result in syntax highlighting. (The type is put in a comment so that the markup is still valid \LaTeX.)

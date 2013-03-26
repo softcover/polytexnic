@@ -1,0 +1,170 @@
+Transcript file of tralics 2.15.0 for file spec/fixtures/figures.tex
+Copyright INRIA/MIAOU/APICS/MARELLE 2002-2012, Jos\'e Grimm
+Tralics is licensed under the CeCILL Free Software Licensing Agreement
+Start compilation: 2013/03/26 12:42:10
+OS: Apple, machine Michaels-MacBook-Air
+Starting translation of file spec/fixtures/figures.tex.
+Output encoding: UTF8  (idem transcript).
+Left quote is ` right quote is '
+Input path (spec/fixtures:)
+++ Input encoding is 1 (iso-8859-1) for the main file
+++ file .tralics_rc does not exist.
+++ file ../confdir/.tralics_rc does not exist.
+Dummy default configuration file used.
+No type in configuration file
+No \documentclass in source file
+Using some default type
+dtd is unknown from unknown.dtd (standard mode)
+OK with the configuration file, dealing with the TeX file...
+There are 8 lines
+Starting translation
+\notrivialmath=1
+{\countdef \count@=\count255}
+{\countdef \c@page=\count0}
+{\dimendef \dimen@=\dimen0}
+{\dimendef \dimen@i=\dimen1}
+{\dimendef \dimen@ii=\dimen2}
+{\dimendef \epsfxsize=\dimen11}
+{\dimendef \epsfysize=\dimen12}
+{\chardef \@ne=\char1}
+{\chardef \tw@=\char2}
+{\chardef \thr@@=\char3}
+{\chardef \sixt@@n=\char16}
+{\chardef \@cclv=\char255}
+{\mathchardef \@cclvi=\mathchar256}
+{\mathchardef \@m=\mathchar1000}
+{\mathchardef \@M=\mathchar10000}
+{\mathchardef \@Mi=\mathchar10001}
+{\mathchardef \@Mii=\mathchar10002}
+{\mathchardef \@Miii=\mathchar10003}
+{\mathchardef \@Miv=\mathchar10004}
+{\mathchardef \@MM=\mathchar20000}
+{\chardef \active=\char13}
+{\tokesdef \toks@=\toks0}
+{\skipdef \skip@=\skip0}
+{\dimendef \z@=\dimen13}
+{\dimendef \p@=\dimen14}
+{\dimendef \oddsidemargin=\dimen15}
+{\dimendef \evensidemargin=\dimen16}
+{\dimendef \leftmargin=\dimen17}
+{\dimendef \rightmargin=\dimen18}
+{\dimendef \leftmargini=\dimen19}
+{\dimendef \leftmarginii=\dimen20}
+{\dimendef \leftmarginiii=\dimen21}
+{\dimendef \leftmarginiv=\dimen22}
+{\dimendef \leftmarginv=\dimen23}
+{\dimendef \leftmarginvi=\dimen24}
+{\dimendef \itemindent=\dimen25}
+{\dimendef \labelwidth=\dimen26}
+{\dimendef \fboxsep=\dimen27}
+{\dimendef \fboxrule=\dimen28}
+{\dimendef \arraycolsep=\dimen29}
+{\dimendef \tabcolsep=\dimen30}
+{\dimendef \arrayrulewidth=\dimen31}
+{\dimendef \doublerulesep=\dimen32}
+{\dimendef \@tempdima=\dimen33}
+{\dimendef \@tempdimb=\dimen34}
+{\dimendef \@tempdimc=\dimen35}
+{\dimendef \footnotesep=\dimen36}
+{\dimendef \topmargin=\dimen37}
+{\dimendef \headheight=\dimen38}
+{\dimendef \headsep=\dimen39}
+{\dimendef \footskip=\dimen40}
+{\dimendef \columnsep=\dimen41}
+{\dimendef \columnseprule=\dimen42}
+{\dimendef \marginparwidth=\dimen43}
+{\dimendef \marginparsep=\dimen44}
+{\dimendef \marginparpush=\dimen45}
+{\dimendef \maxdimen=\dimen46}
+{\dimendef \normallineskiplimit=\dimen47}
+{\dimendef \jot=\dimen48}
+{\dimendef \paperheight=\dimen49}
+{\dimendef \paperwidth=\dimen50}
+{\skipdef \topsep=\skip11}
+{\skipdef \partopsep=\skip12}
+{\skipdef \itemsep=\skip13}
+{\skipdef \labelsep=\skip14}
+{\skipdef \parsep=\skip15}
+{\skipdef \fill=\skip16}
+{\skipdef \@tempskipa=\skip17}
+{\skipdef \@tempskipb=\skip18}
+{\skipdef \@flushglue=\skip19}
+{\skipdef \listparindent=\skip20}
+{\skipdef \hideskip=\skip21}
+{\skipdef \z@skip=\skip22}
+{\skipdef \normalbaselineskip=\skip23}
+{\skipdef \normallineskip=\skip24}
+{\skipdef \smallskipamount=\skip25}
+{\skipdef \medskipamount=\skip26}
+{\skipdef \bigskipamount=\skip27}
+{\skipdef \floatsep=\skip28}
+{\skipdef \textfloatsep=\skip29}
+{\skipdef \intextsep=\skip30}
+{\skipdef \dblfloatsep=\skip31}
+{\skipdef \dbltextfloatsep=\skip32}
+{\countdef \m@ne=\count20}
+{\countdef \c@FancyVerbLine=\count21}
+{\countdef \c@enumi=\count22}
+{\countdef \c@enumii=\count23}
+{\countdef \c@enumiii=\count24}
+{\countdef \c@enumiv=\count25}
+{\countdef \c@enumv=\count26}
+{\countdef \c@enumvi=\count27}
+{\countdef \c@enumvii=\count28}
+{\countdef \c@enumviii=\count29}
+{\countdef \c@enumix=\count30}
+{\countdef \c@enumx=\count31}
+{\countdef \c@Enumi=\count32}
+{\countdef \c@Enumii=\count33}
+{\countdef \c@Enumiii=\count34}
+{\countdef \c@Enumiv=\count35}
+{\countdef \c@Enumv=\count36}
+{\countdef \c@Enumvi=\count37}
+{\countdef \c@Enumvii=\count38}
+{\countdef \c@Enumviii=\count39}
+{\countdef \c@Enumix=\count40}
+{\countdef \c@Enumx=\count41}
+{\countdef \c@tocdepth=\count42}
+{\countdef \c@footnote=\count43}
+{\countdef \c@part=\count44}
+{\countdef \c@chapter=\count45}
+{\countdef \c@section=\count46}
+{\countdef \c@subsection=\count47}
+{\countdef \c@subsubsection=\count48}
+{\countdef \c@paragraph=\count49}
+{\countdef \c@subparagraph=\count50}
+{\countdef \c@mpfootnote=\count51}
+{\countdef \c@table=\count52}
+{\countdef \c@figure=\count53}
+{\countdef \c@subfigure=\count54}
+{\countdef \c@equation=\count55}
+{\countdef \c@bottomnumber=\count56}
+{\countdef \c@topnumber=\count57}
+{\countdef \@tempcnta=\count58}
+{\countdef \@tempcntb=\count59}
+{\countdef \c@totalnumber=\count60}
+{\countdef \c@dbltopnumber=\count61}
+{\countdef \interfootnotelinepenalty=\count62}
+{\countdef \interdisplaylinepenalty=\count63}
+{\toksdef \@temptokena=\toks11}
+{\chardef \@tempboxa=\char11}
+{\chardef \voidb@x=\char12}
+Bib stats: seen 0 entries.
+Math stats: formulas 0, kernels 0, trivial 0, \mbox 0, large 0, small 0.
+Buffer realloc 1, string 1336, size 12178, merge 0
+Macros created 174, deleted 6; hash size 2363; foonotes 0.
+Save stack +23 -23.
+Attribute list search 1526(1505) found 1078 in 1130 elements (1120 at boot).
+Number of ref 1, of used labels 1, of defined labels 1, of ext. ref. 0.
+++ file images/figures/editor_shell.ps does not exist.
+++ file images/figures/editor_shell.eps does not exist.
+++ file images/figures/editor_shell.epsi does not exist.
+++ file images/figures/editor_shell.epsf does not exist.
+++ file images/figures/editor_shell.pdf does not exist.
+++ file images/figures/editor_shell.png does not exist.
+++ file images/figures/editor_shell.gif does not exist.
+There were 1 images.
+Following images not defined: images/figures/editor_shell.
+Output written on spec/fixtures/figures.xml (392 bytes).
+No error found.
+(For more information, see transcript file spec/fixtures/figures.log)

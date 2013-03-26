@@ -49,3 +49,6 @@ to
 
 Pandoc doesn't handle tables at all.
 
+## Sections with cross-references
+
+Pandoc doesn't handle cross-references.
