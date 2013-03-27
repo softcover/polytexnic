@@ -30,30 +30,7 @@ module Polytexnic
       polytex = @polytex
       output = []
       lines = polytex.split("\n")
-      while (line = lines.shift)
-        if line.begin_verbatim?
-          output << xmlelement(:verbatim) do
-            verbatim_count = 1
-            verbatim_text = []
-            while (line = lines.shift)
-              if line.begin_verbatim?
-                verbatim_count += 1
-              elsif line.end_verbatim?
-                verbatim_count -= 1
-                break if verbatim_count == 0
-              end
-              verbatim_text << line if verbatim_count > 0
-            end
-            raise 'Missing \end{verbatim}' if verbatim_count != 0
-            content = verbatim_text.join("\n")
-            key = self.digest(content)
-            verbatim_cache[key] = content
-            key
-          end
-        else
-          output << line
-        end
-      end
+      handle_literal_environments(lines, output)
       # puts output.join("\n")
       output.join("\n")
     end
@@ -73,21 +50,59 @@ module Polytexnic
       raw_xml.gsub('&#133;', '…')
     end
 
+    # Handles environments that should be passed through the pipeline intact.
+    # The includes verbatim environments ('verbatim', 'Verbatim') and all the
+    # equation environments handled by MathJax ('equation', 'align', etc.).
+    def handle_literal_environments(lines, output)
+      while (line = lines.shift)
+        if line.begin_literal?
+          output << xmlelement(line.literal_type) do
+            count = 1
+            text = []
+            while (line = lines.shift)
+              if line.begin_literal?
+                count += 1
+              elsif line.end_literal?
+                count -= 1
+                break if count == 0
+              end
+              text << line if count > 0
+            end
+            raise 'Missing \end{verbatim}' if count != 0
+            content = text.join("\n")
+            key = self.digest(content)
+            verbatim_cache[key] = content
+            key
+          end
+        else
+          output << line
+        end
+      end
+    end
   end
 end
 
 class String
-  def begin_verbatim?
-    match(/^\s*\\begin{#{verbatim}}\s*$/)
+
+  def begin_literal?
+    match(/^\s*\\begin{#{literal}}\s*$/)
   end
 
-  def end_verbatim?
-    match(/^\s*\\end{#{verbatim}}\s*$/)    
+  # Returns the type of literal environment.
+  # '\begin{verbatim}' => :verbatim
+  # '\begin{equation}' => :equation
+  def literal_type
+    scan(/\\begin{(.*?)}/).flatten.first.to_sym
+  end
+
+  def end_literal?
+    match(/^\s*\\end{#{literal}}\s*$/)    
   end
 
   private
 
-    def verbatim
+    # Returns a string matching the supported literal environments.
+    def literal
       'verbatim'
     end
 end
