@@ -31,14 +31,14 @@ module Polytexnic
       output = []
       lines = polytex.split("\n")
       while (line = lines.shift)
-        if line =~ /^\s*\\begin{verbatim}\s*$/
+        if line.begin_verbatim?
           output << xmlelement(:verbatim) do
             verbatim_count = 1
             verbatim_text = []
             while (line = lines.shift)
-              if line =~ /^\s*\\begin{verbatim}\s*$/
+              if line.begin_verbatim?
                 verbatim_count += 1
-              elsif line =~ /^\s*\\end{verbatim}\s*$/
+              elsif line.end_verbatim?
                 verbatim_count -= 1
                 break if verbatim_count == 0
               end
@@ -47,7 +47,7 @@ module Polytexnic
             raise 'Missing \end{verbatim}' if verbatim_count != 0
             content = verbatim_text.join("\n")
             key = self.digest(content)
-            @verbatim_cache[key] = content
+            verbatim_cache[key] = content
             key
           end
         else
@@ -74,4 +74,20 @@ module Polytexnic
     end
 
   end
+end
+
+class String
+  def begin_verbatim?
+    match(/^\s*\\begin{#{verbatim}}\s*$/)
+  end
+
+  def end_verbatim?
+    match(/^\s*\\end{#{verbatim}}\s*$/)    
+  end
+
+  private
+
+    def verbatim
+      'verbatim'
+    end
 end

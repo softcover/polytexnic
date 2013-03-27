@@ -29,7 +29,8 @@ describe Polytexnic::Core::Pipeline do
     describe "footnotes" do
       let(:polytex) { '\footnote{Foo}' }
       it do
-        should resemble('<sup class="footnote"><a href="#footnote-1">1</a></sup>')
+        should resemble('<sup class="footnote">' + 
+                        '<a href="#footnote-1">1</a></sup>')
       end
       it do
         should resemble(
