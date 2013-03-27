@@ -34,7 +34,7 @@ class String
                      ['&#133;',  '…'],
                      ['&#8230;', '…']
                    ]
-    self.tap do
+    tap do
       equivalences.each do |code, character|
         gsub!(code, character)
       end
