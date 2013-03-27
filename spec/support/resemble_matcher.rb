@@ -31,7 +31,8 @@ class String
     equivalences = [ ['&#8220;', '“'],
                      ['&#8221;', '”'],
                      ['&#160;',  ' '],     # nonbreaking space
-                     ['&#133;',  '…']
+                     ['&#133;',  '…'],
+                     ['&#8230;', '…']
                    ]
     self.tap do
       equivalences.each do |code, character|
