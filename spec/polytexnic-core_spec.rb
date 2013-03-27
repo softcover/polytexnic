@@ -130,7 +130,6 @@ describe Polytexnic::Core::Pipeline do
         it { should_not resemble('rend="tt"') }
         it { should resemble('<pre class="verbatim">') }        
       end
-
     end
   end
 end

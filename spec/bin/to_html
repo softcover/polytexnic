@@ -2,4 +2,8 @@
 $LOAD_PATH.unshift File.join(File.dirname(__FILE__), '../..', 'lib')
 require 'polytexnic-core'
 
-puts 'foo'
+filename = ARGV.shift
+polytex = File.open(filename) { |f| f.read }
+html = Polytexnic::Core::Pipeline.new(polytex).process
+output = File.join('tmp', File.basename(filename).sub('tex', 'html'))
+File.open(output, 'w') { |f| f.write(html) }

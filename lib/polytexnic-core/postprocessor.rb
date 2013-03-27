@@ -22,14 +22,17 @@ module Polytexnic
 
     def process_xml(xml)
       doc = Nokogiri::XML(xml)
+      # Italics/emphasis
       doc.xpath('//hi[@rend="it"]').each do |node|
         node.name = 'em'
         node.xpath('//@rend').remove
       end
+      # verbatim
       doc.xpath('//verbatim').each do |node|
         node.name = 'pre'
         node['class'] = 'verbatim'
       end
+      # Verbatim
       doc.xpath('//Verbatim').each do |node|
         node.name = 'pre'
         node['class'] = 'verbatim'
