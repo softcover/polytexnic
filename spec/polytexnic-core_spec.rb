@@ -3,7 +3,8 @@ require 'spec_helper'
 
 describe Polytexnic::Core::Pipeline do
   describe '#process' do
-    subject { Polytexnic::Core::Pipeline.new(polytex).process }
+    let(:processed_text) { Polytexnic::Core::Pipeline.new(polytex).process }
+    subject { processed_text }
 
     describe "italics conversion" do
       let(:polytex) { '\emph{foo bar}' }
@@ -82,6 +83,7 @@ describe Polytexnic::Core::Pipeline do
   \emph{foo bar}
   \end{verbatim}
 \end{verbatim}
+lorem ipsum
          EOS
         end
 
@@ -93,6 +95,9 @@ describe Polytexnic::Core::Pipeline do
         end
 
         it { should resemble(output) }
+        it "should break out of the loop if verbatim count is zero" do
+          expect(processed_text).to resemble('lorem ipsum')
+        end
       end
 
       describe 'with missing \end{verbatim}' do
@@ -103,7 +108,7 @@ describe Polytexnic::Core::Pipeline do
         end
 
         it "should raise an error" do
-          expect { subject }.to raise_error
+          expect { processed_text }.to raise_error
         end
       end
     end
