@@ -62,55 +62,75 @@ describe Polytexnic::Core::Pipeline do
       it { should resemble('foo bar') }
     end
 
-    describe "verbatim environments" do
-       let(:polytex) do <<-'EOS'
-\begin{verbatim}
-  \emph{foo bar}
-\end{verbatim}
-         EOS
-       end
-
-      let(:output) { '\emph{foo bar}' }
-
-      it { should resemble(output) }
-      it { should resemble('<pre class="verbatim">') }
-      it { should_not resemble('\begin{verbatim}') }
-
-      describe "with nesting" do
-        let(:polytex) do <<-'EOS'
-\begin{verbatim}
+    describe "literal environments" do
+      
+      describe "verbatim environments" do
+         let(:polytex) do <<-'EOS'
   \begin{verbatim}
-  \emph{foo bar}
+    \emph{foo bar}
   \end{verbatim}
-\end{verbatim}
-lorem ipsum
-         EOS
-        end
+           EOS
+         end
 
-        let(:output) do <<-'EOS'
-  \begin{verbatim}
-  \emph{foo bar}
-  \end{verbatim}
-         EOS
-        end
+        let(:output) { '\emph{foo bar}' }
 
         it { should resemble(output) }
-        it "should break out of the loop if verbatim count is zero" do
-          expect(processed_text).to resemble('lorem ipsum')
+        it { should resemble('<pre class="verbatim">') }
+        it { should_not resemble('\begin{verbatim}') }
+
+        describe "with nesting" do
+          let(:polytex) do <<-'EOS'
+  \begin{verbatim}
+    \begin{verbatim}
+    \emph{foo bar}
+    \end{verbatim}
+  \end{verbatim}
+  lorem ipsum
+           EOS
+          end
+
+          let(:output) do <<-'EOS'
+    \begin{verbatim}
+    \emph{foo bar}
+    \end{verbatim}
+           EOS
+          end
+
+          it { should resemble(output) }
+          it "should break out of the loop if verbatim count is zero" do
+            expect(processed_text).to resemble('lorem ipsum')
+          end
+        end
+
+        describe 'with missing \end{verbatim}' do
+          let(:polytex) do <<-'EOS'
+  \begin{verbatim}
+    \emph{foo bar}
+           EOS
+          end
+
+          it "should raise an error" do
+            expect { processed_text }.to raise_error
+          end
         end
       end
 
-      describe 'with missing \end{verbatim}' do
-        let(:polytex) do <<-'EOS'
-\begin{verbatim}
-  \emph{foo bar}
-         EOS
-        end
+      describe "Verbatim environments" do
+         let(:polytex) do <<-'EOS'
+  \begin{Verbatim}
+    \emph{foo bar}
+  \end{Verbatim}
+           EOS
+         end
 
-        it "should raise an error" do
-          expect { processed_text }.to raise_error
-        end
+        let(:output) { '\emph{foo bar}' }
+
+        it { should resemble(output) }
+        it { should_not resemble('\begin{Verbatim}') }
+        it { should_not resemble('rend="tt"') }
+        it { should resemble('<pre class="verbatim">') }        
       end
+
     end
   end
 end

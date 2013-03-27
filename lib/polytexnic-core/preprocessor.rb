@@ -53,6 +53,16 @@ module Polytexnic
     # Handles environments that should be passed through the pipeline intact.
     # The includes verbatim environments ('verbatim', 'Verbatim') and all the
     # equation environments handled by MathJax ('equation', 'align', etc.).
+    # We take care to keep count of the number of begins we see so that the
+    # code handles nested environments correctly; i.e., 
+    #   \begin{verbatim}
+    #     \begin{verbatim}
+    #     \emph{foo bar}
+    #     \end{verbatim}
+    #   \end{verbatim}
+    #   lorem ipsum
+    # gets includes the internal literal text without accidentally grabbing the
+    # 'lorem ipsum' at the end.
     def handle_literal_environments(lines, output)
       while (line = lines.shift)
         if line.begin_literal?
@@ -66,11 +76,11 @@ module Polytexnic
                 count -= 1
                 break if count == 0
               end
-              text << line if count > 0
+              text << line
             end
-            raise 'Missing \end{verbatim}' if count != 0
+            raise "Missing \\end{#{line.literal_type}}" if count != 0
             content = text.join("\n")
-            key = self.digest(content)
+            key = digest(content)
             verbatim_cache[key] = content
             key
           end
@@ -103,6 +113,6 @@ class String
 
     # Returns a string matching the supported literal environments.
     def literal
-      'verbatim'
+      '(verbatim|Verbatim)'
     end
 end
