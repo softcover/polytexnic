@@ -7,19 +7,10 @@ describe String do
   subject { string }
 
   it { should respond_to(:compress) }
-  it { should respond_to(:compress!) }
 
   describe '#compress' do
     subject { string.compress }
     it { should eq(compressed_string) }
-  end
-
-  describe '#compress!' do
-    it "should replace the string with string.compress" do
-      expect(string).not_to eq(compressed_string)
-      string.compress!
-      expect(string).to eq(compressed_string)      
-    end
   end
 end
 
@@ -45,6 +36,10 @@ describe "custom 'resemble' matcher" do
 
   it "should work with Unicode nonbreak spaces" do
     expect('foo' + nbsp + nbsp + 'bar').to resemble('foo bar')
+  end
+
+  it "should work with a mix of characters and codes" do
+    expect('“foo bar&#8221;').to resemble('&#8220;foo bar”')
   end
 
   it "should work with multiline strings" do
