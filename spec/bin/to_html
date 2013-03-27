@@ -5,5 +5,17 @@ require 'polytexnic-core'
 filename = ARGV.shift
 polytex = File.open(filename) { |f| f.read }
 html = Polytexnic::Core::Pipeline.new(polytex).process
-output = File.join('tmp', File.basename(filename).sub('tex', 'html'))
-File.open(output, 'w') { |f| f.write(html) }
+outfile = File.join('tmp', File.basename(filename).sub('tex', 'html'))
+output = <<EOF
+<!DOCTYPE html>
+<head>
+<meta charset="UTF-8">
+<style>
+.tt { font-family: Courier; font-size: 90%; }
+</style>
+</head>
+<body>
+#{html}
+</body>
+EOF
+File.open(outfile, 'w') { |f| f.write(output) }
