@@ -7,7 +7,31 @@ RSpec::Matchers.define :resemble do |expected|
     elsif expected.is_a?(Regexp)
       regex = %r{#{expected.to_s.compress}}
     end
-    expect(actual.compress).to match_regex(regex)
+    expect(character_equivalences(actual.compress)).to match_regex(regex)
+  end
+end
+
+
+
+# Apply UTF-8 character code equivalences.
+# For example, '&#133;' and '…' are the same character (horizontal ellipsis), 
+# and depending on the version of Ruby and other factors the string might 
+# contain either or both.
+# We want to be robust to the differences, to gsub them out.
+# For clarity, we standardize on the characters that look literally correct,
+# e.g., '…'.
+# Rather than be exhaustive, we of course only check the ones actually
+# used in the tests. Browsers, etc., display them the same.
+def character_equivalences(string)
+  equivalences = [ ['&#8220;', '“'],
+                   ['&#8221;', '”'],
+                   ['&#160;',  ' '],     # nonbreaking space
+                   ['&#133;',  '…']
+                 ]
+  string.tap do
+    equivalences.each do |code, character|
+      string.gsub!(code, character)
+    end
   end
 end
 
