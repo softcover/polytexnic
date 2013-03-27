@@ -1,5 +1,5 @@
 task default: [:rubies]
 
 task :rubies do
-  exit system('bin/ruby_tests')
+  exit system('tasks/bin/ruby_tests')
 end
