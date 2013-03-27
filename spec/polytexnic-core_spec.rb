@@ -3,7 +3,8 @@ require 'spec_helper'
 
 describe Polytexnic::Core::Pipeline do
   describe '#process' do
-    subject { Polytexnic::Core::Pipeline.new(polytex).process }
+    let(:processed_text) { Polytexnic::Core::Pipeline.new(polytex).process }
+    subject { processed_text }
 
     describe "italics conversion" do
       let(:polytex) { '\emph{foo bar}' }
@@ -22,21 +23,22 @@ describe Polytexnic::Core::Pipeline do
     describe "quoted strings" do
       context "with single quotes" do
         let(:polytex) { "``foo bar''" }
-        it { should =~ /&#8220;foo bar&#8221;/ }
+        it { should resemble('“foo bar”') }
       end
     end
 
     describe "footnotes" do
       let(:polytex) { '\footnote{Foo}' }
       it do
-        should resemble('<sup class="footnote"><a href="#footnote-1">1</a></sup>')
+        should resemble('<sup class="footnote">' + 
+                          '<a href="#footnote-1">1</a>' +
+                        '</sup>')
       end
       it do
         should resemble(
           '<div id="footnotes">' +
             '<div id="footnote-1" class="footnote">Foo</div>' +
-          '</div>'
-        )
+          '</div>')
       end
     end
 
@@ -47,7 +49,7 @@ describe Polytexnic::Core::Pipeline do
 
     describe '\ldots' do
       let(:polytex) { '\ldots' }
-      it { should resemble('&#133;') }
+      it { should resemble('…') }
     end
 
     describe 'end-of-sentence punctuation' do
@@ -57,54 +59,7 @@ describe Polytexnic::Core::Pipeline do
 
     describe 'unbreakable interword space' do
       let(:polytex) { 'foo~bar' }
-      it { should resemble('foo&#160;bar') }
-    end
-
-    describe "verbatim environments" do
-       let(:polytex) do <<-'EOS'
-\begin{verbatim}
-  \emph{foo bar}
-\end{verbatim}
-         EOS
-       end
-
-      let(:output) { '\emph{foo bar}' }
-
-      it { should resemble(output) }
-      it { should resemble('<pre class="verbatim">') }
-      it { should_not resemble('\begin{verbatim}') }
-
-      describe "with nesting" do
-        let(:polytex) do <<-'EOS'
-\begin{verbatim}
-  \begin{verbatim}
-  \emph{foo bar}
-  \end{verbatim}
-\end{verbatim}
-         EOS
-        end
-
-        let(:output) do <<-'EOS'
-  \begin{verbatim}
-  \emph{foo bar}
-  \end{verbatim}
-         EOS
-        end
-
-        it { should resemble(output) }
-      end
-
-      describe 'with missing \end{verbatim}' do
-        let(:polytex) do <<-'EOS'
-\begin{verbatim}
-  \emph{foo bar}
-         EOS
-        end
-
-        it "should raise an error" do
-          expect { subject }.to raise_error
-        end
-      end
+      it { should resemble('foo bar') }
     end
   end
 end
