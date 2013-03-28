@@ -100,9 +100,22 @@ lorem ipsum
     it { should resemble('<p class="noindent">ipsum') }
   end
 
-  describe "unnumbered equations" do
+  describe "display equations, LaTeX-style" do
     let(:equation) do <<-'EOS'
 \[ \int_\Omega d\omega = \int_{\partial\Omega} \omega \]
+     EOS
+    end
+    let(:polytex) { "lorem\n" + equation + "\nipsum" }
+
+    # Tralics messes with the equation innards, so the result
+    # doesn't resemble the whole equation. Use '\\Omega' as a decent proxy.
+    it { should resemble('\\Omega') }
+    it { should resemble('<div class="display_equation">') }
+  end
+
+  describe "display equations, TeX-style" do
+    let(:equation) do <<-'EOS'
+$$ \int_\Omega d\omega = \int_{\partial\Omega} \omega $$
      EOS
     end
     let(:polytex) { "lorem\n" + equation + "\nipsum" }
