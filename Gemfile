@@ -7,5 +7,5 @@ gem 'nokogiri', '~> 1.5.0'
 gemspec
 
 group :test do
-  gem 'debugger'
+  gem 'debugger2'
 end
