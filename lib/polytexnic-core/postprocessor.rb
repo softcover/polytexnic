@@ -27,6 +27,11 @@ module Polytexnic
         node.name = 'em'
         node.xpath('//@rend').remove
       end
+      doc.xpath('//hi[@rend="tt"]').each do |node|
+        node.name = 'span'
+        node['class'] = 'tt'
+        node.xpath('//@rend').remove
+      end
       # verbatim
       doc.xpath('//verbatim').each do |node|
         node.name = 'pre'
@@ -37,10 +42,21 @@ module Polytexnic
         node.name = 'pre'
         node['class'] = 'verbatim'
       end
-      doc.xpath('//hi[@rend="tt"]').each do |node|
-        node.name = 'span'
-        node['class'] = 'tt'
-        node.xpath('//@rend').remove
+      # equation
+      doc.xpath('//equation').each do |node|
+        node.name = 'div'
+        node['class'] = 'equation'
+        begin
+          next_paragraph = node.parent.next_sibling.next_sibling
+          next_paragraph['noindent'] = 'true'
+        rescue
+          nil
+        end
+      end
+      # Paragraphs with noindent
+      doc.xpath('//p[@noindent="true"]').each do |node|
+        node['class'] = 'noindent'
+        node.xpath('//@noindent').remove
       end
 
       # handle footnotes
