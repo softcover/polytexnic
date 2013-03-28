@@ -11,7 +11,7 @@ describe Polytexnic::Core::Pipeline do
       it { should resemble('<em>foo bar</em>') }
     end
 
-    describe "with multiple instances" do
+    describe "italics with multiple instances" do
       let(:polytex) do
         '\emph{foo bar} and also \emph{baz quux}'
       end
@@ -30,15 +30,13 @@ describe Polytexnic::Core::Pipeline do
     describe "footnotes" do
       let(:polytex) { '\footnote{Foo}' }
       it do
-        should resemble('<sup class="footnote">' + 
+        should resemble('<sup class="footnote">' +
                           '<a href="#footnote-1">1</a>' +
                         '</sup>')
       end
       it do
-        should resemble(
-          '<div id="footnotes">' +
-            '<div id="footnote-1" class="footnote">Foo</div>' +
-          '</div>')
+        out = '<div id="footnotes"><ol><li id="footnote-1">Foo</li></ol></div>'
+        should resemble out
       end
     end
 
@@ -60,6 +58,39 @@ describe Polytexnic::Core::Pipeline do
     describe 'unbreakable interword space' do
       let(:polytex) { 'foo~bar' }
       it { should resemble('foo bar') }
+    end
+
+    describe '\maketitle' do
+      let(:polytex) do <<-'EOS'
+          \title{Foo}
+          \subtitle{Bar}
+          \author{Leslie Lamport}
+          \date{Jan 1, 1971}
+          \begin{document}
+            \maketitle
+          \end{document}
+        EOS
+      end
+
+      it do
+        should resemble <<-'EOS'
+          <h1 class="title">Foo</h1>
+          <h1 class="subtitle">Bar</h1>
+          <h2 class="author">Leslie Lamport</h2>
+          <h2 class="date">Jan 1, 1971</h2>
+        EOS
+      end
+    end
+
+    describe '\chapter' do
+      let(:polytex) { '\chapter{Foo Bar}' }
+      let(:output) do <<-'EOS'
+        <h1 class="chapter">
+          <a id="sec-1"></a><span>Foo Bar</span>
+        </h1>
+        EOS
+      end
+      it { should resemble(output) }
     end
   end
 end
