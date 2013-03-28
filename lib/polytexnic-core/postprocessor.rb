@@ -53,6 +53,14 @@ module Polytexnic
           nil
         end
       end
+      # display equation
+      doc.xpath('//texmath[@textype="display"]').each do |node|
+        node.name = 'div'
+        node['class'] = 'display_equation'
+        node.content = '\\[' + node.content + '\\]'
+        node.xpath('//@textype').remove
+        node.xpath('//@type').remove
+      end
       # Paragraphs with noindent
       doc.xpath('//p[@noindent="true"]').each do |node|
         node['class'] = 'noindent'
