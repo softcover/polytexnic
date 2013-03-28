@@ -30,6 +30,10 @@ module Polytexnic
         node.name = 'pre'
         node['class'] = 'verbatim'
       end
+      doc.xpath('//Verbatim').each do |node|
+        node.name = 'pre'
+        node['class'] = 'verbatim'
+      end
 
       # handle footnotes
       footnotes_node = nil
