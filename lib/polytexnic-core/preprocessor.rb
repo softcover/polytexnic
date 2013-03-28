@@ -119,13 +119,21 @@ module Polytexnic
     end
 
     def element(literal_type)
-      if %w[equation aligned].include?(literal_type)
+      if math_environments.include?(literal_type)
         'equation'
       else
         literal_type
       end
     end
   end
+end
+
+def math_environments
+  %w[equation align aligned]
+end
+
+def math_environment_regex
+  math_environments.map { |s| Regexp.escape(s) }.join('|')
 end
 
 class String
@@ -146,13 +154,13 @@ class String
   end
 
   def math_environment?
-    match(/(?:equation|aligned)/)
+    match(/(?:#{math_environment_regex})/)
   end
 
   private
 
     # Returns a string matching the supported literal environments.
     def literal
-      '(verbatim|Verbatim|equation|aligned)'
+      "(?:verbatim|Verbatim|#{math_environment_regex})"
     end
 end

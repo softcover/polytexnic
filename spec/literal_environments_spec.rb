@@ -164,6 +164,27 @@ $$ \int_\Omega d\omega = \int_{\partial\Omega} \omega $$
 
   describe "align" do
     let(:equation) do <<-'EOS'
+\begin{align}
+x^2 + y^2 & = 1 \\
+y & = \sqrt{1 - x^2}.
+\end{align}
+    EOS
+    end
+    let(:polytex) { equation }
+    let(:escaped) do <<-'EOS'
+\begin{align}
+x^2 + y^2 &amp; = 1 \\
+y &amp; = \sqrt{1 - x^2}.
+\end{align}
+    EOS
+    end
+
+    it { should resemble(escaped) }
+    it { should resemble('<div class="equation">') }
+  end
+
+  describe "aligned" do
+    let(:equation) do <<-'EOS'
 \begin{aligned}
 \nabla \times \vec{\mathbf{B}} -\, \frac1c\, \frac{\partial\vec{\mathbf{E}}}{\partial t} & = \frac{4\pi}{c}\vec{\mathbf{j}} \\   \nabla \cdot \vec{\mathbf{E}} & = 4 \pi \rho \\
 \nabla \times \vec{\mathbf{E}}\, +\, \frac1c\, \frac{\partial\vec{\mathbf{B}}}{\partial t} & = \vec{\mathbf{0}} \\
@@ -180,6 +201,7 @@ $$ \int_\Omega d\omega = \int_{\partial\Omega} \omega $$
 \end{aligned}
     EOS
     end
+
     it { should resemble(escaped) }
     it { should resemble('<div class="equation">') }
   end
