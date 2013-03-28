@@ -13,9 +13,18 @@ output = <<EOF
 <style>
 .tt { font-family: Courier; font-size: 90%; }
 </style>
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML">
+  MathJax.Hub.Config({
+    tex2jax: {inlineMath: [['$','$'],["\\(","\\)"]]},
+    "HTML-CSS": {
+      availableFonts: ["TeX"]
+    }
+  });
+</script>
 </head>
 <body>
 #{html}
 </body>
 EOF
 File.open(outfile, 'w') { |f| f.write(output) }
+puts "Wrote file #{outfile}"

@@ -11,12 +11,11 @@ module Polytexnic
       file = Tempfile.new(['polytex', '.tex'])
       file.write preprocess_polytex
       file.close
-      system("#{tralics} -nomathml #{file.path} > /dev/null")
+      system("#{tralics} -nomathml #{file.path} > log/tralics.log")
       dirname = File.dirname(file.path)
       xml_filename = File.basename(file.path, '.tex') + '.xml'
       raw_xml = clean_xml File.read(File.join(dirname, xml_filename))
-      xml = Nokogiri::XML(raw_xml).to_xml
-
+      xml = Nokogiri::XML(raw_xml).at_css('unknown').to_xml
       @xml = xml
     ensure
       file.unlink
@@ -95,12 +94,16 @@ module Polytexnic
           output << xmlelement(line.literal_type) do
             count = 1
             text = []
+            text << line if line.math_environment?
             while (line = lines.shift)
               if line.begin_literal?
                 count += 1
               elsif line.end_literal?
                 count -= 1
-                break if count == 0
+                if count == 0
+                  text << line if line.math_environment?
+                  break
+                end
               end
               text << line
             end
@@ -110,6 +113,7 @@ module Polytexnic
             verbatim_cache[key] = content
             key
           end
+          output << '' # To force the next element to be a paragraph
         else
           output << line
         end
@@ -124,6 +128,10 @@ class String
     match(/^\s*\\begin{#{literal}}\s*$/)
   end
 
+  def end_literal?
+    match(/^\s*\\end{#{literal}}\s*$/)    
+  end
+
   # Returns the type of literal environment.
   # '\begin{verbatim}' => :verbatim
   # '\begin{equation}' => :equation
@@ -131,14 +139,14 @@ class String
     scan(/\\begin{(.*?)}/).flatten.first.to_sym
   end
 
-  def end_literal?
-    match(/^\s*\\end{#{literal}}\s*$/)
+  def math_environment?
+    match(/(?:equation)/)
   end
 
   private
 
     # Returns a string matching the supported literal environments.
     def literal
-      '(verbatim|Verbatim)'
+      '(verbatim|Verbatim|equation)'
     end
 end
