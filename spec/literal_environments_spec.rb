@@ -57,47 +57,19 @@ lorem ipsum
   end
 
   describe "Verbatim environments" do
-     let(:polytex) do <<-'EOS'
+    let(:polytex) do <<-'EOS'
 \begin{Verbatim}
 \emph{foo bar}
 \end{Verbatim}
-       EOS
-     end
+     EOS
+    end
 
     let(:output) { '\emph{foo bar}' }
 
-      it { should resemble(output) }
-      it { should_not resemble('\begin{Verbatim}') }
-      it { should_not resemble('rend="tt"') }
-      it { should resemble('<pre class="verbatim">') }
-    end
-
-  describe "raw equation environments" do
-     let(:equation) do <<-'EOS'
-\begin{equation}
-\int_\Omega d\omega = \int_{\partial\Omega} \omega
-\end{equation}
-       EOS
-     end
-     let(:polytex) { equation }
-
-    it { should resemble(equation) }
-    it { should resemble('<div class="equation">') }
-  end
-
-  describe "equation environments surrounded by text" do
-     let(:equation) do <<-'EOS'
-\begin{equation}
-\int_\Omega d\omega = \int_{\partial\Omega} \omega
-\end{equation}
-       EOS
-     end
-     let(:polytex) { "lorem\n" + equation + "\nipsum" }
-
-    it { should resemble(equation) }
-    it { should resemble('<div class="equation">') }
-    it { should resemble('<p>lorem') }
-    it { should resemble('<p class="noindent">ipsum') }
+    it { should resemble(output) }
+    it { should_not resemble('\begin{Verbatim}') }
+    it { should_not resemble('rend="tt"') }
+    it { should resemble('<pre class="verbatim">') }
   end
 
   describe "inline math, LaTeX-style" do
@@ -106,10 +78,9 @@ lorem ipsum
      EOS
     end
     let(:polytex) { equation }
+    let(:contents) { '\\Omega' }
 
-    # Tralics messes with the equation innards, so the result
-    # doesn't resemble the whole equation. Use '\\Omega' as a decent proxy.
-    it { should resemble('\\Omega') }
+    it { should resemble(contents) }
     it { should resemble('<span class="inline_math">') }    
   end
 
@@ -119,10 +90,9 @@ $\int_\Omega d\omega = \int_{\partial\Omega} \omega$
      EOS
     end
     let(:polytex) { equation }
+    let(:contents) { '\\Omega' }
 
-    # Tralics messes with the equation innards, so the result
-    # doesn't resemble the whole equation. Use '\\Omega' as a decent proxy.
-    it { should resemble('\\Omega') }
+    it { should resemble(contents) }
     it { should resemble('<span class="inline_math">') }    
     it { should resemble('\\(') }
   end
@@ -142,10 +112,9 @@ $\int_\Omega d\omega = \int_{\partial\Omega} \omega$
      EOS
     end
     let(:polytex) { "lorem\n" + equation + "\nipsum" }
+    let(:contents) { '\\Omega' }
 
-    # Tralics messes with the equation innards, so the result
-    # doesn't resemble the whole equation. Use '\\Omega' as a decent proxy.
-    it { should resemble('\\Omega') }
+    it { should resemble(contents) }
     it { should resemble('<div class="display_math">') }
   end
 
@@ -155,11 +124,43 @@ $$ \int_\Omega d\omega = \int_{\partial\Omega} \omega $$
      EOS
     end
     let(:polytex) { "lorem\n" + equation + "\nipsum" }
+    let(:contents) { '\\Omega' }
 
-    # Tralics messes with the equation innards, so the result
-    # doesn't resemble the whole equation. Use '\\Omega' as a decent proxy.
-    it { should resemble('\\Omega') }
+    it { should resemble(contents) }
     it { should resemble('<div class="display_math">') }
+  end
+
+  shared_examples "an equation environment" do
+    it { should resemble(contents) }
+    it { should resemble('<div class="equation">') }
+  end
+
+  describe "raw equation environments" do
+     let(:equation) do <<-'EOS'
+\begin{equation}
+\int_\Omega d\omega = \int_{\partial\Omega} \omega
+\end{equation}
+       EOS
+     end
+     let(:polytex) { equation }
+     let(:contents) { equation }
+
+    it_behaves_like "an equation environment"
+  end
+
+  describe "equation environments surrounded by text" do
+    let(:equation) do <<-'EOS'
+\begin{equation}
+\int_\Omega d\omega = \int_{\partial\Omega} \omega
+\end{equation}
+       EOS
+    end
+    let(:polytex) { "lorem\n" + equation + "\nipsum" }
+    let(:contents) { equation }
+
+    it_behaves_like "an equation environment"
+    it { should resemble('<p>lorem') }
+    it { should resemble('<p class="noindent">ipsum') }
   end
 
   describe "align" do
@@ -171,13 +172,15 @@ y & = \sqrt{1 - x^2}.
     EOS
     end
     let(:polytex) { equation }
-    let(:escaped) do <<-'EOS'
+    let(:contents) do <<-'EOS'
 \begin{align}
 x^2 + y^2 &amp; = 1 \\
 y &amp; = \sqrt{1 - x^2}.
 \end{align}
     EOS
     end
+
+    it_behaves_like "an equation environment"
   end
 
   describe "align*" do
@@ -189,7 +192,7 @@ y & = \sqrt{1 - x^2}.
     EOS
     end
     let(:polytex) { equation }
-    let(:escaped) do <<-'EOS'
+    let(:contents) do <<-'EOS'
 \begin{align*}
 x^2 + y^2 &amp; = 1 \\
 y &amp; = \sqrt{1 - x^2}.
@@ -197,8 +200,7 @@ y &amp; = \sqrt{1 - x^2}.
     EOS
     end
 
-    it { should resemble(escaped) }
-    it { should resemble('<div class="equation">') }
+    it_behaves_like "an equation environment"
   end
 
   describe "aligned" do
@@ -211,7 +213,7 @@ y &amp; = \sqrt{1 - x^2}.
     EOS
     end
     let(:polytex) { equation }
-    let(:escaped) do <<-'EOS'
+    let(:contents) do <<-'EOS'
 \begin{aligned}
 \nabla \times \vec{\mathbf{B}} -\, \frac1c\, \frac{\partial\vec{\mathbf{E}}}{\partial t} &amp; = \frac{4\pi}{c}\vec{\mathbf{j}} \\   \nabla \cdot \vec{\mathbf{E}} &amp; = 4 \pi \rho \\
 \nabla \times \vec{\mathbf{E}}\, +\, \frac1c\, \frac{\partial\vec{\mathbf{B}}}{\partial t} &amp; = \vec{\mathbf{0}} \\
@@ -220,8 +222,7 @@ y &amp; = \sqrt{1 - x^2}.
     EOS
     end
 
-    it { should resemble(escaped) }
-    it { should resemble('<div class="equation">') }
+    it_behaves_like "an equation environment"
   end
 
   describe "equation* with nesting" do
@@ -237,7 +238,7 @@ d*B &= J + \dot{E}
     EOS
     end
     let(:polytex) { equation }
-    let(:escaped) do <<-'EOS'
+    let(:contents) do <<-'EOS'
 \begin{equation*}
 \left.\begin{aligned}
 dE  &amp;= \rho \\
@@ -249,7 +250,6 @@ d*B &amp;= J + \dot{E}
     EOS
     end
 
-    it { should resemble(escaped) }
-    it { should resemble('<div class="equation">') }    
+    it_behaves_like "an equation environment"
   end
 end
