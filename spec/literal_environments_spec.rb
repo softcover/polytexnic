@@ -128,6 +128,12 @@ $\int_\Omega d\omega = \int_{\partial\Omega} \omega$
     it { should resemble('\\(') }
   end
 
+  describe "multiple occurrences of inline math on one line" do
+    let(:polytex) { "$\\Omega > 0$ and \\( x^2 - 2 \\equiv 0 \\) should work." }
+    it { should resemble('\\Omega') }
+    it { should resemble('<span class="inline_math">') }    
+    it { should resemble('\\(') }
+  end
 
   describe "display math, LaTeX-style" do
     let(:equation) do <<-'EOS'
