@@ -22,6 +22,9 @@ module Polytexnic
 
     def process_xml(xml)
       doc = Nokogiri::XML(xml)
+      # clean
+      doc.xpath('//comment()').remove
+
       # Italics/emphasis
       doc.xpath('//hi[@rend="it"]').each do |node|
         node.name = 'em'
@@ -47,21 +50,22 @@ module Polytexnic
       footnotes_node = nil
       doc.xpath('//note[@place="foot"]').each_with_index do |node, i|
         n = i + 1
-        note = Nokogiri::XML::Node.new('div', doc)
+        note = Nokogiri::XML::Node.new('li', doc)
         note['id'] = "footnote-#{n}"
-        note['class'] = 'footnote'
         note.content = node.content
 
         unless footnotes_node
-          footnotes_node = Nokogiri::XML::Node.new('div', doc)
-          footnotes_node['id'] = 'footnotes'
-          doc.root.add_child footnotes_node
+          footnotes_wrapper_node = Nokogiri::XML::Node.new('div', doc)
+          footnotes_wrapper_node['id'] = 'footnotes'
+          footnotes_node = Nokogiri::XML::Node.new('ol', doc)
+          footnotes_wrapper_node.add_child footnotes_node
+          doc.root.add_child footnotes_wrapper_node
         end
 
         footnotes_node.add_child note
 
         node.name = 'sup'
-        %w{id-text id place}.each { |a| node.remove_attribute a }
+        clean_node node, %w{place id id-text}
         node['class'] = 'footnote'
         link = Nokogiri::XML::Node.new('a', doc)
         link['href'] = "#footnote-#{n}"
@@ -75,7 +79,93 @@ module Polytexnic
         node['class'] = 'LaTeX'
       end
 
+      # standard environments
+
+      # quote
+      doc.xpath('//p[@rend="quoted"]').each do |node|
+        clean_node node, 'rend'
+        node.name = 'blockquote'
+        node['class'] = 'quote'
+      end
+
+      # verse
+      doc.xpath('//p[@rend="verse"]').each do |node|
+        clean_node node, %w{rend noindent}
+        node.name = 'blockquote'
+        node['class'] = 'verse'
+      end
+
+      # itemize
+      doc.xpath('//list[@type="simple"]').each do |node|
+        clean_node node, 'type'
+        node.name = 'ul'
+      end
+
+      # enumerate
+      doc.xpath('//list[@type="ordered"]').each do |node|
+        clean_node node, 'type'
+        node.name = 'ol'
+      end
+
+      # item
+      doc.xpath('//item').each do |node|
+        clean_node node, %w{id-text id label}
+        node.name = 'li'
+        node.xpath('//p').each do |pnode|
+          pnode.parent.inner_html = pnode.inner_html
+        end
+      end
+
+      # section
+      doc.xpath('//div0').each do |node|
+        id = node['id']
+        clean_node node, %w{id id-text}
+        node.name = 'div'
+        node['class'] = 'section'
+
+        node.xpath('//head').each do |head_node|
+          head_node.name = 'h2'
+        end
+      end
+
+      # chapter
+      doc.xpath('//chapter').each_with_index do |node, i|
+        n = i + 1
+
+        node.name = 'h1'
+        node['class'] = 'chapter'
+
+        a = Nokogiri::XML::Node.new('a', doc)
+        a['id'] = "sec-#{n}"
+
+        span = Nokogiri::XML::Node.new('span', doc)
+        span.content = node.content
+
+        node.content = ''
+        node << a
+        node << span
+      end
+
+      # title (preprocessed)
+      doc.xpath('//maketitle').each do |node|
+        node.name = 'h1'
+        %w{title subtitle author date}.each do |field|
+          class_var = Polytexnic.instance_variable_get "@#{field}"
+          if class_var
+            type = %w{title subtitle}.include?(field) ? 'h1' : 'h2'
+            el = Nokogiri::XML::Node.new(type, doc)
+            el.content = class_var
+            el['class'] = field
+            node.add_child el
+          end
+        end
+      end
+
       doc.to_html
+    end
+
+    def clean_node(node, attributes)
+      [*attributes].each { |a| node.remove_attribute a }
     end
 
   end

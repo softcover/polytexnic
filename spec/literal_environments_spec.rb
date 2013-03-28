@@ -7,12 +7,12 @@ describe Polytexnic::Core::Pipeline do
     subject { processed_text }
 
     describe "verbatim environments" do
-       let(:polytex) do <<-'EOS'
+      let(:polytex) do <<-'EOS'
 \begin{verbatim}
   \emph{foo bar}
 \end{verbatim}
-         EOS
-       end
+        EOS
+      end
 
       let(:output) { '\emph{foo bar}' }
 
@@ -70,7 +70,7 @@ lorem ipsum
       it { should resemble(output) }
       it { should_not resemble('\begin{Verbatim}') }
       it { should_not resemble('rend="tt"') }
-      it { should resemble('<pre class="verbatim">') }        
+      it { should resemble('<pre class="verbatim">') }
     end
   end
 end
