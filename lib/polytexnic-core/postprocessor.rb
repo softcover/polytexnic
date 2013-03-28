@@ -117,7 +117,6 @@ module Polytexnic
         node['class'] = 'LaTeX'
       end
 
-<<<<<<< HEAD
       # standard environments
 
       # quote
@@ -200,7 +199,7 @@ module Polytexnic
         end
       end
 
-      doc.at_css('unknown').children.to_html
+      doc.at_css('document').children.to_html
     end
 
     def clean_node(node, attributes)

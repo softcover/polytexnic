@@ -15,7 +15,7 @@ module Polytexnic
       dirname = File.dirname(file.path)
       xml_filename = File.basename(file.path, '.tex') + '.xml'
       raw_xml = clean_xml File.read(File.join(dirname, xml_filename))
-      xml = Nokogiri::XML(raw_xml).at_css('unknown').to_xml
+      xml = Nokogiri::XML(raw_xml).to_xml
       @xml = xml
     ensure
       file.unlink
@@ -59,11 +59,11 @@ module Polytexnic
     end
 
     def clean_xml(raw_xml)
-      remove_unknowns(fix_nokogiri_bug(raw_xml))
+      replace_unknowns(fix_nokogiri_bug(raw_xml))
     end
 
-    def remove_unknowns(raw_xml)
-      raw_xml.gsub /<unknown>|<\/unknown>/,''
+    def replace_unknowns(raw_xml)
+      raw_xml.gsub('<unknown>', '<document>').gsub('</unknown>', '</document>')
     end
 
     # Fixes a Nokogiri bug.
