@@ -27,12 +27,12 @@ module Polytexnic
       # Italics/emphasis
       doc.xpath('//hi[@rend="it"]').each do |node|
         node.name = 'em'
-        node.xpath('//@rend').remove
+        node.remove_attribute('rend')
       end
       doc.xpath('//hi[@rend="tt"]').each do |node|
         node.name = 'span'
         node['class'] = 'tt'
-        node.xpath('//@rend').remove
+        node.remove_attribute('rend')
       end
       # verbatim
       doc.xpath('//verbatim').each do |node|
@@ -57,22 +57,23 @@ module Polytexnic
       end
       # inline & display math
       doc.xpath('//texmath').each do |node|
-        type = node.attributes['type'].value
+        type = node.attributes['textype'].value
         if type == 'inline'
           node.name = 'span'
           node.content = '\\(' + node.content + '\\)'
+          node['class'] = 'inline_math'
         else
           node.name = 'div'
           node.content = '\\[' + node.content + '\\]'
+          node['class'] = 'display_math'
         end
-        node['class'] = "#{type}_math"
-        node.xpath('//@textype').remove
-        node.xpath('//@type').remove
+        node.remove_attribute('textype')
+        node.remove_attribute('type')
       end
       # Paragraphs with noindent
       doc.xpath('//p[@noindent="true"]').each do |node|
         node['class'] = 'noindent'
-        node.xpath('//@noindent').remove
+        node.remove_attribute('noindent')
       end
 
       # handle footnotes
