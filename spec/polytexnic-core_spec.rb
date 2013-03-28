@@ -22,7 +22,7 @@ describe Polytexnic::Core::Pipeline do
     describe "quoted strings" do
       context "with single quotes" do
         let(:polytex) { "``foo bar''" }
-        it { should =~ /&#8220;foo bar&#8221;/ }
+        it { should resemble('“foo bar”') }
       end
     end
 
@@ -47,7 +47,7 @@ describe Polytexnic::Core::Pipeline do
 
     describe '\ldots' do
       let(:polytex) { '\ldots' }
-      it { should resemble('&#133;') }
+      it { should resemble('…') }
     end
 
     describe 'end-of-sentence punctuation' do
@@ -57,7 +57,7 @@ describe Polytexnic::Core::Pipeline do
 
     describe 'unbreakable interword space' do
       let(:polytex) { 'foo~bar' }
-      it { should resemble('foo&#160;bar') }
+      it { should resemble('foo bar') }
     end
 
     describe "verbatim environments" do
