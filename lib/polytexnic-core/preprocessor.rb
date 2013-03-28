@@ -15,8 +15,9 @@ module Polytexnic
       dirname = File.dirname(file.path)
       xml_filename = File.basename(file.path, '.tex') + '.xml'
       raw_xml = clean_xml File.read(File.join(dirname, xml_filename))
-      xml = Nokogiri::XML(raw_xml).to_xml
-      @xml = xml
+      doc = Nokogiri::XML(raw_xml)
+      doc.at_css('unknown').name = 'document'
+      @xml = doc.to_xml
     ensure
       file.unlink
     end
@@ -59,11 +60,7 @@ module Polytexnic
     end
 
     def clean_xml(raw_xml)
-      replace_unknowns(fix_nokogiri_bug(raw_xml))
-    end
-
-    def replace_unknowns(raw_xml)
-      raw_xml.gsub('<unknown>', '<document>').gsub('</unknown>', '</document>')
+      nokogiri_ellipsis_workaround(raw_xml)
     end
 
     # Fixes a Nokogiri bug.
@@ -71,7 +68,7 @@ module Polytexnic
     # handle the horizontal ellipsis character '&#133;' correctly in Ruby 2.0.
     # The kludgy solution is to replace it with '…' in the raw XML,
     # which does work.
-    def fix_nokogiri_bug(raw_xml)
+    def nokogiri_ellipsis_workaround(raw_xml)
       raw_xml.gsub('&#133;', '…')
     end
 
