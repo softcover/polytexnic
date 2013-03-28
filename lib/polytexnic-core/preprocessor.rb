@@ -14,8 +14,8 @@ module Polytexnic
       system("#{tralics} -nomathml #{file.path} > /dev/null")
       dirname = File.dirname(file.path)
       xml_filename = File.basename(file.path, '.tex') + '.xml'
-      raw_xml = fix_nokogiri_bug(File.read(File.join(dirname, xml_filename)))
-      xml = Nokogiri::XML(raw_xml).at_css('p').to_xml
+      raw_xml = clean_xml File.read(File.join(dirname, xml_filename))
+      xml = Nokogiri::XML(raw_xml).to_xml
 
       @xml = xml
     ensure
@@ -31,8 +31,26 @@ module Polytexnic
       output = []
       lines = polytex.split("\n")
       handle_literal_environments(lines, output)
-      # puts output.join("\n")
-      output.join("\n")
+
+      output = output.join("\n")
+
+      # handle title fields
+      %w{title subtitle author date}.each do |field|
+        output.gsub! /\\#{field}\{(.*?)\}/ do |s|
+          Polytexnic.instance_variable_set "@#{field}", $1
+          ''
+        end
+      end
+
+      output.gsub! /\\maketitle/ do |s|
+        xmlelement('maketitle')
+      end
+
+      output.gsub! /\\chapter\{(.*?)\}/ do |s|
+        xmlelement('chapter'){ $1 }
+      end
+
+      output
     end
 
     def xmlelement(name)
@@ -41,10 +59,18 @@ module Polytexnic
       output << "\\end{xmlelement}"
     end
 
+    def clean_xml(raw_xml)
+      remove_unknowns(fix_nokogiri_bug(raw_xml))
+    end
+
+    def remove_unknowns(raw_xml)
+      raw_xml.gsub /<unknown>|<\/unknown>/,''
+    end
+
     # Fixes a Nokogiri bug.
     # As of this writing, the latest version of Nokogiri (1.5.6) doesn't
     # handle the horizontal ellipsis character '&#133;' correctly in Ruby 2.0.
-    # The kludgy solution is to replace it with '…' in the raw XML, 
+    # The kludgy solution is to replace it with '…' in the raw XML,
     # which does work.
     def fix_nokogiri_bug(raw_xml)
       raw_xml.gsub('&#133;', '…')
@@ -54,7 +80,7 @@ module Polytexnic
     # The includes verbatim environments ('verbatim', 'Verbatim') and all the
     # equation environments handled by MathJax ('equation', 'align', etc.).
     # We take care to keep count of the number of begins we see so that the
-    # code handles nested environments correctly; i.e., 
+    # code handles nested environments correctly; i.e.,
     #   \begin{verbatim}
     #     \begin{verbatim}
     #     \emph{foo bar}
@@ -106,7 +132,7 @@ class String
   end
 
   def end_literal?
-    match(/^\s*\\end{#{literal}}\s*$/)    
+    match(/^\s*\\end{#{literal}}\s*$/)
   end
 
   private
