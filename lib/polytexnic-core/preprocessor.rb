@@ -129,7 +129,7 @@ module Polytexnic
 end
 
 def math_environments
-  %w[equation align aligned]
+  %w[equation align align* aligned]
 end
 
 def math_environment_regex
@@ -143,13 +143,14 @@ class String
   end
 
   def end_literal?(literal_type)
-    match(/^\s*\\end{#{literal_type}}\s*$/)    
+    match(/^\s*\\end{#{Regexp.escape(literal_type)}}\s*$/)    
   end
 
   # Returns the type of literal environment.
   # '\begin{verbatim}' => 'verbatim'
   # '\begin{equation}' => 'equation'
   def literal_type
+    # raise scan(/\\begin{(.*?)}/).flatten.first.inspect
     scan(/\\begin{(.*?)}/).flatten.first
   end
 

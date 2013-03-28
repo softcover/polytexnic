@@ -178,6 +178,24 @@ y &amp; = \sqrt{1 - x^2}.
 \end{align}
     EOS
     end
+  end
+
+  describe "align*" do
+    let(:equation) do <<-'EOS'
+\begin{align*}
+x^2 + y^2 & = 1 \\
+y & = \sqrt{1 - x^2}.
+\end{align*}
+    EOS
+    end
+    let(:polytex) { equation }
+    let(:escaped) do <<-'EOS'
+\begin{align*}
+x^2 + y^2 &amp; = 1 \\
+y &amp; = \sqrt{1 - x^2}.
+\end{align*}
+    EOS
+    end
 
     it { should resemble(escaped) }
     it { should resemble('<div class="equation">') }
