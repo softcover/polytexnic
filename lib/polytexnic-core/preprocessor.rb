@@ -129,7 +129,7 @@ module Polytexnic
 end
 
 def math_environments
-  %w[equation align align* aligned]
+  %w[align align* aligned equation equation*]
 end
 
 def math_environment_regex

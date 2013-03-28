@@ -223,4 +223,33 @@ y &amp; = \sqrt{1 - x^2}.
     it { should resemble(escaped) }
     it { should resemble('<div class="equation">') }
   end
+
+  describe "equation* with nesting" do
+    let(:equation) do <<-'EOS'
+\begin{equation*}
+\left.\begin{aligned}
+dE  &= \rho \\
+d*B &= J + \dot{E}
+\end{aligned}
+\right\}
+\qquad \text{Maxwell}
+\end{equation*}
+    EOS
+    end
+    let(:polytex) { equation }
+    let(:escaped) do <<-'EOS'
+\begin{equation*}
+\left.\begin{aligned}
+dE  &amp;= \rho \\
+d*B &amp;= J + \dot{E}
+\end{aligned}
+\right\}
+\qquad \text{Maxwell}
+\end{equation*}
+    EOS
+    end
+
+    it { should resemble(escaped) }
+    it { should resemble('<div class="equation">') }    
+  end
 end
