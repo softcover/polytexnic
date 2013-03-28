@@ -60,7 +60,7 @@ module Polytexnic
     end
 
     def clean_xml(raw_xml)
-      remove_unknowns fix_nokogiri_bug raw_xml
+      remove_unknowns(fix_nokogiri_bug(raw_xml))
     end
 
     def remove_unknowns(raw_xml)
