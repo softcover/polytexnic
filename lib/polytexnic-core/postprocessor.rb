@@ -52,10 +52,18 @@ module Polytexnic
           nil
         end
       end
-      # display equation
+      # inline math
+      doc.xpath('//texmath[@textype="inline"]').each do |node|
+        node.name = 'span'
+        node['class'] = 'inline_math'
+        node.content = '\\[' + node.content + '\\]'
+        node.xpath('//@textype').remove
+        node.xpath('//@type').remove
+      end
+      # display math
       doc.xpath('//texmath[@textype="display"]').each do |node|
         node.name = 'div'
-        node['class'] = 'display_equation'
+        node['class'] = 'display_math'
         node.content = '\\[' + node.content + '\\]'
         node.xpath('//@textype').remove
         node.xpath('//@type').remove
