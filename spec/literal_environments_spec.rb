@@ -125,6 +125,7 @@ $\int_\Omega d\omega = \int_{\partial\Omega} \omega$
     # doesn't resemble the whole equation. Use '\\Omega' as a decent proxy.
     it { should resemble('\\Omega') }
     it { should resemble('<span class="inline_math">') }    
+    it { should resemble('\\(') }
   end
 
 
