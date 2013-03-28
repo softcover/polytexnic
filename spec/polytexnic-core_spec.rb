@@ -6,6 +6,12 @@ describe Polytexnic::Core::Pipeline do
     let(:processed_text) { Polytexnic::Core::Pipeline.new(polytex).process }
     subject { processed_text }
 
+    describe "paragraph conversion" do
+      let(:polytex) { 'lorem ipsum' }
+      it { should resemble("<p>lorem ipsum\n</p>") }
+      it { should_not resemble('<unknown>') }
+    end
+
     describe "italics conversion" do
       let(:polytex) { '\emph{foo bar}' }
       it { should resemble('<em>foo bar</em>') }

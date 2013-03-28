@@ -12,12 +12,11 @@ module Polytexnic
     end
 
     def postprocess_xml
-      xml = @xml
-      @verbatim_cache.each do |key, value|
-        xml.gsub!(key, value)
+      @xml.tap do 
+        @verbatim_cache.each do |key, value|
+          @xml.gsub!(key, value)
+        end
       end
-
-      xml
     end
 
     def process_xml(xml)
@@ -25,7 +24,12 @@ module Polytexnic
       # Italics/emphasis
       doc.xpath('//hi[@rend="it"]').each do |node|
         node.name = 'em'
-        node.xpath('//@rend').remove
+        node.remove_attribute('rend')
+      end
+      doc.xpath('//hi[@rend="tt"]').each do |node|
+        node.name = 'span'
+        node['class'] = 'tt'
+        node.remove_attribute('rend')
       end
       # verbatim
       doc.xpath('//verbatim').each do |node|
@@ -37,10 +41,36 @@ module Polytexnic
         node.name = 'pre'
         node['class'] = 'verbatim'
       end
-      doc.xpath('//hi[@rend="tt"]').each do |node|
-        node.name = 'span'
-        node['class'] = 'tt'
-        node.xpath('//@rend').remove
+      # equation
+      doc.xpath('//equation').each do |node|
+        node.name = 'div'
+        node['class'] = 'equation'
+        begin
+          next_paragraph = node.parent.next_sibling.next_sibling
+          next_paragraph['noindent'] = 'true'
+        rescue
+          nil
+        end
+      end
+      # inline & display math
+      doc.xpath('//texmath').each do |node|
+        type = node.attributes['textype'].value
+        if type == 'inline'
+          node.name = 'span'
+          node.content = '\\(' + node.content + '\\)'
+          node['class'] = 'inline_math'
+        else
+          node.name = 'div'
+          node.content = '\\[' + node.content + '\\]'
+          node['class'] = 'display_math'
+        end
+        node.remove_attribute('textype')
+        node.remove_attribute('type')
+      end
+      # Paragraphs with noindent
+      doc.xpath('//p[@noindent="true"]').each do |node|
+        node['class'] = 'noindent'
+        node.remove_attribute('noindent')
       end
 
       # handle footnotes
@@ -75,7 +105,7 @@ module Polytexnic
         node['class'] = 'LaTeX'
       end
 
-      doc.to_html
+      doc.at_css('unknown').children.to_html
     end
 
   end
