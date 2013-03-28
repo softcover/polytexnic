@@ -8,12 +8,12 @@ describe Polytexnic::Core::Pipeline do
     describe "verbatim environments" do
       let(:polytex) do <<-'EOS'
 \begin{verbatim}
-\emph{foo bar}
+\emph{foo bar} & \\
 \end{verbatim}
         EOS
       end
 
-    let(:output) { '\emph{foo bar}' }
+    let(:output) { '\emph{foo bar} &amp; \\\\' }
 
     it { should resemble(output) }
     it { should resemble('<pre class="verbatim">') }
