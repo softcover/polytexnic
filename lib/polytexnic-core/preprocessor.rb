@@ -15,7 +15,6 @@ module Polytexnic
       dirname = File.dirname(file.path)
       xml_filename = File.basename(file.path, '.tex') + '.xml'
       raw_xml = fix_nokogiri_bug(File.read(File.join(dirname, xml_filename)))
-      # puts raw_xml
       xml = Nokogiri::XML(raw_xml).at_css('unknown').to_xml
       @xml = xml
     ensure

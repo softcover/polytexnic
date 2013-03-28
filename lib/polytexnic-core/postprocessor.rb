@@ -12,12 +12,11 @@ module Polytexnic
     end
 
     def postprocess_xml
-      xml = @xml
-      @verbatim_cache.each do |key, value|
-        xml.gsub!(key, value)
+      @xml.tap do 
+        @verbatim_cache.each do |key, value|
+          @xml.gsub!(key, value)
+        end
       end
-
-      xml
     end
 
     def process_xml(xml)
@@ -99,7 +98,7 @@ module Polytexnic
         node['class'] = 'LaTeX'
       end
 
-      doc.to_html
+      doc.at_css('unknown').children.to_html
     end
 
   end
