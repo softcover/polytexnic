@@ -129,7 +129,14 @@ module Polytexnic
 end
 
 def math_environments
-  %w[align align* aligned equation equation*]
+  %w[align align* alignat alignat* aligned array 
+     Bmatrix bmatrix cases
+     eqnarray eqnarray* equation equation*
+     gather gather* gathered
+     matrix multline multline*
+     pmatrix smallmatrix split subarray
+     Vmatrix vmatrix
+    ]
 end
 
 def math_environment_regex
