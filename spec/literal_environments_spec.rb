@@ -100,7 +100,34 @@ lorem ipsum
     it { should resemble('<p class="noindent">ipsum') }
   end
 
-  describe "display equations, LaTeX-style" do
+  describe "inline math, LaTeX-style" do
+    let(:equation) do <<-'EOS'
+\( \int_\Omega d\omega = \int_{\partial\Omega} \omega \)
+     EOS
+    end
+    let(:polytex) { equation }
+
+    # Tralics messes with the equation innards, so the result
+    # doesn't resemble the whole equation. Use '\\Omega' as a decent proxy.
+    it { should resemble('\\Omega') }
+    it { should resemble('<span class="inline_math">') }    
+  end
+
+  describe "inline math, TeX-style" do
+    let(:equation) do <<-'EOS'
+$\int_\Omega d\omega = \int_{\partial\Omega} \omega$
+     EOS
+    end
+    let(:polytex) { equation }
+
+    # Tralics messes with the equation innards, so the result
+    # doesn't resemble the whole equation. Use '\\Omega' as a decent proxy.
+    it { should resemble('\\Omega') }
+    it { should resemble('<span class="inline_math">') }    
+  end
+
+
+  describe "display math, LaTeX-style" do
     let(:equation) do <<-'EOS'
 \[ \int_\Omega d\omega = \int_{\partial\Omega} \omega \]
      EOS
@@ -110,10 +137,10 @@ lorem ipsum
     # Tralics messes with the equation innards, so the result
     # doesn't resemble the whole equation. Use '\\Omega' as a decent proxy.
     it { should resemble('\\Omega') }
-    it { should resemble('<div class="display_equation">') }
+    it { should resemble('<div class="display_math">') }
   end
 
-  describe "display equations, TeX-style" do
+  describe "display math, TeX-style" do
     let(:equation) do <<-'EOS'
 $$ \int_\Omega d\omega = \int_{\partial\Omega} \omega $$
      EOS
@@ -123,6 +150,6 @@ $$ \int_\Omega d\omega = \int_{\partial\Omega} \omega $$
     # Tralics messes with the equation innards, so the result
     # doesn't resemble the whole equation. Use '\\Omega' as a decent proxy.
     it { should resemble('\\Omega') }
-    it { should resemble('<div class="display_equation">') }
+    it { should resemble('<div class="display_math">') }
   end
 end
