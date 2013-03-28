@@ -91,14 +91,15 @@ module Polytexnic
     def handle_literal_environments(lines, output)
       while (line = lines.shift)
         if line.begin_literal?
-          output << xmlelement(line.literal_type) do
+          literal_type = line.literal_type
+          output << xmlelement(element(literal_type)) do
             count = 1
             text = []
             text << line if line.math_environment?
             while (line = lines.shift)
               if line.begin_literal?
                 count += 1
-              elsif line.end_literal?
+              elsif line.end_literal?(literal_type)
                 count -= 1
                 if count == 0
                   text << line if line.math_environment?
@@ -119,6 +120,14 @@ module Polytexnic
         end
       end
     end
+
+    def element(literal_type)
+      if %w[equation aligned].include?(literal_type)
+        'equation'
+      else
+        literal_type
+      end
+    end
   end
 end
 
@@ -128,25 +137,25 @@ class String
     match(/^\s*\\begin{#{literal}}\s*$/)
   end
 
-  def end_literal?
-    match(/^\s*\\end{#{literal}}\s*$/)    
+  def end_literal?(literal_type)
+    match(/^\s*\\end{#{literal_type}}\s*$/)    
   end
 
   # Returns the type of literal environment.
-  # '\begin{verbatim}' => :verbatim
-  # '\begin{equation}' => :equation
+  # '\begin{verbatim}' => 'verbatim'
+  # '\begin{equation}' => 'equation'
   def literal_type
-    scan(/\\begin{(.*?)}/).flatten.first.to_sym
+    scan(/\\begin{(.*?)}/).flatten.first
   end
 
   def math_environment?
-    match(/(?:equation)/)
+    match(/(?:equation|aligned)/)
   end
 
   private
 
     # Returns a string matching the supported literal environments.
     def literal
-      '(verbatim|Verbatim|equation)'
+      '(verbatim|Verbatim|equation|aligned)'
     end
 end

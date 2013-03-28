@@ -1,4 +1,6 @@
 # encoding=utf-8
+require 'cgi'
+
 module Polytexnic
   module Postprocessor
 
@@ -14,10 +16,16 @@ module Polytexnic
     def postprocess_xml
       @xml.tap do 
         @verbatim_cache.each do |key, value|
-          @xml.gsub!(key, value)
+          @xml.gsub!(key, CGI.escapeHTML(escape_backslashes(value)))
         end
       end
     end
+
+    # Escapes backslashes when restoring verbatim elements.
+    def escape_backslashes(string)
+      string.gsub('\\', '\\\\\\\\')
+    end
+
 
     def process_xml(xml)
       doc = Nokogiri::XML(xml)
