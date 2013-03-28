@@ -7,5 +7,5 @@ gem 'nokogiri', '~> 1.5.0'
 gemspec
 
 group :test do
-  gem 'debugger2'
+  gem 'debugger2' unless RUBY_VERSION < "2.0"
 end

@@ -25,10 +25,10 @@ else
   fi
 
   echo "Running tests under Ruby 1.9.3"
-  rvm use 1.9.3@polytexnic-core
+  rvm use 1.9.3@polytexnic
   rspec spec
   echo "Running tests under Ruby 2.0.0"
-  rvm use 2.0.0@polytexnic-core
+  rvm use 2.0.0@polytexnic
   rspec spec
 
 fi
