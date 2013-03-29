@@ -21,6 +21,9 @@ module Polytexnic
       doc.at_css('unknown').name = 'document'
       @xml = doc.to_xml
     ensure
+      xmlfile = file.path.sub('.tex', '.xml')
+      logfile = file.path.sub('.tex', '.log')
+      File.unlink(xmlfile, logfile)
       file.unlink
     end
 
