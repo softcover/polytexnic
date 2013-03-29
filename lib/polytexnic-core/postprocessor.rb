@@ -9,26 +9,11 @@ module Polytexnic
     end
 
     def xml_to_html
-      html  = process_xml(postprocess_xml)
-      @html = Nokogiri::HTML.fragment(html).to_html
+      @html = Nokogiri::HTML.fragment(processed_xml).to_html
     end
 
-    def postprocess_xml
-      @xml.tap do 
-        @verbatim_cache.each do |key, value|
-          @xml.gsub!(key, CGI.escapeHTML(escape_backslashes(value)))
-        end
-      end
-    end
-
-    # Escapes backslashes when restoring verbatim elements.
-    def escape_backslashes(string)
-      string.gsub('\\', '\\\\\\\\')
-    end
-
-
-    def process_xml(xml)
-      doc = Nokogiri::XML(xml)
+    def processed_xml
+      doc = Nokogiri::XML(@xml)
       # clean
       doc.xpath('//comment()').remove
 
@@ -199,12 +184,17 @@ module Polytexnic
         end
       end
 
+      # restore literal environments
+      doc.xpath('//literal').each do |node|
+        node.parent.content = literal_cache[node.content]
+        node.remove
+      end
+
       doc.at_css('document').children.to_html
     end
 
     def clean_node(node, attributes)
       [*attributes].each { |a| node.remove_attribute a }
     end
-
   end
 end

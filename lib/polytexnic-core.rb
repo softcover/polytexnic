@@ -12,10 +12,10 @@ module Polytexnic
       include Polytexnic::Preprocessor
       include Polytexnic::Postprocessor
 
-      attr_accessor :verbatim_cache, :polytex, :xml, :html
+      attr_accessor :literal_cache, :polytex, :xml, :html
 
       def initialize(polytex)
-        @verbatim_cache = {}
+        @literal_cache = {}
         @polytex = polytex
       end
 
