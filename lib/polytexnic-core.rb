@@ -19,7 +19,7 @@ module Polytexnic
         @polytex = polytex
       end
 
-      def process
+      def to_html
         preprocess
         postprocess
         @html

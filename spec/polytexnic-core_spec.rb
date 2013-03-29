@@ -2,8 +2,8 @@
 require 'spec_helper'
 
 describe Polytexnic::Core::Pipeline do
-  describe '#process' do
-    let(:processed_text) { Polytexnic::Core::Pipeline.new(polytex).process }
+  describe '#to_html' do
+    let(:processed_text) { Polytexnic::Core::Pipeline.new(polytex).to_html }
     subject { processed_text }
 
     describe "paragraph conversion" do
