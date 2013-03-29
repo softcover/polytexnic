@@ -4,7 +4,7 @@ require 'polytexnic-core'
 
 filename = ARGV.shift
 polytex = File.open(filename) { |f| f.read }
-html = Polytexnic::Core::Pipeline.new(polytex).process
+html = Polytexnic::Core::Pipeline.new(polytex).to_html
 outfile = File.join('tmp', File.basename(filename).sub('tex', 'html'))
 output = <<EOF
 <!DOCTYPE html>

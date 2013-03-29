@@ -2,7 +2,7 @@
 require 'spec_helper'
 
 describe Polytexnic::Core::Pipeline do
-  let(:processed_text) { Polytexnic::Core::Pipeline.new(polytex).process }
+  let(:processed_text) { Polytexnic::Core::Pipeline.new(polytex).to_html }
   subject { processed_text }
 
   describe "verbatim environments" do

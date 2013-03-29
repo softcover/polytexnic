@@ -2,8 +2,19 @@
 require 'spec_helper'
 
 describe Polytexnic::Core::Pipeline do
-  describe '#process' do
-    let(:processed_text) { Polytexnic::Core::Pipeline.new(polytex).process }
+
+  describe '#to_latex' do
+    let(:processed_text) { Polytexnic::Core::Pipeline.new(polytex).to_latex }
+    subject { processed_text }
+    
+    describe "for vanilla LaTeX" do
+      let(:polytex) { '\emph{foo}' }
+      it { should eql(polytex) }
+    end
+  end
+
+  describe '#to_html' do
+    let(:processed_text) { Polytexnic::Core::Pipeline.new(polytex).to_html }
     subject { processed_text }
 
     describe "paragraph conversion" do
