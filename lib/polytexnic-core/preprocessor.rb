@@ -18,13 +18,24 @@ module Polytexnic
       xml_filename = File.basename(file.path, '.tex') + '.xml'
       raw_xml = clean_xml File.read(File.join(dirname, xml_filename))
       doc = Nokogiri::XML(raw_xml)
-      doc.at_css('unknown').name = 'document'
+      add_document_tag(doc)
       @xml = doc.to_xml
     ensure
       xmlfile = file.path.sub('.tex', '.xml')
       logfile = file.path.sub('.tex', '.log')
       File.unlink(xmlfile, logfile)
       file.unlink
+    end
+
+    # Wrap the whole document in <document></document>.
+    # Fragmentary documents come wrapped in 'unknown' tags.
+    # Full documents are wrapped in 'std' tags.
+    # Change either to 'document'.
+    def add_document_tag(doc)
+        %w[unknown std].each do |parent_tag|
+        node = doc.at_css(parent_tag)
+        node.name = 'document' unless node.nil?
+      end
     end
 
     # Returns a salted hash digest of the string.
