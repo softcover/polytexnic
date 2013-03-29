@@ -17,6 +17,19 @@ describe Polytexnic::Core::Pipeline do
     let(:processed_text) { Polytexnic::Core::Pipeline.new(polytex).to_html }
     subject { processed_text }
 
+    describe "a complete document" do
+      let(:polytex) do <<-'EOS'
+\documentclass{book}
+
+\begin{document}
+lorem ipsum
+\end{document}
+        EOS
+      end
+
+      it { should resemble("<p>lorem ipsum\n</p>") }
+    end
+
     describe "paragraph conversion" do
       let(:polytex) { 'lorem ipsum' }
       it { should resemble("<p>lorem ipsum\n</p>") }
