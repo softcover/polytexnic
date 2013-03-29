@@ -1,0 +1,48 @@
+
+<p>This is an equation environment:</p>
+<div class="display_math">\[
+\int _\Omega d\omega = \int _{\partial \Omega } \omega \qquad \mbox{Stokes's Theorem}
+\]</div>
+<p class="noindent">This should be a centered equation with no numbering.</p>
+<p>We also want to support equation environments:
+</p><div class="equation">\begin{equation}
+\int_\Omega d\omega = \int_{\partial\Omega} \omega \qquad\mbox{Stokes's Theorem}
+\end{equation}</div>
+<p class="noindent">We'll probably have to handle numbering and cross-references in a post-processing step.</p>
+<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
+consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
+cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
+proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+<p>Of course, inline math like <span class="inline_math">\(\Omega &gt; 0\)</span> and <span class="inline_math">\( x^2 - 2 \equiv 0 \)</span> should also work fine.</p>
+<p></p><div class="equation">\begin{align}
+x^2 + y^2 &amp;= 1
+\\ y &amp;= \sqrt{1 - x^2}.
+\end{align}</div>
+<p class="noindent">Maxwell's Equations:
+</p><div class="equation">\begin{aligned}
+\nabla \times \vec{\mathbf{B}} -\, \frac1c\, \frac{\partial\vec{\mathbf{E}}}{\partial t} &amp; = \frac{4\pi}{c}\vec{\mathbf{j}} \\   \nabla \cdot \vec{\mathbf{E}} &amp; = 4 \pi \rho \\
+\nabla \times \vec{\mathbf{E}}\, +\, \frac1c\, \frac{\partial\vec{\mathbf{B}}}{\partial t} &amp; = \vec{\mathbf{0}} \\
+\nabla \cdot \vec{\mathbf{B}} &amp; = 0
+\end{aligned}</div>
+<p class="noindent"></p><div class="equation">\begin{equation*}
+\left.\begin{aligned}
+dE  &amp;= \rho \\
+d*E &amp;= -\dot{B} \\
+dB &amp;= 0 \\
+d*B &amp;= J + \dot{E}
+\end{aligned}
+\right\}
+\qquad \text{Maxwell's equations}
+\end{equation*}</div>
+<p class="noindent">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
+consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
+cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
+proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+</p><div class="equation">\begin{multline}
+a+b+c+d+e+f\\
++i+j+k+l+m+n
+\end{multline}</div>
