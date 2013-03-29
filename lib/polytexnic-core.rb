@@ -25,6 +25,9 @@ module Polytexnic
         @html
       end
 
+      def to_latex
+        @polytex
+      end
     end
   end
 end
