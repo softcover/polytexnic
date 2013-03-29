@@ -8,7 +8,7 @@ end
 
 # Returns the results of converting the TeX filename to HTML.
 def converted(filename)
-  Polytexnic::Core::Pipeline.new(contents(filename, 'tex')).process
+  Polytexnic::Core::Pipeline.new(contents(filename, 'tex')).to_html
 end
 
 # Returns the contents of the HTML filename fixture.
