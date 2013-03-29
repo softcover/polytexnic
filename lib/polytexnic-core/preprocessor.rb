@@ -111,8 +111,8 @@ module Polytexnic
             raise "Missing \\end{#{line.literal_type}}" if count != 0
             content = text.join("\n")
             key = digest(content)
-            verbatim_cache[key] = content
-            key
+            literal_cache[key] = content
+            xmlelement('literal') { key }
           end
           output << '' # To force the next element to be a paragraph
         else
