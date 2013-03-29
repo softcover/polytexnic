@@ -2,17 +2,21 @@
 require 'spec_helper'
 
 describe Polytexnic::Core::Pipeline do
-  %w[foo bar].each do |filename|
+  %w[inline_math verbatim_environments].each do |filename|
     it "should correctly process #{filename}" do
-      expect(polytex(filename)).to eql(html(filename))
+      expect(converted(filename)).to eql(html(filename))
     end
   end
 
-  def polytex(filename)
-    filename
+  def converted(filename)
+    Polytexnic::Core::Pipeline.new(contents(filename, 'tex')).process
   end
 
   def html(filename)
-    filename
+    contents(filename, 'html')
+  end
+
+  def contents(filename, extension)
+    File.open(File.join('spec', 'fixtures', "#{filename}.#{extension}")).read
   end
 end
