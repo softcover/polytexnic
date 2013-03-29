@@ -6,10 +6,11 @@ require 'polytexnic-core/version'
 Gem::Specification.new do |gem|
   gem.name          = "polytexnic-core"
   gem.version       = Polytexnic::Core::VERSION
-  gem.authors       = ["Michael Hartl"]
+  gem.authors       = ["Michael Hartl", "Nick Merwin"]
   gem.email         = ["michael@michaelhartl.com"]
-  gem.description   = %q{TODO: Write a gem description}
-  gem.summary       = %q{TODO: Write a gem summary}
+  gem.description   = %q{Translation to and from PolyTeX}
+  gem.summary       = %q{Provide utilities for converting PolyTeX
+                         to HTML and LaTeX, and from Markdown to PolyTeX}
   gem.homepage      = "https://github.com/mhartl/polytexnic-core"
 
   gem.files         = `git ls-files`.split($/)
