@@ -1,4 +1,6 @@
 # encoding=utf-8
+require 'securerandom'
+
 module Polytexnic
   module Preprocessor
 
@@ -22,8 +24,9 @@ module Polytexnic
       file.unlink
     end
 
+    # Returns a salted hash digest of the string.
     def digest(string)
-      Digest::SHA1.hexdigest(string)
+      Digest::SHA1.hexdigest(SecureRandom.base64 + string)
     end
 
     def preprocess_polytex
@@ -108,8 +111,8 @@ module Polytexnic
             raise "Missing \\end{#{line.literal_type}}" if count != 0
             content = text.join("\n")
             key = digest(content)
-            verbatim_cache[key] = content
-            key
+            literal_cache[key] = content
+            xmlelement('literal') { key }
           end
           output << '' # To force the next element to be a paragraph
         else
