@@ -5,19 +5,19 @@ describe Polytexnic::Core::Pipeline do
   let(:processed_text) { Polytexnic::Core::Pipeline.new(polytex).process }
   subject { processed_text }
 
-    describe "verbatim environments" do
-      let(:polytex) do <<-'EOS'
+  describe "verbatim environments" do
+    let(:polytex) do <<-'EOS'
 \begin{verbatim}
 \emph{foo bar} & \\
 \end{verbatim}
         EOS
-      end
+    end
 
-    let(:output) { '\emph{foo bar} &amp; \\\\' }
+  let(:output) { '\emph{foo bar} &amp; \\\\' }
 
-    it { should resemble(output) }
-    it { should resemble('<pre class="verbatim">') }
-    it { should_not resemble('\begin{verbatim}') }
+  it { should resemble(output) }
+  it { should resemble('<pre class="verbatim">') }
+  it { should_not resemble('\begin{verbatim}') }
 
     describe "with nesting" do
       let(:polytex) do <<-'EOS'
