@@ -268,5 +268,21 @@ end
       it { should resemble('<div class="code">') }
       it { should_not resemble('\begin{code}') }    
     end
+
+    describe "with syntax highlighting" do
+      let(:polytex) do <<-'EOS'
+%= lang:ruby
+\begin{code}
+def foo
+  "bar"
+end
+\end{code}
+      EOS
+      end
+
+      it { should resemble('<div class="code">') }
+      it { should resemble('<div class="highlight">') }
+      it { should resemble('<pre>') }
+    end
   end
 end

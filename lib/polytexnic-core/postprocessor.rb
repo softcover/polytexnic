@@ -195,7 +195,20 @@ module Polytexnic
         node.remove
       end
 
-      doc.at_css('document').children.to_html
+      html = doc.at_css('document').children.to_html
+
+      # highlight source code
+      # We need to put it after the call to 'to_html' because otherwise
+      # Nokogiri escapes it.
+      html.tap do
+        code_cache.each do |key, (content, language)|
+          html.gsub!(key, highlight(content, language))
+        end
+      end
+    end
+
+    def highlight(content, language)
+      Pygments.highlight(content, lexer: language)
     end
 
     def clean_node(node, attributes)

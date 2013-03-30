@@ -23,7 +23,7 @@ module Polytexnic
     ensure
       xmlfile = file.path.sub('.tex', '.xml')
       logfile = file.path.sub('.tex', '.log')
-      File.unlink(xmlfile, logfile)
+      File.unlink(xmlfile, logfile) rescue nil
       file.unlink
     end
 
@@ -103,8 +103,9 @@ module Polytexnic
     # gets includes the internal literal text without accidentally grabbing the
     # 'lorem ipsum' at the end.
     def handle_literal_environments(lines, output)
+      language = nil
       while (line = lines.shift)
-        if line.match(/%=\s+lang:(\w+)/)
+        if line =~ /%=\s+lang:(\w+)/
           language = $1
         elsif line.begin_literal?
           literal_type = line.literal_type
@@ -127,10 +128,16 @@ module Polytexnic
             raise "Missing \\end{#{line.literal_type}}" if count != 0
             content = text.join("\n")
             key = digest(content)
-            literal_cache[key] = content
-            tag = language.nil? ? 'literal' : 'highlight'
+            if language.nil?
+              literal_cache[key] = content
+              tag = 'literal'
+            else
+              code_cache[key] = [content, language]
+              tag = 'code'
+            end
             xmlelement(tag) { key }
           end
+          language = nil
           output << '' # To force the next element to be a paragraph
         else
           output << line
