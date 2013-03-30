@@ -202,13 +202,9 @@ module Polytexnic
       # Nokogiri escapes it.
       html.tap do
         code_cache.each do |key, (content, language)|
-          html.gsub!(key, highlight(content, language))
+          html.gsub!(key, Pygments.highlight(content, lexer: language))
         end
       end
-    end
-
-    def highlight(content, language)
-      Pygments.highlight(content, lexer: language)
     end
 
     def clean_node(node, attributes)

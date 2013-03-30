@@ -11,6 +11,23 @@ describe Polytexnic::Core::Pipeline do
       let(:polytex) { '\emph{foo}' }
       it { should eql(polytex) }
     end
+
+    describe "with source code highlighting" do
+      let(:polytex) do <<-'EOS'
+%= lang:ruby
+\begin{code}
+def foo
+  "bar"
+end
+\end{code}
+      EOS
+      end
+
+      it { should resemble('\begin{Verbatim}') }
+      it { should resemble('commandchars') }
+      it { should resemble('\end{Verbatim}') }
+      it { should_not resemble('def foo') }      
+    end
   end
 
   describe '#to_html' do
