@@ -37,6 +37,11 @@ module Polytexnic
         node.name = 'pre'
         node['class'] = 'verbatim'
       end
+      # Code
+      doc.xpath('//code').each do |node|
+        node.name = 'div'
+        node['class'] = 'code'
+      end
       # equation
       doc.xpath('//equation').each do |node|
         node.name = 'div'

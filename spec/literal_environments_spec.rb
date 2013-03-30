@@ -252,4 +252,21 @@ d*B &amp;= J + \dot{E}
 
     it_behaves_like "an equation environment"
   end
+
+  describe "code blocks" do
+    describe "without syntax highlighting" do
+      let(:polytex) do <<-'EOS'
+\begin{code}
+def foo
+  "bar"
+end
+\end{code}
+      EOS
+      end
+
+      it { should resemble('def foo') }
+      it { should resemble('<div class="code">') }
+      it { should_not resemble('\begin{code}') }    
+    end
+  end
 end

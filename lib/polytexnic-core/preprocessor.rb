@@ -104,7 +104,9 @@ module Polytexnic
     # 'lorem ipsum' at the end.
     def handle_literal_environments(lines, output)
       while (line = lines.shift)
-        if line.begin_literal?
+        if line.match(/%=\s+lang:(\w+)/)
+          language = $1
+        elsif line.begin_literal?
           literal_type = line.literal_type
           output << xmlelement(element(literal_type)) do
             count = 1
@@ -126,7 +128,8 @@ module Polytexnic
             content = text.join("\n")
             key = digest(content)
             literal_cache[key] = content
-            xmlelement('literal') { key }
+            tag = language.nil? ? 'literal' : 'highlight'
+            xmlelement(tag) { key }
           end
           output << '' # To force the next element to be a paragraph
         else
@@ -186,6 +189,6 @@ class String
 
     # Returns a string matching the supported literal environments.
     def literal
-      "(?:verbatim|Verbatim|#{math_environment_regex})"
+      "(?:verbatim|Verbatim|#{math_environment_regex}|code)"
     end
 end

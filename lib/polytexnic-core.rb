@@ -5,6 +5,7 @@ require "polytexnic-core/preprocessor"
 require 'tempfile'
 require 'nokogiri'
 require 'digest/sha1'
+require 'pygments'
 
 module Polytexnic
   module Core
@@ -12,10 +13,11 @@ module Polytexnic
       include Polytexnic::Preprocessor
       include Polytexnic::Postprocessor
 
-      attr_accessor :literal_cache, :polytex, :xml, :html
+      attr_accessor :literal_cache, :code_cache, :polytex, :xml, :html
 
       def initialize(polytex)
         @literal_cache = {}
+        @code_cache = {}
         @polytex = polytex
       end
 
