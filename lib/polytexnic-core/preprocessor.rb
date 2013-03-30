@@ -18,13 +18,24 @@ module Polytexnic
       xml_filename = File.basename(file.path, '.tex') + '.xml'
       raw_xml = clean_xml File.read(File.join(dirname, xml_filename))
       doc = Nokogiri::XML(raw_xml)
-      doc.at_css('unknown').name = 'document'
+      add_document_tag(doc)
       @xml = doc.to_xml
     ensure
       xmlfile = file.path.sub('.tex', '.xml')
       logfile = file.path.sub('.tex', '.log')
-      File.unlink(xmlfile, logfile)
+      File.unlink(xmlfile, logfile) rescue nil
       file.unlink
+    end
+
+    # Wrap the whole document in <document></document>.
+    # Fragmentary documents come wrapped in 'unknown' tags.
+    # Full documents are wrapped in 'std' tags.
+    # Change either to 'document'.
+    def add_document_tag(doc)
+        %w[unknown std].each do |parent_tag|
+        node = doc.at_css(parent_tag)
+        node.name = 'document' unless node.nil?
+      end
     end
 
     # Returns a salted hash digest of the string.
@@ -92,8 +103,11 @@ module Polytexnic
     # gets includes the internal literal text without accidentally grabbing the
     # 'lorem ipsum' at the end.
     def handle_literal_environments(lines, output)
+      language = nil
       while (line = lines.shift)
-        if line.begin_literal?
+        if line =~ /%=\s+lang:(\w+)/
+          language = $1
+        elsif line.begin_literal?
           literal_type = line.literal_type
           output << xmlelement(element(literal_type)) do
             count = 1
@@ -114,9 +128,16 @@ module Polytexnic
             raise "Missing \\end{#{line.literal_type}}" if count != 0
             content = text.join("\n")
             key = digest(content)
-            literal_cache[key] = content
-            xmlelement('literal') { key }
+            if language.nil?
+              literal_cache[key] = content
+              tag = 'literal'
+            else
+              code_cache[key] = [content, language]
+              tag = 'code'
+            end
+            xmlelement(tag) { key }
           end
+          language = nil
           output << '' # To force the next element to be a paragraph
         else
           output << line
@@ -175,6 +196,6 @@ class String
 
     # Returns a string matching the supported literal environments.
     def literal
-      "(?:verbatim|Verbatim|#{math_environment_regex})"
+      "(?:verbatim|Verbatim|#{math_environment_regex}|code)"
     end
 end
