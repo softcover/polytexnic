@@ -23,7 +23,7 @@ module Polytexnic
     ensure
       xmlfile = file.path.sub('.tex', '.xml')
       logfile = file.path.sub('.tex', '.log')
-      File.unlink(xmlfile, logfile)
+      File.unlink(xmlfile, logfile) rescue nil
       file.unlink
     end
 
@@ -103,8 +103,11 @@ module Polytexnic
     # gets includes the internal literal text without accidentally grabbing the
     # 'lorem ipsum' at the end.
     def handle_literal_environments(lines, output)
+      language = nil
       while (line = lines.shift)
-        if line.begin_literal?
+        if line =~ /%=\s+lang:(\w+)/
+          language = $1
+        elsif line.begin_literal?
           literal_type = line.literal_type
           output << xmlelement(element(literal_type)) do
             count = 1
@@ -125,9 +128,16 @@ module Polytexnic
             raise "Missing \\end{#{line.literal_type}}" if count != 0
             content = text.join("\n")
             key = digest(content)
-            literal_cache[key] = content
-            xmlelement('literal') { key }
+            if language.nil?
+              literal_cache[key] = content
+              tag = 'literal'
+            else
+              code_cache[key] = [content, language]
+              tag = 'code'
+            end
+            xmlelement(tag) { key }
           end
+          language = nil
           output << '' # To force the next element to be a paragraph
         else
           output << line
@@ -186,6 +196,6 @@ class String
 
     # Returns a string matching the supported literal environments.
     def literal
-      "(?:verbatim|Verbatim|#{math_environment_regex})"
+      "(?:verbatim|Verbatim|#{math_environment_regex}|code)"
     end
 end
