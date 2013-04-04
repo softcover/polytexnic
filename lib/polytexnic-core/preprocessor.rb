@@ -13,6 +13,7 @@ module Polytexnic
       file = Tempfile.new(['polytex', '.tex'])
       file.write preprocess_polytex
       file.close
+      Dir.mkdir 'log' unless File.directory?('log')
       system("#{tralics} -nomathml #{file.path} > log/tralics.log")
       dirname = File.dirname(file.path)
       xml_filename = File.basename(file.path, '.tex') + '.xml'
@@ -156,7 +157,7 @@ module Polytexnic
 end
 
 def math_environments
-  %w[align align* alignat alignat* aligned array 
+  %w[align align* alignat alignat* aligned array
      Bmatrix bmatrix cases
      eqnarray eqnarray* equation equation*
      gather gather* gathered
@@ -177,7 +178,7 @@ class String
   end
 
   def end_literal?(literal_type)
-    match(/^\s*\\end{#{Regexp.escape(literal_type)}}\s*$/)    
+    match(/^\s*\\end{#{Regexp.escape(literal_type)}}\s*$/)
   end
 
   # Returns the type of literal environment.
