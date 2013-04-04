@@ -37,6 +37,11 @@ module Polytexnic
         node.name = 'pre'
         node['class'] = 'verbatim'
       end
+      # Code
+      doc.xpath('//code').each do |node|
+        node.name = 'div'
+        node['class'] = 'code'
+      end
       # equation
       doc.xpath('//equation').each do |node|
         node.name = 'div'
@@ -190,7 +195,16 @@ module Polytexnic
         node.remove
       end
 
-      doc.at_css('document').children.to_html
+      html = doc.at_css('document').children.to_html
+
+      # highlight source code
+      # We need to put it after the call to 'to_html' because otherwise
+      # Nokogiri escapes it.
+      html.tap do
+        code_cache.each do |key, (content, language)|
+          html.gsub!(key, Pygments.highlight(content, lexer: language))
+        end
+      end
     end
 
     def clean_node(node, attributes)
