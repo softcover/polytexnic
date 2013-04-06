@@ -3,7 +3,7 @@
 RSpec::Matchers.define :resemble do |expected|
   match do |actual|
     if expected.is_a?(String)
-      regex = Regexp.escape(expected.robust)
+      regex = Regexp.escape(escape_backslashes(expected.robust))
     elsif expected.is_a?(Regexp)
       regex = %r{#{expected.to_s.robust}}
     end

@@ -191,7 +191,7 @@ module Polytexnic
 
       # restore literal environments
       doc.xpath('//literal').each do |node|
-        node.parent.content = literal_cache[node.content]
+        node.parent.content = escape_backslashes(literal_cache[node.content])
         node.remove
       end
 
@@ -206,7 +206,7 @@ module Polytexnic
         end
       end
     end
-
+    
     def clean_node(node, attributes)
       [*attributes].each { |a| node.remove_attribute a }
     end
