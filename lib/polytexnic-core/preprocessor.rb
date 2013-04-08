@@ -33,7 +33,7 @@ module Polytexnic
     # Full documents are wrapped in 'std' tags.
     # Change either to 'document'.
     def add_document_tag(doc)
-        %w[unknown std].each do |parent_tag|
+      %w[unknown std].each do |parent_tag|
         node = doc.at_css(parent_tag)
         node.name = 'document' unless node.nil?
       end
