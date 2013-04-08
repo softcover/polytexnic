@@ -24,8 +24,10 @@ module Polytexnic
     ensure
       xmlfile = file.path.sub('.tex', '.xml')
       logfile = file.path.sub('.tex', '.log')
-      File.unlink(xmlfile, logfile) rescue nil
-      file.unlink
+      [xmlfile, logfile].each do |file|
+        File.delete(file) if File.exist?(file)
+      end
+      file.delete
     end
 
     # Wrap the whole document in <document></document>.
