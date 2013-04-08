@@ -1,4 +1,5 @@
 # encoding=utf-8
+require "polytexnic-core/utils"
 require "polytexnic-core/version"
 require "polytexnic-core/postprocessor"
 require "polytexnic-core/preprocessor"
