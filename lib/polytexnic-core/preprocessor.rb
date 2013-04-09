@@ -159,7 +159,7 @@ module Polytexnic
 end
 
 def math_environments
-  %w[align align* alignat alignat* aligned array
+  %w[align align* alignat alignat* array
      Bmatrix bmatrix cases
      eqnarray eqnarray* equation equation*
      gather gather* gathered
