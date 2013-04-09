@@ -20,6 +20,8 @@ def foo
   "bar"
 end
 \end{code}
+
+\noindent lorem ipsum
       EOS
       end
 
@@ -27,6 +29,7 @@ end
       it { should resemble('commandchars') }
       it { should resemble('\end{Verbatim}') }
       it { should_not resemble('def foo') }      
+      it { should resemble('\noindent lorem ipsum') }
     end
   end
 

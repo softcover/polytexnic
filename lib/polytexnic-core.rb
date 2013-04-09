@@ -50,6 +50,7 @@ module Polytexnic
                   output << Pygments.highlight(code.join("\n"), 
                                                lexer: language,
                                                formatter: 'latex')
+                  break
                 end
               else
                 code << line
