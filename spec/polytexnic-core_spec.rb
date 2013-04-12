@@ -90,11 +90,6 @@ lorem ipsum
       end
     end
 
-    describe "LaTeX logo" do
-      let(:polytex) { '\LaTeX' }
-      it { should resemble('<span class="LaTeX"></span>') }
-    end
-
     describe '\ldots' do
       let(:polytex) { '\ldots' }
       it { should resemble('…') }
