@@ -156,6 +156,11 @@ module Polytexnic
         end
       end
 
+      doc.xpath('//chapterWr').each do |node|
+        node.name = 'div'
+        node['class'] = 'chapterWr'
+      end
+
       # chapter
       doc.xpath('//chapter').each_with_index do |node, i|
         n = i + 1
@@ -173,6 +178,8 @@ module Polytexnic
         node << a
         node << span
       end
+
+      doc.xpath('//error').map(&:remove)
 
       # title (preprocessed)
       doc.xpath('//maketitle').each do |node|
@@ -206,7 +213,7 @@ module Polytexnic
         end
       end
     end
-    
+
     def clean_node(node, attributes)
       [*attributes].each { |a| node.remove_attribute a }
     end
