@@ -54,9 +54,9 @@ module Polytexnic
 
       output = output.join("\n")
 
-      # Handle TeX and LaTeX logos by deferring to MathJax.
-      output.gsub!('\TeX', '\( \mathrm{\TeX} \)')
-      output.gsub!('\LaTeX', '\( \mathrm{\LaTeX} \)')
+      # # Handle TeX and LaTeX logos by deferring to MathJax.
+      # output.gsub!('\TeX', '\( \mathrm{\TeX} \)')
+      # output.gsub!('\LaTeX', '\( \mathrm{\LaTeX} \)')
 
       # handle title fields
       %w{title subtitle author date}.each do |field|

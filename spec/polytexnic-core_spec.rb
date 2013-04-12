@@ -138,17 +138,17 @@ lorem ipsum
       it { should resemble(output) }
     end
 
-    describe "logos" do
+    describe "(La)TeX logos" do
       
       describe "TeX logo" do
         let(:polytex) { '\TeX' }
-        let(:output) { '\( \mathrm {\TeX } \)' }
+        let(:output) { '\( \mathrm{\TeX} \)' }
         it { should include(output) }
       end
 
       describe "LaTeX logo" do
         let(:polytex) { '\LaTeX' }
-        let(:output) { '\( \mathrm {\LaTeX } \)' }
+        let(:output) { '\( \mathrm{\LaTeX} \)' }
         it { should include(output) }
       end
     end
