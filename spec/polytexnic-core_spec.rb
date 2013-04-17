@@ -31,6 +31,12 @@ end
       it { should_not resemble('def foo') }      
       it { should resemble('\noindent lorem ipsum') }
     end
+
+    describe "Unicode" do
+      let(:polytex) { 'Алексей Разуваев' }
+      let(:output) { polytex }
+      it { should include(output) }
+    end
   end
 
   describe '#to_html' do
