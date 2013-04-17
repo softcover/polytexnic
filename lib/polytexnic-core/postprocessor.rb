@@ -207,6 +207,12 @@ module Polytexnic
         node.parent.content = escape_backslashes(literal_cache[node.content])
         node.remove
       end
+      # (including non-ASCII unicode)
+      doc.xpath('//unicode').each do |node|
+        node.content = literal_cache[node.content]
+        node.name = 'span'
+        node['class'] = 'unicode'
+      end
 
       html = doc.at_css('document').children.to_html
 
