@@ -287,4 +287,10 @@ end
       it { should resemble('<pre>') }
     end
   end
+
+  describe "non-ASCII Unicode" do
+    let(:polytex) { 'Алексей Разуваев' }
+    it { should include(%(<span class="unicode">Алексей</span>)) }
+    it { should include(%(<span class="unicode">Разуваев</span>)) }
+  end
 end

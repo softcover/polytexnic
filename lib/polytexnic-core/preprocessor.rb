@@ -50,9 +50,9 @@ module Polytexnic
       polytex = @polytex
       output = []
       lines = polytex.split("\n")
-      handle_literal_environments(lines, output)
-
+      cache_literal_environments(lines, output)
       output = output.join("\n")
+      cache_unicode(output)
 
       # handle title fields
       %w{title subtitle author date}.each do |field|
@@ -110,7 +110,7 @@ module Polytexnic
     #   lorem ipsum
     # gets includes the internal literal text without accidentally grabbing the
     # 'lorem ipsum' at the end.
-    def handle_literal_environments(lines, output)
+    def cache_literal_environments(lines, output)
       language = nil
       while (line = lines.shift)
         if line =~ /%=\s+lang:(\w+)/
@@ -150,6 +150,21 @@ module Polytexnic
         else
           output << line
         end
+      end
+    end
+
+    # Handles non-ASCII Unicode characters.
+    # The Tralics part of the pipeline doesn't properly handle Unicode,
+    # which is odd since Tralics is a French project. Nevertheless,
+    # we can hack around the restriction by treading non-ASCII Unicode
+    # characters as literal elements and simply pass them through the
+    # pipeline intact.
+    def cache_unicode(string)
+      non_ascii_unicode = /([^\x00-\x7F]+)/
+      string.gsub!(non_ascii_unicode) do
+        key = digest($1)
+        literal_cache[key] = $1
+        xmlelement('unicode') { key }
       end
     end
 

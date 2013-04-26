@@ -101,10 +101,16 @@ module Polytexnic
         node.inner_html = link
       end
 
-      # LaTeX logo
+      # (La)TeX logos
+      doc.xpath('//TeX').each do |node|
+        node.name = 'span'
+        node['class'] = 'TeX'
+        node.content = '\( \mathrm{\TeX} \)'
+      end
       doc.xpath('//LaTeX').each do |node|
         node.name = 'span'
         node['class'] = 'LaTeX'
+        node.content = '\( \mathrm{\LaTeX} \)'
       end
 
       # standard environments
@@ -204,6 +210,12 @@ module Polytexnic
       doc.xpath('//literal').each do |node|
         node.parent.content = escape_backslashes(literal_cache[node.content])
         node.remove
+      end
+      # (including non-ASCII unicode)
+      doc.xpath('//unicode').each do |node|
+        node.content = literal_cache[node.content]
+        node.name = 'span'
+        node['class'] = 'unicode'
       end
 
       # build numbering tree

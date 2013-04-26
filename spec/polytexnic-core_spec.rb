@@ -31,6 +31,12 @@ end
       it { should_not resemble('def foo') }
       it { should resemble('\noindent lorem ipsum') }
     end
+
+    describe "Unicode" do
+      let(:polytex) { 'Алексей Разуваев' }
+      let(:output) { polytex }
+      it { should include(output) }
+    end
   end
 
   describe '#to_html' do
@@ -88,11 +94,6 @@ lorem ipsum
         out = '<div id="footnotes"><ol><li id="footnote-1">Foo</li></ol></div>'
         should resemble out
       end
-    end
-
-    describe "LaTeX logo" do
-      let(:polytex) { '\LaTeX' }
-      it { should resemble('<span class="LaTeX"></span>') }
     end
 
     describe '\ldots' do
@@ -161,5 +162,19 @@ lorem ipsum
       end
     end
 
+    describe "(La)TeX logos" do
+
+      describe "TeX logo" do
+        let(:polytex) { '\TeX' }
+        let(:output) { '\( \mathrm{\TeX} \)' }
+        it { should include(output) }
+      end
+
+      describe "LaTeX logo" do
+        let(:polytex) { '\LaTeX' }
+        let(:output) { '\( \mathrm{\LaTeX} \)' }
+        it { should include(output) }
+      end
+    end
   end
 end
