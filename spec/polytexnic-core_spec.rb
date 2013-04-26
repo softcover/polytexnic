@@ -6,7 +6,7 @@ describe Polytexnic::Core::Pipeline do
   describe '#to_latex' do
     let(:processed_text) { Polytexnic::Core::Pipeline.new(polytex).to_latex }
     subject { processed_text }
-    
+
     describe "for vanilla LaTeX" do
       let(:polytex) { '\emph{foo}' }
       it { should eql(polytex) }
@@ -28,7 +28,7 @@ end
       it { should resemble('\begin{Verbatim}') }
       it { should resemble('commandchars') }
       it { should resemble('\end{Verbatim}') }
-      it { should_not resemble('def foo') }      
+      it { should_not resemble('def foo') }
       it { should resemble('\noindent lorem ipsum') }
     end
   end
@@ -135,12 +135,31 @@ lorem ipsum
     describe '\chapter' do
       let(:polytex) { '\chapter{Foo Bar}' }
       let(:output) do <<-'EOS'
-        <h1 class="chapter">
-          <a id="sec-1"></a><span>Foo Bar</span>
-        </h1>
-        EOS
+        <div id="cid1" class="chapter" data-tralics-id="cid1" data-number="1">
+          <h2><span class="number">1</span>Foo Bar</h2>
+        </div>
       end
       it { should resemble(output) }
     end
+
+    describe '\ref' do
+      let(:polytex) do
+        %w{
+          \chapter{Foo}
+          \label{cha:foo}
+          \ref{cha:foo}
+        }
+      end
+
+      it do
+        should resemble <<-'EOS'
+          <div id="cha-foo" class="chapter" data-tralics-id="cid1" data-number="1">
+            <h2><span class="number">1</span>Foo</h2>
+            <p><a href="#cha-foo" class="ref">1</a></p>
+          </div>
+        EOS
+      end
+    end
+
   end
 end

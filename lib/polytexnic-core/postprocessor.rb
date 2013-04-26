@@ -146,40 +146,44 @@ module Polytexnic
 
       # section
       doc.xpath('//div0').each do |node|
-        id = node['id']
-        clean_node node, %w{id id-text}
         node.name = 'div'
-        node['class'] = 'section'
+        node['class'] = node['type'] == 'chapter' ? 'chapter' : 'section'
+        clean_node node, %w{id-text type}
 
-        node.xpath('//head').each do |head_node|
+        node.xpath('.//head').each do |head_node|
           head_node.name = 'h2'
         end
       end
 
-      doc.xpath('//chapterWr').each do |node|
+      # subsection
+      doc.xpath('//div1').each do |node|
         node.name = 'div'
-        node['class'] = 'chapterWr'
+        node['class'] = 'subsection'
+        clean_node node, %w{id-text}
+
+        node.xpath('.//h2').each do |head_node|
+          head_node.name = 'h3'
+        end
       end
 
       # chapter
-      doc.xpath('//chapter').each_with_index do |node, i|
-        n = i + 1
-
+      doc.xpath('//chapter').each do |node|
         node.name = 'h1'
         node['class'] = 'chapter'
-
-        a = Nokogiri::XML::Node.new('a', doc)
-        a['id'] = "sec-#{n}"
-
-        span = Nokogiri::XML::Node.new('span', doc)
-        span.content = node.content
-
-        node.content = ''
-        node << a
-        node << span
       end
 
       doc.xpath('//error').map(&:remove)
+
+      # set data-tralics-id
+      doc.xpath('//*[@id]').each do |node|
+        # TODO: make whitelist of non-tralics id's
+        next if node['id'] =~ /footnote/
+
+        node['data-tralics-id'] = node['id']
+        node['id'] = node['data-label'].gsub(/:/, '-') if node['data-label']
+
+        clean_node node, %w{data-label}
+      end
 
       # title (preprocessed)
       doc.xpath('//maketitle').each do |node|
@@ -200,6 +204,39 @@ module Polytexnic
       doc.xpath('//literal').each do |node|
         node.parent.content = escape_backslashes(literal_cache[node.content])
         node.remove
+      end
+
+      # build numbering tree
+      chapter_number = 0
+      section_number = 0
+      subsection_number = 0
+      doc.xpath('//*[@data-tralics-id]').each do |node|
+        node['data-number'] = case node['class'].to_s
+          when 'chapter'
+            section_number = 0
+            "#{chapter_number += 1}"
+          when 'section'
+            subsection_number = 0
+            "#{chapter_number}.#{section_number += 1}"
+          when 'subsection'
+            "#{chapter_number}.#{section_number += 1}.#{subsection_number += 1}"
+          end
+
+        el = Nokogiri::XML::Node.new('span', doc)
+        el.content = node['data-number']
+        el['class'] = 'number'
+        if head = node.css('h2, h3').first
+          head.children.first.add_previous_sibling el
+        end
+      end
+
+      doc.xpath('//ref').each do |node|
+        target = doc.xpath("//*[@data-tralics-id='#{node['target']}']").first
+        node.name = 'a'
+        node['href'] = "##{target['id'].gsub(/:/, '-')}"
+        node['class'] = 'ref'
+        node.content = target['data-number']
+        clean_node node, 'target'
       end
 
       html = doc.at_css('document').children.to_html

@@ -66,8 +66,13 @@ module Polytexnic
         xmlelement('maketitle')
       end
 
+      # preserve label names
+      output.gsub! /\\label\{(.*?)\}/ do |s|
+        "#{s}\n\\AddAttToCurrent{data-label}{#{$1}}"
+      end
+
       output.gsub! /\\chapter\{(.*?)\}/ do |s|
-        xmlelement('chapter'){ $1 }
+        "#{s}\n\\AddAttToCurrent{type}{chapter}"
       end
 
       output
