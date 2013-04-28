@@ -83,6 +83,31 @@ lorem ipsum
       end
     end
 
+    describe "quote" do
+      let(:polytex) { '\quote{foo}' }
+      it { should resemble("<blockquote class=\"quote\">foo\n</blockquote>")}
+    end
+
+    describe "verse" do
+      let(:polytex) { '\verse{foo}' }
+      it { should resemble("<blockquote class=\"verse\">foo\n</blockquote>")}
+    end
+
+    describe "itemize" do
+      let(:polytex) { '\itemize' }
+      it { should resemble('<ul></ul>')}
+    end
+
+    describe "enumerate" do
+      let(:polytex) { '\enumerate' }
+      it { should resemble('<ol></ol>')}
+    end
+
+    describe "item" do
+      let(:polytex) { '\item foo' }
+      it { should resemble("<li>foo\n</li>")}
+    end
+
     describe "footnotes" do
       let(:polytex) { '\footnote{Foo}' }
       it do
@@ -134,30 +159,66 @@ lorem ipsum
     end
 
     describe '\chapter' do
-      let(:polytex) { '\chapter{Foo Bar}' }
+      let(:polytex) do <<-'EOS'
+          \chapter{Foo}
+          \label{cha:foo}
+        EOS
+      end
       let(:output) do <<-'EOS'
-        <div id="cid1" class="chapter" data-tralics-id="cid1" data-number="1">
-          <h2><span class="number">1</span>Foo Bar</h2>
+        <div id="cha-foo" data-tralics-id="cid1" class="chapter" data-number="1">
+          <h3><a href="#cha-foo" class="heading"><span class="number">1</span>Foo</a></h3>
         </div>
+        EOS
       end
       it { should resemble(output) }
     end
 
-    describe '\ref' do
-      let(:polytex) do
-        %w{
+    describe '\section' do
+      let(:polytex) do <<-'EOS'
+          \section{Foo}
+          \label{sec:foo}
+        EOS
+      end
+      let(:output) do <<-'EOS'
+        <div id="sec-foo" data-tralics-id="cid1" class="section" data-number="1.1">
+          <h3><a href="#sec-foo" class="heading"><span class="number">1.1</span>Foo</a></h3>
+        </div>
+        EOS
+      end
+      it { should resemble(output) }
+    end
+
+    describe '\subsection' do
+      let(:polytex) do <<-'EOS'
+          \subsection{Foo}
+          \label{subsec:foo}
+        EOS
+      end
+
+      let(:output) do <<-'EOS'
+        <div id="subsec-foo" data-tralics-id="uid1" class="subsection" data-number="1.1.1"><h4><a href="#subsec-foo" class="heading">Foo
+        </a></h4></div>
+        EOS
+      end
+      it { should resemble(output) }
+    end
+
+    describe '\ref and \hyperref' do
+      let(:polytex) do <<-'EOS'
           \chapter{Foo}
           \label{cha:foo}
-          \ref{cha:foo}
-        }
+          \hyperref[cha:foo]{Foo~\ref{cha:foo}}
+        EOS
       end
 
       it do
         should resemble <<-'EOS'
-          <div id="cha-foo" class="chapter" data-tralics-id="cid1" data-number="1">
-            <h2><span class="number">1</span>Foo</h2>
-            <p><a href="#cha-foo" class="ref">1</a></p>
-          </div>
+<div id="cha-foo" data-tralics-id="cid1" class="chapter" data-number="1">
+  <h3><a href="#cha-foo" class="heading"><span class="number">1</span>Foo</a></h3>
+  <p><a href="#cha-foo" class="hyperref">
+  Foo <span class="ref">1</span>
+  </a></p>
+</div>
         EOS
       end
     end

@@ -7,6 +7,9 @@ RSpec::Matchers.define :resemble do |expected|
     elsif expected.is_a?(Regexp)
       regex = %r{#{expected.to_s.robust}}
     end
+    # the puts' below help a lot for debugging, leaving in for now
+    # puts expected.robust
+    # puts actual.robust
     expect(actual.robust).to match_regex(regex)
   end
 end
@@ -19,8 +22,8 @@ class String
   end
 
   # Applies UTF-8 character code equivalences.
-  # For example, '&#133;' and '…' are the same character (horizontal ellipsis), 
-  # and depending on the version of Ruby and other factors the string might 
+  # For example, '&#133;' and '…' are the same character (horizontal ellipsis),
+  # and depending on the version of Ruby and other factors the string might
   # contain either or both.
   # We want to be robust to the differences, to gsub them out.
   # For clarity, we standardize on the characters that look literally correct,
@@ -47,7 +50,7 @@ class String
   # and trailing whitespace.
   # >> "foo\t    bar\n\nbaz    quux\nderp".compress
   # => "foo bar\n\nbaz quux\nderp"
-  # 
+  #
   # Spaces surround each line are stripped entirely, so that
   #   <ul>
   #     <li>alpha</li>
@@ -59,7 +62,7 @@ class String
   # <li>alpha</li>
   # <li>bravo</li>
   # <li>charlie</li>
-  # </ul>  
+  # </ul>
   def compress
     unicode_nbsp = ' '
     result = gsub(unicode_nbsp, ' ')

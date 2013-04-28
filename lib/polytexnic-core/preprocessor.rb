@@ -75,6 +75,13 @@ module Polytexnic
         "#{s}\n\\AddAttToCurrent{type}{chapter}"
       end
 
+      # handle hyperref
+      output.gsub! /\\hyperref\[(.*?)\]\{(.*?)\}/ do |s|
+        xmlelement('hyperref') do
+          "\\AddAttToCurrent{target}{#{$1}}\n#{$2}"
+        end
+      end
+
       output
     end
 
