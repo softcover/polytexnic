@@ -208,6 +208,8 @@ lorem ipsum
           \chapter{Foo}
           \label{cha:foo}
           \hyperref[cha:foo]{Foo~\ref{cha:foo}}
+
+          bar
         EOS
       end
 
@@ -215,9 +217,9 @@ lorem ipsum
         should resemble <<-'EOS'
 <div id="cha-foo" data-tralics-id="cid1" class="chapter" data-number="1">
   <h3><a href="#cha-foo" class="heading"><span class="number">1</span>Foo</a></h3>
-  <p><a href="#cha-foo" class="hyperref">
-  Foo <span class="ref">1</span>
-  </a></p>
+  <p><a href="#cha-foo" class="hyperref">Foo <span class="ref">1</span></a></p>
+  <p>bar
+  </p>
 </div>
         EOS
       end

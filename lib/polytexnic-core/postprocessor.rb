@@ -225,19 +225,22 @@ module Polytexnic
       end
 
       # build numbering tree
-      chapter_number = 1
-      section_number = 1
-      subsection_number = 1
+      chapter_number = 0
+      section_number = 0
+      subsection_number = 0
       doc.xpath('//*[@data-tralics-id]').each do |node|
         node['data-number'] = case node['class'].to_s
           when 'chapter'
             section_number = 0
-            "#{(chapter_number += 1) - 1}"
+            "#{chapter_number += 1}"
           when 'section'
             subsection_number = 0
-            "#{chapter_number}.#{(section_number += 1) - 1}"
+            cha_n = chapter_number == 0 ? 1 : chapter_number
+            "#{cha_n}.#{section_number += 1}"
           when 'subsection'
-            "#{chapter_number}.#{section_number}.#{(subsection_number += 1) - 1}"
+            cha_n = chapter_number == 0 ? 1 : chapter_number
+            sec_n = section_number == 0 ? 1 : section_number
+            "#{cha_n}.#{sec_n}.#{subsection_number += 1}"
           end
 
         # add number span
@@ -257,10 +260,8 @@ module Polytexnic
         clean_node node, 'target'
       end
 
-      doc.xpath('//hyperref').each do |node|
-        target = doc.xpath("//*[@id='#{node['target'].gsub(/:/,'-')}']").first
-        node.name = 'a'
-        node['href'] = "##{target['id'].gsub(/:/, '-')}"
+      doc.xpath('//*[@target]').each do |node|
+        node['href'] = "##{node['target'].gsub(/:/, '-')}"
         node['class'] = 'hyperref'
         clean_node node, 'target'
       end

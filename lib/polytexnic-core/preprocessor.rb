@@ -48,6 +48,9 @@ module Polytexnic
 
     def preprocess_polytex
       polytex = @polytex
+      defs = '\def\hyperref[#1]#2{\xmlelt{a}{\XMLaddatt{target}{#1}#2}}'
+      polytex = "#{defs}\n#{polytex}"
+
       output = []
       lines = polytex.split("\n")
       cache_literal_environments(lines, output)
@@ -73,13 +76,6 @@ module Polytexnic
 
       output.gsub! /\\chapter\{(.*?)\}/ do |s|
         "#{s}\n\\AddAttToCurrent{type}{chapter}"
-      end
-
-      # handle hyperref
-      output.gsub! /\\hyperref\[(.*?)\]\{(.*?)\}/ do |s|
-        xmlelement('hyperref') do
-          "\\AddAttToCurrent{target}{#{$1}}\n#{$2}"
-        end
       end
 
       output
