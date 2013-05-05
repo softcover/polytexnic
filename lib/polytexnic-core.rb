@@ -47,7 +47,7 @@ module Polytexnic
               elsif line =~ /^\s*\\end{code}\s*/
                 count -= 1
                 if count == 0
-                  output << Pygments.highlight(code.join("\n"), 
+                  output << Pygments.highlight(code.join("\n"),
                                                lexer: language,
                                                formatter: 'latex')
                   break
@@ -60,7 +60,7 @@ module Polytexnic
             output << line
           end
         end
-        output.join("\n")        
+        output.join("\n")
       end
     end
   end

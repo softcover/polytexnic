@@ -19,13 +19,13 @@ describe "custom 'resemble' matcher" do
   it "should pass if two strings agree up to whitespace" do
     expect("foo      bar").to resemble(" foo   \t\tbar ")
   end
-  
+
   it "should work for regexes" do
     expect("foo 628_tau bar").to resemble(/foo \d+\w*        bar/)
   end
 
   it "should work if the actual string contains the right substring" do
-    expect("baz quux foo      bar derp").to resemble(" foo   \t\tbar ")    
+    expect("baz quux foo      bar derp").to resemble(" foo   \t\tbar ")
   end
 
   it "should work with backslashes" do
