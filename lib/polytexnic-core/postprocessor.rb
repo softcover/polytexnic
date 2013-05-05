@@ -185,15 +185,15 @@ module Polytexnic
         node.name = 'div'
         node['class'] = 'subsection'
         clean_node node, %w{id-text}
-        h4 = doc.create_element 'h4'
 
-        a = doc.create_element 'a'
-        a['href'] = "##{node['id']}"
-        a['class'] = 'heading'
-        a << node.children
-
-        h4 << a
-        node << h4
+        node.xpath('.//head').each do |head_node|
+          head_node.name = 'h4'
+          a = doc.create_element 'a'
+          a['href'] = "##{node['id']}"
+          a['class'] = 'heading'
+          a << head_node.children
+          head_node << a
+        end
       end
 
 

@@ -196,8 +196,9 @@ lorem ipsum
       end
 
       let(:output) do <<-'EOS'
-        <div id="subsec-foo" data-tralics-id="uid1" class="subsection" data-number="1.1.1"><h4><a href="#subsec-foo" class="heading">Foo
-        </a></h4></div>
+        <div id="subsec-foo" data-tralics-id="uid1" class="subsection" data-number="1.1.1">
+          <h4><a href="#subsec-foo" class="heading">Foo</a></h4>
+        </div>
         EOS
       end
       it { should resemble(output) }
