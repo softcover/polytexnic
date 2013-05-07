@@ -48,6 +48,9 @@ module Polytexnic
 
     def preprocess_polytex
       polytex = @polytex
+      defs = '\def\hyperref[#1]#2{\xmlelt{a}{\XMLaddatt{target}{#1}#2}}'
+      polytex = "#{defs}\n#{polytex}"
+
       output = []
       lines = polytex.split("\n")
       cache_literal_environments(lines, output)
@@ -66,8 +69,13 @@ module Polytexnic
         xmlelement('maketitle')
       end
 
+      # preserve label names
+      output.gsub! /\\label\{(.*?)\}/ do |s|
+        "#{s}\n\\AddAttToCurrent{data-label}{#{$1}}"
+      end
+
       output.gsub! /\\chapter\{(.*?)\}/ do |s|
-        xmlelement('chapter') { $1 }
+        "#{s}\n\\AddAttToCurrent{type}{chapter}"
       end
 
       output

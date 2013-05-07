@@ -6,7 +6,7 @@ describe Polytexnic::Core::Pipeline do
   describe '#to_latex' do
     let(:processed_text) { Polytexnic::Core::Pipeline.new(polytex).to_latex }
     subject { processed_text }
-    
+
     describe "for vanilla LaTeX" do
       let(:polytex) { '\emph{foo}' }
       it { should eql(polytex) }
@@ -28,7 +28,7 @@ end
       it { should resemble('\begin{Verbatim}') }
       it { should resemble('commandchars') }
       it { should resemble('\end{Verbatim}') }
-      it { should_not resemble('def foo') }      
+      it { should_not resemble('def foo') }
       it { should resemble('\noindent lorem ipsum') }
     end
 
@@ -83,6 +83,31 @@ lorem ipsum
       end
     end
 
+    describe "quote" do
+      let(:polytex) { '\quote{foo}' }
+      it { should resemble("<blockquote class=\"quote\">foo\n</blockquote>")}
+    end
+
+    describe "verse" do
+      let(:polytex) { '\verse{foo}' }
+      it { should resemble("<blockquote class=\"verse\">foo\n</blockquote>")}
+    end
+
+    describe "itemize" do
+      let(:polytex) { '\itemize' }
+      it { should resemble('<ul></ul>')}
+    end
+
+    describe "enumerate" do
+      let(:polytex) { '\enumerate' }
+      it { should resemble('<ol></ol>')}
+    end
+
+    describe "item" do
+      let(:polytex) { '\item foo' }
+      it { should resemble("<li>foo\n</li>")}
+    end
+
     describe "footnotes" do
       let(:polytex) { '\footnote{Foo}' }
       it do
@@ -134,18 +159,75 @@ lorem ipsum
     end
 
     describe '\chapter' do
-      let(:polytex) { '\chapter{Foo Bar}' }
+      let(:polytex) do <<-'EOS'
+          \chapter{Foo}
+          \label{cha:foo}
+        EOS
+      end
       let(:output) do <<-'EOS'
-        <h1 class="chapter">
-          <a id="sec-1"></a><span>Foo Bar</span>
-        </h1>
+        <div id="cha-foo" data-tralics-id="cid1" class="chapter" data-number="1">
+          <h3><a href="#cha-foo" class="heading"><span class="number">1</span>Foo</a></h3>
+        </div>
         EOS
       end
       it { should resemble(output) }
     end
 
+    describe '\section' do
+      let(:polytex) do <<-'EOS'
+          \section{Foo}
+          \label{sec:foo}
+        EOS
+      end
+      let(:output) do <<-'EOS'
+        <div id="sec-foo" data-tralics-id="cid1" class="section" data-number="1.1">
+          <h3><a href="#sec-foo" class="heading"><span class="number">1.1</span>Foo</a></h3>
+        </div>
+        EOS
+      end
+      it { should resemble(output) }
+    end
+
+    describe '\subsection' do
+      let(:polytex) do <<-'EOS'
+          \subsection{Foo}
+          \label{subsec:foo}
+        EOS
+      end
+
+      let(:output) do <<-'EOS'
+        <div id="subsec-foo" data-tralics-id="uid1" class="subsection" data-number="1.1.1">
+          <h4><a href="#subsec-foo" class="heading">Foo</a></h4>
+        </div>
+        EOS
+      end
+      it { should resemble(output) }
+    end
+
+    describe '\ref and \hyperref' do
+      let(:polytex) do <<-'EOS'
+          \chapter{Foo}
+          \label{cha:foo}
+          \hyperref[cha:foo]{Foo~\ref{cha:foo}}
+
+          bar
+        EOS
+      end
+
+      it do
+        should resemble <<-'EOS'
+<div id="cha-foo" data-tralics-id="cid1" class="chapter" data-number="1">
+  <h3><a href="#cha-foo" class="heading"><span class="number">1</span>Foo</a></h3>
+  <p><a href="#cha-foo" class="hyperref">Foo <span class="ref">1</span></a></p>
+  <p>bar
+  </p>
+</div>
+        EOS
+      end
+    end
+
     describe "(La)TeX logos" do
-      
+
       describe "TeX logo" do
         let(:polytex) { '\TeX' }
         let(:output) { '\( \mathrm{\TeX} \)' }

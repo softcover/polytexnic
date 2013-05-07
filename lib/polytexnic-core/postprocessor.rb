@@ -150,42 +150,52 @@ module Polytexnic
         end
       end
 
-      # section
-      doc.xpath('//div0').each do |node|
-        id = node['id']
-        clean_node node, %w{id id-text}
-        node.name = 'div'
-        node['class'] = 'section'
+      doc.xpath('//error').map(&:remove)
 
-        node.xpath('//head').each do |head_node|
-          head_node.name = 'h2'
+      # set data-tralics-id
+      doc.xpath('//*[@id]').each do |node|
+        # TODO: make whitelist of non-tralics id's
+        next if node['id'] =~ /footnote/
+
+        node['data-tralics-id'] = node['id']
+        node['id'] = node['data-label'].gsub(/:/, '-') if node['data-label']
+
+        clean_node node, %w{data-label}
+      end
+
+      # chapter/section
+      doc.xpath('//div0').each do |node|
+        node.name = 'div'
+        is_chapter = node['type'] == 'chapter'
+        node['class'] = is_chapter ? 'chapter' : 'section'
+        clean_node node, %w{id-text type}
+
+        node.xpath('.//head').each do |head_node|
+          head_node.name = 'h3'
+          a = doc.create_element 'a'
+          a['href'] = "##{node['id']}"
+          a['class'] = 'heading'
+          a << head_node.children
+          head_node << a
         end
       end
 
-      doc.xpath('//chapterWr').each do |node|
+      # subsection
+      doc.xpath('//div1').each do |node|
         node.name = 'div'
-        node['class'] = 'chapterWr'
+        node['class'] = 'subsection'
+        clean_node node, %w{id-text}
+
+        node.xpath('.//head').each do |head_node|
+          head_node.name = 'h4'
+          a = doc.create_element 'a'
+          a['href'] = "##{node['id']}"
+          a['class'] = 'heading'
+          a << head_node.children
+          head_node << a
+        end
       end
 
-      # chapter
-      doc.xpath('//chapter').each_with_index do |node, i|
-        n = i + 1
-
-        node.name = 'h1'
-        node['class'] = 'chapter'
-
-        a = Nokogiri::XML::Node.new('a', doc)
-        a['id'] = "sec-#{n}"
-
-        span = Nokogiri::XML::Node.new('span', doc)
-        span.content = node.content
-
-        node.content = ''
-        node << a
-        node << span
-      end
-
-      doc.xpath('//error').map(&:remove)
 
       # title (preprocessed)
       doc.xpath('//maketitle').each do |node|
@@ -214,6 +224,48 @@ module Polytexnic
         node['class'] = 'unicode'
       end
 
+      # build numbering tree
+      chapter_number = 0
+      section_number = 0
+      subsection_number = 0
+      doc.xpath('//*[@data-tralics-id]').each do |node|
+        node['data-number'] = case node['class'].to_s
+          when 'chapter'
+            section_number = 0
+            "#{chapter_number += 1}"
+          when 'section'
+            subsection_number = 0
+            cha_n = chapter_number == 0 ? 1 : chapter_number
+            "#{cha_n}.#{section_number += 1}"
+          when 'subsection'
+            cha_n = chapter_number == 0 ? 1 : chapter_number
+            sec_n = section_number == 0 ? 1 : section_number
+            "#{cha_n}.#{sec_n}.#{subsection_number += 1}"
+          end
+
+        # add number span
+        if head = node.css('h2 a, h3 a').first
+          el = doc.create_element 'span'
+          el.content = node['data-number']
+          el['class'] = 'number'
+          head.children.first.add_previous_sibling el
+        end
+      end
+
+      doc.xpath('//ref').each do |node|
+        target = doc.xpath("//*[@data-tralics-id='#{node['target']}']").first
+        node.name = 'span'
+        node['class'] = 'ref'
+        node.content = target['data-number']
+        clean_node node, 'target'
+      end
+
+      doc.xpath('//*[@target]').each do |node|
+        node['href'] = "##{node['target'].gsub(/:/, '-')}"
+        node['class'] = 'hyperref'
+        clean_node node, 'target'
+      end
+
       html = doc.at_css('document').children.to_html
 
       # highlight source code
@@ -228,6 +280,9 @@ module Polytexnic
 
     def clean_node(node, attributes)
       [*attributes].each { |a| node.remove_attribute a }
+    end
+
+    def find_by_label(doc, label)
     end
   end
 end
