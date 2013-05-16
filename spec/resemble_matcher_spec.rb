@@ -10,7 +10,7 @@ describe String do
 
   describe '#compress' do
     subject { string.compress }
-    it { should eq(compressed_string) }
+    it { should eq compressed_string }
   end
 end
 
