@@ -12,6 +12,7 @@ module Polytexnic
       @html = Nokogiri::HTML.fragment(processed_xml).to_html
     end
 
+    # Handles output of \emph{} and \textit{}.
     def emphasis(doc)
       doc.xpath('//hi[@rend="it"]').each do |node|
         node.name = 'em'
@@ -19,6 +20,7 @@ module Polytexnic
       end
     end
 
+    # Handles output of \texttt{}.
     def typewriter(doc)
       doc.xpath('//hi[@rend="tt"]').each do |node|
         node.name = 'span'
@@ -27,22 +29,33 @@ module Polytexnic
       end
     end
 
-    def processed_xml
-      doc = Nokogiri::XML(@xml)
-
-      # Italics/emphasis
-      emphasis(doc)
-      typewriter(doc)
-      # verbatim
+    # Handles verbatim and Verbatim environments.
+    # \begin{verbatim}
+    # <stuff>
+    # \end{verbatim}
+    # and
+    # \begin{Verbatim}
+    # <stuff>
+    # \end{Verbatim}
+    # Note that verbatim is a built-in LaTeX environment, whereas
+    # Verbatim is loaded by the Verbatim package (and used by the
+    # code environment).
+    def verbatim(doc)
       doc.xpath('//verbatim').each do |node|
         node.name = 'pre'
         node['class'] = 'verbatim'
       end
-      # Verbatim
       doc.xpath('//Verbatim').each do |node|
         node.name = 'pre'
         node['class'] = 'verbatim'
-      end
+      end      
+    end
+
+    def processed_xml
+      doc = Nokogiri::XML(@xml)
+      emphasis(doc)
+      typewriter(doc)
+      verbatim(doc)
       # Code
       doc.xpath('//code').each do |node|
         node.name = 'div'
