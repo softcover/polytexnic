@@ -92,7 +92,14 @@ module Polytexnic
           nil
         end
       end
-          
+
+      # Paragraphs with noindent
+      # See the long comment above.
+      doc.xpath('//p[@noindent="true"]').each do |node|
+        node['class'] = 'noindent'
+        node.remove_attribute('noindent')
+      end
+
       # inline & display math
       doc.xpath('//texmath').each do |node|
         type = node.attributes['textype'].value
@@ -117,12 +124,6 @@ module Polytexnic
       verbatim(doc)
       code(doc)
       math(doc)
-
-      # Paragraphs with noindent
-      doc.xpath('//p[@noindent="true"]').each do |node|
-        node['class'] = 'noindent'
-        node.remove_attribute('noindent')
-      end
 
       # handle footnotes
       footnotes_node = nil
