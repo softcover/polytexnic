@@ -117,15 +117,8 @@ module Polytexnic
       end
     end
 
-    def processed_xml
-      doc = Nokogiri::XML(@xml)
-      emphasis(doc)
-      typewriter(doc)
-      verbatim(doc)
-      code(doc)
-      math(doc)
-
-      # handle footnotes
+    # Handles footnotes.
+    def footnotes(doc)
       footnotes_node = nil
       doc.xpath('//note[@place="foot"]').each_with_index do |node, i|
         n = i + 1
@@ -150,8 +143,18 @@ module Polytexnic
         link['href'] = "#footnote-#{n}"
         link.content = n.to_s
         node.inner_html = link
-      end
+      end      
+    end
 
+    def processed_xml
+      doc = Nokogiri::XML(@xml)
+      emphasis(doc)
+      typewriter(doc)
+      verbatim(doc)
+      code(doc)
+      math(doc)
+      footnotes(doc)
+      
       # (La)TeX logos
       doc.xpath('//TeX').each do |node|
         node.name = 'span'
