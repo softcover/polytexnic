@@ -146,6 +146,26 @@ module Polytexnic
       end      
     end
 
+    # Returns HTML for a nicely styled TeX logo.
+    def tex
+      %(<span class="texhtml" style="font-family: 'CMU Serif', cmr10, LMRoman10-Regular, 'Times New Roman', 'Nimbus Roman No9 L', Times, serif;">T<span style="text-transform: uppercase; vertical-align: -0.5ex; margin-left: -0.1667em; margin-right: -0.125em;">e</span>X</span>)
+    end
+
+    # Returns HTML for a nicely styled LaTeX logo.
+    def latex
+      %(<span class="texhtml" style="font-family: 'CMU Serif', cmr10, LMRoman10-Regular, 'Times New Roman', 'Nimbus Roman No9 L', Times, serif;">L<span style="text-transform: uppercase; font-size: 70%; margin-left: -0.36em; vertical-align: 0.3em; line-height: 0; margin-right: -0.15em;">a</span>T<span style="text-transform: uppercase; margin-left: -0.1667em; vertical-align: -0.5ex; line-height: 0; margin-right: -0.125em;">e</span>X</span>)
+    end
+
+    # Handles logos for TeX and LaTeX
+    def tex_logos(doc)
+      doc.xpath('//TeX').each do |node|
+        node.replace(Nokogiri::XML::fragment(tex))
+      end
+      doc.xpath('//LaTeX').each do |node|
+        node.replace(Nokogiri::XML::fragment(latex))
+      end      
+    end
+
     def processed_xml
       doc = Nokogiri::XML(@xml)
       emphasis(doc)
@@ -154,18 +174,7 @@ module Polytexnic
       code(doc)
       math(doc)
       footnotes(doc)
-      
-      # (La)TeX logos
-      doc.xpath('//TeX').each do |node|
-        node.name = 'span'
-        node['class'] = 'TeX'
-        node.content = '\( \mathrm{\TeX} \)'
-      end
-      doc.xpath('//LaTeX').each do |node|
-        node.name = 'span'
-        node['class'] = 'LaTeX'
-        node.content = '\( \mathrm{\LaTeX} \)'
-      end
+      tex_logos(doc)
 
       # standard environments
 
