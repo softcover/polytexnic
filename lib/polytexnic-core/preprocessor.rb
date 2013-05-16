@@ -181,6 +181,9 @@ module Polytexnic
   end
 end
 
+# Returns supported math environments.
+# Note that the custom AMSTeX environments are supported
+# in addition to the LaTeX defaults.
 def math_environments
   %w[align align* alignat alignat* array
      Bmatrix bmatrix cases

@@ -62,23 +62,37 @@ module Polytexnic
       end      
     end
 
-    def processed_xml
-      doc = Nokogiri::XML(@xml)
-      emphasis(doc)
-      typewriter(doc)
-      verbatim(doc)
-      code(doc)
-      # equation
+    # Handles math environments.
+    # Included are 
+    # \begin{equation}
+    # <equation>
+    # \end{equation}
+    # and all the AMSTeX variants defined in Preprocessor#math_environments.
+    # We also handle inline/display math of the form \(x\) and \[y\].
+    def math(doc)
+      # math environments
       doc.xpath('//equation').each do |node|
         node.name = 'div'
         node['class'] = 'equation'
+        # Mimic default Tralics behavior of giving paragraph tags after
+        # math a 'noindent' class. This allows the HTML to be styled with CSS
+        # in a way that replicates the default behavior of LaTeX, where
+        # math can be included in a paragraph. In such a case, paragraphs
+        # are indented by default, but text after math environments isn't
+        # indented. In HTML, including a math div inside a p tag is illegal,
+        # so the next best thing is to add a 'noindent' class to the p tag
+        # following the math. Most documents won't use this, as the HTML
+        # convention is not to indent paragraphs anyway, but we want to 
+        # support that use case for completeness (mainly because Tralics does).
         begin
           next_paragraph = node.parent.next_sibling.next_sibling
           next_paragraph['noindent'] = 'true'
         rescue
+          # We rescue nil in case the math isn't followed by any text.
           nil
         end
       end
+          
       # inline & display math
       doc.xpath('//texmath').each do |node|
         type = node.attributes['textype'].value
@@ -94,6 +108,16 @@ module Polytexnic
         node.remove_attribute('textype')
         node.remove_attribute('type')
       end
+    end
+
+    def processed_xml
+      doc = Nokogiri::XML(@xml)
+      emphasis(doc)
+      typewriter(doc)
+      verbatim(doc)
+      code(doc)
+      math(doc)
+
       # Paragraphs with noindent
       doc.xpath('//p[@noindent="true"]').each do |node|
         node['class'] = 'noindent'
