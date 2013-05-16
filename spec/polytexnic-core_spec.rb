@@ -81,6 +81,11 @@ lorem ipsum
       it { should resemble('<em>baz quux</em>') }
     end
 
+    describe "typewriter text" do
+      let(:polytex) { '\texttt{typewriter text}' }
+      it { should resemble '<span class="tt">typewriter text</span>' }
+    end
+
     describe "quoted strings" do
       context "with single quotes" do
         let(:polytex) { "``foo bar''" }
@@ -90,12 +95,12 @@ lorem ipsum
 
     describe "quote" do
       let(:polytex) { '\quote{foo}' }
-      it { should resemble("<blockquote class=\"quote\">foo\n</blockquote>")}
+      it { should resemble("<blockquote class=\"quote\">foo\n</blockquote>") }
     end
 
     describe "verse" do
       let(:polytex) { '\verse{foo}' }
-      it { should resemble("<blockquote class=\"verse\">foo\n</blockquote>")}
+      it { should resemble("<blockquote class=\"verse\">foo\n</blockquote>") }
     end
 
     describe "itemize" do

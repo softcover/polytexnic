@@ -12,19 +12,27 @@ module Polytexnic
       @html = Nokogiri::HTML.fragment(processed_xml).to_html
     end
 
-    def processed_xml
-      doc = Nokogiri::XML(@xml)
-
-      # Italics/emphasis
+    def emphasis(doc)
       doc.xpath('//hi[@rend="it"]').each do |node|
         node.name = 'em'
         node.remove_attribute('rend')
       end
+    end
+
+    def typewriter(doc)
       doc.xpath('//hi[@rend="tt"]').each do |node|
         node.name = 'span'
         node['class'] = 'tt'
         node.remove_attribute('rend')
       end
+    end
+
+    def processed_xml
+      doc = Nokogiri::XML(@xml)
+
+      # Italics/emphasis
+      emphasis(doc)
+      typewriter(doc)
       # verbatim
       doc.xpath('//verbatim').each do |node|
         node.name = 'pre'
