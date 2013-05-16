@@ -51,16 +51,23 @@ module Polytexnic
       end      
     end
 
+    # Handles code environments.
+    # \begin{code}
+    # <code>
+    # \end{code}
+    def code(doc)
+      doc.xpath('//code').each do |node|
+        node.name = 'div'
+        node['class'] = 'code'
+      end      
+    end
+
     def processed_xml
       doc = Nokogiri::XML(@xml)
       emphasis(doc)
       typewriter(doc)
       verbatim(doc)
-      # Code
-      doc.xpath('//code').each do |node|
-        node.name = 'div'
-        node['class'] = 'code'
-      end
+      code(doc)
       # equation
       doc.xpath('//equation').each do |node|
         node.name = 'div'
