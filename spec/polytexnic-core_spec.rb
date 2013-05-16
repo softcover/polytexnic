@@ -43,6 +43,11 @@ end
     let(:processed_text) { Polytexnic::Core::Pipeline.new(polytex).to_html }
     subject { processed_text }
 
+    describe "comments" do
+      let(:polytex) { "% A LaTeX comment" }
+      it { should resemble "" }
+    end
+
     describe "a complete document" do
       let(:polytex) do <<-'EOS'
 \documentclass{book}

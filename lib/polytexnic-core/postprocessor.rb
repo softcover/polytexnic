@@ -14,8 +14,6 @@ module Polytexnic
 
     def processed_xml
       doc = Nokogiri::XML(@xml)
-      # clean
-      doc.xpath('//comment()').remove
 
       # Italics/emphasis
       doc.xpath('//hi[@rend="it"]').each do |node|
@@ -278,6 +276,7 @@ module Polytexnic
       end
     end
 
+    # Cleans a node by removing all the given attributes.
     def clean_node(node, attributes)
       [*attributes].each { |a| node.remove_attribute a }
     end
