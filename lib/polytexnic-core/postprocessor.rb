@@ -255,6 +255,22 @@ module Polytexnic
       end
     end
 
+    def title(doc)
+      doc.xpath('//maketitle').each do |node|
+        node.name = 'h1'
+        %w{title subtitle author date}.each do |field|
+          class_var = Polytexnic.instance_variable_get "@#{field}"
+          if class_var
+            type = %w{title subtitle}.include?(field) ? 'h1' : 'h2'
+            el = Nokogiri::XML::Node.new(type, doc)
+            el.content = class_var
+            el['class'] = field
+            node.add_child el
+          end
+        end
+      end
+    end
+
     def processed_xml
       doc = Nokogiri::XML(@xml)
       emphasis(doc)
@@ -273,23 +289,7 @@ module Polytexnic
       set_ids(doc)
       chapters_and_section(doc)
       subsection(doc)
-
-
-      # title (preprocessed)
-      doc.xpath('//maketitle').each do |node|
-        node.name = 'h1'
-        %w{title subtitle author date}.each do |field|
-          class_var = Polytexnic.instance_variable_get "@#{field}"
-          if class_var
-            type = %w{title subtitle}.include?(field) ? 'h1' : 'h2'
-            el = Nokogiri::XML::Node.new(type, doc)
-            el.content = class_var
-            el['class'] = field
-            node.add_child el
-          end
-        end
-      end
-
+      title(doc)
       # restore literal environments
       doc.xpath('//literal').each do |node|
         node.parent.content = escape_backslashes(literal_cache[node.content])
