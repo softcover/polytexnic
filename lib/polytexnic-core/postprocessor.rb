@@ -163,7 +163,47 @@ module Polytexnic
       end
       doc.xpath('//LaTeX').each do |node|
         node.replace(Nokogiri::XML::fragment(latex))
-      end      
+      end
+    end
+
+    def quote(doc)
+      doc.xpath('//p[@rend="quoted"]').each do |node|
+        clean_node node, 'rend'
+        node.name = 'blockquote'
+        node['class'] = 'quote'
+      end
+    end
+
+    def verse(doc)
+      doc.xpath('//p[@rend="verse"]').each do |node|
+        clean_node node, %w{rend noindent}
+        node.name = 'blockquote'
+        node['class'] = 'verse'
+      end
+    end
+
+    def itemize(doc)
+      doc.xpath('//list[@type="simple"]').each do |node|
+        clean_node node, 'type'
+        node.name = 'ul'
+      end
+    end
+
+    def enumerate(doc)
+      doc.xpath('//list[@type="ordered"]').each do |node|
+        clean_node node, 'type'
+        node.name = 'ol'
+      end
+    end
+
+    def item(doc)
+      doc.xpath('//item').each do |node|
+        clean_node node, %w{id-text id label}
+        node.name = 'li'
+        node.xpath('//p').each do |pnode|
+          pnode.parent.inner_html = pnode.inner_html
+        end
+      end
     end
 
     def processed_xml
@@ -175,43 +215,11 @@ module Polytexnic
       math(doc)
       footnotes(doc)
       tex_logos(doc)
-
-      # standard environments
-
-      # quote
-      doc.xpath('//p[@rend="quoted"]').each do |node|
-        clean_node node, 'rend'
-        node.name = 'blockquote'
-        node['class'] = 'quote'
-      end
-
-      # verse
-      doc.xpath('//p[@rend="verse"]').each do |node|
-        clean_node node, %w{rend noindent}
-        node.name = 'blockquote'
-        node['class'] = 'verse'
-      end
-
-      # itemize
-      doc.xpath('//list[@type="simple"]').each do |node|
-        clean_node node, 'type'
-        node.name = 'ul'
-      end
-
-      # enumerate
-      doc.xpath('//list[@type="ordered"]').each do |node|
-        clean_node node, 'type'
-        node.name = 'ol'
-      end
-
-      # item
-      doc.xpath('//item').each do |node|
-        clean_node node, %w{id-text id label}
-        node.name = 'li'
-        node.xpath('//p').each do |pnode|
-          pnode.parent.inner_html = pnode.inner_html
-        end
-      end
+      quote(doc)
+      verse(doc)
+      itemize(doc)
+      enumerate(doc)
+      item(doc)
 
       doc.xpath('//error').map(&:remove)
 
