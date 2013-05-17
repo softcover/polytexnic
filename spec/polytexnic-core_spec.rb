@@ -254,5 +254,11 @@ lorem ipsum
         it { should include(output) }
       end
     end
+    
+    describe "unknown command" do
+      let(:polytex) { '\foobar' }
+      let(:output) { '' }
+      it { should eq output }
+    end
   end
 end

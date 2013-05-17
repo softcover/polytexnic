@@ -206,6 +206,11 @@ module Polytexnic
       end
     end
 
+    # Removes remaining errors.
+    def remove_errors(doc)
+      doc.xpath('//error').map(&:remove)
+    end
+
     def processed_xml
       doc = Nokogiri::XML(@xml)
       emphasis(doc)
@@ -220,8 +225,7 @@ module Polytexnic
       itemize(doc)
       enumerate(doc)
       item(doc)
-
-      doc.xpath('//error').map(&:remove)
+      remove_errors(doc)
 
       # set data-tralics-id
       doc.xpath('//*[@id]').each do |node|
