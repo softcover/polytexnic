@@ -8,10 +8,31 @@ module Polytexnic
       xml_to_html
     end
 
+    # Converts Tralics XML output to HTML. 
     def xml_to_html
-      @html = Nokogiri::HTML.fragment(processed_xml).to_html
+      doc = Nokogiri::XML(@xml)
+      emphasis(doc)
+      typewriter(doc)
+      verbatim(doc)
+      code(doc)
+      math(doc)
+      footnotes(doc)
+      tex_logos(doc)
+      quote(doc)
+      verse(doc)
+      itemize(doc)
+      enumerate(doc)
+      item(doc)
+      remove_errors(doc)
+      set_ids(doc)
+      chapters_and_section(doc)
+      subsection(doc)
+      title(doc)
+      restore_literal(doc)
+      make_cross_references(doc)
+      @html = convert_to_html(doc) 
     end
-
+    
     # Handles output of \emph{} and \textit{}.
     def emphasis(doc)
       doc.xpath('//hi[@rend="it"]').each do |node|
@@ -271,37 +292,23 @@ module Polytexnic
       end
     end
 
-    def processed_xml
-      doc = Nokogiri::XML(@xml)
-      emphasis(doc)
-      typewriter(doc)
-      verbatim(doc)
-      code(doc)
-      math(doc)
-      footnotes(doc)
-      tex_logos(doc)
-      quote(doc)
-      verse(doc)
-      itemize(doc)
-      enumerate(doc)
-      item(doc)
-      remove_errors(doc)
-      set_ids(doc)
-      chapters_and_section(doc)
-      subsection(doc)
-      title(doc)
-      # restore literal environments
+    # Restores literal environments (verbatim, code, math, etc.).
+    # These environments are hashed and passed through the pipeline
+    # so that Tralics doesn't process them.
+    def restore_literal(doc)
       doc.xpath('//literal').each do |node|
         node.parent.content = escape_backslashes(literal_cache[node.content])
         node.remove
       end
-      # (including non-ASCII unicode)
+      # Restore non-ASCII unicode
       doc.xpath('//unicode').each do |node|
         node.content = literal_cache[node.content]
         node.name = 'span'
         node['class'] = 'unicode'
       end
+    end
 
+    def make_cross_references(doc)
       # build numbering tree
       chapter_number = 0
       section_number = 0
@@ -343,17 +350,32 @@ module Polytexnic
         node['class'] = 'hyperref'
         clean_node node, 'target'
       end
+    end
 
-      html = doc.at_css('document').children.to_html
-
-      # highlight source code
-      # We need to put it after the call to 'to_html' because otherwise
-      # Nokogiri escapes it.
+    # Highlights source code.
+    # We pass it HTML instead of an XML document because otherwise
+    # Nokogiri escapes it.
+    def highlight_source_code(html)
       html.tap do
         code_cache.each do |key, (content, language)|
           html.gsub!(key, Pygments.highlight(content, lexer: language))
         end
       end
+    end
+
+    # Converts a document to HTML.
+    # Because there's no way to know a priori which elements are block-level,
+    # and hence can't be nested inside a paragraph tag, we first extract
+    # an HTML fragment by converting the document to HTML, and then use
+    # Nokogiri's HTML.fragment method to read it in and emit valid markup.
+    # (In between, we add in highlighted source code.)
+    # This process transforms, e.g., the invalid
+    #   <p>Preformatted text: <pre>text</pre> foo</p>
+    # to the valid 
+    #  <p>Preformatted text:</p> <pre>text</pre> <p>foo</p> 
+    def convert_to_html(doc)
+      fragment = highlight_source_code(doc.at_css('document').children.to_html)
+      Nokogiri::HTML.fragment(fragment).to_html      
     end
 
     # Cleans a node by removing all the given attributes.

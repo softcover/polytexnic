@@ -151,7 +151,7 @@ $$ \int_\Omega d\omega = \int_{\partial\Omega} \omega $$
   describe "equation environments surrounded by text" do
     let(:equation) do <<-'EOS'
 \begin{equation}
-\int_\Omega d\omega = \int_{\partial\Omega} \omega
+# \int_\Omega d\omega = \int_{\partial\Omega} \omega
 \end{equation}
        EOS
     end
