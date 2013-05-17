@@ -10,36 +10,36 @@ describe String do
 
   describe '#compress' do
     subject { string.compress }
-    it { should eq(compressed_string) }
+    it { should eq compressed_string }
   end
 end
 
 describe "custom 'resemble' matcher" do
 
   it "should pass if two strings agree up to whitespace" do
-    expect("foo      bar").to resemble(" foo   \t\tbar ")
+    expect("foo      bar").to resemble " foo   \t\tbar "
   end
 
   it "should work for regexes" do
-    expect("foo 628_tau bar").to resemble(/foo \d+\w*        bar/)
+    expect("foo 628_tau bar").to resemble /foo \d+\w*        bar/
   end
 
   it "should work if the actual string contains the right substring" do
-    expect("baz quux foo      bar derp").to resemble(" foo   \t\tbar ")
+    expect("baz quux foo      bar derp").to resemble " foo   \t\tbar "
   end
 
   it "should work with backslashes" do
-    expect('\emph{foo bar}').to resemble('\emph{foo bar}')
+    expect('\emph{foo bar}').to resemble '\emph{foo bar}'
   end
 
   let(:nbsp) { ' ' }
 
   it "should work with Unicode nonbreak spaces" do
-    expect('foo' + nbsp + nbsp + 'bar').to resemble('foo bar')
+    expect('foo' + nbsp + nbsp + 'bar').to resemble 'foo bar'
   end
 
   it "should work with a mix of characters and codes" do
-    expect('“foo bar&#8221;').to resemble('&#8220;foo bar”')
+    expect('“foo bar&#8221;').to resemble '&#8220;foo bar”'
   end
 
   it "should work with multiline strings" do
@@ -58,6 +58,6 @@ describe "custom 'resemble' matcher" do
 </ul>
     EOS
 
-    expect(foo).to resemble(bar)
+    expect(foo).to resemble bar
   end
 end

@@ -25,7 +25,7 @@ describe Polytexnic::Core::Pipeline do
   
   filenames.each do |filename|
     it "should correctly process #{filename}" do
-      expect(converted(filename)).to resemble(html(filename))
+      expect(converted(filename)).to resemble html(filename)
     end
   end
 end

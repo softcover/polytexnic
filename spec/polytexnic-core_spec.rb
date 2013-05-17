@@ -25,11 +25,11 @@ end
       EOS
       end
 
-      it { should resemble('\begin{Verbatim}') }
-      it { should resemble('commandchars') }
-      it { should resemble('\end{Verbatim}') }
-      it { should_not resemble('def foo') }
-      it { should resemble('\noindent lorem ipsum') }
+      it { should resemble '\begin{Verbatim}' }
+      it { should resemble 'commandchars' }
+      it { should resemble '\end{Verbatim}' }
+      it { should_not resemble 'def foo' }
+      it { should resemble '\noindent lorem ipsum' }
     end
 
     describe "Unicode" do
@@ -43,6 +43,11 @@ end
     let(:processed_text) { Polytexnic::Core::Pipeline.new(polytex).to_html }
     subject { processed_text }
 
+    describe "comments" do
+      let(:polytex) { "% A LaTeX comment" }
+      it { should resemble "" }
+    end
+
     describe "a complete document" do
       let(:polytex) do <<-'EOS'
 \documentclass{book}
@@ -53,18 +58,18 @@ lorem ipsum
         EOS
       end
 
-      it { should resemble("<p>lorem ipsum\n</p>") }
+      it { should resemble "<p>lorem ipsum\n</p>" }
     end
 
     describe "paragraph conversion" do
       let(:polytex) { 'lorem ipsum' }
-      it { should resemble("<p>lorem ipsum\n</p>") }
-      it { should_not resemble('<unknown>') }
+      it { should resemble "<p>lorem ipsum\n</p>" }
+      it { should_not resemble '<unknown>' }
     end
 
     describe "italics conversion" do
       let(:polytex) { '\emph{foo bar}' }
-      it { should resemble('<em>foo bar</em>') }
+      it { should resemble '<em>foo bar</em>' }
     end
 
     describe "italics with multiple instances" do
@@ -72,40 +77,45 @@ lorem ipsum
         '\emph{foo bar} and also \emph{baz quux}'
       end
 
-      it { should resemble('<em>foo bar</em>') }
-      it { should resemble('<em>baz quux</em>') }
+      it { should resemble '<em>foo bar</em>' }
+      it { should resemble '<em>baz quux</em>' }
+    end
+
+    describe "typewriter text" do
+      let(:polytex) { '\texttt{typewriter text}' }
+      it { should resemble '<span class="tt">typewriter text</span>' }
     end
 
     describe "quoted strings" do
       context "with single quotes" do
         let(:polytex) { "``foo bar''" }
-        it { should resemble('“foo bar”') }
+        it { should resemble '“foo bar”' }
       end
     end
 
     describe "quote" do
       let(:polytex) { '\quote{foo}' }
-      it { should resemble("<blockquote class=\"quote\">foo\n</blockquote>")}
+      it { should resemble "<blockquote class=\"quote\">foo\n</blockquote>" }
     end
 
     describe "verse" do
       let(:polytex) { '\verse{foo}' }
-      it { should resemble("<blockquote class=\"verse\">foo\n</blockquote>")}
+      it { should resemble "<blockquote class=\"verse\">foo\n</blockquote>" }
     end
 
     describe "itemize" do
       let(:polytex) { '\itemize' }
-      it { should resemble('<ul></ul>')}
+      it { should resemble '<ul></ul>'}
     end
 
     describe "enumerate" do
       let(:polytex) { '\enumerate' }
-      it { should resemble('<ol></ol>')}
+      it { should resemble '<ol></ol>'}
     end
 
     describe "item" do
       let(:polytex) { '\item foo' }
-      it { should resemble("<li>foo\n</li>")}
+      it { should resemble "<li>foo\n</li>"}
     end
 
     describe "footnotes" do
@@ -123,17 +133,17 @@ lorem ipsum
 
     describe '\ldots' do
       let(:polytex) { '\ldots' }
-      it { should resemble('…') }
+      it { should resemble '…' }
     end
 
     describe 'end-of-sentence punctuation' do
       let(:polytex) { 'Superman II\@. Lorem ipsum.' }
-      it { should resemble('Superman II. Lorem ipsum.') }
+      it { should resemble 'Superman II. Lorem ipsum.' }
     end
 
     describe 'unbreakable interword space' do
       let(:polytex) { 'foo~bar' }
-      it { should resemble('foo bar') }
+      it { should resemble 'foo bar' }
     end
 
     describe '\maketitle' do
@@ -170,7 +180,7 @@ lorem ipsum
         </div>
         EOS
       end
-      it { should resemble(output) }
+      it { should resemble output }
     end
 
     describe '\section' do
@@ -185,7 +195,7 @@ lorem ipsum
         </div>
         EOS
       end
-      it { should resemble(output) }
+      it { should resemble output }
     end
 
     describe '\subsection' do
@@ -201,7 +211,7 @@ lorem ipsum
         </div>
         EOS
       end
-      it { should resemble(output) }
+      it { should resemble output }
     end
 
     describe '\ref and \hyperref' do
@@ -230,15 +240,25 @@ lorem ipsum
 
       describe "TeX logo" do
         let(:polytex) { '\TeX' }
-        let(:output) { '\( \mathrm{\TeX} \)' }
+        let(:output) do
+%(<span class="texhtml" style="font-family: 'CMU Serif', cmr10, LMRoman10-Regular, 'Times New Roman', 'Nimbus Roman No9 L', Times, serif;">T<span style="text-transform: uppercase; vertical-align: -0.5ex; margin-left: -0.1667em; margin-right: -0.125em;">e</span>X</span>)
+        end
         it { should include(output) }
       end
 
       describe "LaTeX logo" do
         let(:polytex) { '\LaTeX' }
-        let(:output) { '\( \mathrm{\LaTeX} \)' }
+        let(:output) do
+%(<span class="texhtml" style="font-family: 'CMU Serif', cmr10, LMRoman10-Regular, 'Times New Roman', 'Nimbus Roman No9 L', Times, serif;">L<span style="text-transform: uppercase; font-size: 70%; margin-left: -0.36em; vertical-align: 0.3em; line-height: 0; margin-right: -0.15em;">a</span>T<span style="text-transform: uppercase; margin-left: -0.1667em; vertical-align: -0.5ex; line-height: 0; margin-right: -0.125em;">e</span>X</span>)
+        end
         it { should include(output) }
       end
+    end
+
+    describe "unknown command" do
+      let(:polytex) { '\foobar' }
+      let(:output) { '' }
+      it { should resemble output }
     end
   end
 end

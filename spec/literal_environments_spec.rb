@@ -15,9 +15,9 @@ describe Polytexnic::Core::Pipeline do
 
   let(:output) { '\emph{foo bar} &amp; \\\\' }
 
-  it { should resemble(output) }
-  it { should resemble('<pre class="verbatim">') }
-  it { should_not resemble('\begin{verbatim}') }
+  it { should resemble output }
+  it { should resemble '<pre class="verbatim">' }
+  it { should_not resemble '\begin{verbatim}' }
 
     describe "with nesting" do
       let(:polytex) do <<-'EOS'
@@ -37,9 +37,9 @@ lorem ipsum
        EOS
       end
 
-      it { should resemble(output) }
+      it { should resemble output }
       it "should break out of the loop if verbatim count is zero" do
-        expect(processed_text).to resemble('lorem ipsum')
+        expect(processed_text).to resemble 'lorem ipsum'
       end
     end
 
@@ -66,10 +66,10 @@ lorem ipsum
 
     let(:output) { '\emph{foo bar}' }
 
-    it { should resemble(output) }
-    it { should_not resemble('\begin{Verbatim}') }
-    it { should_not resemble('rend="tt"') }
-    it { should resemble('<pre class="verbatim">') }
+    it { should resemble output }
+    it { should_not resemble '\begin{Verbatim}' }
+    it { should_not resemble 'rend="tt"' }
+    it { should resemble '<pre class="verbatim">' }
   end
 
   describe "inline math, LaTeX-style" do
@@ -80,8 +80,8 @@ lorem ipsum
     let(:polytex) { equation }
     let(:contents) { '\\Omega' }
 
-    it { should resemble(contents) }
-    it { should resemble('<span class="inline_math">') }    
+    it { should resemble contents }
+    it { should resemble '<span class="inline_math">' }    
   end
 
   describe "inline math, TeX-style" do
@@ -92,18 +92,18 @@ $\int_\Omega d\omega = \int_{\partial\Omega} \omega$
     let(:polytex) { equation }
     let(:contents) { '\\Omega' }
 
-    it { should resemble(contents) }
-    it { should resemble('<span class="inline_math">') }    
-    it { should resemble('\\(') }
+    it { should resemble contents }
+    it { should resemble '<span class="inline_math">' }    
+    it { should resemble '\\(' }
   end
 
   describe "multiple occurrences of inline math on one line" do
     let(:polytex) { "$\\Omega > 0$ and \\( x^2 - 2 \\equiv 0 \\) should work." }
 
-    it { should resemble('\\Omega') }
-    it { should resemble('\\equiv') }
-    it { should resemble('<span class="inline_math">') }    
-    it { should resemble('\\(') }
+    it { should resemble '\\Omega' }
+    it { should resemble '\\equiv' }
+    it { should resemble '<span class="inline_math">' }    
+    it { should resemble '\\(' }
   end
 
   describe "display math, LaTeX-style" do
@@ -114,8 +114,8 @@ $\int_\Omega d\omega = \int_{\partial\Omega} \omega$
     let(:polytex) { "lorem\n" + equation + "\nipsum" }
     let(:contents) { '\\Omega' }
 
-    it { should resemble(contents) }
-    it { should resemble('<div class="display_math">') }
+    it { should resemble contents }
+    it { should resemble '<div class="display_math">' }
   end
 
   describe "display math, TeX-style" do
@@ -126,13 +126,13 @@ $$ \int_\Omega d\omega = \int_{\partial\Omega} \omega $$
     let(:polytex) { "lorem\n" + equation + "\nipsum" }
     let(:contents) { '\\Omega' }
 
-    it { should resemble(contents) }
-    it { should resemble('<div class="display_math">') }
+    it { should resemble contents }
+    it { should resemble '<div class="display_math">' }
   end
 
   shared_examples "an equation environment" do
-    it { should resemble(contents) }
-    it { should resemble('<div class="equation">') }
+    it { should resemble contents }
+    it { should resemble '<div class="equation">' }
   end
 
   describe "raw equation environments" do
@@ -151,7 +151,7 @@ $$ \int_\Omega d\omega = \int_{\partial\Omega} \omega $$
   describe "equation environments surrounded by text" do
     let(:equation) do <<-'EOS'
 \begin{equation}
-\int_\Omega d\omega = \int_{\partial\Omega} \omega
+# \int_\Omega d\omega = \int_{\partial\Omega} \omega
 \end{equation}
        EOS
     end
@@ -159,8 +159,8 @@ $$ \int_\Omega d\omega = \int_{\partial\Omega} \omega $$
     let(:contents) { equation }
 
     it_behaves_like "an equation environment"
-    it { should resemble('<p>lorem') }
-    it { should resemble('<p class="noindent">ipsum') }
+    it { should resemble '<p>lorem' }
+    it { should resemble '<p class="noindent">ipsum' }
   end
 
   describe "align" do
@@ -266,9 +266,9 @@ end
       EOS
       end
 
-      it { should resemble('def foo') }
-      it { should resemble('<div class="code">') }
-      it { should_not resemble('\begin{code}') }    
+      it { should resemble 'def foo' }
+      it { should resemble '<div class="code">' }
+      it { should_not resemble '\begin{code}' }    
     end
 
     describe "with syntax highlighting" do
@@ -282,9 +282,9 @@ end
       EOS
       end
 
-      it { should resemble('<div class="code">') }
-      it { should resemble('<div class="highlight">') }
-      it { should resemble('<pre>') }
+      it { should resemble '<div class="code">' }
+      it { should resemble '<div class="highlight">' }
+      it { should resemble '<pre>' }
     end
   end
 
