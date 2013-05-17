@@ -211,6 +211,50 @@ module Polytexnic
       doc.xpath('//error').map(&:remove)
     end
 
+    # Set the Tralics ids.
+    # These aren't used, but there's little reason to throw them away.
+    def set_ids(doc)
+      doc.xpath('//*[@id]').each do |node|
+        # TODO: make whitelist of non-tralics id's
+        next if node['id'] =~ /footnote/
+
+        node['data-tralics-id'] = node['id']
+        node['id'] = node['data-label'].gsub(/:/, '-') if node['data-label']
+
+        clean_node node, %w{data-label}
+      end
+    end
+
+    def make_headings(doc, node, name)
+      node.xpath('.//head').each do |head_node|
+        head_node.name = name
+        a = doc.create_element 'a'
+        a['href'] = "##{node['id']}"
+        a['class'] = 'heading'
+        a << head_node.children
+        head_node << a
+      end
+    end
+
+    def chapters_and_section(doc)
+      doc.xpath('//div0').each do |node|
+        node.name = 'div'
+        is_chapter = node['type'] == 'chapter'
+        node['class'] = is_chapter ? 'chapter' : 'section'
+        clean_node node, %w{id-text type}
+        make_headings(doc, node, 'h3')
+      end
+    end
+
+    def subsection(doc)
+      doc.xpath('//div1').each do |node|
+        node.name = 'div'
+        node['class'] = 'subsection'
+        clean_node node, %w{id-text}
+        make_headings(doc, node, 'h4')
+      end
+    end
+
     def processed_xml
       doc = Nokogiri::XML(@xml)
       emphasis(doc)
@@ -226,50 +270,9 @@ module Polytexnic
       enumerate(doc)
       item(doc)
       remove_errors(doc)
-
-      # set data-tralics-id
-      doc.xpath('//*[@id]').each do |node|
-        # TODO: make whitelist of non-tralics id's
-        next if node['id'] =~ /footnote/
-
-        node['data-tralics-id'] = node['id']
-        node['id'] = node['data-label'].gsub(/:/, '-') if node['data-label']
-
-        clean_node node, %w{data-label}
-      end
-
-      # chapter/section
-      doc.xpath('//div0').each do |node|
-        node.name = 'div'
-        is_chapter = node['type'] == 'chapter'
-        node['class'] = is_chapter ? 'chapter' : 'section'
-        clean_node node, %w{id-text type}
-
-        node.xpath('.//head').each do |head_node|
-          head_node.name = 'h3'
-          a = doc.create_element 'a'
-          a['href'] = "##{node['id']}"
-          a['class'] = 'heading'
-          a << head_node.children
-          head_node << a
-        end
-      end
-
-      # subsection
-      doc.xpath('//div1').each do |node|
-        node.name = 'div'
-        node['class'] = 'subsection'
-        clean_node node, %w{id-text}
-
-        node.xpath('.//head').each do |head_node|
-          head_node.name = 'h4'
-          a = doc.create_element 'a'
-          a['href'] = "##{node['id']}"
-          a['class'] = 'heading'
-          a << head_node.children
-          head_node << a
-        end
-      end
+      set_ids(doc)
+      chapters_and_section(doc)
+      subsection(doc)
 
 
       # title (preprocessed)
