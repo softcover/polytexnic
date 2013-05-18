@@ -214,13 +214,13 @@ lorem ipsum
       it { should resemble output }
     end
 
-    describe '\ref and \hyperref' do
+    describe '\ref links' do
       let(:polytex) do <<-'EOS'
           \chapter{Foo}
           \label{cha:foo}
-          \hyperref[cha:foo]{Foo~\ref{cha:foo}}
 
-          bar
+          bar Chapter~\ref{cha:foo}
+          Chapter \ref{cha:foo}
         EOS
       end
 
@@ -228,8 +228,8 @@ lorem ipsum
         should resemble <<-'EOS'
 <div id="cha-foo" data-tralics-id="cid1" class="chapter" data-number="1">
   <h3><a href="#cha-foo" class="heading"><span class="number">1</span>Foo</a></h3>
-  <p><a href="#cha-foo" class="hyperref">Foo <span class="ref">1</span></a></p>
-  <p>bar
+  <p>bar <a href="#cha-foo" class="hyperref">Chapter <span class="ref">1</span></a>
+  <a href="#cha-foo" class="hyperref">Chapter <span class="ref">1</span></a>
   </p>
 </div>
         EOS

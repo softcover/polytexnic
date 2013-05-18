@@ -55,7 +55,9 @@ module Polytexnic
       lines = polytex.split("\n")
       cache_literal_environments(lines, output)
       output = output.join("\n")
+      hyperref(output)
       cache_unicode(output)
+
 
       # handle title fields
       %w{title subtitle author date}.each do |field|
@@ -153,6 +155,23 @@ module Polytexnic
         else
           output << line
         end
+      end
+    end
+
+    # Converts references to hyperrefs.
+    # We want to convert 
+    #   Foo~\ref{cha:foo}
+    # to
+    #   \hyperref[cha:foo]{Foo~\ref{cha:foo}
+    # which is then handled by Tralics and converted to a link
+    # by the postprocessor.
+    # For completeness, we handle the case where the author neglects to
+    # use the nonbreak space ~.
+    def hyperref(string)
+      linked_item = "(Chapter|Section|Table|Box|Figure|Listing)"
+      ref = /#{linked_item}(~| )\\ref{(.*?)}/
+      string.gsub!(ref) do
+        "\\hyperref[#{$3}]{#{$1}#{$2}\\ref{#{$3}}}"
       end
     end
 
