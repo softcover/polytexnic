@@ -55,7 +55,9 @@ module Polytexnic
       lines = polytex.split("\n")
       cache_literal_environments(lines, output)
       output = output.join("\n")
+      hyperref(output)
       cache_unicode(output)
+
 
       # handle title fields
       %w{title subtitle author date}.each do |field|
@@ -111,8 +113,8 @@ module Polytexnic
     #     \end{verbatim}
     #   \end{verbatim}
     #   lorem ipsum
-    # gets includes the internal literal text without accidentally grabbing the
-    # 'lorem ipsum' at the end.
+    # gets includes the internal literal text without stopping after the first
+    # \end{verbatim}.
     def cache_literal_environments(lines, output)
       language = nil
       while (line = lines.shift)
@@ -156,10 +158,27 @@ module Polytexnic
       end
     end
 
+    # Converts references to hyperrefs.
+    # We want to convert 
+    #   Foo~\ref{cha:foo}
+    # to
+    #   \hyperref[cha:foo]{Foo~\ref{cha:foo}
+    # which is then handled by Tralics and converted to a link
+    # by the postprocessor.
+    # For completeness, we handle the case where the author neglects to
+    # use the nonbreak space ~.
+    def hyperref(string)
+      linked_item = "(Chapter|Section|Table|Box|Figure|Listing)"
+      ref = /#{linked_item}(~| )\\ref{(.*?)}/
+      string.gsub!(ref) do
+        "\\hyperref[#{$3}]{#{$1}#{$2}\\ref{#{$3}}}"
+      end
+    end
+
     # Handles non-ASCII Unicode characters.
     # The Tralics part of the pipeline doesn't properly handle Unicode,
     # which is odd since Tralics is a French project. Nevertheless,
-    # we can hack around the restriction by treading non-ASCII Unicode
+    # we can hack around the restriction by treating non-ASCII Unicode
     # characters as literal elements and simply pass them through the
     # pipeline intact.
     def cache_unicode(string)
@@ -195,13 +214,11 @@ def math_environments
     ]
 end
 
-def math_environment_regex
-  math_environments.map { |s| Regexp.escape(s) }.join('|')
-end
-
 class String
 
+  # Returns true if self matches \begin{...} where ... is a literal environment.
   def begin_literal?
+    literal = "(?:verbatim|Verbatim|code|#{math_environment_regex})"
     match(/^\s*\\begin{#{literal}}\s*$/)
   end
 
@@ -213,7 +230,6 @@ class String
   # '\begin{verbatim}' => 'verbatim'
   # '\begin{equation}' => 'equation'
   def literal_type
-    # raise scan(/\\begin{(.*?)}/).flatten.first.inspect
     scan(/\\begin{(.*?)}/).flatten.first
   end
 
@@ -223,8 +239,7 @@ class String
 
   private
 
-    # Returns a string matching the supported literal environments.
-    def literal
-      "(?:verbatim|Verbatim|#{math_environment_regex}|code)"
+    def math_environment_regex
+      math_environments.map { |s| Regexp.escape(s) }.join('|')
     end
 end
