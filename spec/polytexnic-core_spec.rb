@@ -176,7 +176,7 @@ lorem ipsum
       end
       let(:output) do <<-'EOS'
         <div id="cha-foo" data-tralics-id="cid1" class="chapter" data-number="1">
-          <h3><a href="#cha-foo" class="heading"><span class="number">1</span>Foo</a></h3>
+          <h3><a href="#cha-foo" class="heading"><span class="number">1 </span>Foo</a></h3>
         </div>
         EOS
       end
@@ -191,7 +191,7 @@ lorem ipsum
       end
       let(:output) do <<-'EOS'
         <div id="sec-foo" data-tralics-id="cid1" class="section" data-number="1.1">
-          <h3><a href="#sec-foo" class="heading"><span class="number">1.1</span>Foo</a></h3>
+          <h3><a href="#sec-foo" class="heading"><span class="number">1.1 </span>Foo</a></h3>
         </div>
         EOS
       end
@@ -210,9 +210,9 @@ lorem ipsum
 
       let(:output) do <<-'EOS'
         <div id="sec-foo" data-tralics-id="cid1" class="section" data-number="1.1">
-          <h3><a href="#sec-foo" class="heading"><span class="number">1.1</span>Foo</a></h3>
+          <h3><a href="#sec-foo" class="heading"><span class="number">1.1 </span>Foo</a></h3>
           <div id="sec-bar" data-tralics-id="uid1" class="subsection" data-number="1.1.1">
-            <h4><a href="#sec-bar" class="heading">Bar</a></h4>
+            <h4><a href="#sec-bar" class="heading"><span class="number">1.1.1 </span>Bar</a></h4>
           </div>
         </div>
         EOS
@@ -233,7 +233,7 @@ lorem ipsum
       it do
         should resemble <<-'EOS'
 <div id="cha-foo" data-tralics-id="cid1" class="chapter" data-number="1">
-  <h3><a href="#cha-foo" class="heading"><span class="number">1</span>Foo</a></h3>
+  <h3><a href="#cha-foo" class="heading"><span class="number">1 </span>Foo</a></h3>
   <p>bar <a href="#cha-foo" class="hyperref">Chapter <span class="ref">1</span></a>
   <a href="#cha-foo" class="hyperref">Chapter <span class="ref">1</span></a>
   </p>
