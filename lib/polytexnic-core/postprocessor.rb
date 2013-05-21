@@ -248,15 +248,17 @@ module Polytexnic
         end
       end
 
+
+      # Given a section node, process the <head> tag.
+      # Supports chapter, section, and subsection.
       def make_headings(doc, node, name)
-        node.xpath('.//head').each do |head_node|
-          head_node.name = name
-          a = doc.create_element 'a'
-          a['href'] = "##{node['id']}"
-          a['class'] = 'heading'
-          a << head_node.children
-          head_node << a
-        end
+        head_node = node.children.first
+        head_node.name = name
+        a = doc.create_element 'a'
+        a['href'] = "##{node['id']}"
+        a['class'] = 'heading'
+        a << head_node.children
+        head_node << a
       end
 
       def chapters_and_section(doc)
