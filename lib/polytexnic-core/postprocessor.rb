@@ -333,9 +333,9 @@ module Polytexnic
             end
 
           # add number span
-          if head = node.css('h2 a, h3 a').first
+          if head = node.css('h2 a, h3 a, h4 a').first
             el = doc.create_element 'span'
-            el.content = node['data-number']
+            el.content = node['data-number'] + ' '
             el['class'] = 'number'
             head.children.first.add_previous_sibling el
           end
