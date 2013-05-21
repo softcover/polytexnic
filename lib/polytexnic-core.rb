@@ -23,50 +23,16 @@ module Polytexnic
       end
 
       def to_html
-        preprocess
+        preprocess(:html)
         postprocess
         @html
       end
 
       def to_latex
-        highlighted(@polytex)
+        preprocess(:latex)
       end
 
-      # Converts regular references to hyperrefs.
-      def hyperrefs
-        
-      end
 
-      # Replaces code listings with highlighted versions.
-      def highlighted(latex)
-        lines = latex.split("\n")
-        output = []
-        while (line = lines.shift) do
-          if line =~ /%=\s+lang:(\w+)/
-            language = $1
-            count = 0
-            code = []
-            while (line = lines.shift) do
-              if line =~ /^\s*\\begin{code}\s*$/
-                count += 1
-              elsif line =~ /^\s*\\end{code}\s*/
-                count -= 1
-                if count == 0
-                  output << Pygments.highlight(code.join("\n"),
-                                               lexer: language,
-                                               formatter: 'latex')
-                  break
-                end
-              else
-                code << line
-              end
-            end
-          else
-            output << line
-          end
-        end
-        output.join("\n")
-      end
     end
   end
 end

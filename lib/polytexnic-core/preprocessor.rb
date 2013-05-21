@@ -5,8 +5,16 @@ module Polytexnic
   module Preprocessor
     include Literal
 
-    def preprocess
-      to_xml
+    def preprocess(format)
+      if format == :html
+        to_xml
+      elsif format == :latex
+        to_latex
+      end
+    end
+
+    def to_latex
+      highlight(@polytex)
     end
 
     def to_xml
@@ -97,4 +105,37 @@ module Polytexnic
       raw_xml.gsub('&#133;', '…')
     end
   end
+
+  private
+
+      # Replaces code listings with highlighted versions.
+      def highlight(latex)
+        lines = latex.split("\n")
+        output = []
+        while (line = lines.shift) do
+          if line =~ /%=\s+lang:(\w+)/
+            language = $1
+            count = 0
+            code = []
+            while (line = lines.shift) do
+              if line =~ /^\s*\\begin{code}\s*$/
+                count += 1
+              elsif line =~ /^\s*\\end{code}\s*/
+                count -= 1
+                if count == 0
+                  output << Pygments.highlight(code.join("\n"),
+                                               lexer: language,
+                                               formatter: 'latex')
+                  break
+                end
+              else
+                code << line
+              end
+            end
+          else
+            output << line
+          end
+        end
+        output.join("\n")
+      end  
 end
