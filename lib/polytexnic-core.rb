@@ -32,6 +32,11 @@ module Polytexnic
         highlighted(@polytex)
       end
 
+      # Converts regular references to hyperrefs.
+      def hyperrefs
+        
+      end
+
       # Replaces code listings with highlighted versions.
       def highlighted(latex)
         lines = latex.split("\n")

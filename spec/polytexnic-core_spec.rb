@@ -30,6 +30,10 @@ end
       it { should resemble '\end{Verbatim}' }
       it { should_not resemble 'def foo' }
       it { should resemble '\noindent lorem ipsum' }
+
+      describe "hyperref links" do
+        it { should pending }
+      end
     end
 
     describe "Unicode" do
