@@ -200,14 +200,20 @@ lorem ipsum
 
     describe '\subsection' do
       let(:polytex) do <<-'EOS'
-          \subsection{Foo}
-          \label{subsec:foo}
+          \section{Foo}
+          \label{sec:foo}
+
+          \subsection{Bar}
+          \label{sec:bar}
         EOS
       end
 
       let(:output) do <<-'EOS'
-        <div id="subsec-foo" data-tralics-id="uid1" class="subsection" data-number="1.1.1">
-          <h4><a href="#subsec-foo" class="heading">Foo</a></h4>
+        <div id="sec-foo" data-tralics-id="cid1" class="section" data-number="1.1">
+          <h3><a href="#sec-foo" class="heading"><span class="number">1.1</span>Foo</a></h3>
+          <div id="sec-bar" data-tralics-id="uid1" class="subsection" data-number="1.1.1">
+            <h4><a href="#sec-bar" class="heading">Bar</a></h4>
+          </div>
         </div>
         EOS
       end
