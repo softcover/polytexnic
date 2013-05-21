@@ -324,11 +324,11 @@ module Polytexnic
               "#{chapter_number += 1}"
             when 'section'
               subsection_number = 0
-              cha_n = chapter_number == 0 ? 1 : chapter_number
+              cha_n = chapter_number.zero? ? 1 : chapter_number
               "#{cha_n}.#{section_number += 1}"
             when 'subsection'
-              cha_n = chapter_number == 0 ? 1 : chapter_number
-              sec_n = section_number == 0 ? 1 : section_number
+              cha_n = chapter_number.zero? ? 1 : chapter_number
+              sec_n = section_number.zero? ? 1 : section_number
               "#{cha_n}.#{sec_n}.#{subsection_number += 1}"
             end
 
