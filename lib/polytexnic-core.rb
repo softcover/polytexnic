@@ -23,44 +23,15 @@ module Polytexnic
       end
 
       def to_html
-        preprocess
-        postprocess
+        preprocess(:html)
+        postprocess(:html)
         @html
       end
 
       def to_latex
-        highlighted(@polytex)
-      end
-
-      # Replaces code listings with highlighted versions.
-      def highlighted(latex)
-        lines = latex.split("\n")
-        output = []
-        while (line = lines.shift) do
-          if line =~ /%=\s+lang:(\w+)/
-            language = $1
-            count = 0
-            code = []
-            while (line = lines.shift) do
-              if line =~ /^\s*\\begin{code}\s*$/
-                count += 1
-              elsif line =~ /^\s*\\end{code}\s*/
-                count -= 1
-                if count == 0
-                  output << Pygments.highlight(code.join("\n"),
-                                               lexer: language,
-                                               formatter: 'latex')
-                  break
-                end
-              else
-                code << line
-              end
-            end
-          else
-            output << line
-          end
-        end
-        output.join("\n")
+        preprocess(:latex)
+        postprocess(:latex)
+        @latex
       end
     end
   end
