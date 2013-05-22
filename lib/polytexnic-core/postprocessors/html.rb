@@ -92,8 +92,8 @@ module Polytexnic
             node.name = 'div'
             node['class'] = 'equation'
             # Mimic default Tralics behavior of giving paragraph tags after
-            # math a 'noindent' class. This allows the HTML to be styled with CSS
-            # in a way that replicates the default behavior of LaTeX, where
+            # math a 'noindent' class. This allows the HTML to be styled with 
+            # CSS in a way that replicates the default behavior of LaTeX, where
             # math can be included in a paragraph. In such a case, paragraphs
             # are indented by default, but text after math environments isn't
             # indented. In HTML, including a math div inside a p tag is illegal,
@@ -295,7 +295,8 @@ module Polytexnic
         # so that Tralics doesn't process them.
         def restore_literal(doc)
           doc.xpath('//literal').each do |node|
-            node.parent.content = escape_backslashes(literal_cache[node.content])
+            raw_content = literal_cache[node.content]
+            node.parent.content = escape_backslashes(raw_content)
             node.remove
           end
           # Restore non-ASCII unicode

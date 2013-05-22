@@ -15,8 +15,10 @@ def escape_backslashes(string)
 end
 
 # Returns a Tralics pseudo-LaTeX XML element.
-def xmlelement(name)
-  output = "\\begin{xmlelement}{#{name}}"
+# The use of the 'latex' flag is a hack to be able to use xmlelement
+# even when generating LaTeX, where we simply want to yield the block.
+def xmlelement(name, latex = false)
+  output = (latex ? "" : "\\begin{xmlelement}{#{name}}")
   output << yield if block_given?
-  output << "\\end{xmlelement}"
+  output << (latex ? "" : "\\end{xmlelement}")
 end

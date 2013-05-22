@@ -41,7 +41,7 @@ module Polytexnic
         defs = '\def\hyperref[#1]#2{\xmlelt{a}{\XMLaddatt{target}{#1}#2}}'
         polytex = "#{defs}\n#{polytex}"
 
-        output = make_caches(polytex)
+        output = hyperref(cache_unicode(make_caches(polytex)))
 
         # handle title fields
         %w{title subtitle author date}.each do |field|
@@ -65,14 +65,6 @@ module Polytexnic
         end
 
         output
-      end
-
-      def make_caches(polytex)
-        output = []
-        lines = polytex.split("\n")
-        cache_literal_environments(lines, output)
-        output = output.join("\n")
-        cache_unicode(hyperref(output))
       end
 
       def clean_xml(raw_xml)

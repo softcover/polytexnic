@@ -30,6 +30,8 @@ module Polytexnic
 
       def to_latex
         preprocess(:latex)
+        postprocess(:latex)
+        @latex
       end
     end
   end

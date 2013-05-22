@@ -1,6 +1,14 @@
 module Polytexnic
   module Literal
 
+    # Makes the caches for literal environments (including non-ASCII Unicode).
+    def make_caches(polytex, format = :html)
+      output = []
+      lines = polytex.split("\n")
+      cache_literal_environments(lines, output, format)
+      output.join("\n")
+    end
+
     # Handles environments that should be passed through the pipeline intact.
     # The includes verbatim environments ('verbatim', 'Verbatim') and all the
     # equation environments handled by MathJax ('equation', 'align', etc.).
@@ -14,24 +22,29 @@ module Polytexnic
     #   lorem ipsum
     # gets includes the internal literal text without stopping after the first
     # \end{verbatim}.
-    def cache_literal_environments(lines, output)
+    def cache_literal_environments(lines, output, format)
+      latex = format == :latex
       language = nil
       while (line = lines.shift)
         if line =~ /%=\s+lang:(\w+)/
-          language = $1
+          if latex
+            output << line
+          else
+            language = $1
+          end
         elsif line.begin_literal?
           literal_type = line.literal_type
-          output << xmlelement(element(literal_type)) do
+          output << xmlelement(element(literal_type), latex) do
             count = 1
             text = []
-            text << line if line.math_environment?
+            text << line if line.math_environment? || latex
             while (line = lines.shift)
               if line.begin_literal?
                 count += 1
               elsif line.end_literal?(literal_type)
                 count -= 1
                 if count == 0
-                  text << line if line.math_environment?
+                  text << line if line.math_environment? || latex
                   break
                 end
               end
@@ -40,17 +53,22 @@ module Polytexnic
             raise "Missing \\end{#{line.literal_type}}" if count != 0
             content = text.join("\n")
             key = digest(content)
-            if language.nil?
+            if latex
               literal_cache[key] = content
-              tag = 'literal'
+              key
             else
-              code_cache[key] = [content, language]
-              tag = 'code'
+              if language.nil?
+                literal_cache[key] = content
+                tag = 'literal'
+              else
+                code_cache[key] = [content, language]
+                tag = 'code'
+              end
+              xmlelement(tag) { key }
             end
-            xmlelement(tag) { key }
           end
           language = nil
-          output << '' # To force the next element to be a paragraph
+          (output << '') unless latex # Force the next element to be a paragraph
         else
           output << line
         end
@@ -62,8 +80,9 @@ module Polytexnic
     #   Foo~\ref{cha:foo}
     # to
     #   \hyperref[cha:foo]{Foo~\ref{cha:foo}
-    # which is then handled by Tralics and converted to a link
-    # by the postprocessor.
+    # which is then handled by LaTeX's hyperref package
+    # or by Tralics (where it converted to a link
+    # by the postprocessor).
     # For completeness, we handle the case where the author neglects to
     # use the nonbreak space ~.
     def hyperref(string)

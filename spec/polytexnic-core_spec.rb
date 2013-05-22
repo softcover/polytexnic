@@ -31,21 +31,49 @@ end
       it { should_not resemble 'def foo' }
       it { should resemble '\noindent lorem ipsum' }
 
-      describe "hyperref links" do
-        it { should pending }
-      end
     end
 
-    describe "Unicode" do
-      let(:polytex) { 'Алексей Разуваев' }
-      let(:output) { polytex }
-      it { should include(output) }
+    describe "verbatim environments" do
+      let(:polytex) do <<-'EOS'
+\begin{verbatim}
+def foo
+  "bar"
+end
+\end{verbatim}
+
+\begin{Verbatim}
+def foo
+  "bar"
+end
+\end{Verbatim}
+      EOS
+      end
+      it { should resemble polytex }      
     end
+
+    describe "hyperref links" do
+      let(:polytex) do <<-'EOS'
+Chapter~\ref{cha:foo}
+      EOS
+      end
+      let(:output) { '\hyperref[cha:foo]{Chapter~\ref{cha:foo}' }
+      it { should resemble output }
+    end
+
   end
 
   describe '#to_html' do
     let(:processed_text) { Polytexnic::Core::Pipeline.new(polytex).to_html }
     subject { processed_text }
+
+    describe "Unicode" do
+      let(:first) { 'Алексей' }
+      let(:last) { 'Разуваев' }
+      let(:polytex) { "#{first} #{last}" }
+      let(:output) { polytex }
+      it { should include(first) }
+      it { should include(last) }
+    end
 
     describe "comments" do
       let(:polytex) { "% A LaTeX comment" }
