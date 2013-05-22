@@ -1,6 +1,6 @@
 # encoding=utf-8
 require 'polytexnic-core/literal'
-require 'polytexnic-core/html'
+require 'polytexnic-core/preprocessors/html'
 
 module Polytexnic
   module Preprocessor

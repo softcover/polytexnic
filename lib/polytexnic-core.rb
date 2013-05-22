@@ -24,7 +24,7 @@ module Polytexnic
 
       def to_html
         preprocess(:html)
-        postprocess
+        postprocess(:html)
         @html
       end
 
