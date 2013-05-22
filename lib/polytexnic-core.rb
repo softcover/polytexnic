@@ -31,8 +31,6 @@ module Polytexnic
       def to_latex
         preprocess(:latex)
       end
-
-
     end
   end
 end
