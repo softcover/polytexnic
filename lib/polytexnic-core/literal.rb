@@ -57,7 +57,6 @@ module Polytexnic
       end
     end
 
-
     # Converts references to hyperrefs.
     # We want to convert 
     #   Foo~\ref{cha:foo}

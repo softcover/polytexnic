@@ -1,9 +1,10 @@
 module Polytexnic
   module Postprocessor
     module Html
+
       # Converts Tralics XML output to HTML. 
-      def xml_to_html
-        doc = Nokogiri::XML(@xml)
+      def xml_to_html(xml)
+        doc = Nokogiri::XML(xml)
         emphasis(doc)
         typewriter(doc)
         verbatim(doc)
@@ -23,7 +24,7 @@ module Polytexnic
         title(doc)
         restore_literal(doc)
         make_cross_references(doc)
-        @html = convert_to_html(doc) 
+        convert_to_html(doc) 
       end
 
       private

@@ -75,12 +75,6 @@ module Polytexnic
         cache_unicode(hyperref(output))
       end
 
-      def xmlelement(name)
-        output = "\\begin{xmlelement}{#{name}}"
-        output << yield if block_given?
-        output << "\\end{xmlelement}"
-      end
-
       def clean_xml(raw_xml)
         nokogiri_ellipsis_workaround(raw_xml)
       end

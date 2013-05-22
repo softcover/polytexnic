@@ -13,3 +13,10 @@ end
 def escape_backslashes(string)
   string.gsub(/\\(\s+|$)/) { '\\\\' + $1.to_s }
 end
+
+# Returns a Tralics pseudo-LaTeX XML element.
+def xmlelement(name)
+  output = "\\begin{xmlelement}{#{name}}"
+  output << yield if block_given?
+  output << "\\end{xmlelement}"
+end

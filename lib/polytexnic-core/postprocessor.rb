@@ -8,7 +8,7 @@ module Polytexnic
 
     def postprocess(format)
       if format == :html
-        xml_to_html
+        @html = xml_to_html(@xml)
       end
     end
   end
