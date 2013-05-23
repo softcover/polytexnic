@@ -77,9 +77,9 @@ module Polytexnic
 
     # Converts references to hyperrefs.
     # We want to convert 
-    #   Foo~\ref{cha:foo}
+    #   Chapter~\ref{cha:foo}
     # to
-    #   \hyperref[cha:foo]{Foo~\ref{cha:foo}
+    #   \hyperref[cha:foo]{Chapter~\ref{cha:foo}
     # which is then handled by LaTeX's hyperref package
     # or by Tralics (where it converted to a link
     # by the postprocessor).
