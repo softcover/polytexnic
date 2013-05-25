@@ -150,6 +150,42 @@ lorem ipsum
       it { should resemble "<li>foo\n</li>"}
     end
 
+    describe "itemized list" do
+      let(:polytex) do <<-'EOS'
+\begin{itemize}
+  \item Foo
+  \item Bar
+\end{itemize}
+        EOS
+      end
+      it do
+        should resemble <<-'EOS'
+<ul>
+  <li>Foo</li>
+  <li>Bar</li>
+</ul>          
+        EOS
+      end
+    end
+
+    describe "enumerated list" do
+      let(:polytex) do <<-'EOS'
+\begin{enumerate}
+  \item Foo
+  \item Bar
+\end{enumerate}
+        EOS
+      end
+      it do
+        should resemble <<-'EOS'
+<ol>
+  <li>Foo</li>
+  <li>Bar</li>
+</ol>          
+        EOS
+      end
+    end
+
     describe "footnotes" do
       let(:polytex) { '\footnote{Foo}' }
       it do
