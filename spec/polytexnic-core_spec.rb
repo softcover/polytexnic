@@ -288,7 +288,7 @@ lorem ipsum
       it { should resemble output }
     end
 
-    describe '\ref links' do
+    describe 'cross-references with \ref' do
       let(:polytex) do <<-'EOS'
           \chapter{Foo}
           \label{cha:foo}
@@ -310,6 +310,18 @@ lorem ipsum
       end
     end
 
+    describe 'missing cross-references' do
+      let(:polytex) do <<-'EOS'
+          \chapter{Foo}
+          \label{cha:foo}
+
+          Chapter~\ref{cha:bar}
+        EOS
+      end
+      
+      it { should_not raise_error }
+    end
+
     describe "(La)TeX logos" do
 
       describe "TeX logo" do
@@ -324,6 +336,14 @@ lorem ipsum
         let(:polytex) { '\LaTeX' }
         let(:output) do
 %(<span class="texhtml" style="font-family: 'CMU Serif', cmr10, LMRoman10-Regular, 'Times New Roman', 'Nimbus Roman No9 L', Times, serif;">L<span style="text-transform: uppercase; font-size: 70%; margin-left: -0.36em; vertical-align: 0.3em; line-height: 0; margin-right: -0.15em;">a</span>T<span style="text-transform: uppercase; margin-left: -0.1667em; vertical-align: -0.5ex; line-height: 0; margin-right: -0.125em;">e</span>X</span>)
+        end
+        it { should include(output) }
+      end
+
+      describe "PolyTeX logo" do
+        let(:polytex) { '\PolyTeX' }
+        let(:output) do
+%(<span class="texhtml" style="font-family: 'CMU Serif', cmr10, LMRoman10-Regular, 'Times New Roman', 'Nimbus Roman No9 L', Times, serif;">PolyT<span style="text-transform: uppercase; vertical-align: -0.5ex; margin-left: -0.1667em; margin-right: -0.125em;">e</span>X</span>)
         end
         it { should include(output) }
       end
