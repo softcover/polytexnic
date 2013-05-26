@@ -17,10 +17,14 @@ module Polytexnic
 
       attr_accessor :literal_cache, :code_cache, :polytex, :xml, :html
 
-      def initialize(polytex)
+      def initialize(polytex, fragment = true)
         @literal_cache = {}
         @code_cache = {}
-        @polytex = add_commands(polytex)
+        if fragment
+          @polytex = add_commands(polytex)
+        else
+          @polytex = polytex
+        end
       end
 
       def to_html
@@ -37,13 +41,7 @@ module Polytexnic
 
       # Adds some default commands.
       def add_commands(polytex)
-        if File.exist?('polytexnic_commands.sty')
-          # This is the case when used with the full PolyTeXnic system,
-          # where we don't want to add the commands to each LaTeX fragment.
-          polytex
-        else
-          new_commands + polytex
-        end
+        new_commands + polytex
       end
     end
   end
