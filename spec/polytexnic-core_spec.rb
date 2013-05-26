@@ -204,8 +204,8 @@ lorem ipsum
 <ul>
   <li>Foo</li>
   <li>Bar</li>
-</ul>
-<p>lorem ipsum</p>    
+</ul><p>lorem ipsum
+</p>
         EOS
       end
     end
