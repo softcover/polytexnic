@@ -17,17 +17,14 @@ module Polytexnic
 
       attr_accessor :literal_cache, :code_cache, :polytex, :xml, :html
 
-      def initialize(polytex, options = { fragment: true })
+      def initialize(polytex)
         @literal_cache = {}
         @code_cache = {}
-        if options[:fragment]
-          @polytex = add_commands(polytex)
-        else
-          @polytex = polytex
-        end
+        @polytex = polytex
       end
 
       def to_html
+        @polytex = add_commands(polytex)
         preprocess(:html)
         postprocess(:html)
         @html

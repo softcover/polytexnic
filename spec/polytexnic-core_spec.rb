@@ -407,17 +407,6 @@ lorem ipsum
         end
         it { should include(output) }
       end
-
-      describe "for a non-fragment" do
-        let(:polytex) { '\PolyTeXnic' }
-        let(:output) do
-%(Poly<span class="texhtml" style="font-family: 'CMU Serif', cmr10, LMRoman10-Regular, 'Times New Roman', 'Nimbus Roman No9 L', Times, serif;">T<span style="text-transform: uppercase; vertical-align: -0.5ex; margin-left: -0.1667em; margin-right: -0.125em;">e</span>X</span>nic)
-        end
-        let(:processed_text) do
-          Polytexnic::Core::Pipeline.new(polytex, fragment: false).to_html
-        end
-        it { should_not include(output) }
-      end
     end
 
     describe "unknown command" do
