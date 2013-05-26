@@ -13,6 +13,7 @@ module Polytexnic
     class Pipeline
       include Polytexnic::Preprocessor
       include Polytexnic::Postprocessor
+      include Polytexnic::Core::Utils
 
       attr_accessor :literal_cache, :code_cache, :polytex, :xml, :html
 
@@ -34,21 +35,15 @@ module Polytexnic
         @latex
       end
 
-
       # Adds some default commands.
-      def add_commands(polytex) 
-        new_commands + polytex
-      end
-
-      # Returns some new commands.
-      # For example, we arrange for '\PolyTeXnic' to produce
-      # the PolyTeXnic logo.
-      def new_commands
-        commands = <<-'EOS'
-\newcommand{\PolyTeX}{Poly\TeX}
-\newcommand{\PolyTeXnic}{Poly{\TeX}nic}
-        EOS
-        commands + "\n"
+      def add_commands(polytex)
+        if File.exist?('polytexnic_commands.sty')
+          # This is the case when used with the full PolyTeXnic system,
+          # where we don't want to add the commands to each LaTeX fragment.
+          polytex
+        else
+          new_commands + polytex
+        end
       end
     end
   end
