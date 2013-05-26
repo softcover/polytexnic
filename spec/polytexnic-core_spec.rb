@@ -168,6 +168,48 @@ lorem ipsum
       end
     end
 
+    describe "itemized list preceded by text" do
+      let(:polytex) do <<-'EOS'
+lorem ipsum
+
+\begin{itemize}
+  \item Foo
+  \item Bar
+\end{itemize}
+        EOS
+      end
+      it do
+        should resemble <<-'EOS'
+<p>lorem ipsum</p>    
+<ul>
+  <li>Foo</li>
+  <li>Bar</li>
+</ul>
+        EOS
+      end
+    end
+
+    describe "itemized list followed by text" do
+      let(:polytex) do <<-'EOS'
+\begin{itemize}
+  \item Foo
+  \item Bar
+\end{itemize}
+
+lorem ipsum
+        EOS
+      end
+      it do
+        should resemble <<-'EOS'
+<ul>
+  <li>Foo</li>
+  <li>Bar</li>
+</ul>
+<p>lorem ipsum</p>    
+        EOS
+      end
+    end
+
     describe "enumerated list" do
       let(:polytex) do <<-'EOS'
 \begin{enumerate}
@@ -353,6 +395,14 @@ lorem ipsum
         let(:polytex) { '\PolyTeX' }
         let(:output) do
 %(<span class="texhtml" style="font-family: 'CMU Serif', cmr10, LMRoman10-Regular, 'Times New Roman', 'Nimbus Roman No9 L', Times, serif;">PolyT<span style="text-transform: uppercase; vertical-align: -0.5ex; margin-left: -0.1667em; margin-right: -0.125em;">e</span>X</span>)
+        end
+        it { pending; should include(output) }
+      end
+
+      describe "PolyTeXnic logo" do
+        let(:polytex) { '\PolyTeXnic' }
+        let(:output) do
+%(<span class="texhtml" style="font-family: 'CMU Serif', cmr10, LMRoman10-Regular, 'Times New Roman', 'Nimbus Roman No9 L', Times, serif;">PolyT<span style="text-transform: uppercase; vertical-align: -0.5ex; margin-left: -0.1667em; margin-right: -0.125em;">e</span>Xnic</span>)
         end
         it { pending; should include(output) }
       end
