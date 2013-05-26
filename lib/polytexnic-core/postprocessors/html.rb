@@ -217,9 +217,7 @@ module Polytexnic
           doc.xpath('//item').each do |node|
             clean_node node, %w{id-text id label}
             node.name = 'li'
-            node.xpath('p').each do |pnode|
-              pnode.parent.inner_html = pnode.inner_html
-            end
+            node.inner_html = node.at_css('p').inner_html
           end
         end
 
