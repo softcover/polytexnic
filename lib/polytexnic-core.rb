@@ -19,7 +19,7 @@ module Polytexnic
       def initialize(polytex)
         @literal_cache = {}
         @code_cache = {}
-        @polytex = polytex
+        @polytex = add_commands(polytex)
       end
 
       def to_html
@@ -32,6 +32,23 @@ module Polytexnic
         preprocess(:latex)
         postprocess(:latex)
         @latex
+      end
+
+
+      # Adds some default commands.
+      def add_commands(polytex) 
+        new_commands + polytex
+      end
+
+      # Returns some new commands.
+      # For example, we arrange for '\PolyTeXnic' to produce
+      # the PolyTeXnic logo.
+      def new_commands
+        commands = <<-'EOS'
+\newcommand{\PolyTeX}{Poly\TeX}
+\newcommand{\PolyTeXnic}{Poly{\TeX}nic}
+        EOS
+        commands + "\n"
       end
     end
   end
