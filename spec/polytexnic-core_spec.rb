@@ -3,13 +3,14 @@ require 'spec_helper'
 
 describe Polytexnic::Core::Pipeline do
 
+
   describe '#to_latex' do
     let(:processed_text) { Polytexnic::Core::Pipeline.new(polytex).to_latex }
     subject { processed_text }
 
     describe "for vanilla LaTeX" do
       let(:polytex) { '\emph{foo}' }
-      it { should eql(polytex) }
+      it { should include(polytex) }
     end
 
     describe "with source code highlighting" do
@@ -394,17 +395,17 @@ lorem ipsum
       describe "PolyTeX logo" do
         let(:polytex) { '\PolyTeX' }
         let(:output) do
-%(<span class="texhtml" style="font-family: 'CMU Serif', cmr10, LMRoman10-Regular, 'Times New Roman', 'Nimbus Roman No9 L', Times, serif;">PolyT<span style="text-transform: uppercase; vertical-align: -0.5ex; margin-left: -0.1667em; margin-right: -0.125em;">e</span>X</span>)
+%(Poly<span class="texhtml" style="font-family: 'CMU Serif', cmr10, LMRoman10-Regular, 'Times New Roman', 'Nimbus Roman No9 L', Times, serif;">T<span style="text-transform: uppercase; vertical-align: -0.5ex; margin-left: -0.1667em; margin-right: -0.125em;">e</span>X</span>)
         end
-        it { pending; should include(output) }
+        it { should include(output) }
       end
 
       describe "PolyTeXnic logo" do
         let(:polytex) { '\PolyTeXnic' }
         let(:output) do
-%(<span class="texhtml" style="font-family: 'CMU Serif', cmr10, LMRoman10-Regular, 'Times New Roman', 'Nimbus Roman No9 L', Times, serif;">PolyT<span style="text-transform: uppercase; vertical-align: -0.5ex; margin-left: -0.1667em; margin-right: -0.125em;">e</span>Xnic</span>)
+%(Poly<span class="texhtml" style="font-family: 'CMU Serif', cmr10, LMRoman10-Regular, 'Times New Roman', 'Nimbus Roman No9 L', Times, serif;">T<span style="text-transform: uppercase; vertical-align: -0.5ex; margin-left: -0.1667em; margin-right: -0.125em;">e</span>X</span>nic)
         end
-        it { pending; should include(output) }
+        it { should include(output) }
       end
     end
 
