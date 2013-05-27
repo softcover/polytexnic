@@ -150,6 +150,84 @@ lorem ipsum
       it { should resemble "<li>foo\n</li>"}
     end
 
+    describe "itemized list" do
+      let(:polytex) do <<-'EOS'
+\begin{itemize}
+  \item Foo
+  \item Bar
+\end{itemize}
+        EOS
+      end
+      it do
+        should resemble <<-'EOS'
+<ul>
+  <li>Foo</li>
+  <li>Bar</li>
+</ul>          
+        EOS
+      end
+    end
+
+    describe "itemized list preceded by text" do
+      let(:polytex) do <<-'EOS'
+lorem ipsum
+
+\begin{itemize}
+  \item Foo
+  \item Bar
+\end{itemize}
+        EOS
+      end
+      it do
+        should resemble <<-'EOS'
+<p>lorem ipsum</p>    
+<ul>
+  <li>Foo</li>
+  <li>Bar</li>
+</ul>
+        EOS
+      end
+    end
+
+    describe "itemized list followed by text" do
+      let(:polytex) do <<-'EOS'
+\begin{itemize}
+  \item Foo
+  \item Bar
+\end{itemize}
+
+lorem ipsum
+        EOS
+      end
+      it do
+        should resemble <<-'EOS'
+<ul>
+  <li>Foo</li>
+  <li>Bar</li>
+</ul><p>lorem ipsum
+</p>
+        EOS
+      end
+    end
+
+    describe "enumerated list" do
+      let(:polytex) do <<-'EOS'
+\begin{enumerate}
+  \item Foo
+  \item Bar
+\end{enumerate}
+        EOS
+      end
+      it do
+        should resemble <<-'EOS'
+<ol>
+  <li>Foo</li>
+  <li>Bar</li>
+</ol>          
+        EOS
+      end
+    end
+
     describe "footnotes" do
       let(:polytex) { '\footnote{Foo}' }
       it do
@@ -252,7 +330,7 @@ lorem ipsum
       it { should resemble output }
     end
 
-    describe '\ref links' do
+    describe 'cross-references with \ref' do
       let(:polytex) do <<-'EOS'
           \chapter{Foo}
           \label{cha:foo}
@@ -274,6 +352,27 @@ lorem ipsum
       end
     end
 
+    describe 'missing cross-references' do
+      let(:polytex) do <<-'EOS'
+          \chapter{Foo}
+          \label{cha:foo}
+
+          Chapter~\ref{cha:bar}
+        EOS
+      end
+
+      it do      
+        pending
+        should resemble <<-'EOS'
+<div id="cha-foo" data-tralics-id="cid1" class="chapter" data-number="1">
+  <h3><a href="#cha-foo" class="heading"><span class="number">1 </span>Foo</a></h3>
+  <p>bar <a href="#cha-bar" class="hyperref">Chapter <span class="ref">cha:bar</span></a>
+  </p>
+</div>
+      EOS
+      end
+    end
+
     describe "(La)TeX logos" do
 
       describe "TeX logo" do
@@ -290,6 +389,22 @@ lorem ipsum
 %(<span class="texhtml" style="font-family: 'CMU Serif', cmr10, LMRoman10-Regular, 'Times New Roman', 'Nimbus Roman No9 L', Times, serif;">L<span style="text-transform: uppercase; font-size: 70%; margin-left: -0.36em; vertical-align: 0.3em; line-height: 0; margin-right: -0.15em;">a</span>T<span style="text-transform: uppercase; margin-left: -0.1667em; vertical-align: -0.5ex; line-height: 0; margin-right: -0.125em;">e</span>X</span>)
         end
         it { should include(output) }
+      end
+
+      describe "PolyTeX logo" do
+        let(:polytex) { '\PolyTeX' }
+        let(:output) do
+%(<span class="texhtml" style="font-family: 'CMU Serif', cmr10, LMRoman10-Regular, 'Times New Roman', 'Nimbus Roman No9 L', Times, serif;">PolyT<span style="text-transform: uppercase; vertical-align: -0.5ex; margin-left: -0.1667em; margin-right: -0.125em;">e</span>X</span>)
+        end
+        it { pending; should include(output) }
+      end
+
+      describe "PolyTeXnic logo" do
+        let(:polytex) { '\PolyTeXnic' }
+        let(:output) do
+%(<span class="texhtml" style="font-family: 'CMU Serif', cmr10, LMRoman10-Regular, 'Times New Roman', 'Nimbus Roman No9 L', Times, serif;">PolyT<span style="text-transform: uppercase; vertical-align: -0.5ex; margin-left: -0.1667em; margin-right: -0.125em;">e</span>Xnic</span>)
+        end
+        it { pending; should include(output) }
       end
     end
 

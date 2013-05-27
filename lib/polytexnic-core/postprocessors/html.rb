@@ -24,7 +24,7 @@ module Polytexnic
         title(doc)
         restore_literal(doc)
         make_cross_references(doc)
-        convert_to_html(doc) 
+        convert_to_html(doc)
       end
 
       private
@@ -217,9 +217,7 @@ module Polytexnic
           doc.xpath('//item').each do |node|
             clean_node node, %w{id-text id label}
             node.name = 'li'
-            node.xpath('//p').each do |pnode|
-              pnode.parent.inner_html = pnode.inner_html
-            end
+            node.inner_html = node.at_css('p').inner_html
           end
         end
 
@@ -241,7 +239,6 @@ module Polytexnic
             clean_node node, %w{data-label}
           end
         end
-
 
         # Given a section node, process the <head> tag.
         # Supports chapter, section, and subsection.
@@ -363,8 +360,8 @@ module Polytexnic
         end
 
         # Converts a document to HTML.
-        # Because there's no way to know a priori which elements are block-level,
-        # and hence can't be nested inside a paragraph tag, we first extract
+        # Because there's no way to know which elements are block-level
+        # (and hence can't be nested inside a paragraph tag), we first extract
         # an HTML fragment by converting the document to HTML, and then use
         # Nokogiri's HTML.fragment method to read it in and emit valid markup.
         # (In between, we add in highlighted source code.)
@@ -375,14 +372,13 @@ module Polytexnic
         def convert_to_html(doc)
           body = doc.at_css('document').children.to_html
           fragment = highlight_source_code(body)
-          Nokogiri::HTML.fragment(fragment).to_html      
+          Nokogiri::HTML.fragment(fragment).to_html
         end
 
         # Cleans a node by removing all the given attributes.
         def clean_node(node, attributes)
           [*attributes].each { |a| node.remove_attribute a }
         end
-
     end
   end
 end
