@@ -13,16 +13,18 @@ module Polytexnic
     class Pipeline
       include Polytexnic::Preprocessor
       include Polytexnic::Postprocessor
+      include Polytexnic::Core::Utils
 
       attr_accessor :literal_cache, :code_cache, :polytex, :xml, :html
 
       def initialize(polytex)
         @literal_cache = {}
         @code_cache = {}
-        @polytex = add_commands(polytex)
+        @polytex = polytex
       end
 
       def to_html
+        @polytex = add_commands(polytex)
         preprocess(:html)
         postprocess(:html)
         @html
@@ -34,21 +36,9 @@ module Polytexnic
         @latex
       end
 
-
       # Adds some default commands.
-      def add_commands(polytex) 
+      def add_commands(polytex)
         new_commands + polytex
-      end
-
-      # Returns some new commands.
-      # For example, we arrange for '\PolyTeXnic' to produce
-      # the PolyTeXnic logo.
-      def new_commands
-        commands = <<-'EOS'
-\newcommand{\PolyTeX}{Poly\TeX}
-\newcommand{\PolyTeXnic}{Poly{\TeX}nic}
-        EOS
-        commands + "\n"
       end
     end
   end
