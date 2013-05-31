@@ -368,11 +368,10 @@ lorem ipsum
       end
 
       it do
-        pending
         should resemble <<-'EOS'
 <div id="cha-foo" data-tralics-id="cid1" class="chapter" data-number="1">
   <h3><a href="#cha-foo" class="heading"><span class="number">1 </span>Foo</a></h3>
-  <p>bar <a href="#cha-bar" class="hyperref">Chapter <span class="ref">cha:bar</span></a>
+  <p><a href="#cha-bar" class="hyperref">Chapter <span class="undefined_ref">cha:bar</span></a>
   </p>
 </div>
       EOS
