@@ -2,7 +2,7 @@ module Polytexnic
   module Postprocessor
     module Html
 
-      # Converts Tralics XML output to HTML. 
+      # Converts Tralics XML output to HTML.
       def xml_to_html(xml)
         doc = Nokogiri::XML(xml)
         emphasis(doc)
@@ -65,7 +65,7 @@ module Polytexnic
           doc.xpath('//Verbatim').each do |node|
             node.name = 'pre'
             node['class'] = 'verbatim'
-          end      
+          end
         end
 
         # Handles code environments.
@@ -76,11 +76,11 @@ module Polytexnic
           doc.xpath('//code').each do |node|
             node.name = 'div'
             node['class'] = 'code'
-          end      
+          end
         end
 
         # Handles math environments.
-        # Included are 
+        # Included are
         # \begin{equation}
         # <equation>
         # \end{equation}
@@ -92,14 +92,14 @@ module Polytexnic
             node.name = 'div'
             node['class'] = 'equation'
             # Mimic default Tralics behavior of giving paragraph tags after
-            # math a 'noindent' class. This allows the HTML to be styled with 
+            # math a 'noindent' class. This allows the HTML to be styled with
             # CSS in a way that replicates the default behavior of LaTeX, where
             # math can be included in a paragraph. In such a case, paragraphs
             # are indented by default, but text after math environments isn't
             # indented. In HTML, including a math div inside a p tag is illegal,
             # so the next best thing is to add a 'noindent' class to the p tag
             # following the math. Most documents won't use this, as the HTML
-            # convention is not to indent paragraphs anyway, but we want to 
+            # convention is not to indent paragraphs anyway, but we want to
             # support that case for completeness (mainly because Tralics does).
             begin
               next_paragraph = node.parent.next_sibling.next_sibling
@@ -160,7 +160,7 @@ module Polytexnic
             link['href'] = "#footnote-#{n}"
             link.content = n.to_s
             node.inner_html = link
-          end      
+          end
         end
 
         # Returns HTML for a nicely styled TeX logo.
@@ -334,10 +334,15 @@ module Polytexnic
           end
 
           doc.xpath('//ref').each do |node|
-            target = doc.xpath("//*[@data-tralics-id='#{node['target']}']").first
             node.name = 'span'
-            node['class'] = 'ref'
-            node.content = target['data-number']
+            target = doc.xpath("//*[@data-tralics-id='#{node['target']}']")
+            if target.empty?
+              node['class'] = 'undefined_ref'
+              node.content = node['target']
+            else
+              node['class'] = 'ref'
+              node.content = target.first['data-number']
+            end
             clean_node node, 'target'
           end
 
@@ -367,8 +372,8 @@ module Polytexnic
         # (In between, we add in highlighted source code.)
         # This process transforms, e.g., the invalid
         #   <p>Preformatted text: <pre>text</pre> foo</p>
-        # to the valid 
-        #  <p>Preformatted text:</p> <pre>text</pre> <p>foo</p> 
+        # to the valid
+        #  <p>Preformatted text:</p> <pre>text</pre> <p>foo</p>
         def convert_to_html(doc)
           body = doc.at_css('document').children.to_html
           fragment = highlight_source_code(body)

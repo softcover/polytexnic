@@ -1,6 +1,9 @@
 module Polytexnic
   module Literal
 
+    # Matches the line for syntax highlighting.
+    LANG_REGEX = /^\s*%=\s+lang:(\w+)/
+
     # Makes the caches for literal environments (including non-ASCII Unicode).
     def make_caches(polytex, format = :html)
       output = []
@@ -26,7 +29,7 @@ module Polytexnic
       latex = format == :latex
       language = nil
       while (line = lines.shift)
-        if line =~ /%=\s+lang:(\w+)/
+        if line =~ LANG_REGEX
           if latex
             output << line
           else
@@ -76,7 +79,7 @@ module Polytexnic
     end
 
     # Converts references to hyperrefs.
-    # We want to convert 
+    # We want to convert
     #   Chapter~\ref{cha:foo}
     # to
     #   \hyperref[cha:foo]{Chapter~\ref{cha:foo}

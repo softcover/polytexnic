@@ -81,7 +81,7 @@ lorem ipsum
     let(:contents) { '\\Omega' }
 
     it { should resemble contents }
-    it { should resemble '<span class="inline_math">' }    
+    it { should resemble '<span class="inline_math">' }
   end
 
   describe "inline math, TeX-style" do
@@ -93,7 +93,7 @@ $\int_\Omega d\omega = \int_{\partial\Omega} \omega$
     let(:contents) { '\\Omega' }
 
     it { should resemble contents }
-    it { should resemble '<span class="inline_math">' }    
+    it { should resemble '<span class="inline_math">' }
     it { should resemble '\\(' }
   end
 
@@ -102,7 +102,7 @@ $\int_\Omega d\omega = \int_{\partial\Omega} \omega$
 
     it { should resemble '\\Omega' }
     it { should resemble '\\equiv' }
-    it { should resemble '<span class="inline_math">' }    
+    it { should resemble '<span class="inline_math">' }
     it { should resemble '\\(' }
   end
 
@@ -268,7 +268,7 @@ end
 
       it { should resemble 'def foo' }
       it { should resemble '<div class="code">' }
-      it { should_not resemble '\begin{code}' }    
+      it { should_not resemble '\begin{code}' }
     end
 
     describe "with syntax highlighting" do
