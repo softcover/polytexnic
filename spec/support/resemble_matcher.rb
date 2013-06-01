@@ -50,7 +50,7 @@ class String
   # converting everthing to ordinary spaces, while stripping leading
   # and trailing whitespace.
   # >> "foo\t    bar\n\nbaz    quux\nderp".compress
-  # => "foo bar\n\nbaz quux\nderp"
+  # => "foo bar baz quux derp"
   #
   # Spaces surround each line are stripped entirely, so that
   #   <ul>
@@ -68,6 +68,6 @@ class String
     unicode_nbsp = ' '
     result = gsub(unicode_nbsp, ' ')
     stripped_result = result.split("\n").map(&:strip).join("\n")
-    stripped_result.gsub(/[ \t]{2,}/, ' ')
+    stripped_result.gsub("\n", ' ').gsub(/[ \t]{2,}/, ' ')
   end
 end

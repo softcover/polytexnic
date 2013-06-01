@@ -136,6 +136,54 @@ lorem ipsum
       it { should resemble "<blockquote class=\"quote\">foo\n</blockquote>" }
     end
 
+    describe "quote environment" do
+      let(:polytex) do <<-'EOS'
+\begin{quote}
+  lorem ipsum
+
+  dolor sit amet
+\end{quote}
+        EOS
+      end
+      it do
+        should resemble <<-'EOS'
+<blockquote>
+  <p>lorem ipsum</p>
+  <p>dolor sit amet
+  </p>
+</blockquote>
+        EOS
+      end
+    end
+
+    describe "nested quotes" do
+      let(:polytex) do <<-'EOS'
+\begin{quote}
+  lorem ipsum
+
+  \begin{quote}
+    foo bar
+  \end{quote}
+
+  dolor sit amet
+\end{quote}
+        EOS
+      end
+      it do
+        should resemble <<-'EOS'
+<blockquote>
+  <p>lorem ipsum</p>
+  <blockquote>
+  <p>foo bar
+  </p>
+  </blockquote>
+  <p>dolor sit amet
+  </p>
+</blockquote>
+        EOS
+      end
+    end
+
     describe "verse" do
       let(:polytex) { '\verse{foo}' }
       it { should resemble "<blockquote class=\"verse\">foo\n</blockquote>" }
