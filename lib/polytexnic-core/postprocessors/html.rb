@@ -22,6 +22,7 @@ module Polytexnic
         chapters_and_section(doc)
         subsection(doc)
         title(doc)
+        smart_single_quotes(doc)
         restore_literal(doc)
         make_cross_references(doc)
         hrefs(doc)
@@ -285,6 +286,19 @@ module Polytexnic
                 el['class'] = field
                 node.add_child el
               end
+            end
+          end
+        end
+
+        # Converts text to smart single quotes and apostrophes.
+        # This means `foo bar' and "don't" is converted to to use nice curly
+        # "smart" quotes and apostrophes.
+        # We don't bother with double quotes because Tralics already handles
+        # those.
+        def smart_single_quotes(doc)
+          doc.traverse do |node|
+            if node.text?
+              node.content = node.content.gsub('`', '‘').gsub("'", '’')
             end
           end
         end
