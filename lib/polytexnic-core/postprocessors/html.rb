@@ -24,6 +24,7 @@ module Polytexnic
         title(doc)
         restore_literal(doc)
         make_cross_references(doc)
+        hrefs(doc)
         convert_to_html(doc)
       end
 
@@ -350,6 +351,14 @@ module Polytexnic
             node['href'] = "##{node['target'].gsub(/:/, '-')}"
             node['class'] = 'hyperref'
             clean_node node, 'target'
+          end
+        end
+
+        def hrefs(doc)
+          doc.xpath('//xref').each do |node|
+            node.name = 'a'
+            node['href'] = node['url']
+            clean_node node, 'url'
           end
         end
 
