@@ -125,8 +125,8 @@ lorem ipsum
     end
 
     describe "small caps" do
-      let(:polytex) { '\textsc{SMALL CAPS}' }
-      it { should resemble '<span class="sc">SMALL CAPS</span>' }
+      let(:polytex) { '\textsc{small caps}' }
+      it { should resemble '<span class="sc">small caps</span>' }
     end
 
     describe "typewriter text" do
