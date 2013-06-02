@@ -124,6 +124,11 @@ lorem ipsum
       it { should resemble '<strong>boldface</strong>' }
     end
 
+    describe "small caps" do
+      let(:polytex) { '\textsc{SMALL CAPS}' }
+      it { should resemble '<span class="sc">SMALL CAPS</span>' }
+    end
+
     describe "typewriter text" do
       let(:polytex) { '\texttt{typewriter text}' }
       it { should resemble '<span class="tt">typewriter text</span>' }
