@@ -119,6 +119,11 @@ lorem ipsum
       it { should resemble '<em>baz quux</em>' }
     end
 
+    describe "boldface" do
+      let(:polytex) { '\textbf{boldface}' }
+      it { should resemble '<strong>boldface</strong>' }
+    end
+
     describe "typewriter text" do
       let(:polytex) { '\texttt{typewriter text}' }
       it { should resemble '<span class="tt">typewriter text</span>' }
