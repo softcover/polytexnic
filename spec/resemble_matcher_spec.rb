@@ -3,7 +3,7 @@ require 'spec_helper'
 
 describe String do
   let(:string) { "foo\t    bar\n\nbaz    quux\nderp" }
-  let(:compressed_string) { "foo bar\n\nbaz quux\nderp" }
+  let(:compressed_string) { "foo bar baz quux derp" }
   subject { string }
 
   it { should respond_to(:compress) }

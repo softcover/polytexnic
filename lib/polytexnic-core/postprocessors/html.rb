@@ -25,7 +25,8 @@ module Polytexnic
         restore_literal(doc)
         make_cross_references(doc)
         hrefs(doc)
-        convert_to_html(doc)
+        html = convert_to_html(doc)
+        blockquotes(html)
       end
 
       private
@@ -360,6 +361,20 @@ module Polytexnic
             node['href'] = node['url']
             clean_node node, 'url'
           end
+        end
+
+        # Restores blockquotes.
+        # Annoyingly, this is the easiest way to do things.
+        # What we really want to do is just make the substitutions
+        # \begin{quote} -> <blockquote>
+        # \end{quote} -> </blockquote>
+        # but that's hard to do using Tralics and XML. As a kludge,
+        # we insert a tag with unique name and gsub it at the end.
+        def blockquotes(html)
+          html.gsub("<start-#{blockquote}></start-#{blockquote}>",
+                    "<blockquote>\n").
+               gsub("<end-#{blockquote}></end-#{blockquote}></p>",
+                    "</p>\n</blockquote>\n")
         end
 
         # Highlights source code.
