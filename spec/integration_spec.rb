@@ -3,7 +3,7 @@ require 'spec_helper'
 
 # Returns a list of fixture filenames.
 def filenames
-  %w[inline_math verbatim_environments math_environments]    
+  %w[inline_math verbatim_environments math_environments]
 end
 
 # Returns the results of converting the TeX filename to HTML.
@@ -22,7 +22,7 @@ def contents(filename, extension)
 end
 
 describe Polytexnic::Core::Pipeline do
-  
+
   filenames.each do |filename|
     it "should correctly process #{filename}" do
       expect(converted(filename)).to resemble html(filename)

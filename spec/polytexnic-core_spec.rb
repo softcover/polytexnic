@@ -129,6 +129,16 @@ lorem ipsum
         let(:polytex) { "``foo bar''" }
         it { should resemble '“foo bar”' }
       end
+
+      context "with single quotes" do
+        let(:polytex) { "`foo bar'" }
+        it { should resemble '‘foo bar’' }
+      end
+
+      context "with an apostrophe" do
+        let(:polytex) { "don't stop believin'" }
+        it { should resemble 'don’t stop believin’' }
+      end
     end
 
     describe "quote" do
