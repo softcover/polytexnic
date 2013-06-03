@@ -65,7 +65,6 @@ Chapter~\ref{cha:foo}
       let(:output) { '\hyperref[cha:foo]{Chapter~\ref{cha:foo}' }
       it { should resemble output }
     end
-
   end
 
   describe '#to_html' do
@@ -240,47 +239,46 @@ lorem ipsum
 </ul>
         EOS
       end
-    end
 
-    describe "itemized list preceded by text" do
-      let(:polytex) do <<-'EOS'
+      context "preceded by text" do
+        let(:polytex) do <<-'EOS'
 lorem ipsum
 
 \begin{itemize}
   \item Foo
   \item Bar
 \end{itemize}
-        EOS
-      end
-      it do
-        should resemble <<-'EOS'
+          EOS
+        end
+        it do
+          should resemble <<-'EOS'
 <p>lorem ipsum</p>
 <ul>
   <li>Foo</li>
   <li>Bar</li>
 </ul>
-        EOS
+         EOS
+        end
       end
-    end
-
-    describe "itemized list followed by text" do
-      let(:polytex) do <<-'EOS'
+      context "itemized list followed by text" do
+        let(:polytex) do <<-'EOS'
 \begin{itemize}
   \item Foo
   \item Bar
 \end{itemize}
 
 lorem ipsum
-        EOS
-      end
-      it do
-        should resemble <<-'EOS'
+          EOS
+        end
+        it do
+         should resemble <<-'EOS'
 <ul>
   <li>Foo</li>
   <li>Bar</li>
 </ul><p>lorem ipsum
 </p>
-        EOS
+          EOS
+        end
       end
     end
 
@@ -428,10 +426,10 @@ lorem ipsum
 
     describe 'missing cross-references' do
       let(:polytex) do <<-'EOS'
-          \chapter{Foo}
-          \label{cha:foo}
+\chapter{Foo}
+\label{cha:foo}
 
-          Chapter~\ref{cha:bar}
+Chapter~\ref{cha:bar}
         EOS
       end
 
@@ -491,6 +489,101 @@ lorem ipsum
       let(:polytex) { '\href{http://example.com/}{Example Site}' }
       let(:output) { '<a href="http://example.com/">Example Site</a>' }
       it { should resemble output }
+    end
+
+    describe "figures" do
+      let(:polytex) do <<-'EOS'
+\begin{figure}
+lorem
+\end{figure}
+        EOS
+      end
+
+      it do
+        should resemble <<-'EOS'
+<div id="uid1" class="figure">
+  <p>lorem</p>
+</div>
+        EOS
+      end
+
+      context "with included graphics" do
+        let(:polytex) do <<-'EOS'
+\begin{figure}
+\includegraphics{foo.png}
+\end{figure}
+          EOS
+        end
+
+        it do
+          should resemble <<-'EOS'
+<div id="uid1" class="figure">
+  <div class="graphics">
+    <img src="foo.png" />
+  </div>
+</div>
+          EOS
+        end
+      end
+
+      context "with a caption" do
+        let(:polytex) do <<-'EOS'
+ \chapter{The chapter}
+
+ \begin{figure}
+ \includegraphics{foo.png}
+ \caption{This is a caption.}
+ \end{figure}
+           EOS
+         end
+
+         it do
+           should resemble <<-'EOS'
+<div id="cid1" data-tralics-id="cid1" class="chapter" data-number="1">
+  <div id="uid1" class="figure">
+   <div class="graphics">
+      <img src="foo.png" alt="foo" />
+      <div class="caption"
+        <span class="header">Figure 1.1:</span>
+        <span class="description">This is a caption.</span>
+      </div>
+   </div>
+  </div>
+</div>
+          EOS
+        end
+      end
+
+      context "with a label" do
+        let(:polytex) do <<-'EOS'
+ \chapter{The chapter}
+
+ \begin{figure}
+ \includegraphics{foo.png}
+ \caption{This is a caption.\label{fig:foo}}
+ \end{figure}
+
+ Figure~\ref{fig:foo}
+           EOS
+         end
+
+         it do
+           should resemble <<-'EOS'
+<div id="cid1" data-tralics-id="cid1" class="chapter" data-number="1">
+  <div id="fig-foo" class="figure">
+   <div class="graphics">
+      <img src="foo.png" alt="foo" />
+      <div class="caption"
+        <span class="header">Figure 1.1:</span>
+        <span class="description">This is a caption.</span>
+      </div>
+   </div>
+  </div>
+  <p><a href="#fig-foo" class="hyperref">Figure <span class="ref">1.1</span></a></p>
+</div>
+          EOS
+        end
+      end
     end
   end
 end
