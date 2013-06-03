@@ -42,6 +42,8 @@ module Polytexnic
         defs = '\def\hyperref[#1]#2{\xmlelt{a}{\XMLaddatt{target}{#1}#2}}'
         polytex = "#{defs}\n#{polytex}"
 
+        # This key line caches literal environments, non-ASCII Unicode,
+        # and adds enhances hyperref links. See literal.rb for details.
         output = hyperref(cache_unicode(make_caches(polytex)))
 
         # handle title fields
@@ -64,6 +66,26 @@ module Polytexnic
         output.gsub! /\\chapter\{(.*?)\}/ do |s|
           "#{s}\n\\AddAttToCurrent{type}{chapter}"
         end
+
+        # Handles quote environments, which Tralics does wrong.
+        # Tralics converts
+        # \begin{quote}
+        #   foo
+        #
+        #   bar
+        # \end{quote}
+        # into
+        # <p rend='quoted'>foo</p>
+        # <p rend='quoted'>bar</p>
+        # But we want the HTML to be
+        # <blockquote>
+        #   <p>foo</p>
+        #   <p>bar</p>
+        # </blockquote>
+        # which can't easily be inferred from the Tralics output. (It gets
+        # worse if you want to support nested blockquotes, which we do.)
+        output.gsub!(/\\begin{quote}/, "\\xmlemptyelt{start-#{blockquote}}")
+        output.gsub!(/\\end{quote}/, "\\xmlemptyelt{end-#{blockquote}}")
 
         output
       end
