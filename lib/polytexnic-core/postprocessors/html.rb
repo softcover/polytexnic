@@ -6,6 +6,8 @@ module Polytexnic
       def xml_to_html(xml)
         doc = Nokogiri::XML(xml)
         emphasis(doc)
+        boldface(doc)
+        small_caps(doc)
         typewriter(doc)
         verbatim(doc)
         code(doc)
@@ -36,6 +38,23 @@ module Polytexnic
         def emphasis(doc)
           doc.xpath('//hi[@rend="it"]').each do |node|
             node.name = 'em'
+            node.remove_attribute('rend')
+          end
+        end
+
+        # Handles output of \textbf{}.
+        def boldface(doc)
+          doc.xpath('//hi[@rend="bold"]').each do |node|
+            node.name = 'strong'
+            node.remove_attribute('rend')
+          end
+        end
+
+        # Handles output of \textsc{}.
+        def small_caps(doc)
+          doc.xpath('//hi[@rend="sc"]').each do |node|
+            node.name = 'span'
+            node['class'] = 'sc'
             node.remove_attribute('rend')
           end
         end
