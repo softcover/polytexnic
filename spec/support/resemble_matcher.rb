@@ -32,7 +32,9 @@ class String
   # Rather than be exhaustive, we of course only check the ones actually
   # used in the tests. Browsers, etc., display them the same.
   def apply_character_equivalences
-    equivalences = [ ['&#8220;', '“'],
+    equivalences = [ ['&#8216;', '‘'],
+                     ['&#8217;', '’'],
+                     ['&#8220;', '“'],
                      ['&#8221;', '”'],
                      ['&#160;',  ' '],     # nonbreaking space
                      ['&#133;',  '…'],
