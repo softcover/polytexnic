@@ -418,5 +418,11 @@ lorem ipsum
       let(:output) { '' }
       it { should resemble output }
     end
+
+    describe "href" do
+      let(:polytex) { '\href{http://example.com/}{Example Site}' }
+      let(:output) { '<a href="http://example.com/">Example Site</a>' }
+      it { should resemble output }
+    end
   end
 end
