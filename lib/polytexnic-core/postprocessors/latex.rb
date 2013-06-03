@@ -1,3 +1,5 @@
+require 'polytexnic-core/literal'
+
 module Polytexnic
   module Postprocessor
     module Latex
@@ -17,7 +19,7 @@ module Polytexnic
         lines = latex.split("\n")
         output = []
         while (line = lines.shift) do
-          if line =~ /%=\s+lang:(\w+)/
+          if line =~ Polytexnic::Literal::LANG_REGEX
             language = $1
             count = 0
             code = []
