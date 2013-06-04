@@ -19,7 +19,7 @@ class String
 
   # Prepares a string for robust comparison.
   def robust
-    apply_character_equivalences.compress
+    apply_character_equivalences.compress.remove_tag_whitespace
   end
 
   # Applies UTF-8 character code equivalences.
@@ -45,6 +45,10 @@ class String
         gsub!(code, character)
       end
     end
+  end
+
+  def remove_tag_whitespace
+    gsub(/\s*</, '<').gsub(/>\s*/, '>')
   end
 
   # Compress whitespace
