@@ -30,7 +30,7 @@ module Polytexnic
         hrefs(doc)
         figures(doc)
         html = convert_to_html(doc)
-        blockquotes(html)
+        quote_and_verse(html)
       end
 
       private
@@ -408,17 +408,21 @@ module Polytexnic
           end
         end
 
-        # Restores blockquotes.
+        # Restores quote and verse environemtns.
         # Annoyingly, this is the easiest way to do things.
         # What we really want to do is just make the substitutions
         # \begin{quote} -> <blockquote>
         # \end{quote} -> </blockquote>
         # but that's hard to do using Tralics and XML. As a kludge,
         # we insert a tag with unique name and gsub it at the end.
-        def blockquotes(html)
-          html.gsub("<start-#{blockquote}></start-#{blockquote}>",
-                    "<blockquote>\n").
-               gsub("<end-#{blockquote}></end-#{blockquote}></p>",
+        def quote_and_verse(html)
+          html.gsub("<start-#{quote_digest}></start-#{quote_digest}>",
+                    "<blockquote>").
+               gsub("<end-#{quote_digest}></end-#{quote_digest}></p>",
+                    "</p></blockquote>").
+               gsub("<start-#{verse_digest}></start-#{verse_digest}>",
+                    '<blockquote class="verse">').
+               gsub("<end-#{verse_digest}></end-#{verse_digest}></p>",
                     "</p>\n</blockquote>\n")
         end
 

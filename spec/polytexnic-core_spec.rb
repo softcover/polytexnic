@@ -172,10 +172,9 @@ lorem ipsum
 </blockquote>
         EOS
       end
-    end
 
-    describe "nested quotes" do
-      let(:polytex) do <<-'EOS'
+      context "when nested" do
+        let(:polytex) do <<-'EOS'
 \begin{quote}
   lorem ipsum
 
@@ -185,26 +184,43 @@ lorem ipsum
 
   dolor sit amet
 \end{quote}
-        EOS
-      end
-      it do
-        should resemble <<-'EOS'
+          EOS
+        end
+        it do
+          should resemble <<-'EOS'
 <blockquote>
   <p>lorem ipsum</p>
   <blockquote>
-  <p>foo bar
-  </p>
+  <p>foo bar</p>
   </blockquote>
-  <p>dolor sit amet
-  </p>
+  <p>dolor sit amet</p>
 </blockquote>
-        EOS
+          EOS
+        end
       end
     end
 
     describe "verse" do
       let(:polytex) { '\verse{foo}' }
       it { should resemble "<blockquote class=\"verse\">foo\n</blockquote>" }
+    end
+
+    describe "verse environment" do
+      let(:polytex) do <<-'EOS'
+\begin{verse}
+  lorem ipsum\\
+  dolor sit amet
+\end{verse}
+        EOS
+      end
+      it do
+        should resemble <<-'EOS'
+<blockquote class="verse">
+  <p>lorem ipsum</p>
+  <p class="noindent">dolor sit amet</p>
+</blockquote>
+        EOS
+      end
     end
 
     describe "itemize" do
