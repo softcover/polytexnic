@@ -15,13 +15,11 @@ module Polytexnic
       include Polytexnic::Postprocessor
       include Polytexnic::Core::Utils
 
-      attr_accessor :literal_cache, :code_cache, :blockquote,
-                    :polytex, :xml, :html
+      attr_accessor :literal_cache, :code_cache, :polytex, :xml, :html
 
       def initialize(polytex)
         @literal_cache = {}
         @code_cache = {}
-        @blockquote = digest(Time.now.to_s)
         @polytex = polytex
       end
 
@@ -41,6 +39,16 @@ module Polytexnic
       # Adds some default commands.
       def add_commands(polytex)
         new_commands + polytex
+      end
+
+      # Returns a digest for use in quote environments.
+      def quote_digest
+        @quote_digest ||= digest(Time.now.to_s)
+      end
+
+      # Returns a digest for use in verse environments.
+      def verse_digest
+        @verse_digest ||= digest(Time.now.to_s)
       end
     end
   end

@@ -67,7 +67,7 @@ module Polytexnic
           "#{s}\n\\AddAttToCurrent{type}{chapter}"
         end
 
-        # Handles quote environments, which Tralics does wrong.
+        # Handles quote and verse environments, which Tralics does wrong.
         # Tralics converts
         # \begin{quote}
         #   foo
@@ -84,8 +84,10 @@ module Polytexnic
         # </blockquote>
         # which can't easily be inferred from the Tralics output. (It gets
         # worse if you want to support nested blockquotes, which we do.)
-        output.gsub!(/\\begin{quote}/, "\\xmlemptyelt{start-#{blockquote}}")
-        output.gsub!(/\\end{quote}/, "\\xmlemptyelt{end-#{blockquote}}")
+        output.gsub!(/\\begin{quote}/, "\\xmlemptyelt{start-#{quote_digest}}")
+        output.gsub!(/\\end{quote}/, "\\xmlemptyelt{end-#{quote_digest}}")
+        output.gsub!(/\\begin{verse}/, "\\xmlemptyelt{start-#{verse_digest}}")
+        output.gsub!(/\\end{verse}/, "\\xmlemptyelt{end-#{verse_digest}}")
 
         output
       end
