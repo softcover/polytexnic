@@ -95,12 +95,12 @@ lorem ipsum
         EOS
       end
 
-      it { should resemble "<p>lorem ipsum\n</p>" }
+      it { should resemble "<p>lorem ipsum</p>" }
     end
 
     describe "paragraph conversion" do
       let(:polytex) { 'lorem ipsum' }
-      it { should resemble "<p>lorem ipsum\n</p>" }
+      it { should resemble "<p>lorem ipsum</p>" }
       it { should_not resemble '<unknown>' }
     end
 
@@ -168,8 +168,7 @@ lorem ipsum
         should resemble <<-'EOS'
 <blockquote>
   <p>lorem ipsum</p>
-  <p>dolor sit amet
-  </p>
+  <p>dolor sit amet</p>
 </blockquote>
         EOS
       end
@@ -516,6 +515,7 @@ lorem
         end
 
         it do
+          pending
           should resemble <<-'EOS'
 <div id="uid1" class="figure">
   <div class="graphics">
@@ -538,6 +538,7 @@ lorem
          end
 
          it do
+           pending
            should resemble <<-'EOS'
 <div id="cid1" data-tralics-id="cid1" class="chapter" data-number="1">
   <div id="uid1" class="figure">
@@ -568,6 +569,7 @@ lorem
          end
 
          it do
+           pending
            should resemble <<-'EOS'
 <div id="cid1" data-tralics-id="cid1" class="chapter" data-number="1">
   <div id="fig-foo" class="figure">

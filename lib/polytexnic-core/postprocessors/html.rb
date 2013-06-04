@@ -28,6 +28,7 @@ module Polytexnic
         restore_literal(doc)
         make_cross_references(doc)
         hrefs(doc)
+        figures(doc)
         html = convert_to_html(doc)
         blockquotes(html)
       end
@@ -393,6 +394,17 @@ module Polytexnic
             node.name = 'a'
             node['href'] = node['url']
             clean_node node, 'url'
+          end
+        end
+
+        def figures(doc)
+          doc.xpath('//figure').each do |node|
+            node.name = 'div'
+            node['class'] = 'figure'
+            clean_node node.at_css('p'), 'rend'
+            clean_node node, 'id-text'
+            clean_node node,  'data-tralics-id'
+            clean_node node,  'data-number'
           end
         end
 
