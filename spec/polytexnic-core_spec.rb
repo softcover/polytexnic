@@ -531,7 +531,6 @@ lorem
         end
 
         it do
-          pending
           should resemble <<-'EOS'
 <div id="uid1" class="figure">
   <div class="graphics">
