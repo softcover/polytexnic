@@ -506,6 +506,21 @@ Chapter~\ref{cha:bar}
       it { should resemble output }
     end
 
+    describe "graphics" do
+      let(:polytex) do <<-'EOS'
+\includegraphics{foo.png}
+        EOS
+      end
+
+      it do
+        should resemble <<-'EOS'
+<div class="graphics">
+  <img src="foo.png" alt="foo" />
+</div>
+        EOS
+      end
+    end
+
     describe "figures" do
       let(:polytex) do <<-'EOS'
 \begin{figure}

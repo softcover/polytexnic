@@ -28,7 +28,7 @@ module Polytexnic
         restore_literal(doc)
         make_cross_references(doc)
         hrefs(doc)
-        figures(doc)
+        graphics_and_figures(doc)
         html = convert_to_html(doc)
         quote_and_verse(html)
       end
@@ -397,11 +397,8 @@ module Polytexnic
           end
         end
 
-        def graphics(doc)
-
-        end
-
-        def figures(doc)
+        # Handles both \includegraphics and figure environments.
+        def graphics_and_figures(doc)
           doc.xpath('//figure').each do |node|
             node.name = 'div'
             node['class'] = 'figure'
