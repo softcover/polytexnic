@@ -407,7 +407,8 @@ module Polytexnic
             end
             if node['file'] && node['extension']
               filename = "#{node['file']}.#{node['extension']}"
-              img = %(<img src="#{filename}" alt="#{node['file']}" />)
+              alt = File.basename(node['file'])
+              img = %(<img src="#{filename}" alt="#{alt}" />)
               node.inner_html = %(<div class="graphics">#{img}</div>)
               clean_node node, %w[file extension]
             end

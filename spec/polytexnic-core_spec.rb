@@ -540,7 +540,7 @@ lorem
       context "with included graphics" do
         let(:polytex) do <<-'EOS'
 \begin{figure}
-\includegraphics{foo.png}
+\includegraphics{images/foo.png}
 \end{figure}
           EOS
         end
@@ -549,7 +549,7 @@ lorem
           should resemble <<-'EOS'
 <div id="uid1" class="figure">
   <div class="graphics">
-    <img src="foo.png" alt="foo" />
+    <img src="images/foo.png" alt="foo" />
   </div>
 </div>
           EOS
