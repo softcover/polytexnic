@@ -3,16 +3,35 @@
 RSpec::Matchers.define :resemble do |expected|
   match do |actual|
     if expected.is_a?(String)
-      expected = Polytexnic::Core::Utils.escape_backslashes(expected.robust)
-      regex = Regexp.escape(expected)
+      escaped = Polytexnic::Core::Utils.escape_backslashes(expected.robust)
+      regex = %r{#{Regexp.escape(escaped)}}
     elsif expected.is_a?(Regexp)
       regex = %r{#{expected.to_s.robust}}
     end
     # the puts' below help a lot for debugging, leaving in for now
     # puts expected.robust
     # puts actual.robust
+
+
+    failure_message_for_should do |actual|
+      print_output expected, actual
+      "expected #{actual.robust} to resemble #{expected.robust}"
+    end
+
+    failure_message_for_should_not do |actual|
+      print_output expected, actual
+      "expected #{actual.robust} not to resemble #{expected.robust}"
+    end
+
     expect(actual.robust).to match_regex(regex)
   end
+end
+
+# Prints the robust versions of the two strings
+# The output is hugely useful in visually diffing, e.g., HTML output.
+def print_output(expected, actual)
+  puts expected.robust
+  puts actual.robust
 end
 
 class String
