@@ -531,7 +531,7 @@ lorem
 
       it do
         should resemble <<-'EOS'
-<div id="uid1" class="figure">
+<div id="uid1" data-tralics-id="uid1" data-number="1.1" class="figure">
   <p>lorem</p>
 </div>
         EOS
@@ -547,7 +547,7 @@ lorem
 
         it do
           should resemble <<-'EOS'
-<div id="uid1" class="figure">
+<div id="uid1" data-tralics-id="uid1" data-number="1.1" class="figure">
   <div class="graphics">
     <img src="images/foo.png" alt="foo" />
   </div>
@@ -564,21 +564,38 @@ lorem
  \includegraphics{foo.png}
  \caption{This is a caption.}
  \end{figure}
+
+ \begin{figure}
+ \includegraphics{bar.png}
+ \caption{This is another caption.}
+ \end{figure}
            EOS
          end
 
          it do
-           pending
            should resemble <<-'EOS'
 <div id="cid1" data-tralics-id="cid1" class="chapter" data-number="1">
-  <div id="uid1" class="figure">
-   <div class="graphics">
+  <h3>
+    <a href="#cid1" class="heading">
+    <span class="number">1 </span>The chapter</a>
+  </h3>
+  <div id="uid1" data-tralics-id="uid1" data-number="1.1" class="figure">
+    <div class="graphics">
       <img src="foo.png" alt="foo" />
-      <div class="caption"
-        <span class="header">Figure 1.1:</span>
-        <span class="description">This is a caption.</span>
-      </div>
-   </div>
+    </div>
+    <div class="caption">
+      <span class="header">Figure 1.1: </span>
+      <span class="description">This is a caption.</span>
+    </div>
+  </div>
+  <div id="uid2" data-tralics-id="uid2" data-number="1.2" class="figure">
+    <div class="graphics">
+      <img src="bar.png" alt="bar" />
+    </div>
+    <div class="caption">
+      <span class="header">Figure 1.2: </span>
+      <span class="description">This is another caption.</span>
+    </div>
   </div>
 </div>
           EOS

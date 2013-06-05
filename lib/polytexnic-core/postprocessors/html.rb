@@ -345,6 +345,7 @@ module Polytexnic
           chapter_number = 0
           section_number = 0
           subsection_number = 0
+          figure_number = 0
           doc.xpath('//*[@data-tralics-id]').each do |node|
             node['data-number'] = case node['class'].to_s
               when 'chapter'
@@ -359,6 +360,10 @@ module Polytexnic
                 sec_n = section_number.zero? ? 1 : section_number
                 "#{cha_n}.#{sec_n}.#{subsection_number += 1}"
               end
+            if node.name == 'figure'
+              cha_n = chapter_number.zero? ? 1 : chapter_number
+              node['data-number'] = "#{cha_n}.#{figure_number += 1}"
+            end
 
             # add number span
             if head = node.css('h2 a, h3 a, h4 a').first
@@ -409,10 +414,25 @@ module Polytexnic
               filename = "#{node['file']}.#{node['extension']}"
               alt = File.basename(node['file'])
               img = %(<img src="#{filename}" alt="#{alt}" />)
-              node.inner_html = %(<div class="graphics">#{img}</div>)
-              clean_node node, %w[file extension]
+              graphic = %(<div class="graphics">#{img}</div>)
+              graphic_node = Nokogiri::HTML.fragment(graphic)
+              if child = node.children.first
+                # This is the case when there's a caption.
+                child.add_previous_sibling(graphic_node)
+              else
+                node.add_child(graphic_node)
+              end
+              clean_node node, %w[file extension rend]
             end
-            clean_node node, ['id-text', 'data-tralics-id', 'data-number']
+            if caption = node.at_css('head')
+              caption.name = 'div'
+              caption['class'] = 'caption'
+              n = node['data-number']
+              header = %(<span class="header">Figure #{n}: </span>)
+              description = %(<span class="description">#{caption.content}</span>)
+              caption.inner_html = Nokogiri::HTML.fragment(header + description)
+            end
+            clean_node node, ['id-text']
           end
         end
 
