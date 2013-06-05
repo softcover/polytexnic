@@ -402,9 +402,7 @@ module Polytexnic
             node.name = 'div'
             node['class'] = 'figure'
             clean_node node.at_css('p'), 'rend'
-            clean_node node, 'id-text'
-            clean_node node,  'data-tralics-id'
-            clean_node node,  'data-number'
+            clean_node node, ['id-text', 'data-tralics-id', 'data-number']
           end
         end
 
