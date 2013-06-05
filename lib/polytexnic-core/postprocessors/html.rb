@@ -397,11 +397,23 @@ module Polytexnic
           end
         end
 
+        def graphics(doc)
+
+        end
+
         def figures(doc)
           doc.xpath('//figure').each do |node|
             node.name = 'div'
             node['class'] = 'figure'
-            clean_node node.at_css('p'), 'rend'
+            if internal_paragraph = node.at_css('p')
+              clean_node internal_paragraph, 'rend'
+            end
+            if node['file'] && node['extension']
+              filename = "#{node['file']}.#{node['extension']}"
+              img = %(<img src="#{filename}" alt="#{node['file']}" />)
+              node.inner_html = %(<div class="graphics">#{img}</div>)
+              clean_node node, %w[file extension]
+            end
             clean_node node, ['id-text', 'data-tralics-id', 'data-number']
           end
         end
@@ -446,9 +458,9 @@ module Polytexnic
         # to the valid
         #  <p>Preformatted text:</p> <pre>text</pre> <p>foo</p>
         def convert_to_html(doc)
-          body = doc.at_css('document').children.to_html
+          body = doc.at_css('document').children.to_xhtml
           fragment = highlight_source_code(body)
-          Nokogiri::HTML.fragment(fragment).to_html
+          Nokogiri::HTML.fragment(fragment).to_xhtml
         end
 
         # Cleans a node by removing all the given attributes.

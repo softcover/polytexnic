@@ -534,7 +534,7 @@ lorem
           should resemble <<-'EOS'
 <div id="uid1" class="figure">
   <div class="graphics">
-    <img src="foo.png" />
+    <img src="foo.png" alt="foo" />
   </div>
 </div>
           EOS
