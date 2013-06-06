@@ -28,8 +28,9 @@ module Polytexnic
         restore_literal(doc)
         make_cross_references(doc)
         hrefs(doc)
+        graphics_and_figures(doc)
         html = convert_to_html(doc)
-        blockquotes(html)
+        quote_and_verse(html)
       end
 
       private
@@ -256,8 +257,10 @@ module Polytexnic
             next if node['id'] =~ /footnote/
 
             node['data-tralics-id'] = node['id']
-            node['id'] = node['data-label'].gsub(/:/, '-') if node['data-label']
-
+            if label = node.at_css('data-label')
+              node['id'] = label.inner_html.gsub(underscore_digest, '_')
+              label.remove
+            end
             clean_node node, %w{data-label}
           end
         end
@@ -344,6 +347,7 @@ module Polytexnic
           chapter_number = 0
           section_number = 0
           subsection_number = 0
+          figure_number = 0
           doc.xpath('//*[@data-tralics-id]').each do |node|
             node['data-number'] = case node['class'].to_s
               when 'chapter'
@@ -358,6 +362,10 @@ module Polytexnic
                 sec_n = section_number.zero? ? 1 : section_number
                 "#{cha_n}.#{sec_n}.#{subsection_number += 1}"
               end
+            if node.name == 'figure'
+              cha_n = chapter_number.zero? ? 1 : chapter_number
+              node['data-number'] = "#{cha_n}.#{figure_number += 1}"
+            end
 
             # add number span
             if head = node.css('h2 a, h3 a, h4 a').first
@@ -396,17 +404,56 @@ module Polytexnic
           end
         end
 
-        # Restores blockquotes.
+        # Handles both \includegraphics and figure environments.
+        # The unified treatment comes from Tralics using the <figure> tag
+        # in both cases.
+        def graphics_and_figures(doc)
+          doc.xpath('//figure').each do |node|
+            node.name = 'div'
+            node['class'] = 'figure'
+            if internal_paragraph = node.at_css('p')
+              clean_node internal_paragraph, 'rend'
+            end
+            if node['file'] && node['extension']
+              filename = "#{node['file']}.#{node['extension']}"
+              alt = File.basename(node['file'])
+              img = %(<img src="#{filename}" alt="#{alt}" />)
+              graphic = %(<div class="graphics">#{img}</div>)
+              graphic_node = Nokogiri::HTML.fragment(graphic)
+              if caption = node.children.first
+                caption.add_previous_sibling(graphic_node)
+              else
+                node.add_child(graphic_node)
+              end
+              clean_node node, %w[file extension rend]
+            end
+            if caption = node.at_css('head')
+              caption.name = 'div'
+              caption['class'] = 'caption'
+              n = node['data-number']
+              header = %(<span class="header">Figure #{n}: </span>)
+              description = %(<span class="description">#{caption.content}</span>)
+              caption.inner_html = Nokogiri::HTML.fragment(header + description)
+            end
+            clean_node node, ['id-text']
+          end
+        end
+
+        # Restores quote and verse environemtns.
         # Annoyingly, this is the easiest way to do things.
         # What we really want to do is just make the substitutions
         # \begin{quote} -> <blockquote>
         # \end{quote} -> </blockquote>
         # but that's hard to do using Tralics and XML. As a kludge,
         # we insert a tag with unique name and gsub it at the end.
-        def blockquotes(html)
-          html.gsub("<start-#{blockquote}></start-#{blockquote}>",
-                    "<blockquote>\n").
-               gsub("<end-#{blockquote}></end-#{blockquote}></p>",
+        def quote_and_verse(html)
+          html.gsub("<start-#{quote_digest}></start-#{quote_digest}>",
+                    "<blockquote>").
+               gsub("<end-#{quote_digest}></end-#{quote_digest}></p>",
+                    "</p></blockquote>").
+               gsub("<start-#{verse_digest}></start-#{verse_digest}>",
+                    '<blockquote class="verse">').
+               gsub("<end-#{verse_digest}></end-#{verse_digest}></p>",
                     "</p>\n</blockquote>\n")
         end
 
@@ -432,9 +479,9 @@ module Polytexnic
         # to the valid
         #  <p>Preformatted text:</p> <pre>text</pre> <p>foo</p>
         def convert_to_html(doc)
-          body = doc.at_css('document').children.to_html
+          body = doc.at_css('document').children.to_xhtml
           fragment = highlight_source_code(body)
-          Nokogiri::HTML.fragment(fragment).to_html
+          Nokogiri::HTML.fragment(fragment).to_xhtml
         end
 
         # Cleans a node by removing all the given attributes.

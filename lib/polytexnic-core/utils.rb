@@ -12,7 +12,7 @@ module Polytexnic
 
       # Escapes backslashes.
       # Interpolated backslashes need extra escaping.
-      # We only escape '\\' by itself, i.e., a backslash followed by spaces 
+      # We only escape '\\' by itself, i.e., a backslash followed by spaces
       # or the end of line.
       def escape_backslashes(string)
         string.gsub(/\\(\s+|$)/) { '\\\\' + $1.to_s }
@@ -36,6 +36,11 @@ module Polytexnic
 \newcommand{\PolyTeXnic}{Poly{\TeX}nic}
         EOS
         commands + "\n"
+      end
+
+      # Returns true if we are debugging, false otherwise
+      def debug?
+        false
       end
     end
   end

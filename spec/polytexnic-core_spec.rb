@@ -65,7 +65,6 @@ Chapter~\ref{cha:foo}
       let(:output) { '\hyperref[cha:foo]{Chapter~\ref{cha:foo}' }
       it { should resemble output }
     end
-
   end
 
   describe '#to_html' do
@@ -96,12 +95,12 @@ lorem ipsum
         EOS
       end
 
-      it { should resemble "<p>lorem ipsum\n</p>" }
+      it { should resemble "<p>lorem ipsum</p>" }
     end
 
     describe "paragraph conversion" do
       let(:polytex) { 'lorem ipsum' }
-      it { should resemble "<p>lorem ipsum\n</p>" }
+      it { should resemble "<p>lorem ipsum</p>" }
       it { should_not resemble '<unknown>' }
     end
 
@@ -169,15 +168,13 @@ lorem ipsum
         should resemble <<-'EOS'
 <blockquote>
   <p>lorem ipsum</p>
-  <p>dolor sit amet
-  </p>
+  <p>dolor sit amet</p>
 </blockquote>
         EOS
       end
-    end
 
-    describe "nested quotes" do
-      let(:polytex) do <<-'EOS'
+      context "when nested" do
+        let(:polytex) do <<-'EOS'
 \begin{quote}
   lorem ipsum
 
@@ -187,26 +184,43 @@ lorem ipsum
 
   dolor sit amet
 \end{quote}
-        EOS
-      end
-      it do
-        should resemble <<-'EOS'
+          EOS
+        end
+        it do
+          should resemble <<-'EOS'
 <blockquote>
   <p>lorem ipsum</p>
   <blockquote>
-  <p>foo bar
-  </p>
+  <p>foo bar</p>
   </blockquote>
-  <p>dolor sit amet
-  </p>
+  <p>dolor sit amet</p>
 </blockquote>
-        EOS
+          EOS
+        end
       end
     end
 
     describe "verse" do
       let(:polytex) { '\verse{foo}' }
       it { should resemble "<blockquote class=\"verse\">foo\n</blockquote>" }
+    end
+
+    describe "verse environment" do
+      let(:polytex) do <<-'EOS'
+\begin{verse}
+  lorem ipsum\\
+  dolor sit amet
+\end{verse}
+        EOS
+      end
+      it do
+        should resemble <<-'EOS'
+<blockquote class="verse">
+  <p>lorem ipsum</p>
+  <p class="noindent">dolor sit amet</p>
+</blockquote>
+        EOS
+      end
     end
 
     describe "itemize" do
@@ -240,47 +254,46 @@ lorem ipsum
 </ul>
         EOS
       end
-    end
 
-    describe "itemized list preceded by text" do
-      let(:polytex) do <<-'EOS'
+      context "preceded by text" do
+        let(:polytex) do <<-'EOS'
 lorem ipsum
 
 \begin{itemize}
   \item Foo
   \item Bar
 \end{itemize}
-        EOS
-      end
-      it do
-        should resemble <<-'EOS'
+          EOS
+        end
+        it do
+          should resemble <<-'EOS'
 <p>lorem ipsum</p>
 <ul>
   <li>Foo</li>
   <li>Bar</li>
 </ul>
-        EOS
+         EOS
+        end
       end
-    end
-
-    describe "itemized list followed by text" do
-      let(:polytex) do <<-'EOS'
+      context "itemized list followed by text" do
+        let(:polytex) do <<-'EOS'
 \begin{itemize}
   \item Foo
   \item Bar
 \end{itemize}
 
 lorem ipsum
-        EOS
-      end
-      it do
-        should resemble <<-'EOS'
+          EOS
+        end
+        it do
+         should resemble <<-'EOS'
 <ul>
   <li>Foo</li>
   <li>Bar</li>
 </ul><p>lorem ipsum
 </p>
-        EOS
+          EOS
+        end
       end
     end
 
@@ -428,10 +441,10 @@ lorem ipsum
 
     describe 'missing cross-references' do
       let(:polytex) do <<-'EOS'
-          \chapter{Foo}
-          \label{cha:foo}
+\chapter{Foo}
+\label{cha:foo}
 
-          Chapter~\ref{cha:bar}
+Chapter~\ref{cha:bar}
         EOS
       end
 
@@ -491,6 +504,139 @@ lorem ipsum
       let(:polytex) { '\href{http://example.com/}{Example Site}' }
       let(:output) { '<a href="http://example.com/">Example Site</a>' }
       it { should resemble output }
+    end
+
+    describe "graphics" do
+      let(:polytex) do <<-'EOS'
+\includegraphics{foo.png}
+        EOS
+      end
+
+      it do
+        should resemble <<-'EOS'
+<div class="graphics">
+  <img src="foo.png" alt="foo" />
+</div>
+        EOS
+      end
+    end
+
+    describe "figures" do
+      let(:polytex) do <<-'EOS'
+\begin{figure}
+lorem
+\end{figure}
+        EOS
+      end
+
+      it do
+        should resemble <<-'EOS'
+<div id="uid1" data-tralics-id="uid1" data-number="1.1" class="figure">
+  <p>lorem</p>
+</div>
+        EOS
+      end
+
+      context "with included graphics" do
+        let(:polytex) do <<-'EOS'
+\begin{figure}
+\includegraphics{images/foo.png}
+\end{figure}
+          EOS
+        end
+
+        it do
+          should resemble <<-'EOS'
+<div id="uid1" data-tralics-id="uid1" data-number="1.1" class="figure">
+  <div class="graphics">
+    <img src="images/foo.png" alt="foo" />
+  </div>
+</div>
+          EOS
+        end
+      end
+
+      context "with a caption" do
+        let(:polytex) do <<-'EOS'
+ \chapter{The chapter}
+
+ \begin{figure}
+ \includegraphics{foo.png}
+ \caption{This is a caption.}
+ \end{figure}
+
+ \begin{figure}
+ \includegraphics{bar.png}
+ \caption{This is another caption.}
+ \end{figure}
+           EOS
+         end
+
+         it do
+           should resemble <<-'EOS'
+<div id="cid1" data-tralics-id="cid1" class="chapter" data-number="1">
+  <h3>
+    <a href="#cid1" class="heading">
+    <span class="number">1 </span>The chapter</a>
+  </h3>
+  <div id="uid1" data-tralics-id="uid1" data-number="1.1" class="figure">
+    <div class="graphics">
+      <img src="foo.png" alt="foo" />
+    </div>
+    <div class="caption">
+      <span class="header">Figure 1.1: </span>
+      <span class="description">This is a caption.</span>
+    </div>
+  </div>
+  <div id="uid2" data-tralics-id="uid2" data-number="1.2" class="figure">
+    <div class="graphics">
+      <img src="bar.png" alt="bar" />
+    </div>
+    <div class="caption">
+      <span class="header">Figure 1.2: </span>
+      <span class="description">This is another caption.</span>
+    </div>
+  </div>
+</div>
+          EOS
+        end
+      end
+
+      context "with a label and cross-reference" do
+        let(:polytex) do <<-'EOS'
+ \chapter{The chapter}
+ \label{cha:lorem_ipsum}
+
+ \begin{figure}
+ \includegraphics{foo.png}
+ \caption{This is a caption.\label{fig:foo}}
+ \end{figure}
+
+ Figure~\ref{fig:foo}
+           EOS
+         end
+
+         it do
+           should resemble <<-'EOS'
+<div id="cha-lorem_ipsum" data-tralics-id="cid1" class="chapter" data-number="1">
+  <h3>
+    <a href="#cha-lorem_ipsum" class="heading">
+    <span class="number">1 </span>The chapter</a>
+  </h3>
+  <div id="fig-foo" data-tralics-id="uid1" data-number="1.1" class="figure">
+    <div class="graphics">
+      <img src="foo.png" alt="foo" />
+    </div>
+    <div class="caption">
+      <span class="header">Figure 1.1: </span>
+      <span class="description">This is a caption.</span>
+    </div>
+  </div>
+  <p><a href="#fig-foo" class="hyperref">Figure <span class="ref">1.1</span></a></p>
+</div>
+          EOS
+        end
+      end
     end
   end
 end

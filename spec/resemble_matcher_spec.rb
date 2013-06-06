@@ -60,4 +60,10 @@ describe "custom 'resemble' matcher" do
 
     expect(foo).to resemble bar
   end
+
+  it "should handle HTML fragments identical up to whitespace" do
+    foo = "<em>    foobar\n</em>"
+    bar = "<em>foobar</em>"
+    expect(foo).to resemble bar
+  end
 end

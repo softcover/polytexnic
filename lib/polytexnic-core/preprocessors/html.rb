@@ -7,13 +7,16 @@ module Polytexnic
       def to_xml
         tralics = `which tralics`.strip
         file = Tempfile.new(['polytex', '.tex'])
-        file.write process_for_tralics(@polytex)
+        polytex = process_for_tralics(@polytex)
+        puts polytex if debug?
+        file.write(polytex)
         file.close
         Dir.mkdir 'log' unless File.directory?('log')
         system("#{tralics} -nomathml #{file.path} > log/tralics.log")
         dirname = File.dirname(file.path)
         xml_filename = File.basename(file.path, '.tex') + '.xml'
         raw_xml = clean_xml File.read(File.join(dirname, xml_filename))
+        puts raw_xml if debug?
         doc = Nokogiri::XML(raw_xml)
         add_document_tag(doc)
         @xml = doc.to_xml
@@ -60,14 +63,15 @@ module Polytexnic
 
         # preserve label names
         output.gsub! /\\label\{(.*?)\}/ do |s|
-          "#{s}\n\\AddAttToCurrent{data-label}{#{$1}}"
+          label = $1.gsub(':', '-').gsub('_', underscore_digest)
+          "#{s}\n\\xbox{data-label}{#{label}}"
         end
 
         output.gsub! /\\chapter\{(.*?)\}/ do |s|
           "#{s}\n\\AddAttToCurrent{type}{chapter}"
         end
 
-        # Handles quote environments, which Tralics does wrong.
+        # Handles quote and verse environments, which Tralics does wrong.
         # Tralics converts
         # \begin{quote}
         #   foo
@@ -84,8 +88,10 @@ module Polytexnic
         # </blockquote>
         # which can't easily be inferred from the Tralics output. (It gets
         # worse if you want to support nested blockquotes, which we do.)
-        output.gsub!(/\\begin{quote}/, "\\xmlemptyelt{start-#{blockquote}}")
-        output.gsub!(/\\end{quote}/, "\\xmlemptyelt{end-#{blockquote}}")
+        output.gsub!(/\\begin{quote}/, "\\xmlemptyelt{start-#{quote_digest}}")
+        output.gsub!(/\\end{quote}/, "\\xmlemptyelt{end-#{quote_digest}}")
+        output.gsub!(/\\begin{verse}/, "\\xmlemptyelt{start-#{verse_digest}}")
+        output.gsub!(/\\end{verse}/, "\\xmlemptyelt{end-#{verse_digest}}")
 
         output
       end
