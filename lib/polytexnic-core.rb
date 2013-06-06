@@ -44,12 +44,19 @@ module Polytexnic
 
       # Returns a digest for use in quote environments.
       def quote_digest
-        @quote_digest ||= digest(Time.now.to_s)
+        @quote_digest ||= digest(Time.now.to_s + "quote")
       end
 
       # Returns a digest for use in verse environments.
       def verse_digest
-        @verse_digest ||= digest(Time.now.to_s)
+        @verse_digest ||= digest(Time.now.to_s + "verse")
+      end
+
+      # Returns a digest for use in labels.
+      # I like to use labels of the form cha:foo_bar, but for some reason
+      # Tralics removes the underscore in this case.
+      def underscore_digest
+        @underscore_digest ||= digest(Time.now.to_s + "_")
       end
     end
   end

@@ -63,7 +63,7 @@ module Polytexnic
 
         # preserve label names
         output.gsub! /\\label\{(.*?)\}/ do |s|
-          label = $1.gsub(':', '-')
+          label = $1.gsub(':', '-').gsub('_', underscore_digest)
           "#{s}\n\\xbox{data-label}{#{label}}"
         end
 

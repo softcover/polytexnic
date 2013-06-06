@@ -258,7 +258,7 @@ module Polytexnic
 
             node['data-tralics-id'] = node['id']
             if label = node.at_css('data-label')
-              node['id'] = label.inner_html
+              node['id'] = label.inner_html.gsub(underscore_digest, '_')
               label.remove
             end
             clean_node node, %w{data-label}

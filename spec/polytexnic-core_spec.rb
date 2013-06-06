@@ -605,7 +605,7 @@ lorem
       context "with a label and cross-reference" do
         let(:polytex) do <<-'EOS'
  \chapter{The chapter}
- \label{cha:the}
+ \label{cha:lorem_ipsum}
 
  \begin{figure}
  \includegraphics{foo.png}
@@ -618,9 +618,9 @@ lorem
 
          it do
            should resemble <<-'EOS'
-<div id="cha-the" data-tralics-id="cid1" class="chapter" data-number="1">
+<div id="cha-lorem_ipsum" data-tralics-id="cid1" class="chapter" data-number="1">
   <h3>
-    <a href="#cha-the" class="heading">
+    <a href="#cha-lorem_ipsum" class="heading">
     <span class="number">1 </span>The chapter</a>
   </h3>
   <div id="fig-foo" data-tralics-id="uid1" data-number="1.1" class="figure">
