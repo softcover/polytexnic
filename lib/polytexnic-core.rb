@@ -27,6 +27,7 @@ module Polytexnic
         @polytex = add_commands(polytex)
         preprocess(:html)
         postprocess(:html)
+        puts @html if debug?
         @html
       end
 
