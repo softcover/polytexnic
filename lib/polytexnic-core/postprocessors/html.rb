@@ -257,8 +257,10 @@ module Polytexnic
             next if node['id'] =~ /footnote/
 
             node['data-tralics-id'] = node['id']
-            node['id'] = node['data-label'].gsub(/:/, '-') if node['data-label']
-
+            if label = node.at_css('data-label')
+              node['id'] = label.inner_html
+              label.remove
+            end
             clean_node node, %w{data-label}
           end
         end
@@ -403,6 +405,8 @@ module Polytexnic
         end
 
         # Handles both \includegraphics and figure environments.
+        # The unified treatment comes from Tralics using the <figure> tag
+        # in both cases.
         def graphics_and_figures(doc)
           doc.xpath('//figure').each do |node|
             node.name = 'div'
@@ -416,9 +420,8 @@ module Polytexnic
               img = %(<img src="#{filename}" alt="#{alt}" />)
               graphic = %(<div class="graphics">#{img}</div>)
               graphic_node = Nokogiri::HTML.fragment(graphic)
-              if child = node.children.first
-                # This is the case when there's a caption.
-                child.add_previous_sibling(graphic_node)
+              if caption = node.children.first
+                caption.add_previous_sibling(graphic_node)
               else
                 node.add_child(graphic_node)
               end

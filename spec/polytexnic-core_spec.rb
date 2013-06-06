@@ -602,9 +602,10 @@ lorem
         end
       end
 
-      context "with a label" do
+      context "with a label and cross-reference" do
         let(:polytex) do <<-'EOS'
  \chapter{The chapter}
+ \label{cha:the}
 
  \begin{figure}
  \includegraphics{foo.png}
@@ -616,17 +617,20 @@ lorem
          end
 
          it do
-           pending
            should resemble <<-'EOS'
-<div id="cid1" data-tralics-id="cid1" class="chapter" data-number="1">
-  <div id="fig-foo" class="figure">
-   <div class="graphics">
+<div id="cha-the" data-tralics-id="cid1" class="chapter" data-number="1">
+  <h3>
+    <a href="#cha-the" class="heading">
+    <span class="number">1 </span>The chapter</a>
+  </h3>
+  <div id="fig-foo" data-tralics-id="uid1" data-number="1.1" class="figure">
+    <div class="graphics">
       <img src="foo.png" alt="foo" />
-      <div class="caption"
-        <span class="header">Figure 1.1:</span>
-        <span class="description">This is a caption.</span>
-      </div>
-   </div>
+    </div>
+    <div class="caption">
+      <span class="header">Figure 1.1: </span>
+      <span class="description">This is a caption.</span>
+    </div>
   </div>
   <p><a href="#fig-foo" class="hyperref">Figure <span class="ref">1.1</span></a></p>
 </div>
