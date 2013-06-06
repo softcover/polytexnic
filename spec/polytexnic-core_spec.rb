@@ -26,6 +26,7 @@ end
       EOS
       end
 
+      it { should resemble "commandchars=\\\\\\{" }
       it { should resemble '\begin{Verbatim}' }
       it { should resemble 'commandchars' }
       it { should resemble '\end{Verbatim}' }

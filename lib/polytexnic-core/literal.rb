@@ -38,7 +38,7 @@ module Polytexnic
           output << xmlelement(element(literal_type), latex) do
             count = 1
             text = []
-            text << line if line.math_environment? || latex
+            text << line if line.math_environment? || (latex && !language)
             while (line = lines.shift)
               if line.begin_literal?(literal_type)
                 count += 1
@@ -46,7 +46,7 @@ module Polytexnic
                 count -= 1
                 if count == 0
                   in_verbatim = false
-                  text << line if line.math_environment? || latex
+                  text << line if line.math_environment? || (latex && !language)
                   break
                 end
               end
