@@ -54,6 +54,27 @@ lorem ipsum
         expect { processed_text }.to raise_error
       end
     end
+
+    context "containing a code environment" do
+      let(:polytex) do <<-'EOS'
+\begin{verbatim}
+\begin{code}
+\emph{foo bar}
+\end{code}
+\end{verbatim}
+lorem ipsum
+       EOS
+      end
+
+      let(:output) do <<-'EOS'
+\begin{code}
+\emph{foo bar}
+\end{code}
+       EOS
+      end
+
+      it { should resemble output }
+    end
   end
 
   describe "Verbatim environments" do

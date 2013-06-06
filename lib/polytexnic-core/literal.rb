@@ -42,7 +42,7 @@ module Polytexnic
             text = []
             text << line if line.math_environment? || latex
             while (line = lines.shift)
-              if line.begin_literal?
+              if line.begin_literal?(literal_type)
                 count += 1
               elsif line.end_literal?(literal_type)
                 count -= 1
@@ -138,9 +138,9 @@ end
 class String
 
   # Returns true if self matches \begin{...} where ... is a literal environment.
-  def begin_literal?
-    literal = "(?:verbatim|Verbatim|code|#{math_environment_regex})"
-    match(/^\s*\\begin{#{literal}}\s*$/)
+  def begin_literal?(literal_type = nil)
+    literal_type ||= "(?:verbatim|Verbatim|code|#{math_environment_regex})"
+    match(/^\s*\\begin{#{literal_type}}\s*$/)
   end
 
   def end_literal?(literal_type)
