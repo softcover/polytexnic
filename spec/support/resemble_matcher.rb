@@ -11,12 +11,12 @@ RSpec::Matchers.define :resemble do |expected|
     end
 
     failure_message_for_should do |actual|
-      debug_output
+      debug_output(expected, actual)
       "expected #{actual.robust} to resemble #{expected.robust}"
     end
 
     failure_message_for_should_not do |actual|
-      print_output expected, actual if Polytexnic::Core::Utils.debug?
+      debug_output(expected, actual)
       "expected #{actual.robust} not to resemble #{expected.robust}"
     end
 
