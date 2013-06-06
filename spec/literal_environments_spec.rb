@@ -75,6 +75,29 @@ lorem ipsum
 
       it { should resemble output }
     end
+
+    context "containing a highlighted code environment" do
+      let(:polytex) do <<-'EOS'
+\begin{verbatim}
+%= lang:ruby
+\begin{code}
+foo ||= bar
+\end{code}
+\end{verbatim}
+lorem ipsum
+       EOS
+      end
+
+      let(:output) do <<-'EOS'
+%= lang:ruby
+\begin{code}
+foo ||= bar
+\end{code}
+       EOS
+      end
+
+      it { should resemble output }
+    end
   end
 
   describe "Verbatim environments" do

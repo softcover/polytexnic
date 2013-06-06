@@ -38,6 +38,18 @@ module Polytexnic
         commands + "\n"
       end
 
+      # Highlights source code.
+      def highlight_source_code(document, formatter = 'html')
+        document.tap do
+          code_cache.each do |key, (content, language)|
+            code = Pygments.highlight(content,
+                                      lexer: language,
+                                      formatter: formatter)
+            document.gsub!(key, code)
+          end
+        end
+      end
+
       # Returns true if we are debugging, false otherwise
       def debug?
         false
