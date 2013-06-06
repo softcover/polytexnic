@@ -11,17 +11,21 @@ RSpec::Matchers.define :resemble do |expected|
     end
 
     failure_message_for_should do |actual|
-      print_output expected, actual if debug?
+      debug_output
       "expected #{actual.robust} to resemble #{expected.robust}"
     end
 
     failure_message_for_should_not do |actual|
-      print_output expected, actual if debug?
+      print_output expected, actual if Polytexnic::Core::Utils.debug?
       "expected #{actual.robust} not to resemble #{expected.robust}"
     end
 
     expect(actual.robust).to match_regex(regex)
   end
+end
+
+def debug_output(expected, actual)
+  print_output expected, actual if Polytexnic::Core::Utils.debug?
 end
 
 # Prints the robust versions of the two strings

@@ -50,11 +50,6 @@ module Polytexnic
       def verse_digest
         @verse_digest ||= digest(Time.now.to_s)
       end
-
-      # Returns true if we are debugging, false otherwise
-      def debug?
-        false
-      end
     end
   end
 end
