@@ -1,4 +1,5 @@
 # encoding=utf-8
+require 'polytexnic-core'
 
 RSpec::Matchers.define :resemble do |expected|
   match do |actual|
@@ -8,18 +9,14 @@ RSpec::Matchers.define :resemble do |expected|
     elsif expected.is_a?(Regexp)
       regex = %r{#{expected.to_s.robust}}
     end
-    # the puts' below help a lot for debugging, leaving in for now
-    # puts expected.robust
-    # puts actual.robust
-
 
     failure_message_for_should do |actual|
-      print_output expected, actual
+      print_output expected, actual if debug?
       "expected #{actual.robust} to resemble #{expected.robust}"
     end
 
     failure_message_for_should_not do |actual|
-      print_output expected, actual
+      print_output expected, actual if debug?
       "expected #{actual.robust} not to resemble #{expected.robust}"
     end
 
