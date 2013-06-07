@@ -726,19 +726,24 @@ Figure~\ref{fig:foo}
 
     describe "code listings" do
       let(:polytex) do <<-'EOS'
+\chapter{Foo bar}
+
 \begin{codelisting}
-\label{code:create_gemrc}
 Creating a gem configuration file.
+\label{code:create_gemrc}
 %= lang:console
 \begin{code}
 $ subl .gemrc
 \end{code}
 \end{codelisting}
+
+Listing~\ref{code:create_gemrc}
         EOS
       end
 
       it do
         should resemble <<-'EOS'
+<div id="cid1" data-tralics-id="cid1" class="chapter" data-number="1"><h3><a href="#cid1" class="heading"><span class="number">1 </span>Foo bar</a></h3>
 <div class="codelisting">
   <div class="listing">
     <span class="header">Listing 1.1.</span>
@@ -749,6 +754,7 @@ $ subl .gemrc
       <pre><span class="gp">$</span> subl .gemrc</pre>
     </div>
   </div>
+  <p><a href="#code-create_gemrc" class="hyperref">Listing 1.1</span></a>
 </div>
         EOS
       end

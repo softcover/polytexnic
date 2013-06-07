@@ -23,6 +23,7 @@ module Polytexnic
         set_ids(doc)
         chapters_and_section(doc)
         subsection(doc)
+        code_listings(doc)
         title(doc)
         smart_single_quotes(doc)
         restore_literal(doc)
@@ -291,8 +292,16 @@ module Polytexnic
           doc.xpath('//div1').each do |node|
             node.name = 'div'
             node['class'] = 'subsection'
-            clean_node node, %w{}
             make_headings(doc, node, 'h4')
+          end
+        end
+
+        # Process code listings for cross-references.
+        def code_listings(doc)
+          doc.xpath('//p["codelisting"]').each do |node|
+            node.name = 'div'
+            node['class'] = 'codelisting'
+            clean_node node, 'type'
           end
         end
 
