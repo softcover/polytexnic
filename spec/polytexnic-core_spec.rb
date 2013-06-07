@@ -403,8 +403,8 @@ lorem ipsum
         EOS
       end
       let(:output) do <<-'EOS'
-        <div id="sec-foo" data-tralics-id="cid1" class="section" data-number="1.1">
-          <h3><a href="#sec-foo" class="heading"><span class="number">1.1 </span>Foo</a></h3>
+        <div id="sec-foo" data-tralics-id="cid1" class="section" data-number="1">
+          <h3><a href="#sec-foo" class="heading"><span class="number">1 </span>Foo</a></h3>
         </div>
         EOS
       end
@@ -422,10 +422,10 @@ lorem ipsum
       end
 
       let(:output) do <<-'EOS'
-        <div id="sec-foo" data-tralics-id="cid1" class="section" data-number="1.1">
-          <h3><a href="#sec-foo" class="heading"><span class="number">1.1 </span>Foo</a></h3>
-          <div id="sec-bar" data-tralics-id="uid1" class="subsection" data-number="1.1.1">
-            <h4><a href="#sec-bar" class="heading"><span class="number">1.1.1 </span>Bar</a></h4>
+        <div id="sec-foo" data-tralics-id="cid1" class="section" data-number="1">
+          <h3><a href="#sec-foo" class="heading"><span class="number">1 </span>Foo</a></h3>
+          <div id="sec-bar" data-tralics-id="uid1" class="subsection" data-number="1.1">
+            <h4><a href="#sec-bar" class="heading"><span class="number">1.1 </span>Bar</a></h4>
           </div>
         </div>
         EOS
@@ -547,7 +547,7 @@ lorem
 
       it do
         should resemble <<-'EOS'
-<div id="uid1" data-tralics-id="uid1" data-number="1.1" class="figure">
+<div id="uid1" data-tralics-id="uid1" data-number="1" class="figure">
   <p>lorem</p>
 </div>
         EOS
@@ -563,7 +563,7 @@ lorem
 
         it do
           should resemble <<-'EOS'
-<div id="uid1" data-tralics-id="uid1" data-number="1.1" class="figure">
+<div id="uid1" data-tralics-id="uid1" data-number="1" class="figure">
   <div class="graphics">
     <img src="images/foo.png" alt="foo" />
   </div>

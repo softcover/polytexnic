@@ -6,10 +6,11 @@ module Polytexnic
 
       # Restores literal environments (verbatim, code, math, etc.).
       def replace_hashes(polytex)
-        literal_cache.each do |key, value|
-          polytex.gsub!(key, escape_backslashes(value))
+        polytex.tap do
+          literal_cache.each do |key, value|
+            polytex.gsub!(key, escape_backslashes(value))
+          end
         end
-        polytex
       end
     end
   end
