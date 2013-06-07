@@ -257,15 +257,32 @@ module Polytexnic
             next if node['id'] =~ /footnote/
 
             node['data-tralics-id'] = node['id']
-            node.children.each do |child|
-              if child.name == 'data-label'
-                node['id'] = child.inner_html.gsub(underscore_digest, '_')
-                child.remove
-                break
-              end
-            end
+            convert_labels(node)
             clean_node node, %w{data-label}
           end
+          doc.xpath('//figure').each do |node|
+            if label = node.at_css('data-label')
+              node['id'] = pipeline_label(label)
+              label.remove
+              clean_node node, %w{data-label}
+            end
+          end
+        end
+
+        def convert_labels(node)
+          node.children.each do |child|
+            if child.name == 'data-label'
+              node['id'] = pipeline_label(child)
+              child.remove
+              break
+            end
+          end
+        end
+
+        # Returns a label for the pipeline.
+        # Tralics does weird stuff with underscores, so sub them out.
+        def pipeline_label(node)
+          node.inner_html.gsub(underscore_digest, '_')
         end
 
         # Given a section node, process the <head> tag.
