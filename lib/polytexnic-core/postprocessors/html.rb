@@ -424,10 +424,17 @@ module Polytexnic
               end
               clean_node node, %w[file extension rend]
             end
-            if caption = node.at_css('head')
-              caption.name = 'div'
-              caption['class'] = 'caption'
-              n = node['data-number']
+            unless caption = node.at_css('head')
+              caption = Nokogiri::XML::Node.new('div', doc)
+              node.add_child(caption)
+            end
+            caption.name = 'div'
+            caption['class'] = 'caption'
+            n = node['data-number']
+            if caption.content.empty?
+              header = %(<span class="header">Figure #{n}</span>)
+              caption.inner_html = header
+            else
               header = %(<span class="header">Figure #{n}: </span>)
               description = %(<span class="description">#{caption.content}</span>)
               caption.inner_html = Nokogiri::HTML.fragment(header + description)

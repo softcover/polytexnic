@@ -549,6 +549,9 @@ lorem
         should resemble <<-'EOS'
 <div id="uid1" data-tralics-id="uid1" data-number="1" class="figure">
   <p>lorem</p>
+  <div class="caption">
+    <span class="header">Figure 1</span>
+  </div>
 </div>
         EOS
       end
@@ -566,6 +569,9 @@ lorem
 <div id="uid1" data-tralics-id="uid1" data-number="1" class="figure">
   <div class="graphics">
     <img src="images/foo.png" alt="foo" />
+  </div>
+  <div class="caption">
+    <span class="header">Figure 1</span>
   </div>
 </div>
           EOS
