@@ -576,6 +576,30 @@ lorem
         EOS
       end
 
+      context "with a label and a cross-reference" do
+        let(:polytex) do <<-'EOS'
+\begin{figure}
+lorem
+\label{fig:foo}
+\end{figure}
+
+Figure~\ref{fig:foo}
+          EOS
+        end
+
+        it do
+          should resemble <<-'EOS'
+<div id="fig-foo" data-tralics-id="uid1" data-number="1" class="figure">
+  <p>lorem</p>
+  <div class="caption">
+    <span class="header">Figure 1</span>
+  </div>
+</div>
+<p><a href="#fig-foo" class="hyperref">Figure <span class="ref">1</span></a></p>
+          EOS
+        end
+      end
+
       context "with included graphics" do
         let(:polytex) do <<-'EOS'
 \begin{figure}
@@ -600,17 +624,17 @@ lorem
 
       context "with a caption" do
         let(:polytex) do <<-'EOS'
- \chapter{The chapter}
+\chapter{The chapter}
 
- \begin{figure}
- \includegraphics{foo.png}
- \caption{This is a caption.}
- \end{figure}
+\begin{figure}
+\includegraphics{foo.png}
+\caption{This is a caption.}
+\end{figure}
 
- \begin{figure}
- \includegraphics{bar.png}
- \caption{This is another caption.}
- \end{figure}
+\begin{figure}
+\includegraphics{bar.png}
+\caption{This is another caption.}
+\end{figure}
            EOS
          end
 
@@ -644,7 +668,7 @@ lorem
         end
       end
 
-      context "with a label and cross-reference" do
+      context "with labels and cross-reference" do
         let(:polytex) do <<-'EOS'
  \chapter{The chapter}
  \label{cha:lorem_ipsum}
@@ -654,7 +678,13 @@ lorem
  \caption{This is a caption.\label{fig:foo}}
  \end{figure}
 
- Figure~\ref{fig:foo}
+\begin{figure}
+\includegraphics{bar.png}
+\caption{This is another caption.\label{fig:bar}}
+\end{figure}
+
+
+ Figure~\ref{fig:foo} and Figure~\ref{fig:bar}
            EOS
          end
 
@@ -674,7 +704,20 @@ lorem
       <span class="description">This is a caption.</span>
     </div>
   </div>
-  <p><a href="#fig-foo" class="hyperref">Figure <span class="ref">1.1</span></a></p>
+  <div id="fig-bar" data-tralics-id="uid2" data-number="1.2" class="figure">
+    <div class="graphics">
+      <img src="bar.png" alt="bar" />
+    </div>
+    <div class="caption">
+      <span class="header">Figure 1.2: </span>
+      <span class="description">This is another caption.</span>
+    </div>
+  </div>
+  <p>
+    <a href="#fig-foo" class="hyperref">Figure <span class="ref">1.1</span></a>
+    and
+    <a href="#fig-bar" class="hyperref">Figure <span class="ref">1.2</span></a>
+  </p>
 </div>
           EOS
         end
