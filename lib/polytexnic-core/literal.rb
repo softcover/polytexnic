@@ -133,7 +133,7 @@ class String
 
   # Returns true if self matches \begin{...} where ... is a literal environment.
   def begin_literal?(literal_type = nil)
-    literal_type ||= "(?:verbatim|Verbatim|code|#{math_environment_regex})"
+    literal_type ||= "(?:verbatim|Verbatim|code|metacode|#{math_environment_regex})"
     match(/^\s*\\begin{#{literal_type}}\s*$/)
   end
 

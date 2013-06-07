@@ -23,7 +23,7 @@ end
 \end{code}
 
 \noindent lorem ipsum
-      EOS
+        EOS
       end
 
       it { should resemble "commandchars=\\\\\\{" }
@@ -38,6 +38,26 @@ end
         it { should resemble '\verb' }
         it { should_not resemble '<div class="highlight">' }
       end
+    end
+
+    context "with the metacode environment" do
+      let(:polytex) do <<-'EOS'
+%= lang:latex
+\begin{metacode}
+%= lang:ruby
+\begin{code}
+def foo
+  "bar"
+end
+\end{code}
+\end{metacode}
+
+\noindent lorem ipsum
+        EOS
+      end
+
+      it { should resemble "commandchars=\\\\\\{" }
+      it { should_not resemble '%= lang:ruby' }
     end
 
     describe "verbatim environments" do
