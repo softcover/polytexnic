@@ -251,16 +251,18 @@ module Polytexnic
         end
 
         # Set the Tralics ids.
-        # These aren't used, but there's little reason to throw them away.
         def set_ids(doc)
           doc.xpath('//*[@id]').each do |node|
             # TODO: make whitelist of non-tralics id's
             next if node['id'] =~ /footnote/
 
             node['data-tralics-id'] = node['id']
-            if label = node.at_css('data-label')
-              node['id'] = label.inner_html.gsub(underscore_digest, '_')
-              label.remove
+            node.children.each do |child|
+              if child.name == 'data-label'
+                node['id'] = child.inner_html.gsub(underscore_digest, '_')
+                child.remove
+                break
+              end
             end
             clean_node node, %w{data-label}
           end
@@ -296,12 +298,22 @@ module Polytexnic
           end
         end
 
-        # Process code listings for cross-references.
+        # Process code listings.
         def code_listings(doc)
-          doc.xpath('//p["codelisting"]').each do |node|
+          doc.xpath('//p[@type="codelisting"]').each do |node|
             node.name = 'div'
             node['class'] = 'codelisting'
             clean_node node, 'type'
+            heading, description = node.children[0..1]
+            listing = Nokogiri::HTML.fragment <<-EOS
+<div class="listing">
+  <span class="header">#{heading.content}.</span>
+  <span class="description">#{description.content}</span>
+</div>
+            EOS
+            heading.remove
+            description.remove
+            node.children.first.add_previous_sibling listing
           end
         end
 
@@ -362,6 +374,8 @@ module Polytexnic
                                   elsif node['class'] == 'subsection'
                                     @subsec = node['id-text']
                                     label_number(@cha, @sec, @subsec)
+                                  elsif node['class'] == 'codelisting'
+                                    node['id-text']
                                   elsif node.name == 'figure'
                                     @fig = node['id-text']
                                     label_number(@cha, @fig)
