@@ -723,5 +723,35 @@ Figure~\ref{fig:foo}
         end
       end
     end
+
+    describe "code listings" do
+      let(:polytex) do <<-'EOS'
+\begin{codelisting}
+\label{code:create_gemrc}
+Creating a gem configuration file.
+%= lang:console
+\begin{code}
+$ subl .gemrc
+\end{code}
+\end{codelisting}
+        EOS
+      end
+
+      it do
+        should resemble <<-'EOS'
+<div class="codelisting">
+  <div class="listing">
+    <span class="header">Listing 1.1.</span>
+    <span class="description">Creating a gem configuration file.</span>
+  </div>
+  <div class="code"
+    <div class="highlight">
+      <pre><span class="gp">$</span> subl .gemrc</pre>
+    </div>
+  </div>
+</div>
+        EOS
+      end
+    end
   end
 end
