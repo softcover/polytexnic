@@ -15,60 +15,52 @@ module Polytexnic
 
         # Processes the input PolyTeX for Tralics.
         def process_for_tralics(polytex)
-          output = clean_document(polytex)
-          make_hyperrefs(output)
+          clean_document(polytex).tap do |output|
+            hyperrefs(output)
+            title_fields(output)
 
-          # handle title fields
-          %w{title subtitle author date}.each do |field|
-            output.gsub! /\\#{field}\{(.*?)\}/ do |s|
-              Polytexnic.instance_variable_set "@#{field}", $1
-              ''
+            output.gsub! /\\maketitle/ do |s|
+              xmlelement('maketitle')
             end
+
+            # preserve label names
+            output.gsub! /\\label\{(.*?)\}/ do |s|
+              label = $1.gsub(':', '-').gsub('_', underscore_digest)
+              "#{s}\n\\xbox{data-label}{#{label}}"
+            end
+
+            # Mark chapters with a 'chapter' type.
+            output.gsub! /\\chapter\{(.*?)\}/ do |s|
+              "#{s}\n\\AddAttToCurrent{type}{chapter}"
+            end
+
+            # Mark code listings with a 'codelisting' type.
+            output.gsub! /\\begin\{codelisting\}/ do |s|
+              "#{s}\n\\AddAttToCurrent{type}{codelisting}"
+            end
+
+            # Handles quote and verse environments, which Tralics does wrong.
+            # Tralics converts
+            # \begin{quote}
+            #   foo
+            #
+            #   bar
+            # \end{quote}
+            # into
+            # <p rend='quoted'>foo</p>
+            # <p rend='quoted'>bar</p>
+            # But we want the HTML to be
+            # <blockquote>
+            #   <p>foo</p>
+            #   <p>bar</p>
+            # </blockquote>
+            # which can't easily be inferred from the Tralics output. (It gets
+            # worse if you want to support nested blockquotes, which we do.)
+            output.gsub!(/\\begin{quote}/, "\\xmlemptyelt{start-#{quote_digest}}")
+            output.gsub!(/\\end{quote}/, "\\xmlemptyelt{end-#{quote_digest}}")
+            output.gsub!(/\\begin{verse}/, "\\xmlemptyelt{start-#{verse_digest}}")
+            output.gsub!(/\\end{verse}/, "\\xmlemptyelt{end-#{verse_digest}}")
           end
-
-          output.gsub! /\\maketitle/ do |s|
-            xmlelement('maketitle')
-          end
-
-          # preserve label names
-          output.gsub! /\\label\{(.*?)\}/ do |s|
-            label = $1.gsub(':', '-').gsub('_', underscore_digest)
-            "#{s}\n\\xbox{data-label}{#{label}}"
-          end
-
-          # Mark chapters with a 'chapter' type.
-          output.gsub! /\\chapter\{(.*?)\}/ do |s|
-            "#{s}\n\\AddAttToCurrent{type}{chapter}"
-          end
-
-          # Mark code listings with a 'codelisting' type.
-          output.gsub! /\\begin\{codelisting\}/ do |s|
-            "#{s}\n\\AddAttToCurrent{type}{codelisting}"
-          end
-
-          # Handles quote and verse environments, which Tralics does wrong.
-          # Tralics converts
-          # \begin{quote}
-          #   foo
-          #
-          #   bar
-          # \end{quote}
-          # into
-          # <p rend='quoted'>foo</p>
-          # <p rend='quoted'>bar</p>
-          # But we want the HTML to be
-          # <blockquote>
-          #   <p>foo</p>
-          #   <p>bar</p>
-          # </blockquote>
-          # which can't easily be inferred from the Tralics output. (It gets
-          # worse if you want to support nested blockquotes, which we do.)
-          output.gsub!(/\\begin{quote}/, "\\xmlemptyelt{start-#{quote_digest}}")
-          output.gsub!(/\\end{quote}/, "\\xmlemptyelt{end-#{quote_digest}}")
-          output.gsub!(/\\begin{verse}/, "\\xmlemptyelt{start-#{verse_digest}}")
-          output.gsub!(/\\end{verse}/, "\\xmlemptyelt{end-#{verse_digest}}")
-
-          output
         end
 
         # Returns a clean document with cached literal environments.
@@ -78,6 +70,16 @@ module Polytexnic
         # global substitutions.
         def clean_document(polytex)
           cache_unicode(make_caches(add_commands(polytex)))
+        end
+
+        # Handles title fields.
+        def title_fields(output)
+          %w{title subtitle author date}.each do |field|
+            output.gsub! /\\#{field}\{(.*?)\}/ do |s|
+              Polytexnic.instance_variable_set "@#{field}", $1
+              ''
+            end
+          end
         end
 
         # Adds some default commands.

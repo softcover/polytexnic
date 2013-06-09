@@ -399,6 +399,10 @@ lorem ipsum
           <h2 class="date">Jan 1, 1971</h2>
         EOS
       end
+
+      it "should not have repeated title elements" do
+        expect(processed_text.scan(/Leslie Lamport/).length).to eq 1
+      end
     end
 
     describe '\chapter' do
