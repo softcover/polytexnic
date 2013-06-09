@@ -18,16 +18,8 @@ module Polytexnic
           clean_document(polytex).tap do |output|
             hyperrefs(output)
             title_fields(output)
-
-            output.gsub! /\\maketitle/ do |s|
-              xmlelement('maketitle')
-            end
-
-            # preserve label names
-            output.gsub! /\\label\{(.*?)\}/ do |s|
-              label = $1.gsub(':', '-').gsub('_', underscore_digest)
-              "#{s}\n\\xbox{data-label}{#{label}}"
-            end
+            maketitle(output)
+            label_names(output)
 
             # Mark chapters with a 'chapter' type.
             output.gsub! /\\chapter\{(.*?)\}/ do |s|
@@ -73,12 +65,33 @@ module Polytexnic
         end
 
         # Handles title fields.
-        def title_fields(output)
+        def title_fields(string)
           %w{title subtitle author date}.each do |field|
-            output.gsub! /\\#{field}\{(.*?)\}/ do |s|
+            string.gsub! /\\#{field}\{(.*?)\}/ do |s|
               Polytexnic.instance_variable_set "@#{field}", $1
               ''
             end
+          end
+        end
+
+        # Replaces maketitle with an XML element.
+        def maketitle(string)
+          string.gsub! /\\maketitle/ do |s|
+            xmlelement('maketitle')
+          end
+        end
+
+        # Preserves label names.
+        # Tralics doesn't keep the names of labels, e.g., 'cha:foobar' in
+        # '\label{cha:foobar}'. But Tralics exposes a wide variety of
+        # pseudo-LaTeX commands to add arbitrary XML elements to the final
+        # document. In this case, the \xbox command does the trick. See
+        # http://www-sop.inria.fr/marelle/tralics/doc-x.html
+        # for more information.
+        def label_names(string)
+          string.gsub! /\\label\{(.*?)\}/ do |s|
+            label = $1.gsub(':', '-').gsub('_', underscore_digest)
+            "#{s}\n\\xbox{data-label}{#{label}}"
           end
         end
 
