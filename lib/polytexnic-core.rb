@@ -24,7 +24,6 @@ module Polytexnic
       end
 
       def to_html
-        @polytex = add_commands(polytex)
         preprocess(:html)
         postprocess(:html)
         puts @html if debug?
@@ -35,13 +34,6 @@ module Polytexnic
         preprocess(:latex)
         postprocess(:latex)
         @latex
-      end
-
-      # Adds some default commands.
-      # The new_commands are currently in utils, but probably should
-      # eventually be refactored into a file.
-      def add_commands(polytex)
-        new_commands + polytex
       end
 
       # Returns a digest for use in quote environments.

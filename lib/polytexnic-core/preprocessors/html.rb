@@ -5,63 +5,18 @@ module Polytexnic
 
       # Converts HTML to XML.
       def to_xml
-        doc = Nokogiri::XML(tralics_xml)
+        polytex = process_for_tralics(@polytex)
+        doc = Nokogiri::XML(tralics_xml(polytex))
         add_document_tag(doc)
         @xml = doc.to_xml
       end
 
       private
 
-        # Returns the XML produced by the Tralics program.
-        # There is a lot of ugly file manipulation here, but it's fundamentally
-        # straightforward. The heart of it is
-        #
-        #   system("#{tralics} -nomathml #{file.path} > log/tralics.log")
-        #
-        # which writes the converted PolyTeX file as XML, which then gets
-        # read in and lightly processed.
-        def tralics_xml
-          file = Tempfile.new(['polytex', '.tex'])
-          polytex = process_for_tralics(@polytex)
-          puts polytex if debug?
-          file.write(polytex)
-          file.close
-          Dir.mkdir 'log' unless File.directory?('log')
-          system("#{tralics} -nomathml #{file.path} > log/tralics.log")
-          dirname = File.dirname(file.path)
-          xml_filename = File.basename(file.path, '.tex') + '.xml'
-          raw_xml = File.read(File.join(dirname, xml_filename))
-          xml = clean_xml(raw_xml)
-          puts xml if debug?
-          xml
-        ensure
-          xmlfile = file.path.sub('.tex', '.xml')
-          logfile = file.path.sub('.tex', '.log')
-          [xmlfile, logfile].each do |file|
-            File.delete(file) if File.exist?(file)
-          end
-          file.delete
-        end
-
-        # Wraps the whole document in <document></document>.
-        # Fragmentary documents come wrapped in 'unknown' tags.
-        # Full documents are wrapped in 'std' tags.
-        # Change either to 'document' for consistency.
-        def add_document_tag(doc)
-          %w[unknown std].each do |parent_tag|
-            node = doc.at_css(parent_tag)
-            node.name = 'document' unless node.nil?
-          end
-        end
-
         # Processes the input PolyTeX for Tralics.
         def process_for_tralics(polytex)
-          defs = '\def\hyperref[#1]#2{\xmlelt{a}{\XMLaddatt{target}{#1}#2}}'
-          polytex = "#{defs}\n#{polytex}"
-
-          # This key line caches literal environments, non-ASCII Unicode,
-          # and adds enhanced hyperref links. See literal.rb for details.
-          output = hyperref(cache_unicode(make_caches(polytex)))
+          output = clean_document(polytex)
+          make_hyperrefs(output)
 
           # handle title fields
           %w{title subtitle author date}.each do |field|
@@ -114,6 +69,63 @@ module Polytexnic
           output.gsub!(/\\end{verse}/, "\\xmlemptyelt{end-#{verse_digest}}")
 
           output
+        end
+
+        # Returns a clean document with cached literal environments.
+        # This is a key step: we cache literal environments that should be
+        # passed through the pipeline with no changes (verbatim, code, etc.).
+        # The result is a document that can safely be transformed using
+        # global substitutions.
+        def clean_document(polytex)
+          cache_unicode(make_caches(add_commands(polytex)))
+        end
+
+        # Adds some default commands.
+        # The new_commands are currently in utils, but probably should
+        # eventually be refactored into a file.
+        def add_commands(polytex)
+          new_commands + polytex
+        end
+
+        # Returns the XML produced by the Tralics program.
+        # There is a lot of ugly file manipulation here, but it's fundamentally
+        # straightforward. The heart of it is
+        #
+        #   system("#{tralics} -nomathml #{file.path} > log/tralics.log")
+        #
+        # which writes the converted PolyTeX file as XML, which then gets
+        # read in and lightly processed.
+        def tralics_xml(polytex)
+          file = Tempfile.new(['polytex', '.tex'])
+          puts polytex if debug?
+          file.write(polytex)
+          file.close
+          Dir.mkdir 'log' unless File.directory?('log')
+          system("#{tralics} -nomathml #{file.path} > log/tralics.log")
+          dirname = File.dirname(file.path)
+          xml_filename = File.basename(file.path, '.tex') + '.xml'
+          raw_xml = File.read(File.join(dirname, xml_filename))
+          xml = clean_xml(raw_xml)
+          puts xml if debug?
+          xml
+        ensure
+          xmlfile = file.path.sub('.tex', '.xml')
+          logfile = file.path.sub('.tex', '.log')
+          [xmlfile, logfile].each do |file|
+            File.delete(file) if File.exist?(file)
+          end
+          file.delete
+        end
+
+        # Wraps the whole document in <document></document>.
+        # Fragmentary documents come wrapped in 'unknown' tags.
+        # Full documents are wrapped in 'std' tags.
+        # Change either to 'document' for consistency.
+        def add_document_tag(doc)
+          %w[unknown std].each do |parent_tag|
+            node = doc.at_css(parent_tag)
+            node.name = 'document' unless node.nil?
+          end
         end
 
         def clean_xml(raw_xml)

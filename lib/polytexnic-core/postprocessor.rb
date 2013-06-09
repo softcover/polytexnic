@@ -12,7 +12,8 @@ module Polytexnic
       if format == :html
         @html = xml_to_html(@xml)
       elsif format == :latex
-        raw_source = replace_hashes(hyperref(@polytex))
+        make_hyperrefs(@polytex)
+        raw_source = replace_hashes(@polytex)
         @latex = highlight_source_code(raw_source, 'latex')
       end
     end
