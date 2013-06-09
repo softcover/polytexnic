@@ -4,6 +4,10 @@ module Polytexnic
     module Html
 
       # Converts HTML to XML.
+      # The heart of the process is using Tralics to convert the input PolyTeX
+      # to XML. The raw PolyTeX needs to be processed first to make everything
+      # go smoothly, but after that the steps to producing the corresponging
+      # XML is straightforward.
       def to_xml
         polytex = process_for_tralics(@polytex)
         doc = Nokogiri::XML(tralics_xml(polytex))
@@ -14,44 +18,16 @@ module Polytexnic
       private
 
         # Processes the input PolyTeX for Tralics.
+        # The key steps are creating a clean document safe for makin global
+        # substitutions (gsubs), and then making a bunch of gsubs.
         def process_for_tralics(polytex)
           clean_document(polytex).tap do |output|
             hyperrefs(output)
             title_fields(output)
             maketitle(output)
             label_names(output)
-
-            # Mark chapters with a 'chapter' type.
-            output.gsub! /\\chapter\{(.*?)\}/ do |s|
-              "#{s}\n\\AddAttToCurrent{type}{chapter}"
-            end
-
-            # Mark code listings with a 'codelisting' type.
-            output.gsub! /\\begin\{codelisting\}/ do |s|
-              "#{s}\n\\AddAttToCurrent{type}{codelisting}"
-            end
-
-            # Handles quote and verse environments, which Tralics does wrong.
-            # Tralics converts
-            # \begin{quote}
-            #   foo
-            #
-            #   bar
-            # \end{quote}
-            # into
-            # <p rend='quoted'>foo</p>
-            # <p rend='quoted'>bar</p>
-            # But we want the HTML to be
-            # <blockquote>
-            #   <p>foo</p>
-            #   <p>bar</p>
-            # </blockquote>
-            # which can't easily be inferred from the Tralics output. (It gets
-            # worse if you want to support nested blockquotes, which we do.)
-            output.gsub!(/\\begin{quote}/, "\\xmlemptyelt{start-#{quote_digest}}")
-            output.gsub!(/\\end{quote}/, "\\xmlemptyelt{end-#{quote_digest}}")
-            output.gsub!(/\\begin{verse}/, "\\xmlemptyelt{start-#{verse_digest}}")
-            output.gsub!(/\\end{verse}/, "\\xmlemptyelt{end-#{verse_digest}}")
+            mark_environments(output)
+            cache_quote_and_verse(output)
           end
         end
 
@@ -62,6 +38,16 @@ module Polytexnic
         # global substitutions.
         def clean_document(polytex)
           cache_unicode(make_caches(add_commands(polytex)))
+        end
+
+        # Adds some default commands.
+        # These are commands that would ordinarily be defined in a LaTeX
+        # style file for production of a PDF, but in this case Tralics
+        # itself needs the new commands to produce its XML output.
+        # The new_commands are currently in utils, but probably should
+        # eventually be refactored into a file.
+        def add_commands(polytex)
+          new_commands + polytex
         end
 
         # Handles title fields.
@@ -95,11 +81,46 @@ module Polytexnic
           end
         end
 
-        # Adds some default commands.
-        # The new_commands are currently in utils, but probably should
-        # eventually be refactored into a file.
-        def add_commands(polytex)
-          new_commands + polytex
+        # Mark environments with their types.
+        # Tralics strips some information when processing LaTeX, such as
+        # whether a particular div defines a chapter. We remedy this by
+        # using the \AddAttToCurrent pseudo-LaTeX command to mark such
+        # environments with their types.
+        def mark_environments(string)
+
+          # Mark chapters with a 'chapter' type.
+          string.gsub! /\\chapter\{(.*?)\}/ do |s|
+            "#{s}\n\\AddAttToCurrent{type}{chapter}"
+          end
+
+          # Mark code listings with a 'codelisting' type.
+          string.gsub! /\\begin\{codelisting\}/ do |s|
+            "#{s}\n\\AddAttToCurrent{type}{codelisting}"
+          end
+        end
+
+        # Handles quote and verse environments, which Tralics does wrong.
+        # Tralics converts
+        # \begin{quote}
+        #   foo
+        #
+        #   bar
+        # \end{quote}
+        # into
+        # <p rend='quoted'>foo</p>
+        # <p rend='quoted'>bar</p>
+        # But we want the HTML to be
+        # <blockquote>
+        #   <p>foo</p>
+        #   <p>bar</p>
+        # </blockquote>
+        # which can't easily be inferred from the Tralics output. (It gets
+        # worse if you want to support nested blockquotes, which we do.)
+        def cache_quote_and_verse(string)
+          string.gsub!(/\\begin{quote}/, "\\xmlemptyelt{start-#{quote_digest}}")
+          string.gsub!(/\\end{quote}/, "\\xmlemptyelt{end-#{quote_digest}}")
+          string.gsub!(/\\begin{verse}/, "\\xmlemptyelt{start-#{verse_digest}}")
+          string.gsub!(/\\end{verse}/, "\\xmlemptyelt{end-#{verse_digest}}")
         end
 
         # Returns the XML produced by the Tralics program.
