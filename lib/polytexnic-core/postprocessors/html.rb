@@ -31,7 +31,7 @@ module Polytexnic
         hrefs(doc)
         graphics_and_figures(doc)
         html = convert_to_html(doc)
-        quote_and_verse(html)
+        restore_quote_and_verse(html)
       end
 
       private
@@ -490,7 +490,7 @@ module Polytexnic
         # \end{quote} -> </blockquote>
         # but that's hard to do using Tralics and XML. As a kludge,
         # we insert a tag with unique name and gsub it at the end.
-        def quote_and_verse(html)
+        def restore_quote_and_verse(html)
           html.gsub("<start-#{quote_digest}></start-#{quote_digest}>",
                     "<blockquote>").
                gsub("<end-#{quote_digest}></end-#{quote_digest}></p>",
