@@ -456,19 +456,19 @@ lorem ipsum
     describe 'cross-references with \ref' do
       let(:polytex) do <<-'EOS'
           \chapter{Foo}
-          \label{cha:foo}
+          \label{cha:foo_bar}
 
-          bar Chapter~\ref{cha:foo}
-          Chapter \ref{cha:foo}
+          bar Chapter~\ref{cha:foo_bar}
+          Chapter \ref{cha:foo_bar}
         EOS
       end
 
       it do
         should resemble <<-'EOS'
-<div id="cha-foo" data-tralics-id="cid1" class="chapter" data-number="1">
-  <h3><a href="#cha-foo" class="heading"><span class="number">1 </span>Foo</a></h3>
-  <p>bar <a href="#cha-foo" class="hyperref">Chapter <span class="ref">1</span></a>
-  <a href="#cha-foo" class="hyperref">Chapter <span class="ref">1</span></a>
+<div id="cha-foo_bar" data-tralics-id="cid1" class="chapter" data-number="1">
+  <h3><a href="#cha-foo_bar" class="heading"><span class="number">1 </span>Foo</a></h3>
+  <p>bar <a href="#cha-foo_bar" class="hyperref">Chapter <span class="ref">1</span></a>
+  <a href="#cha-foo_bar" class="hyperref">Chapter <span class="ref">1</span></a>
   </p>
 </div>
         EOS

@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-gem 'rspec', '~> 2.12.0'
+gem 'rspec', '~> 2.13'
 gem 'nokogiri', '~> 1.5.0'
 gem 'pygments.rb', "~> 0.4.2"
 
@@ -10,4 +10,9 @@ gemspec
 group :test do
   gem 'debugger2' unless RUBY_VERSION < "2.0"
   gem 'coveralls', require: false
+  gem 'growl'
+end
+
+group :development do
+  gem 'guard-rspec'
 end

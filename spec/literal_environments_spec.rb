@@ -19,6 +19,7 @@ describe Polytexnic::Core::Pipeline do
   it { should resemble '<pre class="verbatim">' }
   it { should_not resemble '\begin{verbatim}' }
 
+
     describe "with nesting" do
       let(:polytex) do <<-'EOS'
 \begin{verbatim}
