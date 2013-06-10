@@ -7,10 +7,10 @@ describe Polytexnic::Core::Pipeline do
 
   describe "verbatim environments" do
     let(:polytex) do <<-'EOS'
-\begin{verbatim}
-\emph{foo bar} & \\
-\end{verbatim}
-        EOS
+      \begin{verbatim}
+      \emph{foo bar} & \\
+      \end{verbatim}
+      EOS
     end
 
   let(:output) { '\emph{foo bar} &amp; \\\\' }
@@ -22,19 +22,19 @@ describe Polytexnic::Core::Pipeline do
 
     describe "with nesting" do
       let(:polytex) do <<-'EOS'
-\begin{verbatim}
-\begin{verbatim}
-\emph{foo bar}
-\end{verbatim}
-\end{verbatim}
-lorem ipsum
-       EOS
+        \begin{verbatim}
+        \begin{verbatim}
+        \emph{foo bar}
+        \end{verbatim}
+        \end{verbatim}
+        lorem ipsum
+        EOS
       end
 
       let(:output) do <<-'EOS'
-\begin{verbatim}
-\emph{foo bar}
-\end{verbatim}
+        \begin{verbatim}
+        \emph{foo bar}
+        \end{verbatim}
        EOS
       end
 
@@ -46,8 +46,8 @@ lorem ipsum
 
     describe 'with missing \end{verbatim}' do
       let(:polytex) do <<-'EOS'
-\begin{verbatim}
-\emph{foo bar}
+        \begin{verbatim}
+        \emph{foo bar}
        EOS
       end
 
@@ -58,20 +58,20 @@ lorem ipsum
 
     context "containing a code environment" do
       let(:polytex) do <<-'EOS'
-\begin{verbatim}
-\begin{code}
-\emph{foo bar}
-\end{code}
-\end{verbatim}
-lorem ipsum
-       EOS
+        \begin{verbatim}
+        \begin{code}
+        \emph{foo bar}
+        \end{code}
+        \end{verbatim}
+        lorem ipsum
+        EOS
       end
 
       let(:output) do <<-'EOS'
-\begin{code}
-\emph{foo bar}
-\end{code}
-       EOS
+  \begin{code}
+  \emph{foo bar}
+  \end{code}
+        EOS
       end
 
       it { should resemble output }
@@ -79,22 +79,22 @@ lorem ipsum
 
     context "containing a highlighted code environment" do
       let(:polytex) do <<-'EOS'
-\begin{verbatim}
-%= lang:ruby
-\begin{code}
-foo ||= bar
-\end{code}
-\end{verbatim}
-lorem ipsum
-       EOS
+        \begin{verbatim}
+        %= lang:ruby
+        \begin{code}
+        foo ||= bar
+        \end{code}
+        \end{verbatim}
+        lorem ipsum
+        EOS
       end
 
       let(:output) do <<-'EOS'
-%= lang:ruby
-\begin{code}
-foo ||= bar
-\end{code}
-       EOS
+        %= lang:ruby
+        \begin{code}
+        foo ||= bar
+        \end{code}
+        EOS
       end
 
       it { should resemble output }
@@ -103,10 +103,10 @@ foo ||= bar
 
   describe "Verbatim environments" do
     let(:polytex) do <<-'EOS'
-\begin{Verbatim}
-\emph{foo bar}
-\end{Verbatim}
-     EOS
+      \begin{Verbatim}
+      \emph{foo bar}
+      \end{Verbatim}
+      EOS
     end
 
     let(:output) { '\emph{foo bar}' }
@@ -119,8 +119,8 @@ foo ||= bar
 
   describe "inline math, LaTeX-style" do
     let(:equation) do <<-'EOS'
-\( \int_\Omega d\omega = \int_{\partial\Omega} \omega \)
-     EOS
+      \( \int_\Omega d\omega = \int_{\partial\Omega} \omega \)
+      EOS
     end
     let(:polytex) { equation }
     let(:contents) { '\\Omega' }
@@ -131,33 +131,33 @@ foo ||= bar
 
   describe "inline math, TeX-style" do
     let(:equation) do <<-'EOS'
-$\int_\Omega d\omega = \int_{\partial\Omega} \omega$
-     EOS
+      $\int_\Omega d\omega = \int_{\partial\Omega} \omega$
+      EOS
     end
     let(:polytex) { equation }
-    let(:contents) { '\\Omega' }
+    let(:contents) { '\Omega' }
 
     it { should resemble contents }
     it { should resemble '<span class="inline_math">' }
-    it { should resemble '\\(' }
+    it { should resemble '\(' }
   end
 
   describe "multiple occurrences of inline math on one line" do
-    let(:polytex) { "$\\Omega > 0$ and \\( x^2 - 2 \\equiv 0 \\) should work." }
+    let(:polytex) { '$\Omega > 0$ and \( x^2 - 2 \equiv 0 \) should work.' }
 
-    it { should resemble '\\Omega' }
-    it { should resemble '\\equiv' }
+    it { should resemble '\Omega' }
+    it { should resemble '\equiv' }
     it { should resemble '<span class="inline_math">' }
-    it { should resemble '\\(' }
+    it { should resemble '\(' }
   end
 
   describe "display math, LaTeX-style" do
     let(:equation) do <<-'EOS'
-\[ \int_\Omega d\omega = \int_{\partial\Omega} \omega \]
-     EOS
+      \[ \int_\Omega d\omega = \int_{\partial\Omega} \omega \]
+      EOS
     end
     let(:polytex) { "lorem\n" + equation + "\nipsum" }
-    let(:contents) { '\\Omega' }
+    let(:contents) { '\Omega' }
 
     it { should resemble contents }
     it { should resemble '<div class="display_math">' }
@@ -165,11 +165,11 @@ $\int_\Omega d\omega = \int_{\partial\Omega} \omega$
 
   describe "display math, TeX-style" do
     let(:equation) do <<-'EOS'
-$$ \int_\Omega d\omega = \int_{\partial\Omega} \omega $$
-     EOS
+      $$ \int_\Omega d\omega = \int_{\partial\Omega} \omega $$
+      EOS
     end
     let(:polytex) { "lorem\n" + equation + "\nipsum" }
-    let(:contents) { '\\Omega' }
+    let(:contents) { '\Omega' }
 
     it { should resemble contents }
     it { should resemble '<div class="display_math">' }
@@ -181,11 +181,11 @@ $$ \int_\Omega d\omega = \int_{\partial\Omega} \omega $$
   end
 
   describe "raw equation environments" do
-     let(:equation) do <<-'EOS'
-\begin{equation}
-\int_\Omega d\omega = \int_{\partial\Omega} \omega
-\end{equation}
-       EOS
+      let(:equation) do <<-'EOS'
+        \begin{equation}
+        \int_\Omega d\omega = \int_{\partial\Omega} \omega
+        \end{equation}
+        EOS
      end
      let(:polytex) { equation }
      let(:contents) { equation }
@@ -195,10 +195,10 @@ $$ \int_\Omega d\omega = \int_{\partial\Omega} \omega $$
 
   describe "equation environments surrounded by text" do
     let(:equation) do <<-'EOS'
-\begin{equation}
-# \int_\Omega d\omega = \int_{\partial\Omega} \omega
-\end{equation}
-       EOS
+      \begin{equation}
+      \int_\Omega d\omega = \int_{\partial\Omega} \omega
+      \end{equation}
+      EOS
     end
     let(:polytex) { "lorem\n" + equation + "\nipsum" }
     let(:contents) { equation }
@@ -210,19 +210,19 @@ $$ \int_\Omega d\omega = \int_{\partial\Omega} \omega $$
 
   describe "align" do
     let(:equation) do <<-'EOS'
-\begin{align}
-x^2 + y^2 & = 1 \\
-y & = \sqrt{1 - x^2}.
-\end{align}
-    EOS
+      \begin{align}
+      x^2 + y^2 & = 1 \\
+      y & = \sqrt{1 - x^2}.
+      \end{align}
+      EOS
     end
     let(:polytex) { equation }
     let(:contents) do <<-'EOS'
-\begin{align}
-x^2 + y^2 &amp; = 1 \\
-y &amp; = \sqrt{1 - x^2}.
-\end{align}
-    EOS
+      \begin{align}
+      x^2 + y^2 &amp; = 1 \\
+      y &amp; = \sqrt{1 - x^2}.
+      \end{align}
+      EOS
     end
 
     it_behaves_like "an equation environment"
@@ -230,18 +230,18 @@ y &amp; = \sqrt{1 - x^2}.
 
   describe "align*" do
     let(:equation) do <<-'EOS'
-\begin{align*}
-x^2 + y^2 & = 1 \\
-y & = \sqrt{1 - x^2}.
-\end{align*}
-    EOS
+      \begin{align*}
+      x^2 + y^2 & = 1 \\
+      y & = \sqrt{1 - x^2}.
+      \end{align*}
+      EOS
     end
     let(:polytex) { equation }
     let(:contents) do <<-'EOS'
-\begin{align*}
-x^2 + y^2 &amp; = 1 \\
-y &amp; = \sqrt{1 - x^2}.
-\end{align*}
+      \begin{align*}
+      x^2 + y^2 &amp; = 1 \\
+      y &amp; = \sqrt{1 - x^2}.
+      \end{align*}
     EOS
     end
 
@@ -250,23 +250,23 @@ y &amp; = \sqrt{1 - x^2}.
 
   describe "aligned" do
     let(:equation) do <<-'EOS'
-\begin{equation}
-\begin{aligned}
-\nabla \times \vec{\mathbf{B}} -\, \frac1c\, \frac{\partial\vec{\mathbf{E}}}{\partial t} & = \frac{4\pi}{c}\vec{\mathbf{j}} \\   \nabla \cdot \vec{\mathbf{E}} & = 4 \pi \rho \\
-\nabla \times \vec{\mathbf{E}}\, +\, \frac1c\, \frac{\partial\vec{\mathbf{B}}}{\partial t} & = \vec{\mathbf{0}} \\
-\nabla \cdot \vec{\mathbf{B}} & = 0
-\end{aligned}
-\end{equation}
-    EOS
+      \begin{equation}
+      \begin{aligned}
+      \nabla \times \vec{\mathbf{B}} -\, \frac1c\, \frac{\partial\vec{\mathbf{E}}}{\partial t} & = \frac{4\pi}{c}\vec{\mathbf{j}} \\   \nabla \cdot \vec{\mathbf{E}} & = 4 \pi \rho \\
+      \nabla \times \vec{\mathbf{E}}\, +\, \frac1c\, \frac{\partial\vec{\mathbf{B}}}{\partial t} & = \vec{\mathbf{0}} \\
+      \nabla \cdot \vec{\mathbf{B}} & = 0
+      \end{aligned}
+      \end{equation}
+      EOS
     end
     let(:polytex) { equation }
     let(:contents) do <<-'EOS'
-\begin{aligned}
-\nabla \times \vec{\mathbf{B}} -\, \frac1c\, \frac{\partial\vec{\mathbf{E}}}{\partial t} &amp; = \frac{4\pi}{c}\vec{\mathbf{j}} \\   \nabla \cdot \vec{\mathbf{E}} &amp; = 4 \pi \rho \\
-\nabla \times \vec{\mathbf{E}}\, +\, \frac1c\, \frac{\partial\vec{\mathbf{B}}}{\partial t} &amp; = \vec{\mathbf{0}} \\
-\nabla \cdot \vec{\mathbf{B}} &amp; = 0
-\end{aligned}
-    EOS
+      \begin{aligned}
+      \nabla \times \vec{\mathbf{B}} -\, \frac1c\, \frac{\partial\vec{\mathbf{E}}}{\partial t} &amp; = \frac{4\pi}{c}\vec{\mathbf{j}} \\   \nabla \cdot \vec{\mathbf{E}} &amp; = 4 \pi \rho \\
+      \nabla \times \vec{\mathbf{E}}\, +\, \frac1c\, \frac{\partial\vec{\mathbf{B}}}{\partial t} &amp; = \vec{\mathbf{0}} \\
+      \nabla \cdot \vec{\mathbf{B}} &amp; = 0
+      \end{aligned}
+      EOS
     end
 
     it_behaves_like "an equation environment"
@@ -274,27 +274,27 @@ y &amp; = \sqrt{1 - x^2}.
 
   describe "equation* with nesting" do
     let(:equation) do <<-'EOS'
-\begin{equation*}
-\left.\begin{aligned}
-dE  &= \rho \\
-d*B &= J + \dot{E}
-\end{aligned}
-\right\}
-\qquad \text{Maxwell}
-\end{equation*}
-    EOS
+      \begin{equation*}
+      \left.\begin{aligned}
+      dE  &= \rho \\
+      d*B &= J + \dot{E}
+      \end{aligned}
+      \right\}
+      \qquad \text{Maxwell}
+      \end{equation*}
+      EOS
     end
     let(:polytex) { equation }
     let(:contents) do <<-'EOS'
-\begin{equation*}
-\left.\begin{aligned}
-dE  &amp;= \rho \\
-d*B &amp;= J + \dot{E}
-\end{aligned}
-\right\}
-\qquad \text{Maxwell}
-\end{equation*}
-    EOS
+      \begin{equation*}
+      \left.\begin{aligned}
+      dE  &amp;= \rho \\
+      d*B &amp;= J + \dot{E}
+      \end{aligned}
+      \right\}
+      \qquad \text{Maxwell}
+      \end{equation*}
+      EOS
     end
 
     it_behaves_like "an equation environment"
@@ -303,12 +303,12 @@ d*B &amp;= J + \dot{E}
   describe "code blocks" do
     describe "without syntax highlighting" do
       let(:polytex) do <<-'EOS'
-\begin{code}
-def foo
-  "bar"
-end
-\end{code}
-      EOS
+        \begin{code}
+        def foo
+          "bar"
+        end
+        \end{code}
+        EOS
       end
 
       it { should resemble 'def foo' }
@@ -318,13 +318,13 @@ end
 
     describe "with syntax highlighting" do
       let(:polytex) do <<-'EOS'
-%= lang:ruby
-\begin{code}
-def foo
-  "bar"
-end
-\end{code}
-      EOS
+        %= lang:ruby
+        \begin{code}
+        def foo
+          "bar"
+        end
+        \end{code}
+        EOS
       end
 
       it { should resemble '<div class="code">' }

@@ -7,15 +7,6 @@ describe Polytexnic::Core::Pipeline do
     let(:processed_text) { Polytexnic::Core::Pipeline.new(polytex).to_html }
     subject { processed_text }
 
-    describe "Unicode" do
-      let(:first) { 'Алексей' }
-      let(:last) { 'Разуваев' }
-      let(:polytex) { "#{first} #{last}" }
-      let(:output) { polytex }
-      it { should include(first) }
-      it { should include(last) }
-    end
-
     describe "comments" do
       let(:polytex) { "% A LaTeX comment" }
       it { should resemble "" }
