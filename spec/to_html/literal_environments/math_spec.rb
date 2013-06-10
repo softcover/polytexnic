@@ -104,7 +104,7 @@ describe Polytexnic::Core::Pipeline do
       it { should resemble '<p class="noindent">ipsum' }
     end
 
-  context "align" do
+    describe "align" do
       let(:equation) do <<-'EOS'
         \begin{align}
         x^2 + y^2 & = 1 \\
@@ -124,7 +124,7 @@ describe Polytexnic::Core::Pipeline do
       it_behaves_like "an equation environment"
     end
 
-    context "align*" do
+    describe "align*" do
       let(:equation) do <<-'EOS'
         \begin{align*}
         x^2 + y^2 & = 1 \\
@@ -144,7 +144,7 @@ describe Polytexnic::Core::Pipeline do
       it_behaves_like "an equation environment"
     end
 
-    context "aligned" do
+    describe "aligned" do
       let(:equation) do <<-'EOS'
         \begin{equation}
         \begin{aligned}
@@ -176,7 +176,7 @@ describe Polytexnic::Core::Pipeline do
       it_behaves_like "an equation environment"
     end
 
-    context "equation* with nesting" do
+    describe "equation*" do
       let(:equation) do <<-'EOS'
         \begin{equation*}
         \left.\begin{aligned}
