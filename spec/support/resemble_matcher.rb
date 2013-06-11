@@ -31,8 +31,8 @@ end
 # Prints the robust versions of the two strings
 # The output is hugely useful in visually diffing, e.g., HTML output.
 def print_output(expected, actual)
-  puts expected.robust
-  puts actual.robust
+  puts "expect: " + expected.robust
+  puts "actual: " + actual.robust
 end
 
 class String
