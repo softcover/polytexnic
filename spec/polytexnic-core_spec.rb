@@ -30,56 +30,6 @@ describe 'Polytexnic::Core::Pipeline#to_html' do
     it { should_not resemble '<unknown>' }
   end
 
-  describe "text transformations" do
-
-    describe "italics" do
-      let(:polytex) { '\emph{foo bar}' }
-      it { should resemble '<em>foo bar</em>' }
-
-
-      context "multiple instances" do
-        let(:polytex) do
-          '\emph{foo bar} and also \emph{baz quux}'
-        end
-
-        it { should resemble '<em>foo bar</em>' }
-        it { should resemble '<em>baz quux</em>' }
-      end
-    end
-
-    describe "boldface" do
-      let(:polytex) { '\textbf{boldface}' }
-      it { should resemble '<strong>boldface</strong>' }
-    end
-
-    describe "small caps" do
-      let(:polytex) { '\textsc{small caps}' }
-      it { should resemble '<span class="sc">small caps</span>' }
-    end
-
-    describe "typewriter text" do
-      let(:polytex) { '\texttt{typewriter text}' }
-      it { should resemble '<span class="tt">typewriter text</span>' }
-    end
-  end
-
-  describe "quoted strings" do
-    context "with single quotes" do
-      let(:polytex) { "``foo bar''" }
-      it { should resemble '“foo bar”' }
-    end
-
-    context "with single quotes" do
-      let(:polytex) { "`foo bar'" }
-      it { should resemble '‘foo bar’' }
-    end
-
-    context "with an apostrophe" do
-      let(:polytex) { "don't stop believin'" }
-      it { should resemble 'don’t stop believin’' }
-    end
-  end
-
   describe "quotations and verse" do
     describe '\quote' do
       let(:polytex) { '\quote{foo}' }
@@ -265,21 +215,6 @@ lorem ipsum
     end
   end
 
-  describe '\ldots' do
-    let(:polytex) { '\ldots' }
-    it { should resemble '…' }
-  end
-
-  describe 'end-of-sentence punctuation' do
-    let(:polytex) { 'Superman II\@. Lorem ipsum.' }
-    it { should resemble 'Superman II. Lorem ipsum.' }
-  end
-
-  describe 'unbreakable interword space' do
-    let(:polytex) { 'foo~bar' }
-    it { should resemble 'foo bar' }
-  end
-
   describe '\maketitle' do
     let(:polytex) do <<-'EOS'
         \title{Foo}
@@ -397,41 +332,6 @@ Chapter~\ref{cha:bar}
 </p>
 </div>
     EOS
-    end
-  end
-
-  describe "(La)TeX logos" do
-
-    describe "TeX logo" do
-      let(:polytex) { '\TeX' }
-      let(:output) do
-%(<span class="texhtml" style="font-family: 'CMU Serif', cmr10, LMRoman10-Regular, 'Times New Roman', 'Nimbus Roman No9 L', Times, serif;">T<span style="text-transform: uppercase; vertical-align: -0.5ex; margin-left: -0.1667em; margin-right: -0.125em;">E</span>X</span>)
-      end
-      it { should include(output) }
-    end
-
-    describe "LaTeX logo" do
-      let(:polytex) { '\LaTeX' }
-      let(:output) do
-%(<span class="texhtml" style="font-family: 'CMU Serif', cmr10, LMRoman10-Regular, 'Times New Roman', 'Nimbus Roman No9 L', Times, serif;">L<span style="text-transform: uppercase; font-size: 70%; margin-left: -0.36em; vertical-align: 0.3em; line-height: 0; margin-right: -0.15em;">A</span>T<span style="text-transform: uppercase; margin-left: -0.1667em; vertical-align: -0.5ex; line-height: 0; margin-right: -0.125em;">E</span>X</span>)
-      end
-      it { should include(output) }
-    end
-
-    describe "PolyTeX logo" do
-      let(:polytex) { '\PolyTeX' }
-      let(:output) do
-%(Poly<span class="texhtml" style="font-family: 'CMU Serif', cmr10, LMRoman10-Regular, 'Times New Roman', 'Nimbus Roman No9 L', Times, serif;">T<span style="text-transform: uppercase; vertical-align: -0.5ex; margin-left: -0.1667em; margin-right: -0.125em;">E</span>X</span>)
-      end
-      it { should include(output) }
-    end
-
-    describe "PolyTeXnic logo" do
-      let(:polytex) { '\PolyTeXnic' }
-      let(:output) do
-%(Poly<span class="texhtml" style="font-family: 'CMU Serif', cmr10, LMRoman10-Regular, 'Times New Roman', 'Nimbus Roman No9 L', Times, serif;">T<span style="text-transform: uppercase; vertical-align: -0.5ex; margin-left: -0.1667em; margin-right: -0.125em;">E</span>X</span>nic)
-      end
-      it { should include(output) }
     end
   end
 
