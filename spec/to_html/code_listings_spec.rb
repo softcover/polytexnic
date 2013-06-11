@@ -15,7 +15,7 @@ describe 'Polytexnic::Core::Pipeline#to_html' do
       \label{code:create_gemrc}
       %= lang:console
       \begin{code}
-      $ subl .gemrc
+$ subl .gemrc
       \end{code}
       \end{codelisting}
 

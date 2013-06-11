@@ -33,6 +33,20 @@ describe Polytexnic::Core::Pipeline do
         EOS
       end
 
+      it do
+        should resemble <<-'EOS'
+          <div class="code">
+            <div class="highlight">
+              <pre>
+                <span class="k">def</span> <span class="nf">foo</span>
+                <span class="s2">"bar"</span>
+                <span class="k">end</span>
+              </pre>
+            </div>
+          </div>
+        EOS
+      end
+
       it { should resemble '<div class="code">' }
       it "should not have repeated code divs" do
         expect(processed_text.scan(/<div class="code">/).length).to eq 1
