@@ -281,7 +281,9 @@ module Polytexnic
         end
 
         # Returns a label for the pipeline.
-        # Tralics does weird stuff with underscores, so sub them out.
+        # Tralics does weird stuff with underscores, so sub them out
+        # so that they can be passed through the pipeline intact and restored
+        # by the postprocessor.
         def pipeline_label(node)
           node.inner_html.gsub(underscore_digest, '_')
         end
