@@ -21,12 +21,12 @@ describe 'Polytexnic::Core::Pipeline#to_html' do
 
       it do
         should resemble <<-'EOS'
-          <table><tr><td class="halign-center">HTTP request</td>
-          <td class="halign-center">URL</td>
-          </tr><tr><td class="halign-center">GET</td>
-          <td class="halign-center">/users</td>
-          </tr><tr><td class="halign-center">GET</td>
-          <td class="halign-center">/users/1</td>
+          <table class="tabular"><tr><td class="align_center">HTTP request</td>
+          <td class="align_center">URL</td>
+          </tr><tr><td class="align_center">GET</td>
+          <td class="align_center">/users</td>
+          </tr><tr><td class="align_center">GET</td>
+          <td class="align_center">/users/1</td>
           </tr></table>
         EOS
       end
@@ -50,39 +50,39 @@ describe 'Polytexnic::Core::Pipeline#to_html' do
 
       it do
         should resemble <<-'EOS'
-          <table><tr class="bottom-border">
-          <td class="halign-left">HTTP request</td>
-          <td class="halign-left">URL</td>
-          <td class="halign-left">Action</td>
-          <td class="halign-left">Purpose</td>
-          </tr><tr><td class="halign-left">GET</td>
-          <td class="halign-left">/users</td>
-          <td class="halign-left">index</td>
-          <td class="halign-left">page to list all users</td>
-          </tr><tr><td class="halign-left">GET</td>
-          <td class="halign-left">/users/1</td>
-          <td class="halign-left">show</td>
-          <td class="halign-left">page to show user with id 1</td>
-          </tr><tr><td class="halign-left">GET</td>
-          <td class="halign-left">/users/new</td>
-          <td class="halign-left">new</td>
-          <td class="halign-left">page to make a new user</td>
-          </tr><tr><td class="halign-left">POST</td>
-          <td class="halign-left">/users</td>
-          <td class="halign-left">create</td>
-          <td class="halign-left">create a new user</td>
-          </tr><tr><td class="halign-left">GET</td>
-          <td class="halign-left">/users/1/edit</td>
-          <td class="halign-left">edit</td>
-          <td class="halign-left">page to edit user with id 1</td>
-          </tr><tr><td class="halign-left">PATCH</td>
-          <td class="halign-left">/users/1</td>
-          <td class="halign-left">update</td>
-          <td class="halign-left">update user with id 1</td>
-          </tr><tr><td class="halign-left">DELETE</td>
-          <td class="halign-left">/users/1</td>
-          <td class="halign-left">destroy</td>
-          <td class="halign-left">delete user with id 1</td>
+          <table class="tabular"><tr class="bottom_border">
+          <td class="align_left">HTTP request</td>
+          <td class="align_left">URL</td>
+          <td class="align_left">Action</td>
+          <td class="align_left">Purpose</td>
+          </tr><tr><td class="align_left">GET</td>
+          <td class="align_left">/users</td>
+          <td class="align_left">index</td>
+          <td class="align_left">page to list all users</td>
+          </tr><tr><td class="align_left">GET</td>
+          <td class="align_left">/users/1</td>
+          <td class="align_left">show</td>
+          <td class="align_left">page to show user with id 1</td>
+          </tr><tr><td class="align_left">GET</td>
+          <td class="align_left">/users/new</td>
+          <td class="align_left">new</td>
+          <td class="align_left">page to make a new user</td>
+          </tr><tr><td class="align_left">POST</td>
+          <td class="align_left">/users</td>
+          <td class="align_left">create</td>
+          <td class="align_left">create a new user</td>
+          </tr><tr><td class="align_left">GET</td>
+          <td class="align_left">/users/1/edit</td>
+          <td class="align_left">edit</td>
+          <td class="align_left">page to edit user with id 1</td>
+          </tr><tr><td class="align_left">PATCH</td>
+          <td class="align_left">/users/1</td>
+          <td class="align_left">update</td>
+          <td class="align_left">update user with id 1</td>
+          </tr><tr><td class="align_left">DELETE</td>
+          <td class="align_left">/users/1</td>
+          <td class="align_left">destroy</td>
+          <td class="align_left">delete user with id 1</td>
           </tr></table>
         EOS
       end

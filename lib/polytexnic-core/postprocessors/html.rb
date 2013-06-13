@@ -31,7 +31,8 @@ module Polytexnic
         make_cross_references(doc)
         hrefs(doc)
         graphics_and_figures(doc)
-        tabular(doc)
+        tables(doc)
+        tables(doc)
         trim_empty_paragraphs(doc)
         html = convert_to_html(doc)
         restore_quote_and_verse(html)
@@ -489,20 +490,21 @@ module Polytexnic
         end
 
         # Converts XML to HTML tables.
-        def tabular(doc)
+        def tables(doc)
           doc.xpath('//table').each do |node|
+            node['class'] = 'tabular'
             clean_node node, %w[rend]
           end
           doc.xpath('//table/row/cell').each do |node|
             node.name = 'td'
             alignment = node['halign']
-            node['class'] = "halign-#{alignment}"
+            node['class'] = "align_#{alignment}"
             clean_node node, %w[halign]
           end
           doc.xpath('//table/row').each do |node|
             node.name = 'tr'
             if node['bottom-border'] == 'true'
-              node['class'] = 'bottom-border'
+              node['class'] = 'bottom_border'
               clean_node node, %w[bottom-border]
             end
           end
