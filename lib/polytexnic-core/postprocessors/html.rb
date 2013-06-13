@@ -264,7 +264,26 @@ module Polytexnic
             clean_node node, %w{data-label}
           end
           doc.xpath('//figure').each do |node|
-            if label = node.at_css('data-label')
+            if unexpected = node.at_css('unexpected')
+              # Tralics puts in an 'unexpected' tag sometimes.
+              label = node.at_css('data-label')
+              node['id'] = pipeline_label(label)
+              unexpected.remove
+              clean_node node, %w{data-label}
+            elsif label = node.at_css('data-label')
+              node['id'] = pipeline_label(label)
+              label.remove
+              clean_node node, %w{data-label}
+            end
+          end
+          doc.xpath('//table').each do |node|
+            if unexpected = node.at_css('unexpected')
+              # Tralics puts in an 'unexpected' tag sometimes.
+              label = node.at_css('data-label')
+              node['id'] = pipeline_label(label)
+              unexpected.remove
+              clean_node node, %w{data-label}
+            elsif label = node.at_css('data-label')
               node['id'] = pipeline_label(label)
               label.remove
               clean_node node, %w{data-label}
@@ -430,7 +449,7 @@ module Polytexnic
           end
 
           doc.xpath('//*[@target]').each do |node|
-            node['href'] = "##{node['target'].gsub(/:/, '-')}"
+            node['href'] = "##{node['target'].gsub(':', '-')}"
             node['class'] = 'hyperref'
             clean_node node, 'target'
           end

@@ -99,7 +99,7 @@ describe 'Polytexnic::Core::Pipeline#to_html' do
         GET & /users/1
         \end{tabular}
         \label{table:foo}
-        \end{figure}
+        \end{table}
 
         Table~\ref{table:foo}
         EOS
