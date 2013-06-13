@@ -263,6 +263,11 @@ module Polytexnic
             convert_labels(node)
             clean_node node, %w{data-label}
           end
+          # Replace '<unexpected>' tags with their children.
+          doc.xpath('//unexpected').each do |node|
+            node.parent.children = node.children
+            node.remove
+          end
           doc.xpath('//figure').each do |node|
             if unexpected = node.at_css('unexpected')
               # Tralics puts in an 'unexpected' tag sometimes.
@@ -520,6 +525,7 @@ module Polytexnic
             elsif table?(node)
               node.name = 'div'
               node['class'] = 'table'
+              clean_node node, %w[rend]
             end
           end
           doc.xpath('//table/row/cell').each do |node|
