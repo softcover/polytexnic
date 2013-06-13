@@ -6,7 +6,7 @@ describe 'Polytexnic::Core::Pipeline#to_html' do
   let(:processed_text) { Polytexnic::Core::Pipeline.new(polytex).to_html }
   subject { processed_text }
 
-  describe "tabular environment" do
+  describe "tabular environments" do
 
     context "simple table with centered elements" do
 
@@ -84,6 +84,32 @@ describe 'Polytexnic::Core::Pipeline#to_html' do
           <td class="halign-left">destroy</td>
           <td class="halign-left">delete user with id 1</td>
           </tr></table>
+        EOS
+      end
+    end
+  end
+
+  describe "table environments" do
+    context "with a label and a cross-reference" do
+      let(:polytex) do <<-'EOS'
+        \begin{table}
+        lorem
+        \label{table:foo}
+        \end{figure}
+
+        Table~\ref{table:foo}
+        EOS
+      end
+
+      it do
+        should resemble <<-'EOS'
+          <div id="table-foo" data-tralics-id="uid1" data-number="1" class="table">
+            <p>lorem</p>
+            <div class="caption">
+              <span class="header">Table 1</span>
+            </div>
+          </div>
+          <p><a href="#table-foo" class="hyperref">Table <span class="ref">1</span></a></p>
         EOS
       end
     end
