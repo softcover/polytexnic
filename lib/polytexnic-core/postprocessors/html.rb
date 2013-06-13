@@ -32,7 +32,6 @@ module Polytexnic
         hrefs(doc)
         graphics_and_figures(doc)
         tables(doc)
-        tables(doc)
         trim_empty_paragraphs(doc)
         html = convert_to_html(doc)
         restore_quote_and_verse(html)
@@ -398,7 +397,11 @@ module Polytexnic
                                     @subsec = node['id-text']
                                     label_number(@cha, @sec, @subsec)
                                   elsif node['class'] == 'codelisting'
-                                    node['id-text']
+                                    @listing = node['id-text']
+                                    label_number(@cha, @listing)
+                                  elsif node.name == 'table' && node['id-text']
+                                    @table = node['id-text']
+                                    label_number(@cha, @table)
                                   elsif node.name == 'figure'
                                     @fig = node['id-text']
                                     label_number(@cha, @fig)
@@ -492,8 +495,13 @@ module Polytexnic
         # Converts XML to HTML tables.
         def tables(doc)
           doc.xpath('//table').each do |node|
-            node['class'] = 'tabular'
-            clean_node node, %w[rend]
+            if tabular?(node)
+              node['class'] = 'tabular'
+              clean_node node, %w[rend]
+            elsif table?(node)
+              node.name = 'div'
+              node['class'] = 'table'
+            end
           end
           doc.xpath('//table/row/cell').each do |node|
             node.name = 'td'
@@ -508,6 +516,23 @@ module Polytexnic
               clean_node node, %w[bottom-border]
             end
           end
+        end
+
+        # Returns true if a table node is from a 'tabular' environment.
+        # Tralics converts both
+        # \begin{table}...
+        # and
+        # \begin{tabular}
+        # to <table> tags, so we have to disambiguate them.
+        def tabular?(table)
+          table['rend'] == 'inline'
+        end
+
+        # Returns true if a table node is from a 'table' environment.
+        # The make_cross_references method tags such tables with a
+        # 'data-number' attribute, so we use that to detect 'table' envs.
+        def table?(table)
+          !table['data-number'].nil?
         end
 
         # Trims empty paragraphs.

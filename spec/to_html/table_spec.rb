@@ -93,7 +93,11 @@ describe 'Polytexnic::Core::Pipeline#to_html' do
     context "with a label and a cross-reference" do
       let(:polytex) do <<-'EOS'
         \begin{table}
-        lorem
+        \begin{tabular}{cc}
+        HTTP request & URL \\
+        GET & /users \\
+        GET & /users/1
+        \end{tabular}
         \label{table:foo}
         \end{figure}
 
@@ -104,7 +108,13 @@ describe 'Polytexnic::Core::Pipeline#to_html' do
       it do
         should resemble <<-'EOS'
           <div id="table-foo" data-tralics-id="uid1" data-number="1" class="table">
-            <p>lorem</p>
+          <table class="tabular"><tr><td class="align_center">HTTP request</td>
+          <td class="align_center">URL</td>
+          </tr><tr><td class="align_center">GET</td>
+          <td class="align_center">/users</td>
+          </tr><tr><td class="align_center">GET</td>
+          <td class="align_center">/users/1</td>
+          </tr></table>
             <div class="caption">
               <span class="header">Table 1</span>
             </div>
