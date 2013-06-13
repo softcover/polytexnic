@@ -31,6 +31,8 @@ module Polytexnic
         make_cross_references(doc)
         hrefs(doc)
         graphics_and_figures(doc)
+        tabular(doc)
+        trim_empty_paragraphs(doc)
         html = convert_to_html(doc)
         restore_quote_and_verse(html)
       end
@@ -483,6 +485,35 @@ module Polytexnic
               caption.inner_html = Nokogiri::HTML.fragment(header + description)
             end
             clean_node node, ['id-text']
+          end
+        end
+
+        # Converts XML to HTML tables.
+        def tabular(doc)
+          doc.xpath('//table').each do |node|
+            clean_node node, %w[rend]
+          end
+          doc.xpath('//table/row/cell').each do |node|
+            node.name = 'td'
+            alignment = node['halign']
+            node['class'] = "halign-#{alignment}"
+            clean_node node, %w[halign]
+          end
+          doc.xpath('//table/row').each do |node|
+            node.name = 'tr'
+            if node['bottom-border'] == 'true'
+              node['class'] = 'bottom-border'
+              clean_node node, %w[bottom-border]
+            end
+          end
+        end
+
+        # Trims empty paragraphs.
+        # Sometimes a <p></p> creeps in due to idiosyncrasies of the
+        # Tralics conversion.
+        def trim_empty_paragraphs(doc)
+          doc.css('p').find_all.each do |p|
+            p.remove if p.content.strip.empty?
           end
         end
 
