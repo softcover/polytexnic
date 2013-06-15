@@ -32,9 +32,9 @@ describe 'Polytexnic::Core::Pipeline#to_html' do
       end
     end
 
-    context "more complicated left-aligned cells with hlines" do
+    context "more complicated left-aligned cells with lines" do
       let(:polytex) do <<-'EOS'
-        \begin{tabular}{llll}
+        \begin{tabular}{|l|lll|}
         HTTP request & URL & Action & Purpose \\ \hline
 
         GET & /users & index & page to list all users \\
@@ -50,41 +50,57 @@ describe 'Polytexnic::Core::Pipeline#to_html' do
 
       it do
         should resemble <<-'EOS'
-          <table class="tabular"><tr class="bottom_border">
-          <td class="align_left">HTTP request</td>
-          <td class="align_left">URL</td>
-          <td class="align_left">Action</td>
-          <td class="align_left">Purpose</td>
-          </tr><tr><td class="align_left">GET</td>
-          <td class="align_left">/users</td>
-          <td class="align_left">index</td>
-          <td class="align_left">page to list all users</td>
-          </tr><tr><td class="align_left">GET</td>
-          <td class="align_left">/users/1</td>
-          <td class="align_left">show</td>
-          <td class="align_left">page to show user with id 1</td>
-          </tr><tr><td class="align_left">GET</td>
-          <td class="align_left">/users/new</td>
-          <td class="align_left">new</td>
-          <td class="align_left">page to make a new user</td>
-          </tr><tr><td class="align_left">POST</td>
-          <td class="align_left">/users</td>
-          <td class="align_left">create</td>
-          <td class="align_left">create a new user</td>
-          </tr><tr><td class="align_left">GET</td>
-          <td class="align_left">/users/1/edit</td>
-          <td class="align_left">edit</td>
-          <td class="align_left">page to edit user with id 1</td>
-          </tr><tr><td class="align_left">PATCH</td>
-          <td class="align_left">/users/1</td>
-          <td class="align_left">update</td>
-          <td class="align_left">update user with id 1</td>
-          </tr><tr><td class="align_left">DELETE</td>
-          <td class="align_left">/users/1</td>
-          <td class="align_left">destroy</td>
-          <td class="align_left">delete user with id 1</td>
-          </tr></table>
-        EOS
+          <table class="tabular">
+            <tr class="bottom_border">
+              <td class="align_left right_border left_border">HTTP request</td>
+              <td class="align_left">URL</td>
+              <td class="align_left">Action</td>
+              <td class="align_left right_border">Purpose</td>
+            </tr>
+            <tr>
+              <td class="align_left right_border left_border">GET</td>
+              <td class="align_left">/users</td>
+              <td class="align_left">index</td>
+              <td class="align_left right_border">page to list all users</td>
+            </tr>
+            <tr>
+              <td class="align_left right_border left_border">GET</td>
+              <td class="align_left">/users/1</td>
+              <td class="align_left">show</td>
+              <td class="align_left right_border">page to show user with id 1</td>
+            </tr>
+            <tr>
+              <td class="align_left right_border left_border">GET</td>
+              <td class="align_left">/users/new</td>
+              <td class="align_left">new</td>
+              <td class="align_left right_border">page to make a new user</td>
+            </tr>
+            <tr>
+              <td class="align_left right_border left_border">POST</td>
+              <td class="align_left">/users</td>
+              <td class="align_left">create</td>
+              <td class="align_left right_border">create a new user</td>
+            </tr>
+            <tr>
+              <td class="align_left right_border left_border">GET</td>
+              <td class="align_left">/users/1/edit</td>
+              <td class="align_left">edit</td>
+              <td class="align_left right_border">page to edit user with id 1</td>
+            </tr>
+            <tr>
+              <td class="align_left right_border left_border">PATCH</td>
+              <td class="align_left">/users/1</td>
+              <td class="align_left">update</td>
+              <td class="align_left right_border">update user with id 1</td>
+          </tr>
+          <tr>
+            <td class="align_left right_border left_border">DELETE</td>
+            <td class="align_left">/users/1</td>
+            <td class="align_left">destroy</td>
+            <td class="align_left right_border">delete user with id 1</td>
+          </tr>
+        </table>
+      EOS
       end
     end
   end
