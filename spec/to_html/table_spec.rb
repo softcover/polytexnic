@@ -156,6 +156,40 @@ describe 'Polytexnic::Core::Pipeline#to_html' do
         EOS
       end
 
+      context "with a caption and a label" do
+        let(:polytex) do <<-'EOS'
+          \begin{table}
+          \begin{tabular}{cc}
+          HTTP request & URL \\
+          GET & /users \\
+          GET & /users/1
+          \end{tabular}
+          \caption{HTTP requests.\label{table:foo}}
+          \end{table}
+
+          Table~\ref{table:foo}
+          EOS
+        end
+
+        it do
+          should resemble <<-'EOS'
+            <div id="table-foo" data-tralics-id="uid1" data-number="1" class="table">
+            <table class="tabular"><tr><td class="align_center">HTTP request</td>
+            <td class="align_center">URL</td>
+            </tr><tr><td class="align_center">GET</td>
+            <td class="align_center">/users</td>
+            </tr><tr><td class="align_center">GET</td>
+            <td class="align_center">/users/1</td>
+            </tr></table>
+              <div class="caption">
+                <span class="header">Table 1: </span>
+                <span class="description">HTTP requests.</span>
+              </div>
+            </div>
+            <p><a href="#table-foo" class="hyperref">Table <span class="ref">1</span></a></p>
+          EOS
+        end
+      end
     end
   end
 end
