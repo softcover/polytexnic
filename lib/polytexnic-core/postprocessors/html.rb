@@ -522,6 +522,14 @@ module Polytexnic
             alignment = node['halign']
             node['class'] = "align_#{alignment}"
             clean_node node, %w[halign]
+            if node['right-border'] == 'true'
+              node['class'] += ' right_border'
+              clean_node node, %w[right-border]
+            end
+            if node['left-border'] == 'true'
+              node['class'] += ' left_border'
+              clean_node node, %w[left-border]
+            end
           end
           doc.xpath('//table/row').each do |node|
             node.name = 'tr'
