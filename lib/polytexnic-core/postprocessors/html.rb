@@ -31,7 +31,7 @@ module Polytexnic
         make_cross_references(doc)
         hrefs(doc)
         graphics_and_figures(doc)
-        tabular(doc)
+        tables(doc)
         trim_empty_paragraphs(doc)
         html = convert_to_html(doc)
         restore_quote_and_verse(html)
@@ -263,8 +263,32 @@ module Polytexnic
             convert_labels(node)
             clean_node node, %w{data-label}
           end
+          # Replace '<unexpected>' tags with their children.
+          doc.xpath('//unexpected').each do |node|
+            node.parent.children = node.children
+            node.remove
+          end
           doc.xpath('//figure').each do |node|
-            if label = node.at_css('data-label')
+            if unexpected = node.at_css('unexpected')
+              # Tralics puts in an 'unexpected' tag sometimes.
+              label = node.at_css('data-label')
+              node['id'] = pipeline_label(label)
+              unexpected.remove
+              clean_node node, %w{data-label}
+            elsif label = node.at_css('data-label')
+              node['id'] = pipeline_label(label)
+              label.remove
+              clean_node node, %w{data-label}
+            end
+          end
+          doc.xpath('//table').each do |node|
+            if unexpected = node.at_css('unexpected')
+              # Tralics puts in an 'unexpected' tag sometimes.
+              label = node.at_css('data-label')
+              node['id'] = pipeline_label(label)
+              unexpected.remove
+              clean_node node, %w{data-label}
+            elsif label = node.at_css('data-label')
               node['id'] = pipeline_label(label)
               label.remove
               clean_node node, %w{data-label}
@@ -398,6 +422,9 @@ module Polytexnic
                                     label_number(@cha, @sec, @subsec)
                                   elsif node['class'] == 'codelisting'
                                     node['id-text']
+                                  elsif node.name == 'table' && node['id-text']
+                                    @table = node['id-text']
+                                    label_number(@cha, @table)
                                   elsif node.name == 'figure'
                                     @fig = node['id-text']
                                     label_number(@cha, @fig)
@@ -426,7 +453,7 @@ module Polytexnic
           end
 
           doc.xpath('//*[@target]').each do |node|
-            node['href'] = "##{node['target'].gsub(/:/, '-')}"
+            node['href'] = "##{node['target'].gsub(':', '-')}"
             node['class'] = 'hyperref'
             clean_node node, 'target'
           end
@@ -489,23 +516,68 @@ module Polytexnic
         end
 
         # Converts XML to HTML tables.
-        def tabular(doc)
-          doc.xpath('//table').each do |node|
-            clean_node node, %w[rend]
-          end
+        def tables(doc)
           doc.xpath('//table/row/cell').each do |node|
             node.name = 'td'
             alignment = node['halign']
-            node['class'] = "halign-#{alignment}"
+            node['class'] = "align_#{alignment}"
             clean_node node, %w[halign]
           end
           doc.xpath('//table/row').each do |node|
             node.name = 'tr'
             if node['bottom-border'] == 'true'
-              node['class'] = 'bottom-border'
+              node['class'] = 'bottom_border'
               clean_node node, %w[bottom-border]
             end
           end
+          doc.xpath('//table').each do |node|
+            if tabular?(node)
+              node['class'] = 'tabular'
+              clean_node node, %w[rend]
+            elsif table?(node)
+              node.name = 'div'
+              node['class'] = 'table'
+              unless node.at_css('table')
+                inner_table = Nokogiri::XML::Node.new('table', doc)
+                inner_table['class'] = 'tabular'
+                inner_table.children = node.children
+                node.add_child(inner_table)
+              end
+              clean_node node, %w[rend]
+              full_caption = Nokogiri::XML::Node.new('div', doc)
+              n = node['data-number']
+              if description_node = node.at_css('head')
+                header = %(<span class="header">Table #{n}: </span>)
+                description = %(<span class="description">#{description_node.content}</span>)
+                description_node.remove
+                full_caption.inner_html = Nokogiri::HTML.fragment(header + description)
+                node.add_child(full_caption)
+              else
+                header = %(<span class="header">Table #{n}</span>)
+                full_caption.inner_html = header
+                node.add_child(full_caption)
+              end
+              full_caption['class'] = 'caption'
+              clean_node node, ['id-text']
+            end
+          end
+        end
+
+        # Returns true if a table node is from a 'tabular' environment.
+        # Tralics converts both
+        # \begin{table}...
+        # and
+        # \begin{tabular}
+        # to <table> tags, so we have to disambiguate them.
+        def tabular?(table)
+          table['rend'] == 'inline'
+        end
+
+        # Returns true if a table node is from a 'table' environment.
+        # The make_cross_references method tags such tables with a
+        # 'data-number' attribute, so we use that to detect 'table' envs.
+        def table?(table)
+          !table['data-number'].nil?
         end
 
         # Trims empty paragraphs.

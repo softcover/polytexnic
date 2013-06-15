@@ -6,7 +6,7 @@ describe 'Polytexnic::Core::Pipeline#to_html' do
   let(:processed_text) { Polytexnic::Core::Pipeline.new(polytex).to_html }
   subject { processed_text }
 
-  describe "tabular environment" do
+  describe "tabular environments" do
 
     context "simple table with centered elements" do
 
@@ -21,12 +21,12 @@ describe 'Polytexnic::Core::Pipeline#to_html' do
 
       it do
         should resemble <<-'EOS'
-          <table><tr><td class="halign-center">HTTP request</td>
-          <td class="halign-center">URL</td>
-          </tr><tr><td class="halign-center">GET</td>
-          <td class="halign-center">/users</td>
-          </tr><tr><td class="halign-center">GET</td>
-          <td class="halign-center">/users/1</td>
+          <table class="tabular"><tr><td class="align_center">HTTP request</td>
+          <td class="align_center">URL</td>
+          </tr><tr><td class="align_center">GET</td>
+          <td class="align_center">/users</td>
+          </tr><tr><td class="align_center">GET</td>
+          <td class="align_center">/users/1</td>
           </tr></table>
         EOS
       end
@@ -50,41 +50,145 @@ describe 'Polytexnic::Core::Pipeline#to_html' do
 
       it do
         should resemble <<-'EOS'
-          <table><tr class="bottom-border">
-          <td class="halign-left">HTTP request</td>
-          <td class="halign-left">URL</td>
-          <td class="halign-left">Action</td>
-          <td class="halign-left">Purpose</td>
-          </tr><tr><td class="halign-left">GET</td>
-          <td class="halign-left">/users</td>
-          <td class="halign-left">index</td>
-          <td class="halign-left">page to list all users</td>
-          </tr><tr><td class="halign-left">GET</td>
-          <td class="halign-left">/users/1</td>
-          <td class="halign-left">show</td>
-          <td class="halign-left">page to show user with id 1</td>
-          </tr><tr><td class="halign-left">GET</td>
-          <td class="halign-left">/users/new</td>
-          <td class="halign-left">new</td>
-          <td class="halign-left">page to make a new user</td>
-          </tr><tr><td class="halign-left">POST</td>
-          <td class="halign-left">/users</td>
-          <td class="halign-left">create</td>
-          <td class="halign-left">create a new user</td>
-          </tr><tr><td class="halign-left">GET</td>
-          <td class="halign-left">/users/1/edit</td>
-          <td class="halign-left">edit</td>
-          <td class="halign-left">page to edit user with id 1</td>
-          </tr><tr><td class="halign-left">PATCH</td>
-          <td class="halign-left">/users/1</td>
-          <td class="halign-left">update</td>
-          <td class="halign-left">update user with id 1</td>
-          </tr><tr><td class="halign-left">DELETE</td>
-          <td class="halign-left">/users/1</td>
-          <td class="halign-left">destroy</td>
-          <td class="halign-left">delete user with id 1</td>
+          <table class="tabular"><tr class="bottom_border">
+          <td class="align_left">HTTP request</td>
+          <td class="align_left">URL</td>
+          <td class="align_left">Action</td>
+          <td class="align_left">Purpose</td>
+          </tr><tr><td class="align_left">GET</td>
+          <td class="align_left">/users</td>
+          <td class="align_left">index</td>
+          <td class="align_left">page to list all users</td>
+          </tr><tr><td class="align_left">GET</td>
+          <td class="align_left">/users/1</td>
+          <td class="align_left">show</td>
+          <td class="align_left">page to show user with id 1</td>
+          </tr><tr><td class="align_left">GET</td>
+          <td class="align_left">/users/new</td>
+          <td class="align_left">new</td>
+          <td class="align_left">page to make a new user</td>
+          </tr><tr><td class="align_left">POST</td>
+          <td class="align_left">/users</td>
+          <td class="align_left">create</td>
+          <td class="align_left">create a new user</td>
+          </tr><tr><td class="align_left">GET</td>
+          <td class="align_left">/users/1/edit</td>
+          <td class="align_left">edit</td>
+          <td class="align_left">page to edit user with id 1</td>
+          </tr><tr><td class="align_left">PATCH</td>
+          <td class="align_left">/users/1</td>
+          <td class="align_left">update</td>
+          <td class="align_left">update user with id 1</td>
+          </tr><tr><td class="align_left">DELETE</td>
+          <td class="align_left">/users/1</td>
+          <td class="align_left">destroy</td>
+          <td class="align_left">delete user with id 1</td>
           </tr></table>
         EOS
+      end
+    end
+  end
+
+  describe "table environments" do
+
+    context "with a label and a cross-reference" do
+      let(:polytex) do <<-'EOS'
+        \begin{table}
+        \begin{tabular}{cc}
+        HTTP request & URL \\
+        GET & /users \\
+        GET & /users/1
+        \end{tabular}
+        \label{table:foo}
+        \end{table}
+
+        Table~\ref{table:foo}
+        EOS
+      end
+
+      it do
+        should resemble <<-'EOS'
+          <div id="table-foo" data-tralics-id="uid1" data-number="1" class="table">
+          <table class="tabular"><tr><td class="align_center">HTTP request</td>
+          <td class="align_center">URL</td>
+          </tr><tr><td class="align_center">GET</td>
+          <td class="align_center">/users</td>
+          </tr><tr><td class="align_center">GET</td>
+          <td class="align_center">/users/1</td>
+          </tr></table>
+            <div class="caption">
+              <span class="header">Table 1</span>
+            </div>
+          </div>
+          <p><a href="#table-foo" class="hyperref">Table <span class="ref">1</span></a></p>
+        EOS
+      end
+    end
+
+    context "with a caption" do
+      let(:polytex) do <<-'EOS'
+        \begin{table}
+        \begin{tabular}{cc}
+        HTTP request & URL \\
+        GET & /users \\
+        GET & /users/1
+        \end{tabular}
+        \caption{HTTP requests.}
+        \end{table}
+        EOS
+      end
+
+      it do
+        should resemble <<-'EOS'
+          <div id="uid1" data-tralics-id="uid1" data-number="1" class="table">
+          <table class="tabular"><tr><td class="align_center">HTTP request</td>
+          <td class="align_center">URL</td>
+          </tr><tr><td class="align_center">GET</td>
+          <td class="align_center">/users</td>
+          </tr><tr><td class="align_center">GET</td>
+          <td class="align_center">/users/1</td>
+          </tr></table>
+            <div class="caption">
+              <span class="header">Table 1:</span>
+              <span class="description">HTTP requests.</span>
+            </div>
+          </div>
+        EOS
+      end
+
+      context "with a caption and a label" do
+        let(:polytex) do <<-'EOS'
+          \begin{table}
+          \begin{tabular}{cc}
+          HTTP request & URL \\
+          GET & /users \\
+          GET & /users/1
+          \end{tabular}
+          \caption{HTTP requests.\label{table:foo}}
+          \end{table}
+
+          Table~\ref{table:foo}
+          EOS
+        end
+
+        it do
+          should resemble <<-'EOS'
+            <div id="table-foo" data-tralics-id="uid1" data-number="1" class="table">
+            <table class="tabular"><tr><td class="align_center">HTTP request</td>
+            <td class="align_center">URL</td>
+            </tr><tr><td class="align_center">GET</td>
+            <td class="align_center">/users</td>
+            </tr><tr><td class="align_center">GET</td>
+            <td class="align_center">/users/1</td>
+            </tr></table>
+              <div class="caption">
+                <span class="header">Table 1: </span>
+                <span class="description">HTTP requests.</span>
+              </div>
+            </div>
+            <p><a href="#table-foo" class="hyperref">Table <span class="ref">1</span></a></p>
+          EOS
+        end
       end
     end
   end
