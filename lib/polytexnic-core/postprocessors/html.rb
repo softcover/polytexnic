@@ -421,8 +421,7 @@ module Polytexnic
                                     @subsec = node['id-text']
                                     label_number(@cha, @sec, @subsec)
                                   elsif node['class'] == 'codelisting'
-                                    @listing = node['id-text']
-                                    label_number(@cha, @listing)
+                                    node['id-text']
                                   elsif node.name == 'table' && node['id-text']
                                     @table = node['id-text']
                                     label_number(@cha, @table)
@@ -518,34 +517,6 @@ module Polytexnic
 
         # Converts XML to HTML tables.
         def tables(doc)
-          doc.xpath('//table').each do |node|
-            if tabular?(node)
-              node['class'] = 'tabular'
-              clean_node node, %w[rend]
-            elsif table?(node)
-              node.name = 'div'
-              node['class'] = 'table'
-              clean_node node, %w[rend]
-              unless caption = node.at_css('head')
-                caption = Nokogiri::XML::Node.new('div', doc)
-                node.add_child(caption)
-              end
-              caption.name = 'div'
-              caption['class'] = 'caption'
-              n = node['data-number']
-              if caption.content.empty?
-                header = %(<span class="header">Table #{n}</span>)
-                caption.inner_html = header
-              else
-                header = %(<span class="header">Table #{n}: </span>)
-                description = %(<span class="description">#{caption.content}</span>)
-                caption.inner_html = Nokogiri::HTML.fragment(header + description)
-              end
-              clean_node node, ['id-text']
-
-
-            end
-          end
           doc.xpath('//table/row/cell').each do |node|
             node.name = 'td'
             alignment = node['halign']
@@ -557,6 +528,37 @@ module Polytexnic
             if node['bottom-border'] == 'true'
               node['class'] = 'bottom_border'
               clean_node node, %w[bottom-border]
+            end
+          end
+          doc.xpath('//table').each do |node|
+            if tabular?(node)
+              node['class'] = 'tabular'
+              clean_node node, %w[rend]
+            elsif table?(node)
+              node.name = 'div'
+              node['class'] = 'table'
+              unless node.at_css('table')
+                inner_table = Nokogiri::XML::Node.new('table', doc)
+                inner_table['class'] = 'tabular'
+                inner_table.children = node.children
+                node.add_child(inner_table)
+              end
+              clean_node node, %w[rend]
+              full_caption = Nokogiri::XML::Node.new('div', doc)
+              n = node['data-number']
+              if description_node = node.at_css('head')
+                header = %(<span class="header">Table #{n}: </span>)
+                description = %(<span class="description">#{description_node.content}</span>)
+                description_node.remove
+                full_caption.inner_html = Nokogiri::HTML.fragment(header + description)
+                node.add_child(full_caption)
+              else
+                header = %(<span class="header">Table #{n}</span>)
+                full_caption.inner_html = header
+                node.add_child(full_caption)
+              end
+              full_caption['class'] = 'caption'
+              clean_node node, ['id-text']
             end
           end
         end
