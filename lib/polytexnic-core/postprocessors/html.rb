@@ -111,7 +111,8 @@ module Polytexnic
         # \begin{equation}
         # <equation>
         # \end{equation}
-        # and all the AMSTeX variants defined in Preprocessor#math_environments.
+        # and all the AMS-LaTeX variants defined in
+        # Preprocessor#math_environments.
         # We also handle inline/display math of the form \(x\) and \[y\].
         def math(doc)
           # math environments
