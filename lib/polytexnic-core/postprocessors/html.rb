@@ -490,30 +490,36 @@ module Polytexnic
               img = %(<img src="#{filename}" alt="#{alt}" />)
               graphic = %(<div class="graphics">#{img}</div>)
               graphic_node = Nokogiri::HTML.fragment(graphic)
-              if caption = node.children.first
-                caption.add_previous_sibling(graphic_node)
+              if description_node = node.children.first
+                description_node.add_previous_sibling(graphic_node)
               else
                 node.add_child(graphic_node)
               end
               clean_node node, %w[file extension rend]
             end
-            unless caption = node.at_css('head')
-              caption = Nokogiri::XML::Node.new('div', doc)
-              node.add_child(caption)
-            end
-            caption.name = 'div'
-            caption['class'] = 'caption'
-            n = node['data-number']
-            if caption.content.empty?
-              header = %(<span class="header">Figure #{n}</span>)
-              caption.inner_html = header
-            else
-              header = %(<span class="header">Figure #{n}: </span>)
-              description = %(<span class="description">#{caption.content}</span>)
-              caption.inner_html = Nokogiri::HTML.fragment(header + description)
-            end
-            clean_node node, ['id-text']
+            add_caption(node, name: 'figure')
           end
+        end
+
+        # Adds a caption to a node.
+        # This works for figures and tables (at the least).
+        def add_caption(node, options={})
+          name = options[:name].to_s.capitalize
+          doc = node.document
+          full_caption = Nokogiri::XML::Node.new('div', doc)
+          full_caption['class'] = 'caption'
+          n = node['data-number']
+          if description_node = node.at_css('head')
+            h = %(<span class="header">#{name} #{n}: </span>)
+            d = %(<span class="description">#{description_node.content}</span>)
+            description_node.remove
+            full_caption.inner_html = Nokogiri::HTML.fragment(h + d)
+          else
+            header = %(<span class="header">#{name} #{n}</span>)
+            full_caption.inner_html = header
+          end
+          node.add_child(full_caption)
+          clean_node node, ['id-text']
         end
 
         # Converts XML to HTML tables.
@@ -553,21 +559,7 @@ module Polytexnic
                 node.add_child(inner_table)
               end
               clean_node node, %w[rend]
-              full_caption = Nokogiri::XML::Node.new('div', doc)
-              n = node['data-number']
-              if description_node = node.at_css('head')
-                header = %(<span class="header">Table #{n}: </span>)
-                description = %(<span class="description">#{description_node.content}</span>)
-                description_node.remove
-                full_caption.inner_html = Nokogiri::HTML.fragment(header + description)
-                node.add_child(full_caption)
-              else
-                header = %(<span class="header">Table #{n}</span>)
-                full_caption.inner_html = header
-                node.add_child(full_caption)
-              end
-              full_caption['class'] = 'caption'
-              clean_node node, ['id-text']
+              add_caption(node, name: 'table')
             end
           end
         end
