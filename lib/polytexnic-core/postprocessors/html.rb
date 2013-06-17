@@ -457,17 +457,6 @@ module Polytexnic
                     "</p>\n</blockquote>\n")
         end
 
-        # Highlights source code.
-        # We pass it HTML instead of an XML document because otherwise
-        # Nokogiri escapes it.
-        def highlight_source_code(html)
-          html.tap do
-            code_cache.each do |key, (content, language)|
-              html.gsub!(key, Pygments.highlight(content, lexer: language))
-            end
-          end
-        end
-
         # Converts a document to HTML.
         # Because there's no way to know which elements are block-level
         # (and hence can't be nested inside a paragraph tag), we first extract
