@@ -34,6 +34,7 @@ module Polytexnic
         commands = <<-'EOS'
 \newcommand{\PolyTeX}{Poly\TeX}
 \newcommand{\PolyTeXnic}{Poly{\TeX}nic}
+\def\hyperref[#1]#2{\xmlelt{a}{\XMLaddatt{target}{#1}#2}}
 
 % Code listing environments
 \usepackage{amsthm}

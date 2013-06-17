@@ -87,10 +87,10 @@ module Polytexnic
     # by the postprocessor).
     # For completeness, we handle the case where the author neglects to
     # use the nonbreak space ~.
-    def hyperref(string)
+    def hyperrefs(string)
       linked_item = "(Chapter|Section|Table|Box|Figure|Listing)"
       ref = /#{linked_item}(~| )\\ref{(.*?)}/
-      string.gsub(ref) do
+      string.gsub!(ref) do
         "\\hyperref[#{$3}]{#{$1}#{$2}\\ref{#{$3}}}"
       end
     end
