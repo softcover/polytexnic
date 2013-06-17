@@ -26,7 +26,8 @@ module Polytexnic
     # gets includes the internal literal text without stopping after the first
     # \end{verbatim}.
     def cache_literal_environments(lines, output, format)
-      latex = format == :latex
+      i = 1
+      latex = (format == :latex)
       language = nil
       in_verbatim = false
       while (line = lines.shift)
@@ -62,7 +63,11 @@ module Polytexnic
               code_cache[key] = [content, language]
               tag = 'code'
             end
-            latex ? key : xmlelement(tag) { key }
+            if latex || tag == 'code'
+              key
+            else
+              xmlelement(tag) { key }
+            end
           end
           language = nil
           (output << '') unless latex # Force the next element to be a paragraph
