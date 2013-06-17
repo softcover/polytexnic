@@ -23,7 +23,7 @@ end
 \end{code}
 
 \noindent lorem ipsum
-      EOS
+        EOS
       end
 
       it { should resemble "commandchars=\\\\\\{" }
@@ -38,6 +38,26 @@ end
         it { should resemble '\verb' }
         it { should_not resemble '<div class="highlight">' }
       end
+    end
+
+    context "with the metacode environment" do
+      let(:polytex) do <<-'EOS'
+%= lang:latex
+\begin{metacode}
+%= lang:ruby
+\begin{code}
+def foo
+  "bar"
+end
+\end{code}
+\end{metacode}
+
+\noindent lorem ipsum
+        EOS
+      end
+
+      it { should resemble "commandchars=\\\\\\{" }
+      it { should_not resemble '%= lang:ruby' }
     end
 
     describe "verbatim environments" do
@@ -403,8 +423,8 @@ lorem ipsum
         EOS
       end
       let(:output) do <<-'EOS'
-        <div id="sec-foo" data-tralics-id="cid1" class="section" data-number="1.1">
-          <h3><a href="#sec-foo" class="heading"><span class="number">1.1 </span>Foo</a></h3>
+        <div id="sec-foo" data-tralics-id="cid1" class="section" data-number="1">
+          <h3><a href="#sec-foo" class="heading"><span class="number">1 </span>Foo</a></h3>
         </div>
         EOS
       end
@@ -422,10 +442,10 @@ lorem ipsum
       end
 
       let(:output) do <<-'EOS'
-        <div id="sec-foo" data-tralics-id="cid1" class="section" data-number="1.1">
-          <h3><a href="#sec-foo" class="heading"><span class="number">1.1 </span>Foo</a></h3>
-          <div id="sec-bar" data-tralics-id="uid1" class="subsection" data-number="1.1.1">
-            <h4><a href="#sec-bar" class="heading"><span class="number">1.1.1 </span>Bar</a></h4>
+        <div id="sec-foo" data-tralics-id="cid1" class="section" data-number="1">
+          <h3><a href="#sec-foo" class="heading"><span class="number">1 </span>Foo</a></h3>
+          <div id="sec-bar" data-tralics-id="uid1" class="subsection" data-number="1.1">
+            <h4><a href="#sec-bar" class="heading"><span class="number">1.1 </span>Bar</a></h4>
           </div>
         </div>
         EOS
@@ -547,10 +567,37 @@ lorem
 
       it do
         should resemble <<-'EOS'
-<div id="uid1" data-tralics-id="uid1" data-number="1.1" class="figure">
+<div id="uid1" data-tralics-id="uid1" data-number="1" class="figure">
   <p>lorem</p>
+  <div class="caption">
+    <span class="header">Figure 1</span>
+  </div>
 </div>
         EOS
+      end
+
+      context "with a label and a cross-reference" do
+        let(:polytex) do <<-'EOS'
+\begin{figure}
+lorem
+\label{fig:foo}
+\end{figure}
+
+Figure~\ref{fig:foo}
+          EOS
+        end
+
+        it do
+          should resemble <<-'EOS'
+<div id="fig-foo" data-tralics-id="uid1" data-number="1" class="figure">
+  <p>lorem</p>
+  <div class="caption">
+    <span class="header">Figure 1</span>
+  </div>
+</div>
+<p><a href="#fig-foo" class="hyperref">Figure <span class="ref">1</span></a></p>
+          EOS
+        end
       end
 
       context "with included graphics" do
@@ -563,9 +610,12 @@ lorem
 
         it do
           should resemble <<-'EOS'
-<div id="uid1" data-tralics-id="uid1" data-number="1.1" class="figure">
+<div id="uid1" data-tralics-id="uid1" data-number="1" class="figure">
   <div class="graphics">
     <img src="images/foo.png" alt="foo" />
+  </div>
+  <div class="caption">
+    <span class="header">Figure 1</span>
   </div>
 </div>
           EOS
@@ -574,17 +624,17 @@ lorem
 
       context "with a caption" do
         let(:polytex) do <<-'EOS'
- \chapter{The chapter}
+\chapter{The chapter}
 
- \begin{figure}
- \includegraphics{foo.png}
- \caption{This is a caption.}
- \end{figure}
+\begin{figure}
+\includegraphics{foo.png}
+\caption{This is a caption.}
+\end{figure}
 
- \begin{figure}
- \includegraphics{bar.png}
- \caption{This is another caption.}
- \end{figure}
+\begin{figure}
+\includegraphics{bar.png}
+\caption{This is another caption.}
+\end{figure}
            EOS
          end
 
@@ -618,7 +668,7 @@ lorem
         end
       end
 
-      context "with a label and cross-reference" do
+      context "with labels and cross-reference" do
         let(:polytex) do <<-'EOS'
  \chapter{The chapter}
  \label{cha:lorem_ipsum}
@@ -628,7 +678,13 @@ lorem
  \caption{This is a caption.\label{fig:foo}}
  \end{figure}
 
- Figure~\ref{fig:foo}
+\begin{figure}
+\includegraphics{bar.png}
+\caption{This is another caption.\label{fig:bar}}
+\end{figure}
+
+
+ Figure~\ref{fig:foo} and Figure~\ref{fig:bar}
            EOS
          end
 
@@ -648,7 +704,20 @@ lorem
       <span class="description">This is a caption.</span>
     </div>
   </div>
-  <p><a href="#fig-foo" class="hyperref">Figure <span class="ref">1.1</span></a></p>
+  <div id="fig-bar" data-tralics-id="uid2" data-number="1.2" class="figure">
+    <div class="graphics">
+      <img src="bar.png" alt="bar" />
+    </div>
+    <div class="caption">
+      <span class="header">Figure 1.2: </span>
+      <span class="description">This is another caption.</span>
+    </div>
+  </div>
+  <p>
+    <a href="#fig-foo" class="hyperref">Figure <span class="ref">1.1</span></a>
+    and
+    <a href="#fig-bar" class="hyperref">Figure <span class="ref">1.2</span></a>
+  </p>
 </div>
           EOS
         end

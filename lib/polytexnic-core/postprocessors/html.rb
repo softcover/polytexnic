@@ -282,7 +282,7 @@ module Polytexnic
             node.name = 'div'
             is_chapter = node['type'] == 'chapter'
             node['class'] = is_chapter ? 'chapter' : 'section'
-            clean_node node, %w{id-text type}
+            clean_node node, %w{type}
             make_headings(doc, node, 'h3')
           end
         end
@@ -291,7 +291,7 @@ module Polytexnic
           doc.xpath('//div1').each do |node|
             node.name = 'div'
             node['class'] = 'subsection'
-            clean_node node, %w{id-text}
+            clean_node node, %w{}
             make_headings(doc, node, 'h4')
           end
         end
@@ -344,29 +344,20 @@ module Polytexnic
 
         def make_cross_references(doc)
           # build numbering tree
-          chapter_number = 0
-          section_number = 0
-          subsection_number = 0
-          figure_number = 0
           doc.xpath('//*[@data-tralics-id]').each do |node|
-            node['data-number'] = case node['class'].to_s
-              when 'chapter'
-                section_number = 0
-                "#{chapter_number += 1}"
-              when 'section'
-                subsection_number = 0
-                cha_n = chapter_number.zero? ? 1 : chapter_number
-                "#{cha_n}.#{section_number += 1}"
-              when 'subsection'
-                cha_n = chapter_number.zero? ? 1 : chapter_number
-                sec_n = section_number.zero? ? 1 : section_number
-                "#{cha_n}.#{sec_n}.#{subsection_number += 1}"
-              end
-            if node.name == 'figure'
-              cha_n = chapter_number.zero? ? 1 : chapter_number
-              node['data-number'] = "#{cha_n}.#{figure_number += 1}"
-            end
-
+            node['data-number'] = if node['class'] == 'chapter'
+                                    @cha = node['id-text']
+                                  elsif node['class'] == 'section'
+                                    @sec = node['id-text']
+                                    label_number(@cha, @sec)
+                                  elsif node['class'] == 'subsection'
+                                    @subsec = node['id-text']
+                                    label_number(@cha, @sec, @subsec)
+                                  elsif node.name == 'figure'
+                                    @fig = node['id-text']
+                                    label_number(@cha, @fig)
+                                  end
+            clean_node node, 'id-text'
             # add number span
             if head = node.css('h2 a, h3 a, h4 a').first
               el = doc.create_element 'span'
@@ -394,6 +385,12 @@ module Polytexnic
             node['class'] = 'hyperref'
             clean_node node, 'target'
           end
+        end
+
+        # Returns a label number for use in headings.
+        # For example, label_number("1", "2") returns "1.2".
+        def label_number(*args)
+          args.compact.join('.')
         end
 
         def hrefs(doc)
@@ -427,10 +424,17 @@ module Polytexnic
               end
               clean_node node, %w[file extension rend]
             end
-            if caption = node.at_css('head')
-              caption.name = 'div'
-              caption['class'] = 'caption'
-              n = node['data-number']
+            unless caption = node.at_css('head')
+              caption = Nokogiri::XML::Node.new('div', doc)
+              node.add_child(caption)
+            end
+            caption.name = 'div'
+            caption['class'] = 'caption'
+            n = node['data-number']
+            if caption.content.empty?
+              header = %(<span class="header">Figure #{n}</span>)
+              caption.inner_html = header
+            else
               header = %(<span class="header">Figure #{n}: </span>)
               description = %(<span class="description">#{caption.content}</span>)
               caption.inner_html = Nokogiri::HTML.fragment(header + description)

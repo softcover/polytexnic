@@ -46,7 +46,7 @@ module Polytexnic
         polytex = "#{defs}\n#{polytex}"
 
         # This key line caches literal environments, non-ASCII Unicode,
-        # and adds enhances hyperref links. See literal.rb for details.
+        # and adds enhanced hyperref links. See literal.rb for details.
         output = hyperref(cache_unicode(make_caches(polytex)))
 
         # handle title fields
