@@ -5,10 +5,12 @@ if hash rbenv 2>/dev/null; then
 
   echo "Running tests under Ruby 1.9.3"
   rbenv shell 1.9.3-p194
+  gem update pivotal-github
   bundle
   rspec spec
   echo "Running tests under Ruby 2.0.0"
   rbenv shell 2.0.0-p0
+  gem update pivotal-github
   bundle
   rspec spec
 
@@ -28,11 +30,12 @@ else
 
   echo "Running tests under Ruby 1.9.3"
   rvm use 1.9.3@polytexnic
+  gem update pivotal-github
   bundle
   rspec spec
   echo "Running tests under Ruby 2.0.0"
   rvm use 2.0.0@polytexnic
+  gem update pivotal-github
   bundle
   rspec spec
-
 fi

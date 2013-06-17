@@ -30,3 +30,5 @@ log
 *.lai
 *.la
 *.a
+
+.DS_Store
