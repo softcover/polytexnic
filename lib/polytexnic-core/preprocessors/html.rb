@@ -67,8 +67,14 @@ module Polytexnic
           "#{s}\n\\xbox{data-label}{#{label}}"
         end
 
+        # Mark chapters with a 'chapter' type.
         output.gsub! /\\chapter\{(.*?)\}/ do |s|
           "#{s}\n\\AddAttToCurrent{type}{chapter}"
+        end
+
+        # Mark code listings with a 'codelisting' type.
+        output.gsub! /\\begin\{codelisting\}/ do |s|
+          "#{s}\n\\AddAttToCurrent{type}{codelisting}"
         end
 
         # Handles quote and verse environments, which Tralics does wrong.

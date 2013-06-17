@@ -23,6 +23,7 @@ module Polytexnic
         set_ids(doc)
         chapters_and_section(doc)
         subsection(doc)
+        code_listings(doc)
         title(doc)
         smart_single_quotes(doc)
         restore_literal(doc)
@@ -250,19 +251,38 @@ module Polytexnic
         end
 
         # Set the Tralics ids.
-        # These aren't used, but there's little reason to throw them away.
         def set_ids(doc)
           doc.xpath('//*[@id]').each do |node|
             # TODO: make whitelist of non-tralics id's
             next if node['id'] =~ /footnote/
 
             node['data-tralics-id'] = node['id']
-            if label = node.at_css('data-label')
-              node['id'] = label.inner_html.gsub(underscore_digest, '_')
-              label.remove
-            end
+            convert_labels(node)
             clean_node node, %w{data-label}
           end
+          doc.xpath('//figure').each do |node|
+            if label = node.at_css('data-label')
+              node['id'] = pipeline_label(label)
+              label.remove
+              clean_node node, %w{data-label}
+            end
+          end
+        end
+
+        def convert_labels(node)
+          node.children.each do |child|
+            if child.name == 'data-label'
+              node['id'] = pipeline_label(child)
+              child.remove
+              break
+            end
+          end
+        end
+
+        # Returns a label for the pipeline.
+        # Tralics does weird stuff with underscores, so sub them out.
+        def pipeline_label(node)
+          node.inner_html.gsub(underscore_digest, '_')
         end
 
         # Given a section node, process the <head> tag.
@@ -291,8 +311,26 @@ module Polytexnic
           doc.xpath('//div1').each do |node|
             node.name = 'div'
             node['class'] = 'subsection'
-            clean_node node, %w{}
             make_headings(doc, node, 'h4')
+          end
+        end
+
+        # Process code listings.
+        def code_listings(doc)
+          doc.xpath('//p[@type="codelisting"]').each do |node|
+            node.name = 'div'
+            node['class'] = 'codelisting'
+            clean_node node, 'type'
+            heading, description = node.children[0..1]
+            listing = Nokogiri::HTML.fragment <<-EOS
+<div class="listing">
+  <span class="header">#{heading.content}.</span>
+  <span class="description">#{description.content}</span>
+</div>
+            EOS
+            heading.remove
+            description.remove
+            node.children.first.add_previous_sibling listing
           end
         end
 
@@ -353,6 +391,8 @@ module Polytexnic
                                   elsif node['class'] == 'subsection'
                                     @subsec = node['id-text']
                                     label_number(@cha, @sec, @subsec)
+                                  elsif node['class'] == 'codelisting'
+                                    node['id-text']
                                   elsif node.name == 'figure'
                                     @fig = node['id-text']
                                     label_number(@cha, @fig)

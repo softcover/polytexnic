@@ -327,6 +327,9 @@ end
       end
 
       it { should resemble '<div class="code">' }
+      it "should not have repeated code divs" do
+        expect(processed_text.scan(/<div class="code">/).length).to eq 1
+      end
       it { should resemble '<div class="highlight">' }
       it { should resemble '<pre>' }
     end

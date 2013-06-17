@@ -34,8 +34,15 @@ module Polytexnic
         commands = <<-'EOS'
 \newcommand{\PolyTeX}{Poly\TeX}
 \newcommand{\PolyTeXnic}{Poly{\TeX}nic}
+
+% Code listing environments
+\usepackage{amsthm}
+\newtheorem{theorem}{Theorem}
+\theoremstyle{definition}
+\newtheorem{codelisting}{Listing}[chapter]
+
         EOS
-        commands + "\n"
+        commands
       end
 
       # Highlights source code.
