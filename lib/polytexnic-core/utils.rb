@@ -38,6 +38,36 @@ module Polytexnic
         commands + "\n"
       end
 
+      # Highlights source code.
+      def highlight_source_code(document, formatter = 'html')
+        document.tap do
+          code_cache.each do |key, (content, language)|
+            code = Pygments.highlight(content,
+                                      lexer: language,
+                                      formatter: formatter)
+            code = horrible_backslash_kludge(code) if formatter == 'latex'
+            document.gsub!(key, code)
+          end
+        end
+      end
+
+      # Does something horrible with backslashes.
+      # OK, so the deal is that code highlighted for LaTeX contains the line
+      # \begin{Verbatim}[commandchars=\\\{\}]
+      # Oh crap, there are backslashes there. This means we have no chance
+      # of getting things to work after interpolating,  gsubbing, and so on,
+      # because in Ruby '\\foo' is the same as '\\\\foo', '\}' is '}', etc.
+      # I thought I escaped (heh) this problem with the escape_backslashes method,
+      # but here the problem is extremely specific. In particular,
+      # \\\{\} is really \\ and \{ and \}, but Ruby doensn't know WTF to do
+      # with it, and thinks that it's "\\{}", which is the same as '\{}'.
+      # The solution is to replace '\\\\' with some number of backslashes.
+      # How many? I literally had to just keep adding backslashes until
+      # the output was correct when running `poly build:pdf`.
+      def horrible_backslash_kludge(string)
+        string.gsub!(/commandchars=\\\\/, 'commandchars=\\\\\\\\\\\\\\')
+      end
+
       # Returns true if we are debugging, false otherwise
       def debug?
         false

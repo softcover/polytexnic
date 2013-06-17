@@ -28,26 +28,25 @@ module Polytexnic
     def cache_literal_environments(lines, output, format)
       latex = format == :latex
       language = nil
+      in_verbatim = false
       while (line = lines.shift)
-        if line =~ LANG_REGEX
-          if latex
-            output << line
-          else
-            language = $1
-          end
+        if line =~ LANG_REGEX && !in_verbatim
+          language = $1
         elsif line.begin_literal?
+          in_verbatim = true
           literal_type = line.literal_type
           output << xmlelement(element(literal_type), latex) do
             count = 1
             text = []
-            text << line if line.math_environment? || latex
+            text << line if line.math_environment? || (latex && !language)
             while (line = lines.shift)
-              if line.begin_literal?
+              if line.begin_literal?(literal_type)
                 count += 1
               elsif line.end_literal?(literal_type)
                 count -= 1
                 if count == 0
-                  text << line if line.math_environment? || latex
+                  in_verbatim = false
+                  text << line if line.math_environment? || (latex && !language)
                   break
                 end
               end
@@ -56,19 +55,14 @@ module Polytexnic
             raise "Missing \\end{#{line.literal_type}}" if count != 0
             content = text.join("\n")
             key = digest(content)
-            if latex
+            if language.nil?
               literal_cache[key] = content
-              key
+              tag = 'literal'
             else
-              if language.nil?
-                literal_cache[key] = content
-                tag = 'literal'
-              else
-                code_cache[key] = [content, language]
-                tag = 'code'
-              end
-              xmlelement(tag) { key }
+              code_cache[key] = [content, language]
+              tag = 'code'
             end
+            latex ? key : xmlelement(tag) { key }
           end
           language = nil
           (output << '') unless latex # Force the next element to be a paragraph
@@ -138,9 +132,9 @@ end
 class String
 
   # Returns true if self matches \begin{...} where ... is a literal environment.
-  def begin_literal?
-    literal = "(?:verbatim|Verbatim|code|#{math_environment_regex})"
-    match(/^\s*\\begin{#{literal}}\s*$/)
+  def begin_literal?(literal_type = nil)
+    literal_type ||= "(?:verbatim|Verbatim|code|#{math_environment_regex})"
+    match(/^\s*\\begin{#{literal_type}}\s*$/)
   end
 
   def end_literal?(literal_type)

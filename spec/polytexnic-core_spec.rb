@@ -26,6 +26,7 @@ end
       EOS
       end
 
+      it { should resemble "commandchars=\\\\\\{" }
       it { should resemble '\begin{Verbatim}' }
       it { should resemble 'commandchars' }
       it { should resemble '\end{Verbatim}' }
@@ -54,7 +55,22 @@ end
 \end{Verbatim}
       EOS
       end
+
       it { should resemble polytex }
+
+      context "containing an example of highlighted code" do
+        let(:polytex) do <<-'EOS'
+\begin{verbatim}
+%= lang:ruby
+def foo
+  "bar"
+end
+\end{verbatim}
+          EOS
+        end
+
+        it { should resemble polytex }
+      end
     end
 
     describe "hyperref links" do

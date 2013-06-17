@@ -12,12 +12,12 @@ RSpec::Matchers.define :resemble do |expected|
 
     failure_message_for_should do |actual|
       debug_output(expected, actual)
-      "expected #{actual.robust} to resemble #{expected.robust}"
+      "expected #{actual} to resemble #{expected}"
     end
 
     failure_message_for_should_not do |actual|
       debug_output(expected, actual)
-      "expected #{actual.robust} not to resemble #{expected.robust}"
+      "expected #{actual} not to resemble #{expected}"
     end
 
     expect(actual.robust).to match_regex(regex)
