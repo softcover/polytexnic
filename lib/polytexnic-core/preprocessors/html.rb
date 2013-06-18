@@ -69,7 +69,7 @@ module Polytexnic
 
         # Preserves label names.
         # Tralics doesn't keep the names of labels, e.g., 'cha:foobar' in
-        # '\label{cha:foobar}'. But Tralics exposes a wide variety of
+        # '\label{cha:foobar}'. But Tralics supplies a wide variety of
         # pseudo-LaTeX commands to add arbitrary XML elements to the final
         # document. In this case, the \xbox command does the trick. See
         # http://www-sop.inria.fr/marelle/tralics/doc-x.html

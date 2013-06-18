@@ -68,13 +68,14 @@ describe 'Polytexnic::Core::Pipeline#to_html' do
       let(:polytex) do <<-'EOS'
         \begin{figure}
         \includegraphics{images/foo.png}
+        \label{fig:foo}
         \end{figure}
         EOS
       end
 
       it do
         should resemble <<-'EOS'
-          <div id="uid1" data-tralics-id="uid1" data-number="1" class="figure">
+          <div id="fig-foo" data-tralics-id="uid1" data-number="1" class="figure">
           <div class="graphics">
             <img src="images/foo.png" alt="foo" />
           </div>
