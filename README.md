@@ -10,7 +10,7 @@ This gem is installed automatically as a dependency of the `polytexnic` gem:
 
 ## Usage
 
-TODO: Write usage instructions here
+See the README for `polytexnic`.
 
 ## Contributing
 
