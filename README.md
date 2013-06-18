@@ -4,17 +4,9 @@ TODO: Write a gem description
 
 ## Installation
 
-Add this line to your application's Gemfile:
+This gem is installed automatically as a dependency of the `polytexnic` gem:
 
-    gem 'polytexnic-core'
-
-And then execute:
-
-    $ bundle
-
-Or install it yourself as:
-
-    $ gem install polytexnic-core
+    $ gem install polytexnic
 
 ## Usage
 
