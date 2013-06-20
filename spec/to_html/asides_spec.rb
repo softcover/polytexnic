@@ -27,15 +27,15 @@ describe 'Polytexnic::Core::Pipeline#to_html' do
     it do
       should resemble <<-'EOS'
         <div id="cid1" data-tralics-id="cid1" class="chapter" data-number="1"><h3><a href="#cid1" class="heading"><span class="number">1 </span>Foo bar</a></h3>
-        <div id="aside-lorem" data-tralics-id="uid1" class="aside" data-number="1.1">
-          <div class="aside">
-            <span class="header">Listing 1.1.</span>
-            <span class="description">Creating a gem configuration file.</span>
+        <div class="aside" id="aside-lorem" data-tralics-id="uid1" data-number="1.1">
+          <div class="heading">
+            <span class="number">Box 1.1.</span>
+            <span class="description">Lorem ipsum.</span>
           </div>
           <p>lorem ipsum</p>
           <p>dolor sit amet</p>
         </div>
-        <p><a href="#code-create_gemrc" class="hyperref">Listing <span class="ref">1.1</span></a></p>
+        <p><a href="#aside-lorem" class="hyperref">Box <span class="ref">1.1</span></a></p>
         </div>
       EOS
     end

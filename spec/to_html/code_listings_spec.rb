@@ -27,8 +27,8 @@ $ subl .gemrc
       should resemble <<-'EOS'
         <div id="cid1" data-tralics-id="cid1" class="chapter" data-number="1"><h3><a href="#cid1" class="heading"><span class="number">1 </span>Foo bar</a></h3>
         <div id="code-create_gemrc" data-tralics-id="uid1" class="codelisting" data-number="1.1">
-          <div class="listing">
-            <span class="header">Listing 1.1.</span>
+          <div class="heading">
+            <span class="number">Listing 1.1.</span>
             <span class="description">Creating a gem configuration file.</span>
           </div>
           <div class="code">
