@@ -81,7 +81,7 @@ module Polytexnic
 
       # Returns true if we are debugging, false otherwise
       def debug?
-        true
+        false
       end
     end
   end

@@ -93,11 +93,15 @@ module Polytexnic
             "#{s}\n\\AddAttToCurrent{type}{chapter}"
           end
 
-          # Mark code listings with a 'codelisting' type.
-          string.gsub! /\\begin\{codelisting\}/ do |s|
-            "#{s}\n\\AddAttToCurrent{type}{codelisting}"
+          # Wrap codelistings in a 'codelisting' element.
+          string.gsub! /\\begin{codelisting}/ do |s|
+            "\\begin{xmlelement*}{codelisting}\n#{s}"
+          end
+          string.gsub! /\\end{codelisting}/ do |s|
+            "#{s}\n\\end{xmlelement*}"
           end
 
+          # Wrap asides in an 'aside' element.
           string.gsub! /\\begin{aside}/ do |s|
             "\\begin{xmlelement*}{aside}\n#{s}"
           end
