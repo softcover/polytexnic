@@ -11,7 +11,7 @@ describe 'Polytexnic::Core::Pipeline#to_html' do
       \chapter{Foo bar}
 
       \begin{codelisting}
-      Creating a gem configuration file.
+      \heading{Creating a gem configuration file.}
       \label{code:create_gemrc}
       %= lang:console
       \begin{code}
@@ -26,7 +26,7 @@ $ subl .gemrc
     it do
       should resemble <<-'EOS'
         <div id="cid1" data-tralics-id="cid1" class="chapter" data-number="1"><h3><a href="#cid1" class="heading"><span class="number">1 </span>Foo bar</a></h3>
-        <div id="code-create_gemrc" data-tralics-id="uid1" class="codelisting" data-number="1.1">
+        <div class="codelisting" id="code-create_gemrc" data-tralics-id="uid1" data-number="1.1">
           <div class="heading">
             <span class="number">Listing 1.1.</span>
             <span class="description">Creating a gem configuration file.</span>

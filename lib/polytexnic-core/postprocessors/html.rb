@@ -348,20 +348,29 @@ module Polytexnic
 
         # Processes codelisting environments.
         def codelistings(doc)
-          doc.xpath('//p[@type="codelisting"]').each do |node|
-            node.name = 'div'
+          doc.xpath('//heading').each do |node|
+            node.name  = 'span'
+            node['class'] = 'description'
+          end
+          doc.xpath('//codelisting').each do |node|
+            node.name  = 'div'
             node['class'] = 'codelisting'
-            clean_node node, 'type'
-            heading, description = node.children[0..1]
-            listing = Nokogiri::HTML.fragment <<-EOS
-<div class="listing">
-  <span class="header">#{heading.content}.</span>
-  <span class="description">#{description.content}</span>
-</div>
-            EOS
-            heading.remove
-            description.remove
-            node.children.first.add_previous_sibling listing
+
+            heading = node.at_css('p')
+            heading.attributes.each do |key, value|
+              node.set_attribute(key, value)
+              heading.remove_attribute(key)
+            end
+            heading.name = 'div'
+            heading['class'] = 'heading'
+
+            number = heading.at_css('strong')
+            number.name = 'span'
+            number['class'] = 'number'
+            number.content += '.'
+
+            code = heading.at_css('div.code')
+            node.add_child(code)
           end
         end
 
