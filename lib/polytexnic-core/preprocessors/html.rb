@@ -98,11 +98,11 @@ module Polytexnic
             "#{s}\n\\AddAttToCurrent{type}{codelisting}"
           end
 
-          string.gsub! /\\begin{aside}/ do
-            "\\begin{xmlelement*}{aside}"
+          string.gsub! /\\begin{aside}/ do |s|
+            "\\begin{xmlelement*}{aside}\n#{s}"
           end
-          string.gsub! /\\end{aside}/ do
-            "\\end{xmlelement*}"
+          string.gsub! /\\end{aside}/ do |s|
+            "#{s}\n\\end{xmlelement*}"
           end
         end
 

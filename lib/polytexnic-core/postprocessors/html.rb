@@ -24,7 +24,8 @@ module Polytexnic
         set_ids(doc)
         chapters_and_section(doc)
         subsection(doc)
-        code_listings(doc)
+        codelistings(doc)
+        asides(doc)
         title(doc)
         smart_single_quotes(doc)
         restore_literal(doc)
@@ -345,8 +346,8 @@ module Polytexnic
           end
         end
 
-        # Process code listings.
-        def code_listings(doc)
+        # Processes codelisting environments.
+        def codelistings(doc)
           doc.xpath('//p[@type="codelisting"]').each do |node|
             node.name = 'div'
             node['class'] = 'codelisting'
@@ -361,6 +362,31 @@ module Polytexnic
             heading.remove
             description.remove
             node.children.first.add_previous_sibling listing
+          end
+        end
+
+        # Processes boxes/asides.
+        def asides(doc)
+          doc.xpath('//heading').each do |node|
+            node.name  = 'span'
+            node['class'] = 'description'
+          end
+          doc.xpath('//aside').each do |node|
+            node.name  = 'div'
+            node['class'] = 'aside'
+
+            heading = node.at_css('p')
+            heading.attributes.each do |key, value|
+              node.set_attribute(key, value)
+              heading.remove_attribute(key)
+            end
+            heading.name = 'div'
+            heading['class'] = 'heading'
+
+            number = heading.at_css('strong')
+            number.name = 'span'
+            number['class'] = 'number'
+            number.content += '.'
           end
         end
 
@@ -422,6 +448,8 @@ module Polytexnic
                                     @subsec = node['id-text']
                                     label_number(@cha, @sec, @subsec)
                                   elsif node['class'] == 'codelisting'
+                                    node['id-text']
+                                  elsif node['class'] == 'aside'
                                     node['id-text']
                                   elsif node.name == 'table' && node['id-text']
                                     @table = node['id-text']
