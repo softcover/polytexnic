@@ -24,6 +24,7 @@ module Polytexnic
         set_ids(doc)
         chapters_and_section(doc)
         subsection(doc)
+        headings(doc)
         codelistings(doc)
         asides(doc)
         title(doc)
@@ -346,29 +347,43 @@ module Polytexnic
           end
         end
 
-        # Processes codelisting environments.
-        def codelistings(doc)
+        # Converts heading elements to the proper spans.
+        # Headings are used in codelisting-like environments such as asides
+        # and codelistings.
+        def headings(doc)
           doc.xpath('//heading').each do |node|
             node.name  = 'span'
             node['class'] = 'description'
           end
+        end
+
+        # Builds the full heading for codelisting-like environments.
+        # The full heading, such as "Listing 1.1. Foo bars." needs to be
+        # extracted and manipulated to produce the right tags and classes.
+        def build_heading(node, css_class)
+          node.name  = 'div'
+          node['class'] = css_class
+
+          heading = node.at_css('p')
+          heading.attributes.each do |key, value|
+            node.set_attribute(key, value)
+            heading.remove_attribute(key)
+          end
+          heading.name = 'div'
+          heading['class'] = 'heading'
+
+          number = heading.at_css('strong')
+          number.name = 'span'
+          number['class'] = 'number'
+          number.content += '.'
+
+          heading
+        end
+
+        # Processes codelisting environments.
+        def codelistings(doc)
           doc.xpath('//codelisting').each do |node|
-            node.name  = 'div'
-            node['class'] = 'codelisting'
-
-            heading = node.at_css('p')
-            heading.attributes.each do |key, value|
-              node.set_attribute(key, value)
-              heading.remove_attribute(key)
-            end
-            heading.name = 'div'
-            heading['class'] = 'heading'
-
-            number = heading.at_css('strong')
-            number.name = 'span'
-            number['class'] = 'number'
-            number.content += '.'
-
+            heading = build_heading(node, 'codelisting')
             code = heading.at_css('div.code')
             node.add_child(code)
           end
@@ -376,26 +391,8 @@ module Polytexnic
 
         # Processes boxes/asides.
         def asides(doc)
-          doc.xpath('//heading').each do |node|
-            node.name  = 'span'
-            node['class'] = 'description'
-          end
           doc.xpath('//aside').each do |node|
-            node.name  = 'div'
-            node['class'] = 'aside'
-
-            heading = node.at_css('p')
-            heading.attributes.each do |key, value|
-              node.set_attribute(key, value)
-              heading.remove_attribute(key)
-            end
-            heading.name = 'div'
-            heading['class'] = 'heading'
-
-            number = heading.at_css('strong')
-            number.name = 'span'
-            number['class'] = 'number'
-            number.content += '.'
+            build_heading(node, 'aside')
           end
         end
 
