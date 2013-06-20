@@ -34,7 +34,6 @@ module Polytexnic
         commands = <<-'EOS'
 \newcommand{\PolyTeX}{Poly\TeX}
 \newcommand{\PolyTeXnic}{Poly{\TeX}nic}
-\def\hyperref[#1]#2{\xmlelt{a}{\XMLaddatt{target}{#1}#2}}
 
 % Code listing environments
 \usepackage{amsthm}
@@ -42,6 +41,10 @@ module Polytexnic
 \theoremstyle{definition}
 \newtheorem{codelisting}{Listing}[chapter]
 
+% Commands specific to Tralics
+\def\hyperref[#1]#2{\xmlelt{a}{\XMLaddatt{target}{#1}#2}}
+\newtheorem{aside}{Box}[chapter]
+\newcommand{\heading}[1]{\xmlelt{heading}{#1}}
         EOS
         commands
       end
@@ -78,7 +81,7 @@ module Polytexnic
 
       # Returns true if we are debugging, false otherwise
       def debug?
-        false
+        true
       end
     end
   end

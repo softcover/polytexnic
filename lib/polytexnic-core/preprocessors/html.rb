@@ -97,6 +97,13 @@ module Polytexnic
           string.gsub! /\\begin\{codelisting\}/ do |s|
             "#{s}\n\\AddAttToCurrent{type}{codelisting}"
           end
+
+          string.gsub! /\\begin{aside}/ do
+            "\\begin{xmlelement*}{aside}"
+          end
+          string.gsub! /\\end{aside}/ do
+            "\\end{xmlelement*}"
+          end
         end
 
         # Handles quote and verse environments, which Tralics does wrong.
