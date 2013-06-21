@@ -190,13 +190,16 @@ module Polytexnic
 
         # Returns the executable for the Tralics LaTeX-to-XML converter.
         def tralics
-          `which tralics`.strip.tap do |tralics|
-            if tralics.empty?
-              $stderr.puts "Please install Tralics"
-              $stderr.puts "See http://polytexnic.com/install"
-              exit 1
-            end
-          end
+          gem_dir = Gem::Specification.find_by_name('polytexnic-core').gem_dir
+
+          File.join(gem_dir, 'bin', 'tralics')
+          # `which tralics`.strip.tap do |tralics|
+          #   if tralics.empty?
+          #     $stderr.puts "Please install Tralics"
+          #     $stderr.puts "See http://polytexnic.com/install"
+          #     exit 1
+          #   end
+          # end
         end
 
     end
