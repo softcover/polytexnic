@@ -30,8 +30,15 @@ module Polytexnic
       # Returns some new commands.
       # For example, we arrange for '\PolyTeXnic' to produce
       # the PolyTeXnic logo.
+      def tralics_commands
+        <<-'EOS'
+% Commands specific to Tralics
+\def\hyperref[#1]#2{\xmlelt{a}{\XMLaddatt{target}{#1}#2}}
+\newcommand{\heading}[1]{\xmlelt{heading}{#1}}
+        EOS
+      end
       def new_commands
-        commands = <<-'EOS'
+        <<-'EOS'
 \newcommand{\PolyTeX}{Poly\TeX}
 \newcommand{\PolyTeXnic}{Poly{\TeX}nic}
 
@@ -41,12 +48,7 @@ module Polytexnic
 \theoremstyle{definition}
 \newtheorem{codelisting}{Listing}[chapter]
 \newtheorem{aside}{Box}[chapter]
-
-% Commands specific to Tralics
-\def\hyperref[#1]#2{\xmlelt{a}{\XMLaddatt{target}{#1}#2}}
-\newcommand{\heading}[1]{\xmlelt{heading}{#1}}
         EOS
-        commands
       end
 
       # Highlights source code.

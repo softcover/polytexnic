@@ -47,7 +47,7 @@ module Polytexnic
         # The new_commands are currently in utils, but probably should
         # eventually be refactored into a file.
         def add_commands(polytex)
-          new_commands + polytex
+          new_commands + tralics_commands + polytex
         end
 
         # Handles title fields.
