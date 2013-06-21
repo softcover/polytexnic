@@ -42,17 +42,17 @@ end
 
     context "with the metacode environment" do
       let(:polytex) do <<-'EOS'
-%= lang:latex
-\begin{metacode}
-%= lang:ruby
-\begin{code}
-def foo
-  "bar"
-end
-\end{code}
-\end{metacode}
+        %= lang:latex
+        \begin{metacode}
+        %= lang:ruby
+        \begin{code}
+        def foo
+          "bar"
+        end
+        \end{code}
+        \end{metacode}
 
-\noindent lorem ipsum
+        \noindent lorem ipsum
         EOS
       end
 
@@ -96,10 +96,37 @@ end
     describe "hyperref links" do
       let(:polytex) do <<-'EOS'
         Chapter~\ref{cha:foo}
-      EOS
+        EOS
       end
       let(:output) { '\hyperref[cha:foo]{Chapter~\ref{cha:foo}' }
       it { should resemble output }
+    end
+
+    describe "asides" do
+
+      context "with headings and labels" do
+        let(:polytex) do <<-'EOS'
+          \begin{aside}
+          \heading{Foo \emph{are} bar.}
+          \label{aside:foo}
+
+          lorem ipsum
+
+          \end{aside}
+          EOS
+        end
+
+        let(:output) do <<-'EOS'
+          \begin{shaded_aside}{Foo \emph{are} bar.}{aside:foo}
+
+          lorem ipsum
+
+          \end{shaded_aside}
+          EOS
+        end
+
+        it { should resemble output }
+      end
     end
   end
 end
