@@ -8,13 +8,13 @@ describe 'Polytexnic::Core::Pipeline#to_html' do
 
   describe '\chapter' do
     let(:polytex) do <<-'EOS'
-        \chapter{Foo}
+        \chapter{Foo \emph{bar}}
         \label{cha:foo}
       EOS
     end
     let(:output) do <<-'EOS'
       <div id="cha-foo" data-tralics-id="cid1" class="chapter" data-number="1">
-        <h3><a href="#cha-foo" class="heading"><span class="number">1 </span>Foo</a></h3>
+        <h3><a href="#cha-foo" class="heading"><span class="number">1 </span>Foo <em>bar</em></a></h3>
       </div>
       EOS
     end

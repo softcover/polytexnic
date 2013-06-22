@@ -89,7 +89,7 @@ module Polytexnic
         def mark_environments(string)
 
           # Mark chapters with a 'chapter' type.
-          string.gsub! /\\chapter\{(.*?)\}/ do |s|
+          string.gsub! /^\s*\\chapter\{(.*)\}/ do |s|
             "#{s}\n\\AddAttToCurrent{type}{chapter}"
           end
 
