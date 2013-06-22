@@ -27,7 +27,7 @@ module Polytexnic
             maketitle(output)
             label_names(output)
             mark_environments(output)
-            cache_quote_and_verse(output)
+            # cache_quote_and_verse(output)
           end
         end
 
@@ -108,30 +108,22 @@ module Polytexnic
           string.gsub! /\\end{aside}/ do |s|
             "#{s}\n\\end{xmlelement*}"
           end
-        end
 
-        # Handles quote and verse environments, which Tralics does wrong.
-        # Tralics converts
-        # \begin{quote}
-        #   foo
-        #
-        #   bar
-        # \end{quote}
-        # into
-        # <p rend='quoted'>foo</p>
-        # <p rend='quoted'>bar</p>
-        # But we want the HTML to be
-        # <blockquote>
-        #   <p>foo</p>
-        #   <p>bar</p>
-        # </blockquote>
-        # which can't easily be inferred from the Tralics output. (It gets
-        # worse if you want to support nested blockquotes, which we do.)
-        def cache_quote_and_verse(string)
-          string.gsub!(/\\begin{quote}/, "\\xmlemptyelt{start-#{quote_digest}}")
-          string.gsub!(/\\end{quote}/, "\\xmlemptyelt{end-#{quote_digest}}")
-          string.gsub!(/\\begin{verse}/, "\\xmlemptyelt{start-#{verse_digest}}")
-          string.gsub!(/\\end{verse}/, "\\xmlemptyelt{end-#{verse_digest}}")
+          # Replace quotations and verse with corresponding XML elements.
+          string.gsub! /\\begin{quote}/ do |s|
+            quotation = '\AddAttToCurrent{class}{quotation}'
+            "\\begin{xmlelement*}{blockquote}\n#{quotation}"
+          end
+          string.gsub! /\\end{quote}/ do |s|
+            "\\end{xmlelement*}"
+          end
+          string.gsub! /\\begin{verse}/ do |s|
+            "\\begin{xmlelement*}{blockquote}\n\\AddAttToCurrent{class}{verse}"
+          end
+          string.gsub! /\\end{verse}/ do |s|
+            "\\end{xmlelement*}"
+          end
+
         end
 
         # Returns the XML produced by the Tralics program.
