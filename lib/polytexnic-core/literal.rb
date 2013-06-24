@@ -45,7 +45,7 @@ module Polytexnic
                 count += 1
               elsif line.end_literal?(literal_type)
                 count -= 1
-                if count == 0
+                if count.zero?
                   in_verbatim = false
                   text << line if line.math_environment? || (latex && !language)
                   break

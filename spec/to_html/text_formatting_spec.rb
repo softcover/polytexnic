@@ -40,7 +40,7 @@ describe 'Polytexnic::Core::Pipeline#to_html' do
 
     describe "custom kode command" do
       let(:polytex) { '\kode{function\_name}' }
-      it { should resemble '<span class="kode">function_name</span>' }
+      it { should resemble '<code>function_name</code>' }
     end
   end
 end
