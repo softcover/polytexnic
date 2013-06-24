@@ -25,6 +25,7 @@ module Polytexnic
         chapters_and_section(doc)
         subsection(doc)
         headings(doc)
+        kode(doc)
         codelistings(doc)
         asides(doc)
         title(doc)
@@ -353,6 +354,13 @@ module Polytexnic
           doc.xpath('//heading').each do |node|
             node.name  = 'span'
             node['class'] = 'description'
+          end
+        end
+
+        # Converts inline code (\kode) to the proper tag
+        def kode(doc)
+          doc.xpath('//kode').each do |node|
+            node.name  = 'code'
           end
         end
 
