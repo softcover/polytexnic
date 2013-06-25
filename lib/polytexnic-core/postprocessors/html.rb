@@ -35,8 +35,7 @@ module Polytexnic
         graphics_and_figures(doc)
         tables(doc)
         trim_empty_paragraphs(doc)
-        html = convert_to_html(doc)
-        restore_quote_and_verse(html)
+        convert_to_html(doc)
       end
 
       private
@@ -622,24 +621,6 @@ module Polytexnic
           doc.css('p').find_all.each do |p|
             p.remove if p.content.strip.empty?
           end
-        end
-
-        # Restores quote and verse environemtns.
-        # Annoyingly, this is the easiest way to do things.
-        # What we really want to do is just make the substitutions
-        # \begin{quote} -> <blockquote>
-        # \end{quote} -> </blockquote>
-        # but that's hard to do using Tralics and XML. As a kludge,
-        # we insert a tag with unique name and gsub it at the end.
-        def restore_quote_and_verse(html)
-          html.gsub("<start-#{quote_digest}></start-#{quote_digest}>",
-                    "<blockquote>").
-               gsub("<end-#{quote_digest}></end-#{quote_digest}></p>",
-                    "</p></blockquote>").
-               gsub("<start-#{verse_digest}></start-#{verse_digest}>",
-                    '<blockquote class="verse">').
-               gsub("<end-#{verse_digest}></end-#{verse_digest}></p>",
-                    "</p>\n</blockquote>\n")
         end
 
         # Converts a document to HTML.

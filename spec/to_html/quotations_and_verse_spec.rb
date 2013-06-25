@@ -7,7 +7,7 @@ describe 'Polytexnic::Core::Pipeline#to_html' do
   subject { processed_text }
 
   describe "quotations and verse" do
-    describe '\quote' do
+    describe '\begin{quote}...\end{quote}' do
       let(:polytex) { '\quote{foo}' }
       it { should resemble "<blockquote class=\"quote\">foo\n</blockquote>" }
     end
@@ -26,7 +26,7 @@ describe 'Polytexnic::Core::Pipeline#to_html' do
 
         it do
           should resemble <<-'EOS'
-            <blockquote>
+            <blockquote class="quotation">
               <p>lorem ipsum</p>
               <p>dolor sit amet</p>
             </blockquote>
@@ -49,9 +49,9 @@ describe 'Polytexnic::Core::Pipeline#to_html' do
         end
         it do
           should resemble <<-'EOS'
-            <blockquote>
+            <blockquote class="quotation">
               <p>lorem ipsum</p>
-              <blockquote>
+              <blockquote class="quotation">
               <p>foo bar</p>
               </blockquote>
               <p>dolor sit amet</p>
