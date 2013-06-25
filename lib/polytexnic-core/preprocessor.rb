@@ -14,7 +14,7 @@ module Polytexnic
       if format == :html
         to_xml
       elsif format == :latex
-        to_hashed_latex
+        to_processed_latex
       end
     end
   end
