@@ -466,6 +466,9 @@ module Polytexnic
           # build numbering tree
           doc.xpath('//*[@data-tralics-id]').each do |node|
             node['data-number'] = if node['class'] == 'chapter'
+                                    # Tralics numbers equations overall,
+                                    # not per chapter, so we need a counter.
+                                    @equation = 0
                                     @cha = node['id-text']
                                   elsif node['class'] == 'section'
                                     @sec = node['id-text']
@@ -474,7 +477,11 @@ module Polytexnic
                                     @subsec = node['id-text']
                                     label_number(@cha, @sec, @subsec)
                                   elsif node['textype'] == 'equation'
-                                    @equation = node['id-text']
+                                    if @cha.nil?
+                                      @equation = node['id-text']
+                                    else
+                                      @equation += 1
+                                    end
                                     label_number(@cha, @equation)
                                   elsif node['class'] == 'codelisting'
                                     node['id-text']
