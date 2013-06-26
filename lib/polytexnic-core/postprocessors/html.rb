@@ -12,7 +12,6 @@ module Polytexnic
         typewriter(doc)
         verbatim(doc)
         code(doc)
-        math(doc)
         footnotes(doc)
         tex_logos(doc)
         quote(doc)
@@ -35,6 +34,7 @@ module Polytexnic
         hrefs(doc)
         graphics_and_figures(doc)
         tables(doc)
+        math(doc)
         trim_empty_paragraphs(doc)
         convert_to_html(doc)
       end
@@ -118,10 +118,13 @@ module Polytexnic
         # We also handle inline/display math of the form \(x\) and \[y\].
         def math(doc)
           # math environments
-          doc.xpath('//texmath[@textype="equation"]').each do |node|
+          doc.xpath('//equation//texmath[@textype="equation"]').each do |node|
             node.name = 'div'
             node['class'] = 'equation'
             node.content = literal_cache[node.content.strip] + "\n"
+            clean_node node, ['textype', 'type']
+            node.parent.replace(node)
+            begin
             # Mimic default Tralics behavior of giving paragraph tags after
             # math a 'noindent' class. This allows the HTML to be styled with
             # CSS in a way that replicates the default behavior of LaTeX, where
@@ -132,9 +135,7 @@ module Polytexnic
             # following the math. Most documents won't use this, as the HTML
             # convention is not to indent paragraphs anyway, but we want to
             # support that case for completeness (mainly because Tralics does).
-            clean_node node, ['textype', 'type']
-            begin
-              next_paragraph = node.next_sibling.next_sibling
+              next_paragraph = node.next_sibling
               next_paragraph['noindent'] = 'true'
             rescue
               # We rescue nil in case the math isn't followed by any text.
@@ -297,6 +298,12 @@ module Polytexnic
               clean_node node, %w{data-label}
             end
           end
+          doc.xpath('//equation').each do |node|
+            if label = node.at_css('data-label')
+              node.at_css('texmath')['id'] = pipeline_label(label)
+              label.remove
+            end
+          end
         end
 
         def convert_labels(node)
@@ -309,10 +316,10 @@ module Polytexnic
           end
         end
 
-        # Returns a label for the pipeline.
-        # Tralics does weird stuff with underscores, so sub them out
-        # so that they can be passed through the pipeline intact and restored
-        # by the postprocessor.
+        # Restore the label.
+        # Tralics does weird stuff with underscores, so they are subbed out
+        # so that they can be passed through the pipeline intact. This is where
+        # we restore them.
         def pipeline_label(node)
           node.inner_html.gsub(underscore_digest, '_')
         end
@@ -466,6 +473,9 @@ module Polytexnic
                                   elsif node['class'] == 'subsection'
                                     @subsec = node['id-text']
                                     label_number(@cha, @sec, @subsec)
+                                  elsif node['textype'] == 'equation'
+                                    @equation = node['id-text']
+                                    label_number(@cha, @equation)
                                   elsif node['class'] == 'codelisting'
                                     node['id-text']
                                   elsif node['class'] == 'aside'

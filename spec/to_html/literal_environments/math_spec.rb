@@ -90,6 +90,33 @@ describe Polytexnic::Core::Pipeline do
       it_behaves_like "an equation environment"
     end
 
+    context "with a label and cross-reference" do
+      let(:equation) do <<-'EOS'
+        \chapter{Foo}
+        \begin{equation}
+        \label{eq:stokes}
+        \int_\Omega d\omega = \int_{\partial\Omega} \omega
+        \end{equation}
+
+        Eq.~\eqref{eq:stokes}
+      EOS
+      end
+      let(:polytex)  { equation }
+      let(:contents) do <<-'EOS'
+        <div id="cid1" data-tralics-id="cid1" class="chapter" data-number="1"><h3><a href="#cid1" class="heading"><span class="number">1 </span>Foo</a></h3>
+        <div id="eq-stokes" data-tralics-id="uid1" data-number="1.1" class="equation">
+               \begin{equation}
+               \label{eq:stokes}
+               \int_\Omega d\omega = \int_{\partial\Omega} \omega
+               \end{equation}
+        </div>
+        <p class="noindent"><a href="#eq-stokes" class="hyperref">Eq. (<span class="ref">1.1</span>)</a>
+      EOS
+      end
+
+      it_behaves_like "an equation environment"
+    end
+
     context "surrounded by text" do
       let(:equation) do <<-'EOS'
         \begin{equation}
@@ -162,7 +189,6 @@ describe Polytexnic::Core::Pipeline do
       end
       let(:polytex) { equation }
       let(:contents) do <<-'EOS'
-        <div id="uid1" class="equation" data-tralics-id="uid1" data-number="">
         \begin{equation}
         \begin{aligned}
         \nabla \times \vec{\mathbf{B}} -\, \frac1c\,
@@ -174,7 +200,6 @@ describe Polytexnic::Core::Pipeline do
         \nabla \cdot \vec{\mathbf{B}} &amp; = 0
         \end{aligned}
         \end{equation}
-        </div>
         EOS
       end
 
