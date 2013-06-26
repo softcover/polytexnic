@@ -94,23 +94,23 @@ describe Polytexnic::Core::Pipeline do
       let(:equation) do <<-'EOS'
         \chapter{Foo}
         \begin{equation}
-        \label{eq:stokes}
+        \label{eq:stokes_theorem}
         \int_\Omega d\omega = \int_{\partial\Omega} \omega
         \end{equation}
 
-        Eq.~\eqref{eq:stokes}
+        Eq.~\eqref{eq:stokes_theorem}
       EOS
       end
       let(:polytex)  { equation }
       let(:contents) do <<-'EOS'
         <div id="cid1" data-tralics-id="cid1" class="chapter" data-number="1"><h3><a href="#cid1" class="heading"><span class="number">1 </span>Foo</a></h3>
-        <div id="eq-stokes" data-tralics-id="uid1" data-number="1.1" class="equation">
+        <div id="eq-stokes_theorem" data-tralics-id="uid1" data-number="1.1" class="equation">
                \begin{equation}
-               \label{eq:stokes}
+               \label{eq:stokes_theorem}
                \int_\Omega d\omega = \int_{\partial\Omega} \omega
                \end{equation}
         </div>
-        <p class="noindent"><a href="#eq-stokes" class="hyperref">Eq. (<span class="ref">1.1</span>)</a>
+        <p class="noindent"><a href="#eq-stokes_theorem" class="hyperref">Eq. (<span class="ref">1.1</span>)</a>
       EOS
       end
 

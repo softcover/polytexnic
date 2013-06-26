@@ -84,7 +84,7 @@ module Polytexnic
             output << '\end{equation}'
             unless label.nil?
               string = label.scan(/\{.*?\}/).first
-              string.gsub!(':', '-').gsub('_', underscore_digest)
+              string = string.gsub(':', '-').gsub('_', underscore_digest)
               output << "\\xbox{data-label}{#{string}}"
             end
             output << '\end{xmlelement*}'
