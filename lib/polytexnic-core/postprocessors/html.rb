@@ -121,7 +121,7 @@ module Polytexnic
           doc.xpath('//texmath[@textype="equation"]').each do |node|
             node.name = 'div'
             node['class'] = 'equation'
-            node.content = literal_cache[node.content.strip]
+            node.content = literal_cache[node.content.strip] + "\n"
             # Mimic default Tralics behavior of giving paragraph tags after
             # math a 'noindent' class. This allows the HTML to be styled with
             # CSS in a way that replicates the default behavior of LaTeX, where
@@ -134,7 +134,7 @@ module Polytexnic
             # support that case for completeness (mainly because Tralics does).
             clean_node node, ['textype', 'type']
             begin
-              next_paragraph = node.parent.next_sibling.next_sibling
+              next_paragraph = node.next_sibling.next_sibling
               next_paragraph['noindent'] = 'true'
             rescue
               # We rescue nil in case the math isn't followed by any text.
