@@ -26,6 +26,7 @@ module Polytexnic
             title_fields(output)
             maketitle(output)
             label_names(output)
+            restore_eq_labels(output)
             mark_environments(output)
           end
         end
@@ -75,12 +76,14 @@ module Polytexnic
         # for more information.
         def label_names(string)
           string.gsub! /\\label\{(.*?)\}/ do |s|
-            if $1.include?('eq:')
-              s
-            else
-              label = $1.gsub(':', '-').gsub('_', underscore_digest)
-              "#{s}\n\\xbox{data-label}{#{label}}"
-            end
+            label = $1.gsub(':', '-').gsub('_', underscore_digest)
+            "#{s}\n\\xbox{data-label}{#{label}}"
+          end
+        end
+
+        def restore_eq_labels(output)
+          math_label_cache.each do |key, label|
+            output.gsub!(key, label)
           end
         end
 

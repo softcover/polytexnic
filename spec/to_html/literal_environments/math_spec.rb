@@ -94,25 +94,25 @@ describe Polytexnic::Core::Pipeline do
       let(:equation) do <<-'EOS'
         \chapter{Foo}
         \begin{equation}
-        \label{eq:stokes_theorem}
+        \label{stokes_theorem}
         \int_\Omega d\omega = \int_{\partial\Omega} \omega
         \end{equation}
 
-        Eq.~\eqref{eq:stokes_theorem} or \eqref{eq:stokes_theorem}
+        Eq.~\eqref{stokes_theorem} or \eqref{stokes_theorem}
       EOS
       end
       let(:polytex)  { equation }
       let(:contents) do <<-'EOS'
         <div id="cid1" data-tralics-id="cid1" class="chapter" data-number="1"><h3><a href="#cid1" class="heading"><span class="number">1 </span>Foo</a></h3>
-        <div id="eq-stokes_theorem" data-tralics-id="uid1" data-number="1.1" class="equation">
+        <div id="stokes_theorem" data-tralics-id="uid1" data-number="1.1" class="equation">
                \begin{equation}
-               \label{eq:stokes_theorem}
+               \label{stokes_theorem}
                \int_\Omega d\omega = \int_{\partial\Omega} \omega
                \end{equation}
         </div>
-        <p class="noindent"><a href="#eq-stokes_theorem" class="hyperref">Eq. (<span class="ref">1.1</span>)</a>
+        <p class="noindent"><a href="#stokes_theorem" class="hyperref">Eq. (<span class="ref">1.1</span>)</a>
         or
-        <a href="#eq-stokes_theorem" class="hyperref">(<span class="ref">1.1</span>)</a>
+        <a href="#stokes_theorem" class="hyperref">(<span class="ref">1.1</span>)</a>
         </p>
       EOS
       end

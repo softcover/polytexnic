@@ -80,7 +80,11 @@ module Polytexnic
             end
           end
           if math
-            output << label unless label.nil?
+            unless label.nil?
+              key = digest(label)
+              math_label_cache[key] = label
+              output << key
+            end
             output << '\end{equation}'
             unless label.nil?
               string = label.scan(/\{.*?\}/).first

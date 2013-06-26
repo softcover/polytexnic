@@ -15,11 +15,13 @@ module Polytexnic
       include Polytexnic::Postprocessor
       include Polytexnic::Core::Utils
 
-      attr_accessor :literal_cache, :code_cache, :polytex, :xml, :html
+      attr_accessor :literal_cache, :code_cache, :polytex, :xml, :html,
+                    :math_label_cache
 
       def initialize(polytex)
         @literal_cache = {}
         @code_cache = {}
+        @math_label_cache = {}
         @polytex = polytex
       end
 
