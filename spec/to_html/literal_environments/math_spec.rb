@@ -162,6 +162,8 @@ describe Polytexnic::Core::Pipeline do
       end
       let(:polytex) { equation }
       let(:contents) do <<-'EOS'
+        <div id="uid1" class="equation" data-tralics-id="uid1" data-number="">
+        \begin{equation}
         \begin{aligned}
         \nabla \times \vec{\mathbf{B}} -\, \frac1c\,
         \frac{\partial\vec{\mathbf{E}}}{\partial t} &amp; =
@@ -171,6 +173,8 @@ describe Polytexnic::Core::Pipeline do
         \frac{\partial\vec{\mathbf{B}}}{\partial t} &amp; = \vec{\mathbf{0}} \\
         \nabla \cdot \vec{\mathbf{B}} &amp; = 0
         \end{aligned}
+        \end{equation}
+        </div>
         EOS
       end
 
