@@ -109,7 +109,7 @@ module Polytexnic
     # use the nonbreak space ~.
     def hyperrefs(string)
       linked_item = "(Chapter|Section|Table|Box|Figure|Listing|Equation|Eq\.)"
-      ref = /#{linked_item}(~| )(\\(?:eq)*ref){(.*?)}/i
+      ref = /(?:#{linked_item}(~| ))*(\\(?:eq)*ref){(.*?)}/i
       string.gsub!(ref) do
         "\\hyperref[#{$4}]{#{$1}#{$2}#{$3}{#{$4}}}"
       end

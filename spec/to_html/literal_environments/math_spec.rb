@@ -98,7 +98,7 @@ describe Polytexnic::Core::Pipeline do
         \int_\Omega d\omega = \int_{\partial\Omega} \omega
         \end{equation}
 
-        Eq.~\eqref{eq:stokes_theorem}
+        Eq.~\eqref{eq:stokes_theorem} or \eqref{eq:stokes_theorem}
       EOS
       end
       let(:polytex)  { equation }
@@ -111,6 +111,9 @@ describe Polytexnic::Core::Pipeline do
                \end{equation}
         </div>
         <p class="noindent"><a href="#eq-stokes_theorem" class="hyperref">Eq. (<span class="ref">1.1</span>)</a>
+        or
+        <a href="#eq-stokes_theorem" class="hyperref">(<span class="ref">1.1</span>)</a>
+        </p>
       EOS
       end
 
