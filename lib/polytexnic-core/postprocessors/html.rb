@@ -118,7 +118,7 @@ module Polytexnic
         # We also handle inline/display math of the form \(x\) and \[y\].
         def math(doc)
           # math environments
-          doc.xpath('//equation').each do |node|
+          doc.xpath('//equations').each do |node|
             node.name = 'div'
             node['class'] = 'equation'
             # Mimic default Tralics behavior of giving paragraph tags after
@@ -148,19 +148,18 @@ module Polytexnic
           end
 
           # inline & display math
-          doc.xpath('//texmath').each do |node|
-            type = node.attributes['textype'].value
-            if type == 'inline'
-              node.name = 'span'
-              node.content = '\\(' + node.content + '\\)'
-              node['class'] = 'inline_math'
-            else
-              node.name = 'div'
-              node.content = '\\[' + node.content + '\\]'
-              node['class'] = 'display_math'
-            end
-            node.remove_attribute('textype')
-            node.remove_attribute('type')
+          doc.xpath('//texmath[@textype="inline"]').each do |node|
+            node.name = 'span'
+            node.content = '\\(' + node.content + '\\)'
+            node['class'] = 'inline_math'
+            clean_node node, ['textype', 'type']
+          end
+          doc.xpath('//texmath[@textype="display"]').each do |node|
+            raise
+            node.name = 'div'
+            node.content = '\\[' + node.content + '\\]'
+            node['class'] = 'display_math'
+            clean_node node, ['textype', 'type']
           end
         end
 

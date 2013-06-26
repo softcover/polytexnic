@@ -83,7 +83,7 @@ describe Polytexnic::Core::Pipeline do
         \end{equation}
       EOS
       end
-      let(:polytex) { equation }
+      let(:polytex)  { equation }
       let(:contents) { equation }
 
       it_behaves_like "an equation environment"
@@ -96,7 +96,7 @@ describe Polytexnic::Core::Pipeline do
         \end{equation}
         EOS
       end
-      let(:polytex) { "lorem\n" + equation + "\nipsum" }
+      let(:polytex)  { "lorem\n" + equation + "\nipsum" }
       let(:contents) { equation }
 
       it_behaves_like "an equation environment"
