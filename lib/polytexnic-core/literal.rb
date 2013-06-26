@@ -59,7 +59,9 @@ module Polytexnic
             raise "Missing \\end{#{line.literal_type}}" if count != 0
             content = text.join("\n")
             key = digest(content)
-            if language.nil?
+            if math
+              literal_cache[key] = content
+            elsif language.nil?
               literal_cache[key] = content
               tag = 'literal'
             else

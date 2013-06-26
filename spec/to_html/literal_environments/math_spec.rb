@@ -73,7 +73,8 @@ describe Polytexnic::Core::Pipeline do
 
     shared_examples "an equation environment" do
       it { should resemble contents }
-      it { should resemble '<div class="equation">' }
+      it { should resemble '<div' }
+      it { should resemble 'class="equation"' }
     end
 
     context "alone" do

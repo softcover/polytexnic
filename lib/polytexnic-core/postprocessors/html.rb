@@ -118,9 +118,10 @@ module Polytexnic
         # We also handle inline/display math of the form \(x\) and \[y\].
         def math(doc)
           # math environments
-          doc.xpath('//equations').each do |node|
+          doc.xpath('//texmath[@textype="equation"]').each do |node|
             node.name = 'div'
             node['class'] = 'equation'
+            node.content = literal_cache[node.content.strip]
             # Mimic default Tralics behavior of giving paragraph tags after
             # math a 'noindent' class. This allows the HTML to be styled with
             # CSS in a way that replicates the default behavior of LaTeX, where
@@ -131,6 +132,7 @@ module Polytexnic
             # following the math. Most documents won't use this, as the HTML
             # convention is not to indent paragraphs anyway, but we want to
             # support that case for completeness (mainly because Tralics does).
+            clean_node node, ['textype', 'type']
             begin
               next_paragraph = node.parent.next_sibling.next_sibling
               next_paragraph['noindent'] = 'true'
@@ -155,7 +157,6 @@ module Polytexnic
             clean_node node, ['textype', 'type']
           end
           doc.xpath('//texmath[@textype="display"]').each do |node|
-            raise
             node.name = 'div'
             node.content = '\\[' + node.content + '\\]'
             node['class'] = 'display_math'
