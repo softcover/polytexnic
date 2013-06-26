@@ -187,7 +187,6 @@ module Polytexnic
 
         # Returns the executable for the Tralics LaTeX-to-XML converter.
         def tralics
-
           if (exec = executable('tralics')).empty?
             dir = Gem::Specification.find_by_name('polytexnic-core').gem_dir
             binary = File.join(dir, 'precompiled_binaries', 'tralics')
