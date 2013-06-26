@@ -10,6 +10,7 @@ describe Polytexnic::Core::Pipeline do
     context "alone" do
       let(:polytex) do <<-'EOS'
         \begin{verbatim}
+        \label{foo:bar}
         \emph{foo bar} & \\
         \end{verbatim}
         EOS

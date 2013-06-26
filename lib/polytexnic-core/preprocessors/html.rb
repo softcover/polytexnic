@@ -75,8 +75,12 @@ module Polytexnic
         # for more information.
         def label_names(string)
           string.gsub! /\\label\{(.*?)\}/ do |s|
-            label = $1.gsub(':', '-').gsub('_', underscore_digest)
-            "#{s}\n\\xbox{data-label}{#{label}}"
+            if $1.include?('eq:')
+              s
+            else
+              label = $1.gsub(':', '-').gsub('_', underscore_digest)
+              "#{s}\n\\xbox{data-label}{#{label}}"
+            end
           end
         end
 

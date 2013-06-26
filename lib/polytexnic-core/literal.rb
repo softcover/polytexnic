@@ -37,8 +37,12 @@ module Polytexnic
           in_verbatim = true
           literal_type = line.literal_type
           skip = line.math_environment? || latex
-          output << '\begin{equation}' if line.math_environment?
+          if line.math_environment?
+            output << '\begin{xmlelement*}{equation}'
+            output << '\begin{equation}'
+          end
           math = line.math_environment?
+          label = nil
           output << xmlelement(element(literal_type), skip) do
             count = 1
             text = []
@@ -54,6 +58,7 @@ module Polytexnic
                   break
                 end
               end
+              label = line if math && line =~ /^\s*\\label{.*?}\s*$/
               text << line
             end
             raise "Missing \\end{#{line.literal_type}}" if count != 0
@@ -74,7 +79,16 @@ module Polytexnic
               xmlelement(tag) { key }
             end
           end
-          output << '\end{equation}' if math
+          if math
+            output << label unless label.nil?
+            output << '\end{equation}'
+            unless label.nil?
+              string = label.scan(/\{.*?\}/).first
+              string.gsub!(':', '-').gsub('_', underscore_digest)
+              output << "\\xbox{data-label}{#{string}}"
+            end
+            output << '\end{xmlelement*}'
+          end
           language = nil
           (output << '') unless latex # Force the next element to be a paragraph
         else

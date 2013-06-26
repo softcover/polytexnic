@@ -21,13 +21,11 @@ describe Polytexnic::Core::Pipeline do
     context 'with \ref{eq:foobar}' do
       let(:polytex) { equation + '\ref{eq:foobar}' }
       it { should include '1.1' }
-      it { should pending 'Correct hyperref' }
     end
 
     context 'with \eqref{eq:foobar}' do
       let(:polytex) { equation + '\eqref{eq:foobar}' }
-      it { should include '(1.1)' }
-      it { should pending 'Correct hyperref' }
+      it { should include '(<span class="ref">1.1</span>)' }
     end
   end
 end
