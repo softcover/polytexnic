@@ -36,7 +36,7 @@ module Polytexnic
         # The result is a document that can safely be transformed using
         # global substitutions.
         def clean_document(polytex)
-          cache_unicode(cache_eqrefs(cache_literal(add_commands(polytex))))
+          cache_unicode(cache_literal(add_commands(polytex)))
         end
 
         # Adds some default commands.

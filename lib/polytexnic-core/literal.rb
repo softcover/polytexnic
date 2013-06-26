@@ -110,22 +110,6 @@ module Polytexnic
       end
     end
 
-    # Caches equation references.
-    # These are handled by MathJax and so should be passed through the pipeline
-    # intact.
-    def cache_eqrefs(string)
-      eqref_regex = /((?:
-                         equation(?:\s+|~)\\ref{.*?} |
-                         eq\.(?:\s+|~)\\ref{.*?} |
-                         \\ref{eq:.*?} |
-                         \\eqref{.*?}))/xi
-      string.gsub(eqref_regex) do
-        key = digest($1)
-        literal_cache[key] = $1
-        xmlelement('eqref') { key }
-      end
-    end
-
     def element(literal_type)
       if math_environments.include?(literal_type)
         'equation'
