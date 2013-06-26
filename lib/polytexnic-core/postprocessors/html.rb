@@ -441,6 +441,12 @@ module Polytexnic
             node.parent.content = escape_backslashes(raw_content)
             node.remove
           end
+          # Restore equation references.
+          doc.xpath('//eqref').each do |node|
+            node.content = literal_cache[node.content]
+            node.name = 'span'
+            node['class'] = 'eqref'
+          end
           # Restore non-ASCII unicode
           doc.xpath('//unicode').each do |node|
             node.content = literal_cache[node.content]

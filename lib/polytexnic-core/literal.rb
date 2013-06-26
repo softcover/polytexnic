@@ -5,7 +5,7 @@ module Polytexnic
     LANG_REGEX = /^\s*%=\s+lang:(\w+)/
 
     # Makes the caches for literal environments (including non-ASCII Unicode).
-    def make_caches(polytex, format = :html)
+    def cache_literal(polytex, format = :html)
       output = []
       lines = polytex.split("\n")
       cache_literal_environments(lines, output, format)
@@ -107,6 +107,22 @@ module Polytexnic
         key = digest($1)
         literal_cache[key] = $1
         xmlelement('unicode') { key }
+      end
+    end
+
+    # Caches equation references.
+    # These are handled by MathJax and so should be passed through the pipeline
+    # intact.
+    def cache_eqrefs(string)
+      eqref_regex = /((?:
+                         equation(?:\s+|~)\\ref{.*?} |
+                         eq\.(?:\s+|~)\\ref{.*?} |
+                         \\ref{eq:.*?} |
+                         \\eqref{.*?}))/xi
+      string.gsub(eqref_regex) do
+        key = digest($1)
+        literal_cache[key] = $1
+        xmlelement('eqref') { key }
       end
     end
 
