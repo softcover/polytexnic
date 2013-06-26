@@ -36,7 +36,10 @@ module Polytexnic
         elsif line.begin_literal?
           in_verbatim = true
           literal_type = line.literal_type
-          output << xmlelement(element(literal_type), latex) do
+          skip = line.math_environment? || latex
+          output << '\begin{equation}' if line.math_environment?
+          math = line.math_environment?
+          output << xmlelement(element(literal_type), skip) do
             count = 1
             text = []
             text << line if line.math_environment? || (latex && !language)
@@ -63,12 +66,13 @@ module Polytexnic
               code_cache[key] = [content, language]
               tag = 'code'
             end
-            if latex || tag == 'code'
+            if latex || tag == 'code' || math
               key
             else
               xmlelement(tag) { key }
             end
           end
+          output << '\end{equation}' if math
           language = nil
           (output << '') unless latex # Force the next element to be a paragraph
         else
