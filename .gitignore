@@ -32,3 +32,5 @@ log
 *.a
 
 .DS_Store
+.api_token
+.project_id
