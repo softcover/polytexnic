@@ -10,7 +10,7 @@ module Polytexnic
       # Literal environments are hashed and passed through the pipeline
       # so that we can process things like refs to hyperrefs using gsubs.
       def clean_latex_document
-        make_caches(@polytex, :latex)
+        cache_literal(@polytex, :latex)
       end
 
       # Processes aside environments.

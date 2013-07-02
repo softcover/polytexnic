@@ -4,8 +4,7 @@ require 'polytexnic-core'
 RSpec::Matchers.define :resemble do |expected|
   match do |actual|
     if expected.is_a?(String)
-      escaped = Polytexnic::Core::Utils.escape_backslashes(expected.robust)
-      regex = %r{#{Regexp.escape(escaped)}}
+      regex = %r{#{Regexp.escape(expected.robust)}}
     elsif expected.is_a?(Regexp)
       regex = %r{#{expected.to_s.robust}}
     end

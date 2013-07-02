@@ -37,5 +37,10 @@ describe 'Polytexnic::Core::Pipeline#to_html' do
       let(:polytex) { '\texttt{typewriter text}' }
       it { should resemble '<span class="tt">typewriter text</span>' }
     end
+
+    describe "custom kode command" do
+      let(:polytex) { '\kode{function\_name}' }
+      it { should resemble '<code>function_name</code>' }
+    end
   end
 end

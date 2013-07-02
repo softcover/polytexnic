@@ -12,7 +12,6 @@ module Polytexnic
         typewriter(doc)
         verbatim(doc)
         code(doc)
-        math(doc)
         footnotes(doc)
         tex_logos(doc)
         quote(doc)
@@ -25,6 +24,7 @@ module Polytexnic
         chapters_and_section(doc)
         subsection(doc)
         headings(doc)
+        kode(doc)
         codelistings(doc)
         asides(doc)
         title(doc)
@@ -34,6 +34,7 @@ module Polytexnic
         hrefs(doc)
         graphics_and_figures(doc)
         tables(doc)
+        math(doc)
         trim_empty_paragraphs(doc)
         convert_to_html(doc)
       end
@@ -117,9 +118,13 @@ module Polytexnic
         # We also handle inline/display math of the form \(x\) and \[y\].
         def math(doc)
           # math environments
-          doc.xpath('//equation').each do |node|
+          doc.xpath('//equation//texmath[@textype="equation"]').each do |node|
             node.name = 'div'
             node['class'] = 'equation'
+            node.content = literal_cache[node.content.strip] + "\n"
+            clean_node node, ['textype', 'type']
+            node.parent.replace(node)
+            begin
             # Mimic default Tralics behavior of giving paragraph tags after
             # math a 'noindent' class. This allows the HTML to be styled with
             # CSS in a way that replicates the default behavior of LaTeX, where
@@ -130,8 +135,7 @@ module Polytexnic
             # following the math. Most documents won't use this, as the HTML
             # convention is not to indent paragraphs anyway, but we want to
             # support that case for completeness (mainly because Tralics does).
-            begin
-              next_paragraph = node.parent.next_sibling.next_sibling
+              next_paragraph = node.next_sibling
               next_paragraph['noindent'] = 'true'
             rescue
               # We rescue nil in case the math isn't followed by any text.
@@ -147,19 +151,17 @@ module Polytexnic
           end
 
           # inline & display math
-          doc.xpath('//texmath').each do |node|
-            type = node.attributes['textype'].value
-            if type == 'inline'
-              node.name = 'span'
-              node.content = '\\(' + node.content + '\\)'
-              node['class'] = 'inline_math'
-            else
-              node.name = 'div'
-              node.content = '\\[' + node.content + '\\]'
-              node['class'] = 'display_math'
-            end
-            node.remove_attribute('textype')
-            node.remove_attribute('type')
+          doc.xpath('//texmath[@textype="inline"]').each do |node|
+            node.name = 'span'
+            node.content = '\\(' + node.content + '\\)'
+            node['class'] = 'inline_math'
+            clean_node node, ['textype', 'type']
+          end
+          doc.xpath('//texmath[@textype="display"]').each do |node|
+            node.name = 'div'
+            node.content = '\\[' + node.content + '\\]'
+            node['class'] = 'display_math'
+            clean_node node, ['textype', 'type']
           end
         end
 
@@ -296,6 +298,12 @@ module Polytexnic
               clean_node node, %w{data-label}
             end
           end
+          doc.xpath('//equation').each do |node|
+            if label = node.at_css('data-label')
+              node.at_css('texmath')['id'] = pipeline_label(label)
+              label.remove
+            end
+          end
         end
 
         def convert_labels(node)
@@ -308,10 +316,10 @@ module Polytexnic
           end
         end
 
-        # Returns a label for the pipeline.
-        # Tralics does weird stuff with underscores, so sub them out
-        # so that they can be passed through the pipeline intact and restored
-        # by the postprocessor.
+        # Restore the label.
+        # Tralics does weird stuff with underscores, so they are subbed out
+        # so that they can be passed through the pipeline intact. This is where
+        # we restore them.
         def pipeline_label(node)
           node.inner_html.gsub(underscore_digest, '_')
         end
@@ -353,6 +361,13 @@ module Polytexnic
           doc.xpath('//heading').each do |node|
             node.name  = 'span'
             node['class'] = 'description'
+          end
+        end
+
+        # Converts inline code (\kode) to the proper tag
+        def kode(doc)
+          doc.xpath('//kode').each do |node|
+            node.name  = 'code'
           end
         end
 
@@ -433,6 +448,12 @@ module Polytexnic
             node.parent.content = escape_backslashes(raw_content)
             node.remove
           end
+          # Restore equation references.
+          doc.xpath('//eqref').each do |node|
+            node.content = literal_cache[node.content]
+            node.name = 'span'
+            node['class'] = 'eqref'
+          end
           # Restore non-ASCII unicode
           doc.xpath('//unicode').each do |node|
             node.content = literal_cache[node.content]
@@ -445,6 +466,9 @@ module Polytexnic
           # build numbering tree
           doc.xpath('//*[@data-tralics-id]').each do |node|
             node['data-number'] = if node['class'] == 'chapter'
+                                    # Tralics numbers equations overall,
+                                    # not per chapter, so we need a counter.
+                                    @equation = 0
                                     @cha = node['id-text']
                                   elsif node['class'] == 'section'
                                     @sec = node['id-text']
@@ -452,6 +476,13 @@ module Polytexnic
                                   elsif node['class'] == 'subsection'
                                     @subsec = node['id-text']
                                     label_number(@cha, @sec, @subsec)
+                                  elsif node['textype'] == 'equation'
+                                    if @cha.nil?
+                                      @equation = node['id-text']
+                                    else
+                                      @equation += 1
+                                    end
+                                    label_number(@cha, @equation)
                                   elsif node['class'] == 'codelisting'
                                     node['id-text']
                                   elsif node['class'] == 'aside'

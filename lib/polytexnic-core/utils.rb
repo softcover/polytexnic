@@ -19,12 +19,13 @@ module Polytexnic
       end
 
       # Returns a Tralics pseudo-LaTeX XML element.
-      # The use of the 'latex' flag is a hack to be able to use xmlelement
-      # even when generating LaTeX, where we simply want to yield the block.
-      def xmlelement(name, latex = false)
-        output = (latex ? "" : "\\begin{xmlelement}{#{name}}")
+      # The use of the 'skip' flag is a hack to be able to use xmlelement
+      # even when generating, e.g., LaTex, where we simply want to yield the
+      # block.
+      def xmlelement(name, skip = false)
+        output = (skip ? "" : "\\begin{xmlelement}{#{name}}")
         output << yield if block_given?
-        output << (latex ? "" : "\\end{xmlelement}")
+        output << (skip ? "" : "\\end{xmlelement}")
       end
 
       # Returns some new commands.
@@ -35,6 +36,7 @@ module Polytexnic
 % Commands specific to Tralics
 \def\hyperref[#1]#2{\xmlelt{a}{\XMLaddatt{target}{#1}#2}}
 \newcommand{\heading}[1]{\xmlelt{heading}{#1}}
+\newcommand{\kode}[1]{\xmlelt{kode}{#1}}
         EOS
       end
       def new_commands

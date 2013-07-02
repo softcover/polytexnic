@@ -26,8 +26,8 @@ module Polytexnic
             title_fields(output)
             maketitle(output)
             label_names(output)
+            restore_eq_labels(output)
             mark_environments(output)
-            # cache_quote_and_verse(output)
           end
         end
 
@@ -37,7 +37,7 @@ module Polytexnic
         # The result is a document that can safely be transformed using
         # global substitutions.
         def clean_document(polytex)
-          cache_unicode(make_caches(add_commands(polytex)))
+          cache_unicode(cache_literal(add_commands(polytex)))
         end
 
         # Adds some default commands.
@@ -78,6 +78,12 @@ module Polytexnic
           string.gsub! /\\label\{(.*?)\}/ do |s|
             label = $1.gsub(':', '-').gsub('_', underscore_digest)
             "#{s}\n\\xbox{data-label}{#{label}}"
+          end
+        end
+
+        def restore_eq_labels(output)
+          math_label_cache.each do |key, label|
+            output.gsub!(key, label)
           end
         end
 
@@ -188,7 +194,6 @@ module Polytexnic
 
         # Returns the executable for the Tralics LaTeX-to-XML converter.
         def tralics
-
           if (exec = executable('tralics')).empty?
             dir = Gem::Specification.find_by_name('polytexnic-core').gem_dir
             binary = File.join(dir, 'precompiled_binaries', 'tralics')

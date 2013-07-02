@@ -5,7 +5,7 @@ module Polytexnic
     LANG_REGEX = /^\s*%=\s+lang:(\w+)/
 
     # Makes the caches for literal environments (including non-ASCII Unicode).
-    def make_caches(polytex, format = :html)
+    def cache_literal(polytex, format = :html)
       output = []
       lines = polytex.split("\n")
       cache_literal_environments(lines, output, format)
@@ -36,7 +36,14 @@ module Polytexnic
         elsif line.begin_literal?
           in_verbatim = true
           literal_type = line.literal_type
-          output << xmlelement(element(literal_type), latex) do
+          skip = line.math_environment? || latex
+          if line.math_environment? && !latex
+            output << '\begin{xmlelement*}{equation}'
+            output << '\begin{equation}'
+          end
+          math = line.math_environment?
+          label = nil
+          output << xmlelement(element(literal_type), skip) do
             count = 1
             text = []
             text << line if line.math_environment? || (latex && !language)
@@ -45,29 +52,48 @@ module Polytexnic
                 count += 1
               elsif line.end_literal?(literal_type)
                 count -= 1
-                if count == 0
+                if count.zero?
                   in_verbatim = false
-                  text << line if line.math_environment? || (latex && !language)
+                  text << line if line.math_environment? ||
+                                  (latex && !language)   ||
+                                  (latex && math)
                   break
                 end
               end
+              label = line if math && line =~ /^\s*\\label{.*?}\s*$/
               text << line
             end
             raise "Missing \\end{#{line.literal_type}}" if count != 0
             content = text.join("\n")
             key = digest(content)
-            if language.nil?
+            if math
+              literal_cache[key] = content
+            elsif language.nil?
               literal_cache[key] = content
               tag = 'literal'
             else
               code_cache[key] = [content, language]
               tag = 'code'
             end
-            if latex || tag == 'code'
+            if latex || tag == 'code' || math
               key
             else
               xmlelement(tag) { key }
             end
+          end
+          if math && !latex
+            unless label.nil?
+              key = digest(label)
+              math_label_cache[key] = label
+              output << key
+            end
+            output << '\end{equation}'
+            unless label.nil?
+              string = label.scan(/\{.*?\}/).first
+              string = string.gsub(':', '-').gsub('_', underscore_digest)
+              output << "\\xbox{data-label}{#{string}}"
+            end
+            output << '\end{xmlelement*}'
           end
           language = nil
           (output << '') unless latex # Force the next element to be a paragraph
@@ -88,10 +114,10 @@ module Polytexnic
     # For completeness, we handle the case where the author neglects to
     # use the nonbreak space ~.
     def hyperrefs(string)
-      linked_item = "(Chapter|Section|Table|Box|Figure|Listing)"
-      ref = /#{linked_item}(~| )\\ref{(.*?)}/
+      linked_item = "(Chapter|Section|Table|Box|Figure|Listing|Equation|Eq\.)"
+      ref = /(?:#{linked_item}(~| ))*(\\(?:eq)*ref){(.*?)}/i
       string.gsub!(ref) do
-        "\\hyperref[#{$3}]{#{$1}#{$2}\\ref{#{$3}}}"
+        "\\hyperref[#{$4}]{#{$1}#{$2}#{$3}{#{$4}}}"
       end
     end
 

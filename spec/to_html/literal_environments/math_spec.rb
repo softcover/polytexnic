@@ -73,7 +73,8 @@ describe Polytexnic::Core::Pipeline do
 
     shared_examples "an equation environment" do
       it { should resemble contents }
-      it { should resemble '<div class="equation">' }
+      it { should resemble '<div' }
+      it { should resemble 'class="equation"' }
     end
 
     context "alone" do
@@ -83,8 +84,38 @@ describe Polytexnic::Core::Pipeline do
         \end{equation}
       EOS
       end
-      let(:polytex) { equation }
+      let(:polytex)  { equation }
       let(:contents) { equation }
+
+      it_behaves_like "an equation environment"
+    end
+
+    context "with a label and cross-reference" do
+      let(:equation) do <<-'EOS'
+        \chapter{Foo}
+        \begin{equation}
+        \label{stokes_theorem}
+        \int_\Omega d\omega = \int_{\partial\Omega} \omega
+        \end{equation}
+
+        Eq.~\eqref{stokes_theorem} or \eqref{stokes_theorem}
+      EOS
+      end
+      let(:polytex)  { equation }
+      let(:contents) do <<-'EOS'
+        <div id="cid1" data-tralics-id="cid1" class="chapter" data-number="1"><h3><a href="#cid1" class="heading"><span class="number">1 </span>Foo</a></h3>
+        <div id="stokes_theorem" data-tralics-id="uid1" data-number="1.1" class="equation">
+               \begin{equation}
+               \label{stokes_theorem}
+               \int_\Omega d\omega = \int_{\partial\Omega} \omega
+               \end{equation}
+        </div>
+        <p class="noindent"><a href="#stokes_theorem" class="hyperref">Eq. (<span class="ref">1.1</span>)</a>
+        or
+        <a href="#stokes_theorem" class="hyperref">(<span class="ref">1.1</span>)</a>
+        </p>
+      EOS
+      end
 
       it_behaves_like "an equation environment"
     end
@@ -96,7 +127,7 @@ describe Polytexnic::Core::Pipeline do
         \end{equation}
         EOS
       end
-      let(:polytex) { "lorem\n" + equation + "\nipsum" }
+      let(:polytex)  { "lorem\n" + equation + "\nipsum" }
       let(:contents) { equation }
 
       it_behaves_like "an equation environment"
@@ -161,6 +192,7 @@ describe Polytexnic::Core::Pipeline do
       end
       let(:polytex) { equation }
       let(:contents) do <<-'EOS'
+        \begin{equation}
         \begin{aligned}
         \nabla \times \vec{\mathbf{B}} -\, \frac1c\,
         \frac{\partial\vec{\mathbf{E}}}{\partial t} &amp; =
@@ -170,6 +202,7 @@ describe Polytexnic::Core::Pipeline do
         \frac{\partial\vec{\mathbf{B}}}{\partial t} &amp; = \vec{\mathbf{0}} \\
         \nabla \cdot \vec{\mathbf{B}} &amp; = 0
         \end{aligned}
+        \end{equation}
         EOS
       end
 

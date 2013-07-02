@@ -15,11 +15,13 @@ module Polytexnic
       include Polytexnic::Postprocessor
       include Polytexnic::Core::Utils
 
-      attr_accessor :literal_cache, :code_cache, :polytex, :xml, :html
+      attr_accessor :literal_cache, :code_cache, :polytex, :xml, :html,
+                    :math_label_cache
 
       def initialize(polytex)
         @literal_cache = {}
         @code_cache = {}
+        @math_label_cache = {}
         @polytex = polytex
       end
 
@@ -36,16 +38,6 @@ module Polytexnic
         @latex
       end
 
-      # Returns a digest for use in quote environments.
-      def quote_digest
-        pipeline_digest(:quote)
-      end
-
-      # Returns a digest for use in verse environments.
-      def verse_digest
-        pipeline_digest(:verse)
-      end
-
       # Returns a digest for use in labels.
       # I like to use labels of the form cha:foo_bar, but for some reason
       # Tralics removes the underscore in this case.
@@ -56,12 +48,9 @@ module Polytexnic
       private
 
         # Returns a digest for passing things through the pipeline.
-        # The principal cases are the quote and verse environment,
-        # which Tralics handles incorrectly. As a kludge, we run a
-        # tag through the pipeline and gsub it at the end. In order to ensure
-        # that the gsub is safe, the tag should be unique.
         def pipeline_digest(element)
-          @literal_cache[element] ||= digest("#{Time.now.to_s}::#{element}")
+          value = digest("#{Time.now.to_s}::#{element}")
+          @literal_cache[element.to_s] ||= value
         end
     end
   end
