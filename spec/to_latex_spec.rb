@@ -104,6 +104,10 @@ describe Polytexnic::Core::Pipeline do
         it { should resemble polytex }
         it { should_not resemble 'xmlelement' }
         it { should_not resemble 'xbox' }
+        it "should have only one '\end{equation}'" do
+          n_ends = processed_text.scan(/\\end{equation}/).length
+          expect(n_ends).to eq 1
+        end
       end
     end
 

@@ -54,7 +54,9 @@ module Polytexnic
                 count -= 1
                 if count.zero?
                   in_verbatim = false
-                  text << line if line.math_environment? || (latex && !language)
+                  text << line if line.math_environment? ||
+                                  (latex && !language)   ||
+                                  (latex && math)
                   break
                 end
               end
@@ -79,19 +81,19 @@ module Polytexnic
               xmlelement(tag) { key }
             end
           end
-          if math
+          if math && !latex
             unless label.nil?
               key = digest(label)
               math_label_cache[key] = label
               output << key
             end
             output << '\end{equation}'
-            unless label.nil? || latex
+            unless label.nil?
               string = label.scan(/\{.*?\}/).first
               string = string.gsub(':', '-').gsub('_', underscore_digest)
               output << "\\xbox{data-label}{#{string}}"
             end
-            output << '\end{xmlelement*}' unless latex
+            output << '\end{xmlelement*}'
           end
           language = nil
           (output << '') unless latex # Force the next element to be a paragraph
