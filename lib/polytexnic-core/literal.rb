@@ -37,7 +37,7 @@ module Polytexnic
           in_verbatim = true
           literal_type = line.literal_type
           skip = line.math_environment? || latex
-          if line.math_environment?
+          if line.math_environment? && !latex
             output << '\begin{xmlelement*}{equation}'
             output << '\begin{equation}'
           end
@@ -86,12 +86,12 @@ module Polytexnic
               output << key
             end
             output << '\end{equation}'
-            unless label.nil?
+            unless label.nil? || latex
               string = label.scan(/\{.*?\}/).first
               string = string.gsub(':', '-').gsub('_', underscore_digest)
               output << "\\xbox{data-label}{#{string}}"
             end
-            output << '\end{xmlelement*}'
+            output << '\end{xmlelement*}' unless latex
           end
           language = nil
           (output << '') unless latex # Force the next element to be a paragraph
