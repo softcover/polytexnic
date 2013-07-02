@@ -37,7 +37,7 @@ module Polytexnic
           in_verbatim = true
           literal_type = line.literal_type
           skip = line.math_environment? || latex
-          if line.math_environment?
+          if line.math_environment? && !latex
             output << '\begin{xmlelement*}{equation}'
             output << '\begin{equation}'
           end
@@ -54,7 +54,9 @@ module Polytexnic
                 count -= 1
                 if count.zero?
                   in_verbatim = false
-                  text << line if line.math_environment? || (latex && !language)
+                  text << line if line.math_environment? ||
+                                  (latex && !language)   ||
+                                  (latex && math)
                   break
                 end
               end
@@ -79,7 +81,7 @@ module Polytexnic
               xmlelement(tag) { key }
             end
           end
-          if math
+          if math && !latex
             unless label.nil?
               key = digest(label)
               math_label_cache[key] = label

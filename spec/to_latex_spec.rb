@@ -15,15 +15,15 @@ describe Polytexnic::Core::Pipeline do
 
     describe "with source code highlighting" do
       let(:polytex) do <<-'EOS'
-%= lang:ruby
-\begin{code}
-def foo
-  "bar"
-end
-\end{code}
+        %= lang:ruby
+        \begin{code}
+        def foo
+          "bar"
+        end
+        \end{code}
 
-\noindent lorem ipsum
-        EOS
+        \noindent lorem ipsum
+      EOS
       end
 
       it { should resemble "commandchars=\\\\\\{" }
@@ -90,6 +90,24 @@ end
         end
 
         it { should resemble polytex }
+      end
+
+      context "with an equation" do
+        let(:polytex) do <<-'EOS'
+          \begin{equation}
+          \label{eq:x_y}
+          x_y
+          \end{equation}
+          EOS
+        end
+
+        it { should resemble polytex }
+        it { should_not resemble 'xmlelement' }
+        it { should_not resemble 'xbox' }
+        it "should have only one '\end{equation}'" do
+          n_ends = processed_text.scan(/\\end{equation}/).length
+          expect(n_ends).to eq 1
+        end
       end
     end
 
