@@ -89,7 +89,7 @@ module Polytexnic
             end
             output << '\end{equation}'
             unless label.nil?
-              string = label.scan(/\{.*?\}/).first
+              string = label.scan(/\{(.*?)\}/).flatten.first
               string = string.gsub(':', '-').gsub('_', underscore_digest)
               output << "\\xbox{data-label}{#{string}}"
             end
