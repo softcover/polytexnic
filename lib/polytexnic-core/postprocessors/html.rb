@@ -12,6 +12,7 @@ module Polytexnic
         typewriter(doc)
         verbatim(doc)
         code(doc)
+        metacode(doc)
         footnotes(doc)
         tex_logos(doc)
         quote(doc)
@@ -103,6 +104,17 @@ module Polytexnic
         # \end{code}
         def code(doc)
           doc.xpath('//code').each do |node|
+            node.name = 'div'
+            node['class'] = 'code'
+          end
+        end
+
+        # Handles metacode environments.
+        # \begin{metacode}
+        # <code>
+        # \end{metacode}
+        def metacode(doc)
+          doc.xpath('//metacode').each do |node|
             node.name = 'div'
             node['class'] = 'code'
           end
