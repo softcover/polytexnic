@@ -557,6 +557,7 @@ module Polytexnic
           doc.xpath('//figure').each do |node|
             node.name = 'div'
             node['class'] = 'figure'
+            raw_graphic = (node['rend'] == 'inline')
             if internal_paragraph = node.at_css('p')
               clean_node internal_paragraph, 'rend'
             end
@@ -573,7 +574,7 @@ module Polytexnic
               end
               clean_node node, %w[file extension rend]
             end
-            add_caption(node, name: 'figure')
+            add_caption(node, name: 'figure') unless raw_graphic
           end
         end
 
@@ -662,7 +663,7 @@ module Polytexnic
         # Tralics conversion.
         def trim_empty_paragraphs(doc)
           doc.css('p').find_all.each do |p|
-            p.remove if p.content.strip.empty?
+            p.remove if p.inner_html.strip.empty?
           end
         end
 

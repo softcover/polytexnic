@@ -19,6 +19,7 @@ describe 'Polytexnic::Core::Pipeline#to_html' do
         </div>
       EOS
     end
+    it { should_not resemble 'Figure' }
   end
 
   describe "figures" do
