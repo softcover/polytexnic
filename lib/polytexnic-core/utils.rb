@@ -60,7 +60,10 @@ module Polytexnic
             code = Pygments.highlight(content,
                                       lexer: language,
                                       formatter: formatter)
-            code = horrible_backslash_kludge(code) if formatter == 'latex'
+            if formatter == 'latex'
+              hbk = horrible_backslash_kludge(code)
+              code = "\\begin{framed_shaded}\n" + hbk + "\n\\end{framed_shaded}"
+            end
             document.gsub!(key, code)
           end
         end

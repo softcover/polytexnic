@@ -26,6 +26,8 @@ describe Polytexnic::Core::Pipeline do
       EOS
       end
 
+      it { should resemble '\begin{framed_shaded}' + "\n" }
+      it { should resemble "\n" + '\end{framed_shaded}' }
       it { should resemble "commandchars=\\\\\\{" }
       it { should resemble '\begin{Verbatim}' }
       it { should resemble 'commandchars' }
