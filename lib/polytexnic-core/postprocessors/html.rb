@@ -27,6 +27,7 @@ module Polytexnic
         headings(doc)
         kode(doc)
         codelistings(doc)
+        backslash_break(doc)
         asides(doc)
         title(doc)
         smart_single_quotes(doc)
@@ -412,6 +413,13 @@ module Polytexnic
             heading = build_heading(node, 'codelisting')
             code = heading.at_css('div.code')
             node.add_child(code)
+          end
+        end
+
+        # Add in breaks from '\\'.
+        def backslash_break(doc)
+          doc.xpath('//backslashbreak').each do |node|
+            node.name  = 'br'
           end
         end
 
