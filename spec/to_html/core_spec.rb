@@ -69,6 +69,12 @@ describe 'Polytexnic::Core::Pipeline#to_html' do
     end
   end
 
+  describe "double backslashes" do
+    let(:polytex) { 'foo \\\\ bar' }
+    let(:output) { 'foo <br /> bar' }
+    it { should resemble output }
+  end
+
   describe "unknown command" do
     let(:polytex) { '\foobar' }
     let(:output) { '' }

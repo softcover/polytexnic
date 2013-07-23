@@ -21,7 +21,9 @@ module Polytexnic
         # The key steps are creating a clean document safe for makin global
         # substitutions (gsubs), and then making a bunch of gsubs.
         def process_for_tralics(polytex)
-          clean_document(polytex).tap do |output|
+          clean = double_backslashes(clean_document(polytex))
+          clean.tap do |output|
+            double_backslashes(output)
             hyperrefs(output)
             title_fields(output)
             maketitle(output)
@@ -38,6 +40,19 @@ module Polytexnic
         # global substitutions.
         def clean_document(polytex)
           cache_unicode(cache_literal(add_commands(polytex)))
+        end
+
+        # Converts LaTeX double backslashes to
+        def double_backslashes(string)
+          lines = []
+          in_table = false
+          string.split("\n").each do |line|
+            in_table ||= (line =~ /\\begin{tabular}/)
+            line.gsub!('\\\\', xmlelement('backslashbreak')) unless in_table
+            lines << line
+            in_table = (in_table && line !~ /\\end{tabular}/)
+          end
+          lines.join("\n")
         end
 
         # Adds some default commands.
@@ -81,6 +96,7 @@ module Polytexnic
           end
         end
 
+        # Restores the equation labels.
         def restore_eq_labels(output)
           math_label_cache.each do |key, label|
             output.gsub!(key, label)
