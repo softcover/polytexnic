@@ -22,7 +22,6 @@ module Polytexnic
         remove_errors(doc)
         set_ids(doc)
         chapters_and_section(doc)
-        footnotes(doc)
         subsection(doc)
         subsubsection(doc)
         headings(doc)
@@ -39,6 +38,7 @@ module Polytexnic
         tables(doc)
         math(doc)
         trim_empty_paragraphs(doc)
+        footnotes(doc)
         convert_to_html(doc)
       end
 
@@ -181,44 +181,64 @@ module Polytexnic
 
         # Numbers footnotes.
         def footnotes(doc)
-          # Convert footnotes in chapters.
-          doc.xpath('//div[@class="chapter"]').each do |chapter|
-            convert_footnotes(chapter)
-          end
+          convert_footnotes(doc)
         end
 
         # Convert all the footnotes in the given section.
         def convert_footnotes(section)
           footnotes_node = nil
-          doc = (section.document == section) ? section : section.document
-          section.xpath('.//note[@place="foot"]').each_with_index do |node, i|
-            n = i + 1
-            note = Nokogiri::XML::Node.new('li', doc)
-            note['id'] = "#{section['id']}_footnote-#{n}"
-            reflink = Nokogiri::XML::Node.new('a', doc)
-            reflink.content = "↩"
-            reflink['href'] = "##{section['id']}_footnote-ref-#{n}"
-            node.add_child reflink
-            note.inner_html = node.inner_html
-
-            unless footnotes_node
-              footnotes_wrapper_node = Nokogiri::XML::Node.new('div', doc)
-              footnotes_wrapper_node['id'] = "#{section['id']}_footnotes"
-              footnotes_node = Nokogiri::XML::Node.new('ol', doc)
-              footnotes_wrapper_node.add_child footnotes_node
-              section.add_child footnotes_wrapper_node
+          doc = section
+          all_footnotes = {}
+          section.xpath('//note[@place="foot"]').each do |node|
+            chapter = chapter_number(node)
+            if all_footnotes[chapter]
+              all_footnotes[chapter] << node
+            else
+              all_footnotes[chapter] = [node]
             end
+          end
+          all_footnotes.each do |chapter_number, chapter_footnotes|
+            chapter_footnotes.each_with_index do |node, i|
+              n = i + 1
+              note = Nokogiri::XML::Node.new('li', doc)
+              note['id'] = "cha-#{chapter_number}_footnote-#{n}"
+              reflink = Nokogiri::XML::Node.new('a', doc)
+              reflink.content = "↩"
+              reflink['href'] = "#cha-#{chapter_number}_footnote-ref-#{n}"
+              note.inner_html = "#{node.inner_html} #{reflink.to_xhtml}"
 
-            footnotes_node.add_child note
+              # unless footnotes_node
+              #   footnotes_wrapper_node = Nokogiri::XML::Node.new('div', doc)
+              #   footnotes_wrapper_node['id'] = "cha-#{chapter_number}_footnotes"
+              #   footnotes_node = Nokogiri::XML::Node.new('ol', doc)
+              #   footnotes_wrapper_node.add_child footnotes_node
+              #   section.add_child footnotes_wrapper_node
+              # end
 
-            node.name = 'sup'
-            clean_node node, %w{place id id-text data-tralics-id data-number}
-            node['id'] = "#{section['id']}_footnote-ref-#{n}"
-            node['class'] = 'footnote'
-            link = Nokogiri::XML::Node.new('a', doc)
-            link['href'] = "##{section['id']}_footnote-#{n}"
-            link.content = n.to_s
-            node.inner_html = link
+              # footnotes_node.add_child note
+
+              node.name = 'sup'
+              clean_node node, %w{place id id-text data-tralics-id data-number}
+              node['id'] = "cha-#{chapter_number}_footnote-ref-#{n}"
+              node['class'] = 'footnote'
+              link = Nokogiri::XML::Node.new('a', doc)
+              link['href'] = "#cha-#{chapter_number}_footnote-#{n}"
+              link.content = n.to_s
+              node.inner_html = link
+            end
+          end
+        end
+
+        # Returns the chapter number for a given node.
+        # Every node is inside some div that has a 'data-number' attribute,
+        # so recursively search the parents to find it.
+        # Then return the first number in the value, e.g., "1" in "1.2".
+        def chapter_number(node)
+          number = node['data-number']
+          if number && !number.empty?
+            number.split('.').first
+          else
+            chapter_number(node.parent)
           end
         end
 

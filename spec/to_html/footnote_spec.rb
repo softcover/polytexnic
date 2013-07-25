@@ -11,6 +11,9 @@ describe 'Polytexnic::Core::Pipeline#to_html' do
         \chapter{Foo \emph{bar}}
         \label{cha:foo}
 
+        \section{Foobar}
+        \label{sec:foobar}
+
         Lorem ipsum.\footnote{Cicero}
 
         \chapter{Bar}
@@ -23,25 +26,14 @@ describe 'Polytexnic::Core::Pipeline#to_html' do
     let(:output) do <<-'EOS'
       <div id="cha-foo" data-tralics-id="cid1" class="chapter" data-number="1">
         <h3><a href="#cha-foo" class="heading"><span class="number">1 </span>Foo <em>bar</em></a></h3>
-        <p>Lorem ipsum.<sup id="cha-foo_footnote-ref-1" class="footnote"><a href="#cha-foo_footnote-1">1</a></sup></p>
-        <div id="cha-foo_footnotes">
-          <ol>
-            <li id="cha-foo_footnote-1">
-              Cicero <a href="#cha-foo_footnote-ref-1">↩</a>
-            </li>
-          </ol>
-        </div>
       </div>
-        <div id="cha-bar" data-tralics-id="cid2" class="chapter" data-number="2">
+      <div id="sec-foobar" data-tralics-id="cid2" class="section" data-number="1.1">
+        <h3><a href="#sec-foobar" class="heading"><span class="number">1.1 </span>Foobar</a></h3>
+        <p>Lorem ipsum.<sup id="cha-1_footnote-ref-1" class="footnote"><a href="#cha-1_footnote-1">1</a></sup></p>
+      </div>
+      <div id="cha-bar" data-tralics-id="cid3" class="chapter" data-number="2">
         <h3><a href="#cha-bar" class="heading"><span class="number">2 </span>Bar</a></h3>
-        <p>Dolor sit amet.<sup id="cha-bar_footnote-ref-1" class="footnote"><a href="#cha-bar_footnote-1">1</a></sup></p>
-        <div id="cha-bar_footnotes">
-          <ol>
-            <li id="cha-bar_footnote-1">
-              <em>Still</em> Cicero <a href="#cha-bar_footnote-ref-1">↩</a>
-            </li>
-          </ol>
-        </div>
+        <p>Dolor sit amet.<sup id="cha-2_footnote-ref-1" class="footnote"><a href="#cha-2_footnote-1">1</a></sup></p>
       </div>
       EOS
     end

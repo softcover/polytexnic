@@ -105,19 +105,19 @@ describe 'Polytexnic::Core::Pipeline#to_html' do
     it do
       should resemble <<-'EOS'
         <div id="cha-foo_bar" data-tralics-id="cid1" class="chapter" data-number="1">
-        <h3><a href="#cha-foo_bar" class="heading"><span class="number">1 </span>Foo</a></h3>
-        <p><a href="#cha-foo_bar" class="hyperref">Chapter <span class="ref">1</span></a>
-        and
-        <a href="#cha-foo_baz" class="hyperref">Chapter <span class="ref">2</span></a>
-        </p>
+          <h3><a href="#cha-foo_bar" class="heading"><span class="number">1 </span>Foo</a></h3>
+          <p><a href="#cha-foo_bar" class="hyperref">Chapter <span class="ref">1</span></a>
+          and
+          <a href="#cha-foo_baz" class="hyperref">Chapter <span class="ref">2</span></a>
+          </p>
         </div>
 
         <div id="cha-foo_baz" data-tralics-id="cid2" class="chapter" data-number="2">
-        <h3><a href="#cha-foo_baz" class="heading"><span class="number">2 </span>Baz</a></h3>
-        <p><a href="#cha-foo_baz" class="hyperref">Chapter <span class="ref">2</span></a>
-        and
-        <a href="#cha-foo_bar" class="hyperref">Chapter <span class="ref">1</span></a>
-        </p>
+          <h3><a href="#cha-foo_baz" class="heading"><span class="number">2 </span>Baz</a></h3>
+          <p><a href="#cha-foo_baz" class="hyperref">Chapter <span class="ref">2</span></a>
+          and
+          <a href="#cha-foo_bar" class="hyperref">Chapter <span class="ref">1</span></a>
+          </p>
         </div>
       EOS
     end
