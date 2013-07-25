@@ -34,7 +34,7 @@ describe 'Polytexnic::Core::Pipeline#to_html' do
       <div id="cha-1_footnotes">
         <ol>
           <li id="cha-1_footnote-1">
-            Cicero <a href="#cha-1_footnote-ref-1">↩</a>
+            Cicero <a href="#cha-1_footnote-ref-1">↑</a>
           </li>
         </ol>
       </div>
@@ -80,7 +80,7 @@ describe 'Polytexnic::Core::Pipeline#to_html' do
       <div id="cha-1_footnotes">
         <ol>
           <li id="cha-1_footnote-1">
-            Cicero <a href="#cha-1_footnote-ref-1">↩</a>
+            Cicero <a href="#cha-1_footnote-ref-1">↑</a>
           </li>
         </ol>
       </div>
@@ -92,10 +92,10 @@ describe 'Polytexnic::Core::Pipeline#to_html' do
       <div id="cha-2_footnotes">
         <ol>
           <li id="cha-2_footnote-1">
-            <em>Still</em> Cicero <a href="#cha-2_footnote-ref-1">↩</a>
+            <em>Still</em> Cicero <a href="#cha-2_footnote-ref-1">↑</a>
           </li>
           <li id="cha-2_footnote-2">
-            Lennon/McCartney <a href="#cha-2_footnote-ref-2">↩</a>
+            Lennon/McCartney <a href="#cha-2_footnote-ref-2">↑</a>
           </li>
         </ol>
       </div>

@@ -57,7 +57,8 @@ class String
                      ['&#8221;', '”'],
                      ['&#160;',  ' '],     # nonbreaking space
                      ['&#133;',  '…'],
-                     ['&#8230;', '…']
+                     ['&#8230;', '…'],
+                     ['&#8617',  '↩']
                    ]
     tap do
       equivalences.each do |code, character|
