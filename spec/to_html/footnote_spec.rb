@@ -23,19 +23,23 @@ describe 'Polytexnic::Core::Pipeline#to_html' do
     let(:output) do <<-'EOS'
       <div id="cha-foo" data-tralics-id="cid1" class="chapter" data-number="1">
         <h3><a href="#cha-foo" class="heading"><span class="number">1 </span>Foo <em>bar</em></a></h3>
-        <p>Lorem ipsum.<sup class="footnote"><a href="#cha-foo-footnote-1">1</a></sup></p>
-        <div id="cha-foo-footnotes">
+        <p>Lorem ipsum.<sup id="cha-foo_footnote-ref-1" class="footnote"><a href="#cha-foo_footnote-1">1</a></sup></p>
+        <div id="cha-foo_footnotes">
           <ol>
-            <li id="cha-foo-footnote-1">Cicero</li>
+            <li id="cha-foo_footnote-1">
+              Cicero <a href="#cha-foo_footnote-ref-1">↩</a>
+            </li>
           </ol>
         </div>
       </div>
         <div id="cha-bar" data-tralics-id="cid2" class="chapter" data-number="2">
         <h3><a href="#cha-bar" class="heading"><span class="number">2 </span>Bar</a></h3>
-        <p>Dolor sit amet.<sup class="footnote"><a href="#cha-bar-footnote-1">1</a></sup></p>
-        <div id="cha-bar-footnotes">
+        <p>Dolor sit amet.<sup id="cha-bar_footnote-ref-1" class="footnote"><a href="#cha-bar_footnote-1">1</a></sup></p>
+        <div id="cha-bar_footnotes">
           <ol>
-            <li id="cha-bar-footnote-1">Still Cicero</li>
+            <li id="cha-bar_footnote-1">
+              Still Cicero <a href="#cha-bar_footnote-ref-1">↩</a>
+            </li>
           </ol>
         </div>
       </div>

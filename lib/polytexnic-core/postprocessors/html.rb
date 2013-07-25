@@ -194,12 +194,16 @@ module Polytexnic
           section.xpath('.//note[@place="foot"]').each_with_index do |node, i|
             n = i + 1
             note = Nokogiri::XML::Node.new('li', doc)
-            note['id'] = "#{section['id']}-footnote-#{n}"
-            note.content = node.content
+            note['id'] = "#{section['id']}_footnote-#{n}"
+            reflink = Nokogiri::XML::Node.new('a', doc)
+            reflink.content = "↩"
+            reflink['href'] = "##{section['id']}_footnote-ref-#{n}"
+            node.add_child reflink
+            note.inner_html = node.inner_html
 
             unless footnotes_node
               footnotes_wrapper_node = Nokogiri::XML::Node.new('div', doc)
-              footnotes_wrapper_node['id'] = "#{section['id']}-footnotes"
+              footnotes_wrapper_node['id'] = "#{section['id']}_footnotes"
               footnotes_node = Nokogiri::XML::Node.new('ol', doc)
               footnotes_wrapper_node.add_child footnotes_node
               section.add_child footnotes_wrapper_node
@@ -209,9 +213,10 @@ module Polytexnic
 
             node.name = 'sup'
             clean_node node, %w{place id id-text data-tralics-id data-number}
+            node['id'] = "#{section['id']}_footnote-ref-#{n}"
             node['class'] = 'footnote'
             link = Nokogiri::XML::Node.new('a', doc)
-            link['href'] = "##{section['id']}-footnote-#{n}"
+            link['href'] = "##{section['id']}_footnote-#{n}"
             link.content = n.to_s
             node.inner_html = link
           end
