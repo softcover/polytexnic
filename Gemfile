@@ -15,4 +15,5 @@ end
 
 group :development do
   gem 'guard-rspec'
+  gem 'rake'
 end
