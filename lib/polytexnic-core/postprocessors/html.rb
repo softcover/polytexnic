@@ -24,6 +24,7 @@ module Polytexnic
         set_ids(doc)
         chapters_and_section(doc)
         subsection(doc)
+        subsubsection(doc)
         headings(doc)
         kode(doc)
         codelistings(doc)
@@ -367,6 +368,14 @@ module Polytexnic
           end
         end
 
+        def subsubsection(doc)
+          doc.xpath('//div2').each do |node|
+            node.name = 'div'
+            node['class'] = 'subsubsection'
+            make_headings(doc, node, 'h5')
+          end
+        end
+
         # Converts heading elements to the proper spans.
         # Headings are used in codelisting-like environments such as asides
         # and codelistings.
@@ -496,6 +505,9 @@ module Polytexnic
                                   elsif node['class'] == 'subsection'
                                     @subsec = node['id-text']
                                     label_number(@cha, @sec, @subsec)
+                                  elsif node['class'] == 'subsubsection'
+                                    @ssubsec = node['id-text']
+                                    label_number(@cha, @sec, @subsec, @ssubsec)
                                   elsif node['textype'] == 'equation'
                                     if @cha.nil?
                                       @equation = node['id-text']
@@ -516,7 +528,7 @@ module Polytexnic
                                   end
             clean_node node, 'id-text'
             # add number span
-            if head = node.css('h2 a, h3 a, h4 a').first
+            if head = node.css('h2 a, h3 a, h4 a, h5 a').first
               el = doc.create_element 'span'
               el.content = node['data-number'] + ' '
               el['class'] = 'number'
