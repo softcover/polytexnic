@@ -58,6 +58,34 @@ describe 'Polytexnic::Core::Pipeline#to_html' do
     it { should resemble output }
   end
 
+  describe '\subsubsection' do
+    let(:polytex) do <<-'EOS'
+        \section{Foo}
+        \label{sec:foo}
+
+        \subsection{Bar}
+        \label{sec:bar}
+
+        \subsubsection{Baz}
+        \label{sec:baz}
+      EOS
+    end
+
+    let(:output) do <<-'EOS'
+      <div id="sec-foo" data-tralics-id="cid1" class="section" data-number="1">
+        <h3><a href="#sec-foo" class="heading"><span class="number">1 </span>Foo</a></h3>
+        <div id="sec-bar" data-tralics-id="uid1" class="subsection" data-number="1.1">
+          <h4><a href="#sec-bar" class="heading"><span class="number">1.1 </span>Bar</a></h4>
+          <div id="sec-baz" data-tralics-id="uid2" class="subsubsection" data-number="1.1.1">
+            <h5><a href="#sec-baz" class="heading"><span class="number">1.1.1 </span>Baz</a></h5>
+          </div>
+        </div>
+      </div>
+      EOS
+    end
+    it { should resemble output }
+  end
+
   describe 'chapter cross-references' do
     let(:polytex) do <<-'EOS'
         \chapter{Foo}
@@ -100,22 +128,32 @@ describe 'Polytexnic::Core::Pipeline#to_html' do
         \section{Foo}
         \label{sec:foo}
 
-        Section~\ref{sec:bar}
+        Section~\ref{sec:bar} and Section~\ref{sec:baz}
 
         \subsection{Bar}
         \label{sec:bar}
 
         Section~\ref{sec:foo}
+
+        \subsubsection{Baz}
+        \label{sec:baz}
       EOS
     end
 
     it do
       should resemble <<-'EOS'
         <div id="sec-foo" data-tralics-id="cid1" class="section" data-number="1"><h3><a href="#sec-foo" class="heading"><span class="number">1 </span>Foo</a></h3>
-        <p><a href="#sec-bar" class="hyperref">Section <span class="ref">1.1</span></a></p>
+        <p>
+          <a href="#sec-bar" class="hyperref">Section <span class="ref">1.1</span></a>
+          and
+          <a href="#sec-baz" class="hyperref">Section <span class="ref">1.1.1</span></a>
+        </p>
         <div id="sec-bar" data-tralics-id="uid1" class="subsection" data-number="1.1"><h4><a href="#sec-bar" class="heading"><span class="number">1.1 </span>Bar</a></h4>
         <p><a href="#sec-foo" class="hyperref">Section <span class="ref">1</span></a>
-        </p></div></div>
+        </p>
+        <div id="sec-baz" data-tralics-id="uid2" class="subsubsection" data-number="1.1.1">
+          <h5><a href="#sec-baz" class="heading"><span class="number">1.1.1 </span>Baz</a></h5>
+        </div></div></div>
       EOS
     end
   end
