@@ -13,7 +13,6 @@ module Polytexnic
         verbatim(doc)
         code(doc)
         metacode(doc)
-        footnotes(doc)
         tex_logos(doc)
         quote(doc)
         verse(doc)
@@ -23,6 +22,7 @@ module Polytexnic
         remove_errors(doc)
         set_ids(doc)
         chapters_and_section(doc)
+        footnotes(doc)
         subsection(doc)
         subsubsection(doc)
         headings(doc)
@@ -181,28 +181,37 @@ module Polytexnic
 
         # Numbers footnotes.
         def footnotes(doc)
+          # Convert footnotes in chapters.
+          doc.xpath('//div[@class="chapter"]').each do |chapter|
+            convert_footnotes(chapter)
+          end
+        end
+
+        # Convert all the footnotes in the given section.
+        def convert_footnotes(section)
           footnotes_node = nil
-          doc.xpath('//note[@place="foot"]').each_with_index do |node, i|
+          doc = (section.document == section) ? section : section.document
+          section.xpath('.//note[@place="foot"]').each_with_index do |node, i|
             n = i + 1
             note = Nokogiri::XML::Node.new('li', doc)
-            note['id'] = "footnote-#{n}"
+            note['id'] = "#{section['id']}-footnote-#{n}"
             note.content = node.content
 
             unless footnotes_node
               footnotes_wrapper_node = Nokogiri::XML::Node.new('div', doc)
-              footnotes_wrapper_node['id'] = 'footnotes'
+              footnotes_wrapper_node['id'] = "#{section['id']}-footnotes"
               footnotes_node = Nokogiri::XML::Node.new('ol', doc)
               footnotes_wrapper_node.add_child footnotes_node
-              doc.root.add_child footnotes_wrapper_node
+              section.add_child footnotes_wrapper_node
             end
 
             footnotes_node.add_child note
 
             node.name = 'sup'
-            clean_node node, %w{place id id-text}
+            clean_node node, %w{place id id-text data-tralics-id data-number}
             node['class'] = 'footnote'
             link = Nokogiri::XML::Node.new('a', doc)
-            link['href'] = "#footnote-#{n}"
+            link['href'] = "##{section['id']}-footnote-#{n}"
             link.content = n.to_s
             node.inner_html = link
           end
