@@ -197,28 +197,31 @@ module Polytexnic
             end
           end
           section.xpath('//div[@class="chapter"]').each_with_index do |node, i|
+            # Skip the first chapter.
             next if i == 0
-            chapter_number = i
-            if all_footnotes[chapter_number]
+            previous_chapter_number = i
+            if all_footnotes[previous_chapter_number]
               footnotes_wrapper_node = Nokogiri::XML::Node.new('div', doc)
-              footnotes_wrapper_node['id'] = "cha-#{chapter_number}_footnotes"
+              footnotes_wrapper_node['id'] = "cha-#{previous_chapter_number}_footnotes"
               footnotes_node = Nokogiri::XML::Node.new('ol', doc)
-              all_footnotes[chapter_number].each_with_index do |node, i|
+              all_footnotes[previous_chapter_number].each_with_index do |node, i|
                 n = i + 1
                 note = Nokogiri::XML::Node.new('li', doc)
-                note['id'] = "cha-#{chapter_number}_footnote-#{n}"
+                note['id'] = "cha-#{previous_chapter_number}_footnote-#{n}"
                 reflink = Nokogiri::XML::Node.new('a', doc)
                 reflink.content = "↩"
-                reflink['href'] = "#cha-#{chapter_number}_footnote-ref-#{n}"
+                reflink['href'] = "#cha-#{previous_chapter_number}_footnote-ref-#{n}"
                 note.inner_html = "#{node.inner_html} #{reflink.to_xhtml}"
                 footnotes_node.add_child note
               end
 
+              # Place footnotes for Chapter n-1 just before Chapter n.
               footnotes_wrapper_node.add_child footnotes_node
               node.add_previous_sibling(footnotes_wrapper_node)
             end
           end
-          chapter_number = all_footnotes.length
+          # Place the footnotes for Chapter n (if any).
+          chapter_number = section.xpath('//div[@class="chapter"]').length
           if all_footnotes[chapter_number]
             footnotes_wrapper_node = Nokogiri::XML::Node.new('div', doc)
             footnotes_wrapper_node['id'] = "cha-#{chapter_number}_footnotes"
@@ -237,6 +240,7 @@ module Polytexnic
             section.children.last.add_child(footnotes_wrapper_node)
           end
 
+          # Rewrite footnote content with its corresponding number.
           all_footnotes.each do |chapter_number, chapter_footnotes|
             chapter_footnotes.each_with_index do |node, i|
               n = i + 1
