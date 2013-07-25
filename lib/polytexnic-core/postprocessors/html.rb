@@ -186,7 +186,6 @@ module Polytexnic
 
         # Convert all the footnotes in the given section.
         def convert_footnotes(section)
-          footnotes_node = nil
           doc = section
           all_footnotes = {}
           section.xpath('//note[@place="foot"]').each do |node|
@@ -197,8 +196,34 @@ module Polytexnic
               all_footnotes[chapter] = [node]
             end
           end
-          all_footnotes.each do |chapter_number, chapter_footnotes|
-            chapter_footnotes.each_with_index do |node, i|
+          section.xpath('//div[@class="chapter"]').each_with_index do |node, i|
+            next if i == 0
+            chapter_number = i
+            if all_footnotes[chapter_number]
+              footnotes_wrapper_node = Nokogiri::XML::Node.new('div', doc)
+              footnotes_wrapper_node['id'] = "cha-#{chapter_number}_footnotes"
+              footnotes_node = Nokogiri::XML::Node.new('ol', doc)
+              all_footnotes[chapter_number].each_with_index do |node, i|
+                n = i + 1
+                note = Nokogiri::XML::Node.new('li', doc)
+                note['id'] = "cha-#{chapter_number}_footnote-#{n}"
+                reflink = Nokogiri::XML::Node.new('a', doc)
+                reflink.content = "↩"
+                reflink['href'] = "#cha-#{chapter_number}_footnote-ref-#{n}"
+                note.inner_html = "#{node.inner_html} #{reflink.to_xhtml}"
+                footnotes_node.add_child note
+              end
+
+              footnotes_wrapper_node.add_child footnotes_node
+              node.add_previous_sibling(footnotes_wrapper_node)
+            end
+          end
+          chapter_number = all_footnotes.length
+          if all_footnotes[chapter_number]
+            footnotes_wrapper_node = Nokogiri::XML::Node.new('div', doc)
+            footnotes_wrapper_node['id'] = "cha-#{chapter_number}_footnotes"
+            footnotes_node = Nokogiri::XML::Node.new('ol', doc)
+            all_footnotes[chapter_number].each_with_index do |node, i|
               n = i + 1
               note = Nokogiri::XML::Node.new('li', doc)
               note['id'] = "cha-#{chapter_number}_footnote-#{n}"
@@ -206,17 +231,15 @@ module Polytexnic
               reflink.content = "↩"
               reflink['href'] = "#cha-#{chapter_number}_footnote-ref-#{n}"
               note.inner_html = "#{node.inner_html} #{reflink.to_xhtml}"
+              footnotes_node.add_child note
+            end
+            footnotes_wrapper_node.add_child footnotes_node
+            section.children.last.add_child(footnotes_wrapper_node)
+          end
 
-              # unless footnotes_node
-              #   footnotes_wrapper_node = Nokogiri::XML::Node.new('div', doc)
-              #   footnotes_wrapper_node['id'] = "cha-#{chapter_number}_footnotes"
-              #   footnotes_node = Nokogiri::XML::Node.new('ol', doc)
-              #   footnotes_wrapper_node.add_child footnotes_node
-              #   section.add_child footnotes_wrapper_node
-              # end
-
-              # footnotes_node.add_child note
-
+          all_footnotes.each do |chapter_number, chapter_footnotes|
+            chapter_footnotes.each_with_index do |node, i|
+              n = i + 1
               node.name = 'sup'
               clean_node node, %w{place id id-text data-tralics-id data-number}
               node['id'] = "cha-#{chapter_number}_footnote-ref-#{n}"
@@ -236,7 +259,7 @@ module Polytexnic
         def chapter_number(node)
           number = node['data-number']
           if number && !number.empty?
-            number.split('.').first
+            number.split('.').first.to_i
           else
             chapter_number(node.parent)
           end
