@@ -64,6 +64,8 @@ describe 'Polytexnic::Core::Pipeline#to_html' do
         \label{cha:bar}
 
         Dolor sit amet.\footnote{\emph{Still} Cicero}
+
+        Hey Jude.\footnote{Lennon/McCartney}
       EOS
     end
 
@@ -85,11 +87,15 @@ describe 'Polytexnic::Core::Pipeline#to_html' do
       <div id="cha-bar" data-tralics-id="cid3" class="chapter" data-number="2">
         <h3><a href="#cha-bar" class="heading"><span class="number">2 </span>Bar</a></h3>
         <p>Dolor sit amet.<sup id="cha-2_footnote-ref-1" class="footnote"><a href="#cha-2_footnote-1">1</a></sup></p>
+        <p>Hey Jude.<sup id="cha-2_footnote-ref-2" class="footnote"><a href="#cha-2_footnote-2">2</a></sup></p>
       </div>
       <div id="cha-2_footnotes">
         <ol>
           <li id="cha-2_footnote-1">
             <em>Still</em> Cicero <a href="#cha-2_footnote-ref-1">↩</a>
+          </li>
+          <li id="cha-2_footnote-2">
+            Lennon/McCartney <a href="#cha-2_footnote-ref-2">↩</a>
           </li>
         </ol>
       </div>
