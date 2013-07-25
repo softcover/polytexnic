@@ -30,19 +30,6 @@ describe 'Polytexnic::Core::Pipeline#to_html' do
     it { should_not resemble '<unknown>' }
   end
 
-  describe "footnotes" do
-    let(:polytex) { '\footnote{Foo}' }
-    it do
-      should resemble('<sup class="footnote">' +
-                        '<a href="#footnote-1">1</a>' +
-                      '</sup>')
-    end
-    it do
-      out = '<div id="footnotes"><ol><li id="footnote-1">Foo</li></ol></div>'
-      should resemble out
-    end
-  end
-
   describe '\maketitle' do
     let(:polytex) do <<-'EOS'
         \title{Foo}

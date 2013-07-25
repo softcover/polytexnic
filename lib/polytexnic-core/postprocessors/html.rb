@@ -179,7 +179,7 @@ module Polytexnic
           end
         end
 
-        # Handles footnotes.
+        # Numbers footnotes.
         def footnotes(doc)
           footnotes_node = nil
           doc.xpath('//note[@place="foot"]').each_with_index do |node, i|
