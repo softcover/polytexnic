@@ -95,6 +95,31 @@ describe 'Polytexnic::Core::Pipeline#to_html' do
     end
   end
 
+  describe "section cross-references" do
+    let(:polytex) do <<-'EOS'
+        \section{Foo}
+        \label{sec:foo}
+
+        Section~\ref{sec:bar}
+
+        \subsection{Bar}
+        \label{sec:bar}
+
+        Section~\ref{sec:foo}
+      EOS
+    end
+
+    it do
+      should resemble <<-'EOS'
+        <div id="sec-foo" data-tralics-id="cid1" class="section" data-number="1"><h3><a href="#sec-foo" class="heading"><span class="number">1 </span>Foo</a></h3>
+        <p><a href="#sec-bar" class="hyperref">Section <span class="ref">1.1</span></a></p>
+        <div id="sec-bar" data-tralics-id="uid1" class="subsection" data-number="1.1"><h4><a href="#sec-bar" class="heading"><span class="number">1.1 </span>Bar</a></h4>
+        <p><a href="#sec-foo" class="hyperref">Section <span class="ref">1</span></a>
+        </p></div></div>
+      EOS
+    end
+  end
+
   describe 'missing cross-references' do
     let(:polytex) do <<-'EOS'
       \chapter{Foo}
