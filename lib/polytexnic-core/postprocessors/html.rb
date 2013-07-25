@@ -209,7 +209,7 @@ module Polytexnic
                 note = Nokogiri::XML::Node.new('li', doc)
                 note['id'] = "cha-#{previous_chapter_number}_footnote-#{n}"
                 reflink = Nokogiri::XML::Node.new('a', doc)
-                reflink.content = "↩"
+                reflink.content = "↑"
                 reflink['href'] = "#cha-#{previous_chapter_number}_footnote-ref-#{n}"
                 note.inner_html = "#{node.inner_html} #{reflink.to_xhtml}"
                 footnotes_node.add_child note
@@ -231,7 +231,7 @@ module Polytexnic
               note = Nokogiri::XML::Node.new('li', doc)
               note['id'] = "cha-#{chapter_number}_footnote-#{n}"
               reflink = Nokogiri::XML::Node.new('a', doc)
-              reflink.content = "↩"
+              reflink.content = "↑"
               reflink['href'] = "#cha-#{chapter_number}_footnote-ref-#{n}"
               note.inner_html = "#{node.inner_html} #{reflink.to_xhtml}"
               footnotes_node.add_child note
