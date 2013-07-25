@@ -16,7 +16,7 @@ describe 'Polytexnic::Core::Pipeline#to_html' do
         \chapter{Bar}
         \label{cha:bar}
 
-        Dolor sit amet.\footnote{Still Cicero}
+        Dolor sit amet.\footnote{\emph{Still} Cicero}
       EOS
     end
 
@@ -38,7 +38,7 @@ describe 'Polytexnic::Core::Pipeline#to_html' do
         <div id="cha-bar_footnotes">
           <ol>
             <li id="cha-bar_footnote-1">
-              Still Cicero <a href="#cha-bar_footnote-ref-1">↩</a>
+              <em>Still</em> Cicero <a href="#cha-bar_footnote-ref-1">↩</a>
             </li>
           </ol>
         </div>
