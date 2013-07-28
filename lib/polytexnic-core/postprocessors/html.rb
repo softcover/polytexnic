@@ -12,7 +12,7 @@ module Polytexnic
         typewriter(doc)
         verbatim(doc)
         code(doc)
-        footnotes(doc)
+        metacode(doc)
         tex_logos(doc)
         quote(doc)
         verse(doc)
@@ -23,9 +23,11 @@ module Polytexnic
         set_ids(doc)
         chapters_and_section(doc)
         subsection(doc)
+        subsubsection(doc)
         headings(doc)
         kode(doc)
         codelistings(doc)
+        backslash_break(doc)
         asides(doc)
         title(doc)
         smart_single_quotes(doc)
@@ -36,6 +38,7 @@ module Polytexnic
         tables(doc)
         math(doc)
         trim_empty_paragraphs(doc)
+        footnotes(doc)
         convert_to_html(doc)
       end
 
@@ -108,6 +111,17 @@ module Polytexnic
           end
         end
 
+        # Handles metacode environments.
+        # \begin{metacode}
+        # <code>
+        # \end{metacode}
+        def metacode(doc)
+          doc.xpath('//metacode').each do |node|
+            node.name = 'div'
+            node['class'] = 'code'
+          end
+        end
+
         # Handles math environments.
         # Included are
         # \begin{equation}
@@ -165,32 +179,93 @@ module Polytexnic
           end
         end
 
-        # Handles footnotes.
+        # Numbers footnotes.
         def footnotes(doc)
-          footnotes_node = nil
-          doc.xpath('//note[@place="foot"]').each_with_index do |node, i|
-            n = i + 1
-            note = Nokogiri::XML::Node.new('li', doc)
-            note['id'] = "footnote-#{n}"
-            note.content = node.content
+          convert_footnotes(doc)
+        end
 
-            unless footnotes_node
-              footnotes_wrapper_node = Nokogiri::XML::Node.new('div', doc)
-              footnotes_wrapper_node['id'] = 'footnotes'
-              footnotes_node = Nokogiri::XML::Node.new('ol', doc)
-              footnotes_wrapper_node.add_child footnotes_node
-              doc.root.add_child footnotes_wrapper_node
+        # Convert all the footnotes in the given section.
+        def convert_footnotes(section)
+          doc = section
+          all_footnotes = {}
+          section.xpath('//note[@place="foot"]').each do |node|
+            chapter = chapter_number(node)
+            if all_footnotes[chapter]
+              all_footnotes[chapter] << node
+            else
+              all_footnotes[chapter] = [node]
             end
+          end
+          section.xpath('//div[@class="chapter"]').each_with_index do |node, i|
+            # Skip the first chapter.
+            next if i == 0
+            previous_chapter_number = i
+            if all_footnotes[previous_chapter_number]
+              footnotes_wrapper_node = Nokogiri::XML::Node.new('div', doc)
+              footnotes_wrapper_node['id'] = "cha-#{previous_chapter_number}_footnotes"
+              footnotes_node = Nokogiri::XML::Node.new('ol', doc)
+              all_footnotes[previous_chapter_number].each_with_index do |node, i|
+                n = i + 1
+                note = Nokogiri::XML::Node.new('li', doc)
+                note['id'] = "cha-#{previous_chapter_number}_footnote-#{n}"
+                reflink = Nokogiri::XML::Node.new('a', doc)
+                reflink.content = "↑"
+                reflink['href'] = "#cha-#{previous_chapter_number}_footnote-ref-#{n}"
+                note.inner_html = "#{node.inner_html} #{reflink.to_xhtml}"
+                footnotes_node.add_child note
+              end
 
-            footnotes_node.add_child note
+              # Place footnotes for Chapter n-1 just before Chapter n.
+              footnotes_wrapper_node.add_child footnotes_node
+              node.add_previous_sibling(footnotes_wrapper_node)
+            end
+          end
+          # Place the footnotes for Chapter n (if any).
+          chapter_number = section.xpath('//div[@class="chapter"]').length
+          if all_footnotes[chapter_number]
+            footnotes_wrapper_node = Nokogiri::XML::Node.new('div', doc)
+            footnotes_wrapper_node['id'] = "cha-#{chapter_number}_footnotes"
+            footnotes_node = Nokogiri::XML::Node.new('ol', doc)
+            all_footnotes[chapter_number].each_with_index do |node, i|
+              n = i + 1
+              note = Nokogiri::XML::Node.new('li', doc)
+              note['id'] = "cha-#{chapter_number}_footnote-#{n}"
+              reflink = Nokogiri::XML::Node.new('a', doc)
+              reflink.content = "↑"
+              reflink['href'] = "#cha-#{chapter_number}_footnote-ref-#{n}"
+              note.inner_html = "#{node.inner_html} #{reflink.to_xhtml}"
+              footnotes_node.add_child note
+            end
+            footnotes_wrapper_node.add_child footnotes_node
+            section.children.last.add_child(footnotes_wrapper_node)
+          end
 
-            node.name = 'sup'
-            clean_node node, %w{place id id-text}
-            node['class'] = 'footnote'
-            link = Nokogiri::XML::Node.new('a', doc)
-            link['href'] = "#footnote-#{n}"
-            link.content = n.to_s
-            node.inner_html = link
+          # Rewrite footnote content with its corresponding number.
+          all_footnotes.each do |chapter_number, chapter_footnotes|
+            chapter_footnotes.each_with_index do |node, i|
+              n = i + 1
+              node.name = 'sup'
+              clean_node node, %w{place id id-text data-tralics-id data-number}
+              node['id'] = "cha-#{chapter_number}_footnote-ref-#{n}"
+              node['class'] = 'footnote'
+              link = Nokogiri::XML::Node.new('a', doc)
+              link['href'] = "#cha-#{chapter_number}_footnote-#{n}"
+              link.content = n.to_s
+              node.inner_html = link
+            end
+          end
+        end
+
+        # Returns the chapter number for a given node.
+        # Every node is inside some div that has a 'data-number' attribute,
+        # so recursively search the parents to find it.
+        # Then return the first number in the value, e.g., "1" in "1.2".
+        def chapter_number(node)
+          number = node['data-number']
+          if number && !number.empty?
+            number.split('.').first.to_i
+          else
+            chapter_number(node.parent)
           end
         end
 
@@ -354,6 +429,14 @@ module Polytexnic
           end
         end
 
+        def subsubsection(doc)
+          doc.xpath('//div2').each do |node|
+            node.name = 'div'
+            node['class'] = 'subsubsection'
+            make_headings(doc, node, 'h5')
+          end
+        end
+
         # Converts heading elements to the proper spans.
         # Headings are used in codelisting-like environments such as asides
         # and codelistings.
@@ -400,6 +483,13 @@ module Polytexnic
             heading = build_heading(node, 'codelisting')
             code = heading.at_css('div.code')
             node.add_child(code)
+          end
+        end
+
+        # Add in breaks from '\\'.
+        def backslash_break(doc)
+          doc.xpath('//backslashbreak').each do |node|
+            node.name  = 'br'
           end
         end
 
@@ -476,6 +566,9 @@ module Polytexnic
                                   elsif node['class'] == 'subsection'
                                     @subsec = node['id-text']
                                     label_number(@cha, @sec, @subsec)
+                                  elsif node['class'] == 'subsubsection'
+                                    @ssubsec = node['id-text']
+                                    label_number(@cha, @sec, @subsec, @ssubsec)
                                   elsif node['textype'] == 'equation'
                                     if @cha.nil?
                                       @equation = node['id-text']
@@ -496,7 +589,7 @@ module Polytexnic
                                   end
             clean_node node, 'id-text'
             # add number span
-            if head = node.css('h2 a, h3 a, h4 a').first
+            if head = node.css('h2 a, h3 a, h4 a, h5 a').first
               el = doc.create_element 'span'
               el.content = node['data-number'] + ' '
               el['class'] = 'number'
@@ -545,6 +638,7 @@ module Polytexnic
           doc.xpath('//figure').each do |node|
             node.name = 'div'
             node['class'] = 'figure'
+            raw_graphic = (node['rend'] == 'inline')
             if internal_paragraph = node.at_css('p')
               clean_node internal_paragraph, 'rend'
             end
@@ -561,7 +655,7 @@ module Polytexnic
               end
               clean_node node, %w[file extension rend]
             end
-            add_caption(node, name: 'figure')
+            add_caption(node, name: 'figure') unless raw_graphic
           end
         end
 
@@ -650,7 +744,7 @@ module Polytexnic
         # Tralics conversion.
         def trim_empty_paragraphs(doc)
           doc.css('p').find_all.each do |p|
-            p.remove if p.content.strip.empty?
+            p.remove if p.inner_html.strip.empty?
           end
         end
 

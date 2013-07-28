@@ -3,15 +3,14 @@ require 'spec_helper'
 
 describe 'Polytexnic::Core::Pipeline#to_html' do
 
-  let(:processed_text) { Polytexnic::Core::Pipeline.new(polytex).to_html }
-  subject { processed_text }
+  subject(:processed_text) { Polytexnic::Core::Pipeline.new(polytex).to_html }
 
   describe "code listings" do
     let(:polytex) do <<-'EOS'
       \chapter{Foo bar}
 
       \begin{codelisting}
-      \heading{Creating a gem configuration file.}
+      \heading{Creating a \texttt{gem} configuration file. \\ filename}
       \label{code:create_gemrc}
       %= lang:console
       \begin{code}
@@ -29,7 +28,7 @@ $ subl .gemrc
         <div class="codelisting" id="code-create_gemrc" data-tralics-id="uid1" data-number="1.1">
           <div class="heading">
             <span class="number">Listing 1.1.</span>
-            <span class="description">Creating a gem configuration file.</span>
+            <span class="description">Creating a <span class="tt">gem</span> configuration file. <br /> filename</span>
           </div>
           <div class="code">
             <div class="highlight">
@@ -40,6 +39,29 @@ $ subl .gemrc
         <p><a href="#code-create_gemrc" class="hyperref">Listing <span class="ref">1.1</span></a></p>
         </div>
       EOS
+    end
+  end
+
+  describe "metacode listings" do
+    let(:polytex) do <<-'EOS'
+      \begin{codelisting}
+      \heading{The heading.}
+      \label{code:listing}
+      %= lang:latex
+      \begin{metacode}
+      %= lang:ruby
+      \begin{code}
+      def foo
+        "bar"
+      end
+      \end{code}
+      \end{metacode}
+      \end{codelisting}
+      EOS
+    end
+
+    it "should not raise an error" do
+      expect { processed_text }.not_to raise_error
     end
   end
 end

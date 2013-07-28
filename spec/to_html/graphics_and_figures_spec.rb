@@ -19,6 +19,7 @@ describe 'Polytexnic::Core::Pipeline#to_html' do
         </div>
       EOS
     end
+    it { should_not resemble 'Figure' }
   end
 
   describe "figures" do
@@ -47,7 +48,7 @@ describe 'Polytexnic::Core::Pipeline#to_html' do
         \label{fig:foo}
         \end{figure}
 
-        Figure~\ref{fig:foo}
+        Figure~\ref{fig:foo} or Fig.~\ref{fig:foo}
         EOS
       end
 
@@ -59,7 +60,10 @@ describe 'Polytexnic::Core::Pipeline#to_html' do
             <span class="header">Figure 1</span>
           </div>
           </div>
-          <p><a href="#fig-foo" class="hyperref">Figure <span class="ref">1</span></a></p>
+          <p><a href="#fig-foo" class="hyperref">Figure <span class="ref">1</span></a>
+              or
+             <a href="#fig-foo" class="hyperref">Fig. <span class="ref">1</span></a>
+          </p>
         EOS
       end
     end

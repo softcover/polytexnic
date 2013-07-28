@@ -30,19 +30,6 @@ describe 'Polytexnic::Core::Pipeline#to_html' do
     it { should_not resemble '<unknown>' }
   end
 
-  describe "footnotes" do
-    let(:polytex) { '\footnote{Foo}' }
-    it do
-      should resemble('<sup class="footnote">' +
-                        '<a href="#footnote-1">1</a>' +
-                      '</sup>')
-    end
-    it do
-      out = '<div id="footnotes"><ol><li id="footnote-1">Foo</li></ol></div>'
-      should resemble out
-    end
-  end
-
   describe '\maketitle' do
     let(:polytex) do <<-'EOS'
         \title{Foo}
@@ -67,6 +54,12 @@ describe 'Polytexnic::Core::Pipeline#to_html' do
     it "should not have repeated title elements" do
       expect(processed_text.scan(/Leslie Lamport/).length).to eq 1
     end
+  end
+
+  describe "double backslashes" do
+    let(:polytex) { 'foo \\\\ bar' }
+    let(:output) { 'foo <br /> bar' }
+    it { should resemble output }
   end
 
   describe "unknown command" do
