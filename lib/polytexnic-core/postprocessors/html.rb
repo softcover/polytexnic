@@ -179,77 +179,99 @@ module Polytexnic
           end
         end
 
-        # Numbers footnotes.
+        # Processes and places footnotes.
         def footnotes(doc)
-          convert_footnotes(doc)
-        end
-
-        # Convert all the footnotes in the given section.
-        def convert_footnotes(section)
-          doc = section
-          all_footnotes = {}
-          section.xpath('//note[@place="foot"]').each do |node|
-            chapter = chapter_number(node)
-            if all_footnotes[chapter]
-              all_footnotes[chapter] << node
-            else
-              all_footnotes[chapter] = [node]
-            end
+          footnotes = Hash.new { |h, k| h[k] = [] }
+          doc.xpath('//note[@place="foot"]').each do |footnote|
+            footnotes[chapter_number(footnote)] << footnote
           end
-          section.xpath('//div[@class="chapter"]').each_with_index do |node, i|
-            # Skip the first chapter.
+          # Handle chapters 1 through n-1.
+          doc.xpath('//div[@class="chapter"]').each_with_index do |chapter, i|
+            # Skip the first chapter since no footnotes can be placed before it.
+            # TODO: allow this placement once we can handle frontmatter.
             next if i == 0
-            previous_chapter_number = i
-            if all_footnotes[previous_chapter_number]
-              footnotes_wrapper_node = Nokogiri::XML::Node.new('div', doc)
-              footnotes_wrapper_node['id'] = "cha-#{previous_chapter_number}_footnotes"
-              footnotes_node = Nokogiri::XML::Node.new('ol', doc)
-              all_footnotes[previous_chapter_number].each_with_index do |node, i|
-                n = i + 1
-                note = Nokogiri::XML::Node.new('li', doc)
-                note['id'] = "cha-#{previous_chapter_number}_footnote-#{n}"
-                reflink = Nokogiri::XML::Node.new('a', doc)
-                reflink.content = "↑"
-                reflink['href'] = "#cha-#{previous_chapter_number}_footnote-ref-#{n}"
-                note.inner_html = "#{node.inner_html} #{reflink.to_xhtml}"
-                footnotes_node.add_child note
-              end
-
-              # Place footnotes for Chapter n-1 just before Chapter n.
-              footnotes_wrapper_node.add_child footnotes_node
-              node.add_previous_sibling(footnotes_wrapper_node)
-            end
+            make_footnotes(footnotes, i, chapter)
           end
           # Place the footnotes for Chapter n (if any).
-          chapter_number = section.xpath('//div[@class="chapter"]').length
-          if all_footnotes[chapter_number]
-            footnotes_wrapper_node = Nokogiri::XML::Node.new('div', doc)
-            footnotes_wrapper_node['id'] = "cha-#{chapter_number}_footnotes"
-            footnotes_node = Nokogiri::XML::Node.new('ol', doc)
-            all_footnotes[chapter_number].each_with_index do |node, i|
-              n = i + 1
-              note = Nokogiri::XML::Node.new('li', doc)
-              note['id'] = "cha-#{chapter_number}_footnote-#{n}"
-              reflink = Nokogiri::XML::Node.new('a', doc)
-              reflink.content = "↑"
-              reflink['href'] = "#cha-#{chapter_number}_footnote-ref-#{n}"
-              note.inner_html = "#{node.inner_html} #{reflink.to_xhtml}"
-              footnotes_node.add_child note
-            end
-            footnotes_wrapper_node.add_child footnotes_node
-            section.children.last.add_child(footnotes_wrapper_node)
-          end
+          final_chapter_number = doc.xpath('//div[@class="chapter"]').length
+          make_footnotes(footnotes, final_chapter_number)
+          rewrite_contents(footnotes)
+        end
 
-          # Rewrite footnote content with its corresponding number.
-          all_footnotes.each do |chapter_number, chapter_footnotes|
+        # Returns a unique CSS id for the footnotes of a given chapter.
+        def footnotes_id(chapter_number)
+          "cha-#{chapter_number}_footnotes"
+        end
+
+        # Returns a unique CSS id for footnote n in given chapter.
+        def footnote_id(chapter_number, n)
+          "cha-#{chapter_number}_footnote-#{n}"
+        end
+
+        # Returns the href needed to link to footnote n.
+        def footnote_href(chapter_number, n)
+          "##{footnote_id(chapter_number, n)}"
+        end
+
+        # Returns a unique CSS id for the footnote reference.
+        def footnote_ref_id(chapter_number, n)
+          "cha-#{chapter_number}_footnote-ref-#{n}"
+        end
+
+        # Returns the href needed to link to reference for footnote n.
+        def footnote_ref_href(chapter_number, n)
+          "##{footnote_ref_id(chapter_number, n)}"
+        end
+
+        def make_footnotes(footnotes, previous_chapter_number, chapter = nil)
+          unless (chapter_footnotes = footnotes[previous_chapter_number]).empty?
+            doc = chapter_footnotes.first.document
+            footnotes_node = footnotes_list(footnotes, previous_chapter_number)
+            place_footnotes(footnotes_node, previous_chapter_number, chapter)
+          end
+        end
+
+        # Returns a list of footnotes ready for placement.
+        def footnotes_list(footnotes, chapter_number)
+          doc = footnotes.values[0][0].document
+          footnotes_node = Nokogiri::XML::Node.new('ol', doc)
+          footnotes[chapter_number].each_with_index do |footnote, i|
+            n = i + 1
+            note = Nokogiri::XML::Node.new('li', doc)
+            note['id'] = footnote_id(chapter_number, n)
+            reflink = Nokogiri::XML::Node.new('a', doc)
+            reflink.content = "↑"
+            reflink['href'] = footnote_ref_href(chapter_number, n)
+            note.inner_html = "#{footnote.inner_html} #{reflink.to_xhtml}"
+            footnotes_node.add_child note
+          end
+          footnotes_node
+        end
+
+        # Places footnotes for Chapter n-1 just before Chapter n.
+        def place_footnotes(footnotes_node, chapter_number, chapter = nil)
+          doc = footnotes_node.document
+          footnotes_wrapper_node = Nokogiri::XML::Node.new('div', doc)
+          footnotes_wrapper_node['id'] = footnotes_id(chapter_number)
+          footnotes_wrapper_node.add_child footnotes_node
+          if chapter.nil?
+            doc.children.last.add_child(footnotes_wrapper_node)
+          else
+            chapter.add_previous_sibling(footnotes_wrapper_node)
+          end
+        end
+
+        # Rewrites contents of each footnote with its corresponding number.
+        def rewrite_contents(footnotes)
+          footnotes.each do |chapter_number, chapter_footnotes|
             chapter_footnotes.each_with_index do |node, i|
               n = i + 1
               node.name = 'sup'
               clean_node node, %w{place id id-text data-tralics-id data-number}
-              node['id'] = "cha-#{chapter_number}_footnote-ref-#{n}"
+              node['id'] = footnote_ref_id(chapter_number, n)
               node['class'] = 'footnote'
-              link = Nokogiri::XML::Node.new('a', doc)
-              link['href'] = "#cha-#{chapter_number}_footnote-#{n}"
+              link = Nokogiri::XML::Node.new('a', node.document)
+              link['href'] = footnote_href(chapter_number, n)
               link.content = n.to_s
               node.inner_html = link
             end
