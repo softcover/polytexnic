@@ -9,12 +9,7 @@ module Polytexnic
       output = []
       lines = polytex.split("\n")
       cache_literal_environments(lines, output, format)
-      output = output.join("\n")
-      if format == :html
-        cache_display_math(output)
-        cache_inline_math(output)
-      end
-      output
+      output.join("\n")
     end
 
     # Handles environments that should be passed through the pipeline intact.
@@ -109,6 +104,13 @@ module Polytexnic
         else
           output << line
         end
+      end
+    end
+
+    def cache_display_inline_math(output)
+      output.tap do
+        cache_display_math(output)
+        cache_inline_math(output)
       end
     end
 

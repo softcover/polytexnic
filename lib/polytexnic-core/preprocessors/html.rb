@@ -21,9 +21,8 @@ module Polytexnic
         # The key steps are creating a clean document safe for makin global
         # substitutions (gsubs), and then making a bunch of gsubs.
         def process_for_tralics(polytex)
-          clean = double_backslashes(clean_document(polytex))
-          clean.tap do |output|
-            remove_comments(output)
+          # clean = double_backslashes(clean_document(polytex))
+          clean_document(polytex).tap do |output|
             hyperrefs(output)
             title_fields(output)
             maketitle(output)
@@ -39,7 +38,8 @@ module Polytexnic
         # The result is a document that can safely be transformed using
         # global substitutions.
         def clean_document(polytex)
-          cache_unicode(cache_literal(add_commands(polytex)))
+          doc = cache_unicode(cache_literal(add_commands(polytex)))
+          double_backslashes(cache_display_inline_math(remove_comments(doc)))
         end
 
         # Removes commented-out lines.
