@@ -20,7 +20,7 @@ module Polytexnic
 
       # Returns a Tralics pseudo-LaTeX XML element.
       # The use of the 'skip' flag is a hack to be able to use xmlelement
-      # even when generating, e.g., LaTex, where we simply want to yield the
+      # even when generating, e.g., LaTeX, where we simply want to yield the
       # block.
       def xmlelement(name, skip = false)
         output = (skip ? "" : "\\begin{xmlelement}{#{name}}")

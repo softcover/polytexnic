@@ -4,7 +4,7 @@ module Polytexnic
     # Matches the line for syntax highlighting.
     LANG_REGEX = /^\s*%=\s+lang:(\w+)/
 
-    # Makes the caches for literal environments (including non-ASCII Unicode).
+    # Makes the caches for literal environments.
     def cache_literal(polytex, format = :html)
       output = []
       lines = polytex.split("\n")
@@ -25,8 +25,12 @@ module Polytexnic
     #   lorem ipsum
     # gets includes the internal literal text without stopping after the first
     # \end{verbatim}.
+    #
+    # The control flow here is really nasty, but attempts to refactor it
+    # into a multi-pass solution have only resulted in even more complexity,
+    # and even then I've failed to get it to work. Thus, it shall for now
+    # follow the "ball of mud" pattern.
     def cache_literal_environments(lines, output, format)
-      i = 1
       latex = (format == :latex)
       language = nil
       in_verbatim = false
@@ -163,6 +167,11 @@ end
 
 class String
 
+  def begin_verbatim?
+    literal_type = "(?:verbatim|Verbatim|code|metacode)"
+    match(/^\s*\\begin{#{literal_type}}\s*$/)
+  end
+
   # Returns true if self matches \begin{...} where ... is a literal environment.
   # Support for the 'metacode' environment exists solely to allow
   # meta-dicsussion of the 'code' environment.
@@ -180,6 +189,11 @@ class String
   # '\begin{equation}' => 'equation'
   def literal_type
     scan(/\\begin{(.*?)}/).flatten.first
+  end
+
+  def begin_math?
+    literal_type = "(?:#{math_environment_regex})"
+    match(/^\s*\\begin{#{literal_type}}\s*$/)
   end
 
   def math_environment?
