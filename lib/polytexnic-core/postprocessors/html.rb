@@ -164,17 +164,11 @@ module Polytexnic
             node.remove_attribute('noindent')
           end
 
-          # inline & display math
-          doc.xpath('//texmath[@textype="inline"]').each do |node|
+          # inline math
+          doc.xpath('//inline').each do |node|
             node.name = 'span'
-            node.content = '\\(' + node.content + '\\)'
+            node.content = literal_cache[node.content.strip]
             node['class'] = 'inline_math'
-            clean_node node, ['textype', 'type']
-          end
-          doc.xpath('//texmath[@textype="display"]').each do |node|
-            node.name = 'div'
-            node.content = '\\[' + node.content + '\\]'
-            node['class'] = 'display_math'
             clean_node node, ['textype', 'type']
           end
         end
