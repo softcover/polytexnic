@@ -436,10 +436,15 @@ module Polytexnic
         def chapters_and_section(doc)
           doc.xpath('//div0').each do |node|
             node.name = 'div'
-            is_chapter = node['type'] == 'chapter'
-            node['class'] = is_chapter ? 'chapter' : 'section'
+            if node['type'] == 'chapter'
+              node['class'] = 'chapter'
+              heading = 'h1'
+            else
+              node['class'] = 'section'
+              heading = 'h2'
+            end
             clean_node node, %w{type}
-            make_headings(doc, node, 'h3')
+            make_headings(doc, node, heading)
           end
         end
 
@@ -447,7 +452,7 @@ module Polytexnic
           doc.xpath('//div1').each do |node|
             node.name = 'div'
             node['class'] = 'subsection'
-            make_headings(doc, node, 'h4')
+            make_headings(doc, node, 'h3')
           end
         end
 
@@ -455,7 +460,7 @@ module Polytexnic
           doc.xpath('//div2').each do |node|
             node.name = 'div'
             node['class'] = 'subsubsection'
-            make_headings(doc, node, 'h5')
+            make_headings(doc, node, 'h4')
           end
         end
 
@@ -611,7 +616,7 @@ module Polytexnic
                                   end
             clean_node node, 'id-text'
             # add number span
-            if head = node.css('h2 a, h3 a, h4 a, h5 a').first
+            if head = node.css('h1 a, h2 a, h3 a, h4 a').first
               el = doc.create_element 'span'
               el.content = node['data-number'] + ' '
               el['class'] = 'number'
