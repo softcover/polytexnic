@@ -649,7 +649,7 @@ module Polytexnic
         def hrefs(doc)
           doc.xpath('//xref').each do |node|
             node.name = 'a'
-            node['href'] = node['url']
+            node['href'] = URI::encode(literal_cache[node['url']])
             clean_node node, 'url'
           end
         end

@@ -21,7 +21,6 @@ module Polytexnic
         # The key steps are creating a clean document safe for makin global
         # substitutions (gsubs), and then making a bunch of gsubs.
         def process_for_tralics(polytex)
-          # clean = double_backslashes(clean_document(polytex))
           clean_document(polytex).tap do |output|
             hyperrefs(output)
             title_fields(output)
@@ -39,7 +38,18 @@ module Polytexnic
         # global substitutions.
         def clean_document(polytex)
           doc = cache_unicode(cache_literal(add_commands(polytex)))
-          double_backslashes(cache_display_inline_math(remove_comments(doc)))
+          cache_hrefs(doc)
+          remove_comments(doc)
+          double_backslashes(cache_display_inline_math(doc))
+        end
+
+        # Caches URLs for \href commands.
+        def cache_hrefs(doc)
+          doc.gsub!(/\\href{(.*?)}/) do
+            key = digest($1)
+            literal_cache[key] = $1
+            "\\href{#{key}}"
+          end
         end
 
         # Removes commented-out lines.
