@@ -611,10 +611,12 @@ module Polytexnic
                                     label_number(@cha, @fig)
                                   end
             clean_node node, 'id-text'
-            # add number span
+            # Add number span
             if head = node.css('h1 a, h2 a, h3 a, h4 a').first
               el = doc.create_element 'span'
-              el.content = node['data-number'] + ' '
+              number = node['data-number']
+              prefix = (@cha.nil? || number.match(/\./)) ? '' : 'Chapter '
+              el.content = prefix + node['data-number'] + ' '
               el['class'] = 'number'
               head.children.first.add_previous_sibling el
             end
