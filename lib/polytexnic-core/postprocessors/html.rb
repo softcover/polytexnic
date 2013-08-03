@@ -29,6 +29,7 @@ module Polytexnic
         codelistings(doc)
         backslash_break(doc)
         asides(doc)
+        center(doc)
         title(doc)
         smart_single_quotes(doc)
         restore_literal(doc)
@@ -520,6 +521,14 @@ module Polytexnic
         def asides(doc)
           doc.xpath('//aside').each do |node|
             build_heading(node, 'aside')
+          end
+        end
+
+        # Processes centered elements.
+        def center(doc)
+          doc.xpath('//center').each do |node|
+            node.name = 'div'
+            node['class'] = 'center'
           end
         end
 

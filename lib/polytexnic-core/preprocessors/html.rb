@@ -161,6 +161,9 @@ module Polytexnic
             "\\end{xmlelement*}"
           end
 
+          # Handle \begin{center}...\end{center}
+          string.gsub! /\\begin{center}/, '\begin{xmlelement*}{center}'
+          string.gsub! /\\end{center}/,   '\end{xmlelement*}'
         end
 
         # Returns the XML produced by the Tralics program.
