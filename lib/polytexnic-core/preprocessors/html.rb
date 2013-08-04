@@ -55,7 +55,7 @@ module Polytexnic
         #   \verb8<stuff>8
         # My preference is to use + or - if available.
         def inline_verbatim(doc)
-          doc.gsub!(/\\verb(.)(.*?)\1/) do
+          doc.gsub!(/\\verb([^A-Za-z])(.*?)\1/) do
             key = digest($2)
             literal_cache[key] = $2
             xmlelement('inlineverbatim') { key }

@@ -6,8 +6,11 @@ describe Polytexnic::Core::Pipeline do
   subject { processed_text }
 
   describe "\\verb environments" do
-    let(:polytex) { '\verb+\begin{center}+' }
-    let(:output) { '<span class="inline_verbatim">\begin{center}</span>' }
+    let(:polytex) { '\verb+\begin{center}+ \verb-$foo-' }
+    let(:output) do
+      '<span class="inline_verbatim">\begin{center}</span>' +
+      '<span class="inline_verbatim">$foo</span>'
+    end
     it { should resemble output }
   end
 
