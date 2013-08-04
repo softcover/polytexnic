@@ -52,49 +52,49 @@ describe 'Polytexnic::Core::Pipeline#to_html' do
         should resemble <<-'EOS'
           <table class="tabular">
             <tr class="bottom_border">
-              <td class="align_left right_border left_border">HTTP request</td>
+              <td class="left_border align_left right_border">HTTP request</td>
               <td class="align_left">URL</td>
               <td class="align_left">Action</td>
               <td class="align_left right_border">Purpose</td>
             </tr>
             <tr>
-              <td class="align_left right_border left_border">GET</td>
+              <td class="left_border align_left right_border">GET</td>
               <td class="align_left">/users</td>
               <td class="align_left">index</td>
               <td class="align_left right_border">page to list all users</td>
             </tr>
             <tr>
-              <td class="align_left right_border left_border">GET</td>
+              <td class="left_border align_left right_border">GET</td>
               <td class="align_left">/users/1</td>
               <td class="align_left">show</td>
               <td class="align_left right_border">page to show user with id 1</td>
             </tr>
             <tr>
-              <td class="align_left right_border left_border">GET</td>
+              <td class="left_border align_left right_border">GET</td>
               <td class="align_left">/users/new</td>
               <td class="align_left">new</td>
               <td class="align_left right_border">page to make a new user</td>
             </tr>
             <tr>
-              <td class="align_left right_border left_border">POST</td>
+              <td class="left_border align_left right_border">POST</td>
               <td class="align_left">/users</td>
               <td class="align_left">create</td>
               <td class="align_left right_border">create a new user</td>
             </tr>
             <tr>
-              <td class="align_left right_border left_border">GET</td>
+              <td class="left_border align_left right_border">GET</td>
               <td class="align_left">/users/1/edit</td>
               <td class="align_left">edit</td>
               <td class="align_left right_border">page to edit user with id 1</td>
             </tr>
             <tr>
-              <td class="align_left right_border left_border">PATCH</td>
+              <td class="left_border align_left right_border">PATCH</td>
               <td class="align_left">/users/1</td>
               <td class="align_left">update</td>
               <td class="align_left right_border">update user with id 1</td>
           </tr>
           <tr>
-            <td class="align_left right_border left_border">DELETE</td>
+            <td class="left_border align_left right_border">DELETE</td>
             <td class="align_left">/users/1</td>
             <td class="align_left">destroy</td>
             <td class="align_left right_border">delete user with id 1</td>
@@ -109,20 +109,32 @@ describe 'Polytexnic::Core::Pipeline#to_html' do
         \begin{tabular}{l|l|ll}
         DELETE & /users/1 & destroy & delete user with id 1
         \end{tabular}
+
+        \begin{tabular}{|r|l|ll|}
+        DELETE & /users/1 & destroy & delete user with id 1
+        \end{tabular}
       EOS
       end
 
       it do
         should resemble <<-'EOS'
           <table class="tabular">
-          <tr>
-            <td class="align_left right_border">DELETE</td>
-            <td class="align_left right_border">/users/1</td>
-            <td class="align_left">destroy</td>
-            <td class="align_left">delete user with id 1</td>
-          </tr>
-        </table>
-      EOS
+            <tr>
+              <td class="align_left right_border">DELETE</td>
+              <td class="align_left right_border">/users/1</td>
+              <td class="align_left">destroy</td>
+              <td class="align_left">delete user with id 1</td>
+            </tr>
+          </table>
+          <table class="tabular">
+            <tr>
+              <td class="left_border align_right right_border">DELETE</td>
+              <td class="align_left right_border">/users/1</td>
+              <td class="align_left">destroy</td>
+              <td class="align_left right_border">delete user with id 1</td>
+            </tr>
+          </table>
+        EOS
       end
     end
   end

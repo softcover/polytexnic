@@ -192,8 +192,8 @@ module Polytexnic
         # I've tried in vain to figure out WTF is going on in the Tralics
         # source, but it's easy enough in Ruby so I'm throwing it in here.
         def make_tabular_alignmnt_cache(output)
-          # /(\|*(?:l|c|r)\|*)/
-          # @tabular_alignmnt_cache = output.scan()
+          alignment_regex = /\\begin{tabular}{((?:\|*[lcr]+\|*)+)}/
+          @tabular_alignment_cache = output.scan(alignment_regex).flatten
         end
 
         # Returns the XML produced by the Tralics program.
