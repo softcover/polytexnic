@@ -28,6 +28,7 @@ module Polytexnic
             label_names(output)
             restore_eq_labels(output)
             mark_environments(output)
+            make_tabular_alignmnt_cache(output)
           end
         end
 
@@ -38,9 +39,27 @@ module Polytexnic
         # global substitutions.
         def clean_document(polytex)
           doc = cache_unicode(cache_literal(add_commands(polytex)))
+          inline_verbatim(doc)
           cache_hrefs(doc)
           remove_comments(doc)
           double_backslashes(cache_display_inline_math(doc))
+        end
+
+        # Handles \verb environments.
+        # LaTeX supports an inline verbatim environment using
+        #   \verb+<stuff>+
+        # The + is arbitrary; any non-letter character is fine as long as it
+        # doesn't appear in <stuff>, so this code has exactly the same effect:
+        #   \verb!<stuff>!
+        #   \verb@<stuff>@
+        #   \verb8<stuff>8
+        # My preference is to use + or - if available.
+        def inline_verbatim(doc)
+          doc.gsub!(/\\verb(.)(.*?)\1/) do
+            key = digest($2)
+            literal_cache[key] = $2
+            xmlelement('inlineverbatim') { key }
+          end
         end
 
         # Caches URLs for \href commands.
@@ -164,6 +183,17 @@ module Polytexnic
           # Handle \begin{center}...\end{center}
           string.gsub! /\\begin{center}/, '\begin{xmlelement*}{center}'
           string.gsub! /\\end{center}/,   '\end{xmlelement*}'
+        end
+
+        # Collects alignment information for tabular environments.
+        # We suck out all the stuff like 'l|l|lr' in
+        # \begin{tabular}{l|l|lr}
+        # The reason is that we need to work around a couple of bugs in Tralics.
+        # I've tried in vain to figure out WTF is going on in the Tralics
+        # source, but it's easy enough in Ruby so I'm throwing it in here.
+        def make_tabular_alignmnt_cache(output)
+          # /(\|*(?:l|c|r)\|*)/
+          # @tabular_alignmnt_cache = output.scan()
         end
 
         # Returns the XML produced by the Tralics program.

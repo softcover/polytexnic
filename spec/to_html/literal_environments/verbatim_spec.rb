@@ -5,6 +5,12 @@ describe Polytexnic::Core::Pipeline do
   let(:processed_text) { Polytexnic::Core::Pipeline.new(polytex).to_html }
   subject { processed_text }
 
+  describe "\\verb environments" do
+    let(:polytex) { '\verb+\begin{center}+' }
+    let(:output) { '<span class="inline_verbatim">\begin{center}</span>' }
+    it { should resemble output }
+  end
+
   describe "verbatim environments" do
 
     context "alone" do

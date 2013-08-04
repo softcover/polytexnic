@@ -103,6 +103,28 @@ describe 'Polytexnic::Core::Pipeline#to_html' do
       EOS
       end
     end
+
+    context "table whose border used to break for some reason" do
+      let(:polytex) do <<-'EOS'
+        \begin{tabular}{l|l|ll}
+        DELETE & /users/1 & destroy & delete user with id 1
+        \end{tabular}
+      EOS
+      end
+
+      it do
+        should resemble <<-'EOS'
+          <table class="tabular">
+          <tr>
+            <td class="align_left right_border">DELETE</td>
+            <td class="align_left right_border">/users/1</td>
+            <td class="align_left">destroy</td>
+            <td class="align_left">delete user with id 1</td>
+          </tr>
+        </table>
+      EOS
+      end
+    end
   end
 
   describe "table environments" do

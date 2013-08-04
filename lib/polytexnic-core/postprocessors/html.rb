@@ -33,6 +33,7 @@ module Polytexnic
         title(doc)
         smart_single_quotes(doc)
         restore_literal(doc)
+        restore_inline_verbatim(doc)
         make_cross_references(doc)
         hrefs(doc)
         graphics_and_figures(doc)
@@ -584,6 +585,15 @@ module Polytexnic
           end
         end
 
+        # Restores things inside \verb+...+
+        def restore_inline_verbatim(doc)
+          doc.xpath('//inlineverbatim').each do |node|
+            node.content = literal_cache[node.content]
+            node.name = 'span'
+            node['class'] = 'inline_verbatim'
+          end
+        end
+
         def make_cross_references(doc)
           # build numbering tree
           doc.xpath('//*[@data-tralics-id]').each do |node|
@@ -718,9 +728,10 @@ module Polytexnic
         def tables(doc)
           doc.xpath('//table/row/cell').each do |node|
             node.name = 'td'
-            alignment = node['halign']
-            node['class'] = "align_#{alignment}"
-            clean_node node, %w[halign]
+            if alignment = node['halign']
+              node['class'] = "align_#{alignment}"
+              clean_node node, %w[halign]
+            end
             if node['right-border'] == 'true'
               node['class'] += ' right_border'
               clean_node node, %w[right-border]

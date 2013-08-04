@@ -22,6 +22,7 @@ module Polytexnic
         @literal_cache = {}
         @code_cache = {}
         @math_label_cache = {}
+        @tabular_alignmnt_cache = []
         @polytex = polytex
       end
 
