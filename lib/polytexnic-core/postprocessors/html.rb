@@ -597,9 +597,11 @@ module Polytexnic
           # build numbering tree
           doc.xpath('//*[@data-tralics-id]').each do |node|
             node['data-number'] = if node['class'] == 'chapter'
-                                    # Tralics numbers equations overall,
-                                    # not per chapter, so we need a counter.
+                                    # Tralics numbers figures & equations
+                                    # overall, not per chapter, so we need
+                                    # counters.
                                     @equation = 0
+                                    @figure = 0
                                     @cha = node['id-text']
                                   elsif node['class'] == 'section'
                                     @sec = node['id-text']
@@ -625,8 +627,12 @@ module Polytexnic
                                     @table = node['id-text']
                                     label_number(@cha, @table)
                                   elsif node.name == 'figure'
-                                    @fig = node['id-text']
-                                    label_number(@cha, @fig)
+                                    if @cha.nil?
+                                      @figure = node['id-text']
+                                    else
+                                      @figure += 1
+                                    end
+                                    label_number(@cha, @figure)
                                   end
             clean_node node, 'id-text'
             # Add number span
@@ -738,18 +744,6 @@ module Polytexnic
 
           doc.xpath('//table/row/cell').each do |node|
             node.name = 'td'
-            # if alignment = node['halign']
-            #   node['class'] = "align_#{alignment}"
-            #   clean_node node, %w[halign]
-            # end
-            # if node['right-border'] == 'true'
-            #   node['class'] += ' right_border'
-            #   clean_node node, %w[right-border]
-            # end
-            # if node['left-border'] == 'true'
-            #   node['class'] += ' left_border'
-            #   clean_node node, %w[left-border]
-            # end
           end
           doc.xpath('//table/row').each do |node|
             node.name = 'tr'
