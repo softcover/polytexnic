@@ -69,13 +69,21 @@ module Polytexnic
             end
             raise "Missing \\end{#{line.literal_type}}" if count != 0
             content = text.join("\n")
-            key = digest(content)
             if math
+              key = digest(content)
               literal_cache[key] = content
             elsif language.nil?
+              key = digest(content)
               literal_cache[key] = content
               tag = 'literal'
             else
+              format = latex ? 'latex' : 'html'
+              # Make the digests effectively unguessable.
+              # (We just want to keep people from accidentally including them
+              #  in their source files.)
+              permanent_salt = 'fbbc13ed4a51e27608037365e1d27a5f992b6339'
+              key = digest("#{content}--#{language}--#{format}",
+                           salt: permanent_salt)
               code_cache[key] = [content, language]
               tag = 'code'
             end
@@ -215,6 +223,7 @@ end
 class String
 
   def begin_verbatim?
+    return false unless include?('\begin')
     literal_type = "(?:verbatim|Verbatim|code|metacode)"
     match(/^\s*\\begin{#{literal_type}}\s*$/)
   end
@@ -223,11 +232,14 @@ class String
   # Support for the 'metacode' environment exists solely to allow
   # meta-dicsussion of the 'code' environment.
   def begin_literal?(literal_type = nil)
-    literal_type ||= "(?:verbatim|Verbatim|code|metacode|#{math_environment_regex})"
+    return false unless include?('\begin')
+    literal_type ||= "(?:verbatim|Verbatim|code|metacode|" +
+                     "#{math_environment_regex})"
     match(/^\s*\\begin{#{literal_type}}\s*$/)
   end
 
   def end_literal?(literal_type)
+    return false unless include?('\end')
     match(/^\s*\\end{#{Regexp.escape(literal_type)}}\s*$/)
   end
 
@@ -240,6 +252,7 @@ class String
   end
 
   def begin_math?
+    return false unless include?('\begin')
     literal_type = "(?:#{math_environment_regex})"
     match(/^\s*\\begin{#{literal_type}}\s*$/)
   end

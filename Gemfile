@@ -1,9 +1,5 @@
 source 'https://rubygems.org'
 
-gem 'rspec', '~> 2.13'
-gem 'nokogiri', '~> 1.5.0'
-gem 'pygments.rb', "~> 0.4.2"
-
 # Specify your gem's dependencies in polytexnic-core.gemspec
 gemspec
 
@@ -14,6 +10,7 @@ group :test do
 end
 
 group :development do
+  gem 'rspec', '~> 2.13'
   gem 'guard-rspec'
   gem 'rake'
 end

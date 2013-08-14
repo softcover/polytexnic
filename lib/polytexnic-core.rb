@@ -7,6 +7,7 @@ require 'tempfile'
 require 'nokogiri'
 require 'digest/sha1'
 require 'pygments'
+require 'msgpack'
 
 module Polytexnic
   module Core
@@ -16,19 +17,33 @@ module Polytexnic
       include Polytexnic::Core::Utils
 
       attr_accessor :literal_cache, :code_cache, :polytex, :xml, :html,
-                    :math_label_cache
+                    :math_label_cache, :highlight_cache
 
       def initialize(polytex)
         @literal_cache = {}
         @code_cache = {}
+        @highlight_cache_filename = f = '.highlight_cache'
+        @highlight_cache = File.exist?(f) ? MessagePack.unpack(File.read(f))
+                                          : {}
         @math_label_cache = {}
         @polytex = polytex
       end
 
       def to_html
+        if profiling?
+          require 'ruby-prof'
+          RubyProf.start
+        end
+
         preprocess(:html)
         postprocess(:html)
         puts @html if debug?
+
+        if profiling?
+          result = RubyProf.stop
+          printer = RubyProf::GraphPrinter.new(result)
+          printer.print(STDOUT, {})
+        end
         @html
       end
 

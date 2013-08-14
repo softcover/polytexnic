@@ -13,7 +13,6 @@ module Polytexnic
         verbatim(doc)
         code(doc)
         metacode(doc)
-        tex_logos(doc)
         quote(doc)
         verse(doc)
         itemize(doc)
@@ -31,7 +30,8 @@ module Polytexnic
         asides(doc)
         center(doc)
         title(doc)
-        smart_single_quotes(doc)
+        doc = smart_single_quotes(doc)
+        tex_logos(doc)
         restore_literal(doc)
         restore_inline_verbatim(doc)
         make_cross_references(doc)
@@ -39,7 +39,7 @@ module Polytexnic
         graphics_and_figures(doc)
         tables(doc)
         math(doc)
-        trim_empty_paragraphs(doc)
+        doc = trim_empty_paragraphs(doc)
         footnotes(doc)
         convert_to_html(doc)
       end
@@ -555,11 +555,10 @@ module Polytexnic
         # We don't bother with double quotes because Tralics already handles
         # those.
         def smart_single_quotes(doc)
-          doc.traverse do |node|
-            if node.text?
-              node.content = node.content.gsub('`', '‘').gsub("'", '’')
-            end
-          end
+          s = doc.to_xml
+          s.gsub!('`', '‘')
+          s.gsub!("'", '’')
+          Nokogiri::XML(s)
         end
 
         # Restores literal environments (verbatim, code, math, etc.).
@@ -641,15 +640,21 @@ module Polytexnic
             end
           end
 
+          targets = doc.xpath("//*[@data-tralics-id]")
+          target_cache = {}
+          targets.each do |target|
+            target_cache[target['data-tralics-id']] = target
+          end
+
           doc.xpath('//ref').each do |node|
             node.name = 'span'
-            target = doc.xpath("//*[@data-tralics-id='#{node['target']}']")
-            if target.empty?
+            target = target_cache[node['target']]
+            if target.nil?
               node['class'] = 'undefined_ref'
               node.content = node['target']
             else
               node['class'] = 'ref'
-              node.content = target.first['data-number']
+              node.content = target['data-number']
             end
             clean_node node, 'target'
           end
@@ -819,9 +824,9 @@ module Polytexnic
         # Sometimes a <p></p> creeps in due to idiosyncrasies of the
         # Tralics conversion.
         def trim_empty_paragraphs(doc)
-          doc.css('p').find_all.each do |p|
-            p.remove if p.inner_html.strip.empty?
-          end
+          s = doc.to_xml
+          s.gsub!(/<p>\s*<\/p>/, '')
+          Nokogiri::XML(s)
         end
 
         # Converts a document to HTML.
@@ -829,15 +834,15 @@ module Polytexnic
         # (and hence can't be nested inside a paragraph tag), we first extract
         # an HTML fragment by converting the document to HTML, and then use
         # Nokogiri's HTML.fragment method to read it in and emit valid markup.
-        # (In between, we add in highlighted source code.)
         # This process transforms, e.g., the invalid
         #   <p>Preformatted text: <pre>text</pre> foo</p>
         # to the valid
         #  <p>Preformatted text:</p> <pre>text</pre> <p>foo</p>
         def convert_to_html(doc)
-          body = doc.at_css('document').children.to_xhtml
-          fragment = highlight_source_code(body)
-          Nokogiri::HTML.fragment(fragment).to_xhtml
+          highlight_source_code(doc)
+          File.write(@highlight_cache_filename, highlight_cache.to_msgpack)
+          Nokogiri::HTML.fragment(doc.at_css('document').children.to_xhtml).
+                                  to_xhtml
         end
 
         # Cleans a node by removing all the given attributes.
