@@ -20,6 +20,21 @@ describe 'Polytexnic::Core::Pipeline#to_html' do
       EOS
     end
     it { should_not resemble 'Figure' }
+
+    context "with a PDF image" do
+      let(:polytex) do <<-'EOS'
+        \includegraphics{foo.pdf}
+        EOS
+      end
+
+      it do
+        should resemble <<-'EOS'
+          <div class="graphics">
+          <img src="foo.png" alt="foo" />
+          </div>
+        EOS
+      end
+    end
   end
 
   describe "figures" do
