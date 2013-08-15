@@ -68,40 +68,21 @@ module Polytexnic
         puts markdown if debug?
         file.write(markdown)
         file.close
-        Dir.mkdir 'log' unless File.directory?('log')
-        exec = `which pandoc`.strip
         polytex_filename = file.path.sub('.md', '.tex')
-        system("#{exec} -s #{file.path} -o #{polytex_filename}")
-        dirname = File.dirname(file.path)
-        raw_polytex = File.read(polytex_filename)
-        # xml = clean_xml(raw_xml)
-        polytex = raw_polytex
+        system("#{pandoc} -s #{file.path} -o #{polytex_filename}")
+        raw_polytex =
+        polytex = File.read(polytex_filename)
         puts polytex if debug?
         polytex
       ensure
-        # xmlfile = file.path.sub('.tex', '.xml')
-        # logfile = file.path.sub('.tex', '.log')
-        # [xmlfile, logfile].each do |file|
-        #   File.delete(file) if File.exist?(file)
-        # end
         file.delete
         File.delete(polytex_filename)
       end
 
-      # Returns a digest for use in labels.
-      # I like to use labels of the form cha:foo_bar, but for some reason
-      # Tralics removes the underscore in this case.
-      def underscore_digest
-        pipeline_digest(:_)
+      # Returns the executable for Pandoc.
+      def pandoc
+        executable('pandoc')
       end
-
-      private
-
-        # Returns a digest for passing things through the pipeline.
-        def pipeline_digest(element)
-          value = digest("#{Time.now.to_s}::#{element}")
-          @literal_cache[element.to_s] ||= value
-        end
     end
   end
 end
