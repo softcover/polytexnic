@@ -26,11 +26,11 @@ module Polytexnic
         @highlight_cache = File.exist?(f) ? MessagePack.unpack(File.read(f))
                                           : {}
         @math_label_cache = {}
-        format = options[:format] || :polytex
-        @polytex = case format
-                   when :polytex
+        @format = options[:format] || :polytex
+        @polytex = case
+                   when polytex?
                      source
-                   when :markdown
+                   when markdown?
                      to_polytex(source)
                    end
       end
@@ -59,30 +59,40 @@ module Polytexnic
         @latex
       end
 
-      def to_polytex(markdown)
-        pandoc_polytex(markdown)
-      end
+      private
 
-      def pandoc_polytex(markdown)
-        file = Tempfile.new(['markdown', '.md'])
-        puts markdown if debug?
-        file.write(markdown)
-        file.close
-        polytex_filename = file.path.sub('.md', '.tex')
-        system("#{pandoc} -s #{file.path} -o #{polytex_filename}")
-        raw_polytex =
-        polytex = File.read(polytex_filename)
-        puts polytex if debug?
-        polytex
-      ensure
-        file.delete
-        File.delete(polytex_filename)
-      end
+        def markdown?
+          @format == :markdown || @format == :md
+        end
 
-      # Returns the executable for Pandoc.
-      def pandoc
-        executable('pandoc')
+        def polytex?
+          @format == :polytex
+        end
+
+        def to_polytex(markdown)
+          pandoc_polytex(markdown)
+        end
+
+        def pandoc_polytex(markdown)
+          file = Tempfile.new(['markdown', '.md'])
+          puts markdown if debug?
+          file.write(markdown)
+          file.close
+          polytex_filename = file.path.sub('.md', '.tex')
+          system("#{pandoc} -s #{file.path} -o #{polytex_filename}")
+          raw_polytex =
+          polytex = File.read(polytex_filename)
+          puts polytex if debug?
+          polytex
+        ensure
+          file.delete
+          File.delete(polytex_filename)
+        end
+
+        # Returns the executable for Pandoc.
+        def pandoc
+          executable('pandoc')
+        end
       end
-    end
   end
 end
