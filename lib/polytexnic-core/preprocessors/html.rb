@@ -216,8 +216,7 @@ module Polytexnic
           file.write(polytex)
           file.close
           Dir.mkdir 'log' unless File.directory?('log')
-          t = tralics
-          system("#{t} -nomathml #{file.path} > log/tralics.log")
+          system("#{tralics} -nomathml #{file.path} > log/tralics.log")
           dirname = File.dirname(file.path)
           xml_filename = File.basename(file.path, '.tex') + '.xml'
           raw_xml = File.read(File.join(dirname, xml_filename))
