@@ -7,12 +7,6 @@ describe Polytexnic::Core::Pipeline do
     FileUtils.rm('.highlight_cache') if File.exist?('.highlight_cache')
   end
 
-  describe "Pandoc installation" do
-    before { File.delete(Polytexnic::Core::Utils.executable('pandoc')) }
-    subject { Polytexnic::Core::Utils.executable('pandoc') }
-    it { should include 'pandoc' }
-  end
-
   describe '#to_polytex' do
     let(:processed_text) do
       Polytexnic::Core::Pipeline.new(source, format: :markdown).polytex
@@ -38,6 +32,7 @@ Lorem ipsum
       end
       it { should include '\chapter{A chapter}' }
       it { should include '\section{A section}' }
+      it { should_not include '\hypertarget' }
     end
   end
 end
