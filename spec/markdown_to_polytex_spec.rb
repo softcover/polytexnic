@@ -30,10 +30,14 @@ describe Polytexnic::Core::Pipeline do
 # A chapter
 
 Hello, *world*!
+
+## A section
+
+Lorem ipsum
         EOS
       end
       it { should include '\chapter{A chapter}' }
-      it { should include '\emph{world}' }
+      it { should include '\section{A section}' }
     end
   end
 end

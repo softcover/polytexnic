@@ -69,34 +69,19 @@ module Polytexnic
           @format == :polytex
         end
 
+        # Converts Markdown to PolyTeX.
+        # We adopt a unified approach: rather than convert "Markdown" (I use
+        # the term loosely*) directly to HTML, we convert it to PolyTeX and
+        # then run everything through the PolyTeX pipeline.
+        # * <rant>The number of mutually incompatible markup languages going
+        # by the name "Markdown" is truly mind-boggling. At this point, I fear
+        # "Markdown" is little more than a marketing term.</rant>
         def to_polytex(markdown)
-          pandoc_polytex(markdown)
-        end
-
-        def pandoc_polytex(markdown)
-          file = Tempfile.new(['markdown', '.md'])
-          puts markdown if debug?
-          file.write(markdown)
-          file.close
-          polytex_filename = file.path.sub('.md', '.tex')
-          system("#{pandoc} --chapters -s #{file.path} -o #{polytex_filename}")
-          raw_polytex = File.read(polytex_filename)
-          polytex = extract_document(raw_polytex)
-          puts polytex if debug?
-          polytex
-        ensure
-          file.delete
-          File.delete(polytex_filename)
-        end
-
-        def extract_document(raw_polytex)
-          document_regex = /\\begin{document}\n(.*)\n\\end{document}/m
-          raw_polytex.scan(document_regex).flatten.first
-        end
-
-        # Returns the executable for Pandoc.
-        def pandoc
-          executable('pandoc')
+          require 'kramdown'
+          lh = 'chapter,section,subsection,subsubsection,paragraph,subparagraph'
+          polytex = Kramdown::Document.new(markdown, latex_headers: lh).to_latex
+          # TODO: Put this in a postprocessor.
+          polytex.gsub(/\\hypertarget.*$/, '')
         end
       end
   end
