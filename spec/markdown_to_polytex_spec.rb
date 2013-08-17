@@ -13,13 +13,13 @@ describe Polytexnic::Core::Pipeline do
     end
     subject { processed_text }
 
-    describe "for vanilla Markdown" do
+    context "for vanilla Markdown" do
       let(:source) { '*foo* **bar**' }
       it { should include '\emph{foo} \textbf{bar}' }
       it { should_not include '\begin{document}' }
     end
 
-    describe "for multiline Markdown" do
+    context "for multiline Markdown" do
       let(:source) do <<-EOS
 # A chapter
 
@@ -33,6 +33,26 @@ Lorem ipsum
       it { should include '\chapter{A chapter}' }
       it { should include '\section{A section}' }
       it { should_not include '\hypertarget' }
+    end
+
+    describe "source code" do
+      context "without highlighting" do
+        let(:source) do <<-EOS
+    def foo
+      "bar"
+    end
+          EOS
+        end
+        let(:output) do <<-'EOS'
+\begin{verbatim}
+def foo
+  "bar"
+end
+\end{verbatim}
+          EOS
+        end
+        it { should eq output }
+      end
     end
   end
 end
