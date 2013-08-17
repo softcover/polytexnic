@@ -23,10 +23,35 @@ module Polytexnic
       # has become little more than a marketing term.</rant>
       def to_polytex
         require 'kramdown'
-        # preprocess(:polytex)
-        # postprocess(:polytex)
+        cleaned_markdown = cache_code_environments
+        # Override the header ordering, which starts with 'section' by default.
         lh = 'chapter,section,subsection,subsubsection,paragraph,subparagraph'
-        @source = Kramdown::Document.new(@source, latex_headers: lh).to_latex
+        kramdown = Kramdown::Document.new(cleaned_markdown, latex_headers: lh)
+        @source = kramdown.to_latex
+      end
+
+      def cache_code_environments
+        output = []
+        lines = @source.split("\n")
+        while (line = lines.shift)
+          if line =~ /\{lang="(.*?)"\}/
+            language = $1
+            code = []
+            indentation = ' ' * 4
+
+            while (line = lines.shift) && line.match(/^#{indentation}(.*)$/) do
+              code << $1
+            end
+            code = code.join("\n")
+            key = digest(code)
+            code_cache[key] = [code, language]
+            output << key
+            output << line
+          else
+            output << line
+          end
+        end
+        output.join("\n")
       end
     end
   end

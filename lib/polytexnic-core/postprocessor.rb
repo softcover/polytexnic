@@ -18,7 +18,9 @@ module Polytexnic
         raw_source = replace_hashes(@polytex)
         @latex = highlight_source_code(raw_source)
       elsif format == :polytex
-        @source = sub_things
+        remove_hypertarget
+        fix_verbatim_bug
+        write_polytex_code
       end
     end
   end

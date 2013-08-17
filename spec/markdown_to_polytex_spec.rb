@@ -53,6 +53,28 @@ end
         end
         it { should eq output }
       end
+
+      context "with highlighting" do
+        let(:source) do <<-EOS
+{lang="ruby"}
+    def foo
+      "bar"
+    end
+lorem
+          EOS
+        end
+        let(:output) do <<-'EOS'
+%= lang:ruby
+\begin{code}
+def foo
+  "bar"
+end
+\end{code}
+lorem
+          EOS
+        end
+        it { should resemble output }
+      end
     end
   end
 end
