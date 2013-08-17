@@ -26,7 +26,7 @@ module Polytexnic
         @highlight_cache = File.exist?(f) ? MessagePack.unpack(File.read(f))
                                           : {}
         @math_label_cache = {}
-        @format = options[:format] || :polytex
+        @source = options[:source] || :polytex
         @polytex = case
                    when polytex?
                      source
@@ -62,11 +62,11 @@ module Polytexnic
       private
 
         def markdown?
-          @format == :markdown || @format == :md
+          @source == :markdown || @source == :md
         end
 
         def polytex?
-          @format == :polytex
+          @source == :polytex
         end
 
         # Converts Markdown to PolyTeX.

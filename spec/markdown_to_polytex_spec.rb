@@ -9,7 +9,7 @@ describe Polytexnic::Core::Pipeline do
 
   describe '#to_polytex' do
     let(:processed_text) do
-      Polytexnic::Core::Pipeline.new(source, format: :markdown).polytex
+      Polytexnic::Core::Pipeline.new(source, source: :markdown).polytex
     end
     subject { processed_text }
 
