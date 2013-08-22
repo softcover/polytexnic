@@ -13,7 +13,6 @@ module Polytexnic
         verbatim(doc)
         code(doc)
         metacode(doc)
-        tex_logos(doc)
         quote(doc)
         verse(doc)
         itemize(doc)
@@ -29,15 +28,18 @@ module Polytexnic
         codelistings(doc)
         backslash_break(doc)
         asides(doc)
+        center(doc)
         title(doc)
-        smart_single_quotes(doc)
+        doc = smart_single_quotes(doc)
+        tex_logos(doc)
         restore_literal(doc)
+        restore_inline_verbatim(doc)
         make_cross_references(doc)
         hrefs(doc)
         graphics_and_figures(doc)
         tables(doc)
         math(doc)
-        trim_empty_paragraphs(doc)
+        doc = trim_empty_paragraphs(doc)
         footnotes(doc)
         convert_to_html(doc)
       end
@@ -164,17 +166,11 @@ module Polytexnic
             node.remove_attribute('noindent')
           end
 
-          # inline & display math
-          doc.xpath('//texmath[@textype="inline"]').each do |node|
+          # inline math
+          doc.xpath('//inline').each do |node|
             node.name = 'span'
-            node.content = '\\(' + node.content + '\\)'
+            node.content = literal_cache[node.content.strip]
             node['class'] = 'inline_math'
-            clean_node node, ['textype', 'type']
-          end
-          doc.xpath('//texmath[@textype="display"]').each do |node|
-            node.name = 'div'
-            node.content = '\\[' + node.content + '\\]'
-            node['class'] = 'display_math'
             clean_node node, ['textype', 'type']
           end
         end
@@ -235,11 +231,13 @@ module Polytexnic
         def footnotes_list(footnotes, chapter_number)
           doc = footnotes.values[0][0].document
           footnotes_node = Nokogiri::XML::Node.new('ol', doc)
+          footnotes_node['class'] = 'footnotes'
           footnotes[chapter_number].each_with_index do |footnote, i|
             n = i + 1
             note = Nokogiri::XML::Node.new('li', doc)
             note['id'] = footnote_id(chapter_number, n)
             reflink = Nokogiri::XML::Node.new('a', doc)
+            reflink['class'] = 'arrow'
             reflink.content = "↑"
             reflink['href'] = footnote_ref_href(chapter_number, n)
             note.inner_html = "#{footnote.inner_html} #{reflink.to_xhtml}"
@@ -436,10 +434,15 @@ module Polytexnic
         def chapters_and_section(doc)
           doc.xpath('//div0').each do |node|
             node.name = 'div'
-            is_chapter = node['type'] == 'chapter'
-            node['class'] = is_chapter ? 'chapter' : 'section'
+            if node['type'] == 'chapter'
+              node['class'] = 'chapter'
+              heading = 'h1'
+            else
+              node['class'] = 'section'
+              heading = 'h2'
+            end
             clean_node node, %w{type}
-            make_headings(doc, node, 'h3')
+            make_headings(doc, node, heading)
           end
         end
 
@@ -447,7 +450,7 @@ module Polytexnic
           doc.xpath('//div1').each do |node|
             node.name = 'div'
             node['class'] = 'subsection'
-            make_headings(doc, node, 'h4')
+            make_headings(doc, node, 'h3')
           end
         end
 
@@ -455,7 +458,7 @@ module Polytexnic
           doc.xpath('//div2').each do |node|
             node.name = 'div'
             node['class'] = 'subsubsection'
-            make_headings(doc, node, 'h5')
+            make_headings(doc, node, 'h4')
           end
         end
 
@@ -522,6 +525,14 @@ module Polytexnic
           end
         end
 
+        # Processes centered elements.
+        def center(doc)
+          doc.xpath('//center').each do |node|
+            node.name = 'div'
+            node['class'] = 'center'
+          end
+        end
+
         def title(doc)
           doc.xpath('//maketitle').each do |node|
             node.name = 'h1'
@@ -544,11 +555,10 @@ module Polytexnic
         # We don't bother with double quotes because Tralics already handles
         # those.
         def smart_single_quotes(doc)
-          doc.traverse do |node|
-            if node.text?
-              node.content = node.content.gsub('`', '‘').gsub("'", '’')
-            end
-          end
+          s = doc.to_xml
+          s.gsub!('`', '‘')
+          s.gsub!("'", '’')
+          Nokogiri::XML(s)
         end
 
         # Restores literal environments (verbatim, code, math, etc.).
@@ -574,13 +584,24 @@ module Polytexnic
           end
         end
 
+        # Restores things inside \verb+...+
+        def restore_inline_verbatim(doc)
+          doc.xpath('//inlineverbatim').each do |node|
+            node.content = literal_cache[node.content]
+            node.name = 'span'
+            node['class'] = 'inline_verbatim'
+          end
+        end
+
         def make_cross_references(doc)
           # build numbering tree
           doc.xpath('//*[@data-tralics-id]').each do |node|
             node['data-number'] = if node['class'] == 'chapter'
-                                    # Tralics numbers equations overall,
-                                    # not per chapter, so we need a counter.
+                                    # Tralics numbers figures & equations
+                                    # overall, not per chapter, so we need
+                                    # counters.
                                     @equation = 0
+                                    @figure = 0
                                     @cha = node['id-text']
                                   elsif node['class'] == 'section'
                                     @sec = node['id-text']
@@ -606,28 +627,40 @@ module Polytexnic
                                     @table = node['id-text']
                                     label_number(@cha, @table)
                                   elsif node.name == 'figure'
-                                    @fig = node['id-text']
-                                    label_number(@cha, @fig)
+                                    if @cha.nil?
+                                      @figure = node['id-text']
+                                    else
+                                      @figure += 1
+                                    end
+                                    label_number(@cha, @figure)
                                   end
             clean_node node, 'id-text'
-            # add number span
-            if head = node.css('h2 a, h3 a, h4 a, h5 a').first
+            # Add number span
+            if head = node.css('h1 a, h2 a, h3 a, h4 a').first
               el = doc.create_element 'span'
-              el.content = node['data-number'] + ' '
+              number = node['data-number']
+              prefix = (@cha.nil? || number.match(/\./)) ? '' : 'Chapter '
+              el.content = prefix + node['data-number'] + ' '
               el['class'] = 'number'
               head.children.first.add_previous_sibling el
             end
           end
 
+          targets = doc.xpath("//*[@data-tralics-id]")
+          target_cache = {}
+          targets.each do |target|
+            target_cache[target['data-tralics-id']] = target
+          end
+
           doc.xpath('//ref').each do |node|
             node.name = 'span'
-            target = doc.xpath("//*[@data-tralics-id='#{node['target']}']")
-            if target.empty?
+            target = target_cache[node['target']]
+            if target.nil?
               node['class'] = 'undefined_ref'
               node.content = node['target']
             else
               node['class'] = 'ref'
-              node.content = target.first['data-number']
+              node.content = target['data-number']
             end
             clean_node node, 'target'
           end
@@ -648,7 +681,7 @@ module Polytexnic
         def hrefs(doc)
           doc.xpath('//xref').each do |node|
             node.name = 'a'
-            node['href'] = node['url']
+            node['href'] = URI::encode(literal_cache[node['url']])
             clean_node node, 'url'
           end
         end
@@ -659,13 +692,20 @@ module Polytexnic
         def graphics_and_figures(doc)
           doc.xpath('//figure').each do |node|
             node.name = 'div'
-            node['class'] = 'figure'
+            if node['class']
+              node['class'] += ' figure'
+            else
+              node['class'] = 'figure'
+            end
             raw_graphic = (node['rend'] == 'inline')
             if internal_paragraph = node.at_css('p')
               clean_node internal_paragraph, 'rend'
             end
             if node['file'] && node['extension']
-              filename = "#{node['file']}.#{node['extension']}"
+              extension = node['extension']
+              # Support PDF images in PDF documents and PNGs in HTML.
+              extension = 'png' if extension == 'pdf'
+              filename = "#{node['file']}.#{extension}"
               alt = File.basename(node['file'])
               img = %(<img src="#{filename}" alt="#{alt}" />)
               graphic = %(<div class="graphics">#{img}</div>)
@@ -704,19 +744,9 @@ module Polytexnic
 
         # Converts XML to HTML tables.
         def tables(doc)
+
           doc.xpath('//table/row/cell').each do |node|
             node.name = 'td'
-            alignment = node['halign']
-            node['class'] = "align_#{alignment}"
-            clean_node node, %w[halign]
-            if node['right-border'] == 'true'
-              node['class'] += ' right_border'
-              clean_node node, %w[right-border]
-            end
-            if node['left-border'] == 'true'
-              node['class'] += ' left_border'
-              clean_node node, %w[left-border]
-            end
           end
           doc.xpath('//table/row').each do |node|
             node.name = 'tr'
@@ -725,10 +755,13 @@ module Polytexnic
               clean_node node, %w[bottom-border]
             end
           end
+          tabular_count = 0
           doc.xpath('//table').each do |node|
             if tabular?(node)
               node['class'] = 'tabular'
               clean_node node, %w[rend]
+              add_cell_alignment(node, tabular_count)
+              tabular_count += 1
             elsif table?(node)
               node.name = 'div'
               node['class'] = 'table'
@@ -736,12 +769,35 @@ module Polytexnic
                 inner_table = Nokogiri::XML::Node.new('table', doc)
                 inner_table['class'] = 'tabular'
                 inner_table.children = node.children
+                add_cell_alignment(inner_table, tabular_count)
+                tabular_count += 1
                 node.add_child(inner_table)
               end
               clean_node node, %w[rend]
               add_caption(node, name: 'table')
             end
           end
+        end
+
+        # Adds the alignment (left, center, right) plus the border (if any).
+        def add_cell_alignment(table, tabular_count)
+          alignments = @tabular_alignment_cache[tabular_count]
+          cell_alignments = alignments.scan(/(\|*(?:l|c|r)\|*)/).flatten
+          table.css('tr').each do |row|
+            row.css('td').zip(cell_alignments).each do |cell, alignment|
+              cell['class'] = alignment_class(alignment)
+              clean_node cell, %w[halign right-border left-border]
+            end
+          end
+        end
+
+        # Returns the CSS class corresponding to the given table alignment.
+        def alignment_class(alignment)
+          alignment.sub('l', 'align_left')
+                   .sub('r', 'align_right')
+                   .sub('c', 'align_center')
+                   .sub(/^\|/, 'left_border ')
+                   .sub(/\|$/, ' right_border')
         end
 
         # Returns true if a table node is from a 'tabular' environment.
@@ -765,9 +821,9 @@ module Polytexnic
         # Sometimes a <p></p> creeps in due to idiosyncrasies of the
         # Tralics conversion.
         def trim_empty_paragraphs(doc)
-          doc.css('p').find_all.each do |p|
-            p.remove if p.inner_html.strip.empty?
-          end
+          s = doc.to_xml
+          s.gsub!(/<p>\s*<\/p>/, '')
+          Nokogiri::XML(s)
         end
 
         # Converts a document to HTML.
@@ -775,15 +831,15 @@ module Polytexnic
         # (and hence can't be nested inside a paragraph tag), we first extract
         # an HTML fragment by converting the document to HTML, and then use
         # Nokogiri's HTML.fragment method to read it in and emit valid markup.
-        # (In between, we add in highlighted source code.)
         # This process transforms, e.g., the invalid
         #   <p>Preformatted text: <pre>text</pre> foo</p>
         # to the valid
         #  <p>Preformatted text:</p> <pre>text</pre> <p>foo</p>
         def convert_to_html(doc)
-          body = doc.at_css('document').children.to_xhtml
-          fragment = highlight_source_code(body)
-          Nokogiri::HTML.fragment(fragment).to_xhtml
+          highlight_source_code(doc)
+          File.write(@highlight_cache_filename, highlight_cache.to_msgpack)
+          Nokogiri::HTML.fragment(doc.at_css('document').children.to_xhtml).
+                                  to_xhtml
         end
 
         # Cleans a node by removing all the given attributes.

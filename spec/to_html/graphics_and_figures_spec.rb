@@ -20,6 +20,21 @@ describe 'Polytexnic::Core::Pipeline#to_html' do
       EOS
     end
     it { should_not resemble 'Figure' }
+
+    context "with a PDF image" do
+      let(:polytex) do <<-'EOS'
+        \includegraphics{foo.pdf}
+        EOS
+      end
+
+      it do
+        should resemble <<-'EOS'
+          <div class="graphics">
+          <img src="foo.png" alt="foo" />
+          </div>
+        EOS
+      end
+    end
   end
 
   describe "figures" do
@@ -110,10 +125,10 @@ describe 'Polytexnic::Core::Pipeline#to_html' do
       it do
         should resemble <<-'EOS'
           <div id="cid1" data-tralics-id="cid1" class="chapter" data-number="1">
-          <h3>
+          <h1>
             <a href="#cid1" class="heading">
-            <span class="number">1 </span>The chapter</a>
-          </h3>
+            <span class="number">Chapter 1 </span>The chapter</a>
+          </h1>
           <div id="uid1" data-tralics-id="uid1" data-number="1.1" class="figure">
             <div class="graphics">
               <img src="foo.png" alt="foo" />
@@ -152,6 +167,15 @@ describe 'Polytexnic::Core::Pipeline#to_html' do
         \caption{This is another caption.\label{fig:bar}}
         \end{figure}
 
+        Figure~\ref{fig:baz}
+
+        \chapter{A second chapter}
+        \label{cha:two}
+
+        \begin{figure}
+        \includegraphics{baz.png}
+        \caption{Yet another.\label{fig:baz}}
+        \end{figure}
 
         Figure~\ref{fig:foo} and Figure~\ref{fig:bar}
         EOS
@@ -160,10 +184,10 @@ describe 'Polytexnic::Core::Pipeline#to_html' do
        it do
          should resemble <<-'EOS'
           <div id="cha-lorem_ipsum" data-tralics-id="cid1" class="chapter" data-number="1">
-          <h3>
+          <h1>
             <a href="#cha-lorem_ipsum" class="heading">
-            <span class="number">1 </span>The chapter</a>
-          </h3>
+            <span class="number">Chapter 1 </span>The chapter</a>
+          </h1>
           <div id="fig-foo" data-tralics-id="uid1" data-number="1.1" class="figure">
             <div class="graphics">
               <img src="foo.png" alt="foo" />
@@ -183,12 +207,98 @@ describe 'Polytexnic::Core::Pipeline#to_html' do
             </div>
           </div>
           <p>
+            <a href="#fig-baz" class="hyperref">Figure <span class="ref">2.1</span></a>
+          </p>
+          </div>
+          <div id="cha-two" data-tralics-id="cid2" class="chapter" data-number="2">
+          <h1>
+            <a href="#cha-two" class="heading">
+            <span class="number">Chapter 2 </span>A second chapter</a>
+          </h1>
+          <div id="fig-baz" data-tralics-id="uid3" data-number="2.1" class="figure">
+            <div class="graphics">
+              <img src="baz.png" alt="baz" />
+            </div>
+            <div class="caption">
+              <span class="header">Figure 2.1: </span>
+              <span class="description">Yet another.</span>
+            </div>
+          </div>
+          <p>
             <a href="#fig-foo" class="hyperref">Figure <span class="ref">1.1</span></a>
             and
             <a href="#fig-bar" class="hyperref">Figure <span class="ref">1.2</span></a>
           </p>
           </div>
         EOS
+      end
+
+      context "with a centered image" do
+        let(:polytex) do <<-'EOS'
+          \chapter{The chapter}
+          \label{cha:lorem_ipsum}
+
+          \begin{figure}
+          \centering
+          \includegraphics{foo.png}
+          \caption{This is a caption.\label{fig:foo}}
+          \end{figure}
+          EOS
+         end
+
+         it do
+           should resemble <<-'EOS'
+            <div id="cha-lorem_ipsum" data-tralics-id="cid1" class="chapter" data-number="1">
+            <h1>
+              <a href="#cha-lorem_ipsum" class="heading">
+              <span class="number">Chapter 1 </span>The chapter</a>
+            </h1>
+            <div class="center figure" id="fig-foo" data-tralics-id="uid1" data-number="1.1">
+              <div class="graphics">
+                <img src="foo.png" alt="foo" />
+              </div>
+              <div class="caption">
+                <span class="header">Figure 1.1: </span>
+                <span class="description">This is a caption.</span>
+              </div>
+            </div>
+            </div>
+          EOS
+        end
+
+        context "using the \\image command" do
+          let(:polytex) do <<-'EOS'
+            \chapter{The chapter}
+            \label{cha:lorem_ipsum}
+
+            \begin{figure}
+            \centering
+            \image{foo.png}
+            \caption{This is a caption.\label{fig:foo}}
+            \end{figure}
+            EOS
+           end
+
+           it do
+             should resemble <<-'EOS'
+              <div id="cha-lorem_ipsum" data-tralics-id="cid1" class="chapter" data-number="1">
+              <h1>
+                <a href="#cha-lorem_ipsum" class="heading">
+                <span class="number">Chapter 1 </span>The chapter</a>
+              </h1>
+              <div class="center figure" id="fig-foo" data-tralics-id="uid1" data-number="1.1">
+                <div class="graphics">
+                  <img src="foo.png" alt="foo" />
+                </div>
+                <div class="caption">
+                  <span class="header">Figure 1.1: </span>
+                  <span class="description">This is a caption.</span>
+                </div>
+              </div>
+              </div>
+            EOS
+          end
+        end
       end
     end
   end

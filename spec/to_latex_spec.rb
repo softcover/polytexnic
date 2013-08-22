@@ -3,6 +3,9 @@ require 'spec_helper'
 
 describe Polytexnic::Core::Pipeline do
 
+  before(:all) do
+    FileUtils.rm('.highlight_cache') if File.exist?('.highlight_cache')
+  end
 
   describe '#to_latex' do
     let(:processed_text) { Polytexnic::Core::Pipeline.new(polytex).to_latex }

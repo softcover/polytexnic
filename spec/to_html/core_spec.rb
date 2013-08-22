@@ -6,9 +6,70 @@ describe 'Polytexnic::Core::Pipeline#to_html' do
   let(:processed_text) { Polytexnic::Core::Pipeline.new(polytex).to_html }
   subject { processed_text }
 
+  describe "Tralics installation" do
+    before { File.delete(Polytexnic::Core::Utils.executable('tralics')) }
+    subject { Polytexnic::Core::Utils.executable('tralics') }
+    it { should include 'tralics' }
+  end
+
   describe "comments" do
     let(:polytex) { "% A LaTeX comment" }
-    it { should resemble "" }
+    it { should eq '' }
+
+    context "with a section and lable" do
+      let(:polytex) do <<-'EOS'
+        % \section{Foo}
+        % \label{sec:foo}
+        EOS
+      end
+      it { should eq '' }
+    end
+
+    context "with a code listing" do
+      let(:polytex) do <<-'EOS'
+        % \begin{codelisting}
+        % \heading{A hello program in Ruby.}
+        % \label{code:hello}
+        % %= lang:ruby
+        % \begin{code}
+        % def hello
+        %   "hello, world!"
+        % end
+        % \end{code}
+        % \end{codelisting}
+        EOS
+      end
+      it { should eq '' }
+    end
+
+    context "with a literal percent" do
+      let(:polytex) { '87.3\% of statistics are made up' }
+      it { should resemble '87.3% of statistics are made up' }
+    end
+
+    context "With characters before the percent" do
+      let(:polytex) { 'foo % bar' }
+      it { should resemble 'foo' }
+    end
+
+    context "with two percent signs" do
+      let(:polytex) { 'foo % bar % baz' }
+      it { should resemble 'foo' }
+    end
+
+    context "with display math" do
+      let(:polytex) do <<-'EOS'
+        % \[
+        % \begin{bmatrix}
+        % 1 & \cdots & 0 \\
+        % \vdots & \ddots & \vdots \\
+        % 2 & \cdots & 0
+        % \end{bmatrix}
+        % \]
+        EOS
+      end
+      it { should eq '' }
+    end
   end
 
   describe "a complete document" do
@@ -69,8 +130,38 @@ describe 'Polytexnic::Core::Pipeline#to_html' do
   end
 
   describe "href" do
-    let(:polytex) { '\href{http://example.com/}{Example Site}' }
-    let(:output) { '<a href="http://example.com/">Example Site</a>' }
+
+    context "standard URL" do
+      let(:polytex) { '\href{http://example.com/}{Example Site}' }
+      let(:output) { '<a href="http://example.com/">Example Site</a>' }
+      it { should resemble output }
+    end
+
+    context "URL needing encoding" do
+      let(:url) { 'https://groups.google.com/~forum/#!to pic/mathjax%20users' }
+      let(:polytex) { "\\href{#{url}}{Example Site}" }
+      let(:output) { %(<a href="#{URI::encode(url)}">Example Site</a>) }
+      it { should resemble output }
+    end
+  end
+
+  describe "centering" do
+    let(:polytex) do <<-'EOS'
+      \begin{center}
+      Lorem ipsum
+
+      dolor sit amet
+      \end{center}
+      EOS
+    end
+    let(:output) do <<-'EOS'
+      <div class="center">
+      <p>Lorem ipsum</p>
+
+      <p>dolor sit amet</p>
+      </div>
+      EOS
+    end
     it { should resemble output }
   end
 end

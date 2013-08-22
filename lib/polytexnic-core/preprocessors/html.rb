@@ -21,15 +21,14 @@ module Polytexnic
         # The key steps are creating a clean document safe for makin global
         # substitutions (gsubs), and then making a bunch of gsubs.
         def process_for_tralics(polytex)
-          clean = double_backslashes(clean_document(polytex))
-          clean.tap do |output|
-            double_backslashes(output)
+          clean_document(polytex).tap do |output|
             hyperrefs(output)
             title_fields(output)
             maketitle(output)
             label_names(output)
             restore_eq_labels(output)
             mark_environments(output)
+            make_tabular_alignmnt_cache(output)
           end
         end
 
@@ -39,7 +38,42 @@ module Polytexnic
         # The result is a document that can safely be transformed using
         # global substitutions.
         def clean_document(polytex)
-          cache_unicode(cache_literal(add_commands(polytex)))
+          doc = cache_unicode(cache_literal(add_commands(polytex)))
+          inline_verbatim(doc)
+          cache_hrefs(doc)
+          remove_comments(doc)
+          double_backslashes(cache_display_inline_math(doc))
+        end
+
+        # Handles \verb environments.
+        # LaTeX supports an inline verbatim environment using
+        #   \verb+<stuff>+
+        # The + is arbitrary; any non-letter character is fine as long as it
+        # doesn't appear in <stuff>, so this code has exactly the same effect:
+        #   \verb!<stuff>!
+        #   \verb@<stuff>@
+        #   \verb8<stuff>8
+        # My preference is to use + or - if available.
+        def inline_verbatim(doc)
+          doc.gsub!(/\\verb([^A-Za-z])(.*?)\1/) do
+            key = digest($2)
+            literal_cache[key] = $2
+            xmlelement('inlineverbatim') { key }
+          end
+        end
+
+        # Caches URLs for \href commands.
+        def cache_hrefs(doc)
+          doc.gsub!(/\\href{(.*?)}/) do
+            key = digest($1)
+            literal_cache[key] = $1
+            "\\href{#{key}}"
+          end
+        end
+
+        # Removes commented-out lines.
+        def remove_comments(output)
+          output.gsub!(/[^\\]%.*$/, '')
         end
 
         # Converts LaTeX double backslashes to
@@ -146,6 +180,26 @@ module Polytexnic
             "\\end{xmlelement*}"
           end
 
+          # Handle \begin{center}...\end{center}
+          string.gsub! /\\begin{center}/, '\begin{xmlelement*}{center}'
+          string.gsub! /\\end{center}/,   '\end{xmlelement*}'
+
+          # Handle \centering
+          string.gsub! /\\centering/, '\AddAttToCurrent{class}{center}'
+
+          # Handle \image
+          string.gsub! /\\image/, '\includegraphics'
+        end
+
+        # Collects alignment information for tabular environments.
+        # We suck out all the stuff like 'l|l|lr' in
+        # \begin{tabular}{l|l|lr}
+        # The reason is that we need to work around a couple of bugs in Tralics.
+        # I've tried in vain to figure out WTF is going on in the Tralics
+        # source, but it's easy enough in Ruby so I'm throwing it in here.
+        def make_tabular_alignmnt_cache(output)
+          alignment_regex = /\\begin{tabular}{((?:\|*[lcr]+\|*)+)}/
+          @tabular_alignment_cache = output.scan(alignment_regex).flatten
         end
 
         # Returns the XML produced by the Tralics program.
@@ -162,8 +216,7 @@ module Polytexnic
           file.write(polytex)
           file.close
           Dir.mkdir 'log' unless File.directory?('log')
-          t = tralics
-          system("#{t} -nomathml #{file.path} > log/tralics.log")
+          system("#{tralics} -nomathml #{file.path} > log/tralics.log")
           dirname = File.dirname(file.path)
           xml_filename = File.basename(file.path, '.tex') + '.xml'
           raw_xml = File.read(File.join(dirname, xml_filename))
@@ -203,31 +256,9 @@ module Polytexnic
           raw_xml.gsub('&#133;', '…')
         end
 
-        # Returns the executable on the path.
-        def executable(name)
-          `which #{name}`.strip
-        end
-
         # Returns the executable for the Tralics LaTeX-to-XML converter.
         def tralics
-          if (exec = executable('tralics')).empty?
-            dir = Gem::Specification.find_by_name('polytexnic-core').gem_dir
-            binary = File.join(dir, 'precompiled_binaries', 'tralics')
-            # Try a couple of common directories for executables.
-            if File.exist?(bin_dir = File.join(ENV['HOME'], 'bin'))
-              FileUtils.cp binary, bin_dir
-              executable('tralics')
-            elsif File.exist?(bin_dir = File.join('usr', 'local', 'bin'))
-              FileUtils.cp binary, bin_dir
-              executable('tralics')
-            else
-              $stderr.puts "Please install Tralics"
-              $stderr.puts "See http://polytexnic.com/install"
-              exit 1
-            end
-          else
-            exec
-          end
+          executable('tralics')
         end
     end
   end

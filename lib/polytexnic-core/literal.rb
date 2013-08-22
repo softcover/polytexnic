@@ -4,7 +4,7 @@ module Polytexnic
     # Matches the line for syntax highlighting.
     LANG_REGEX = /^\s*%=\s+lang:(\w+)/
 
-    # Makes the caches for literal environments (including non-ASCII Unicode).
+    # Makes the caches for literal environments.
     def cache_literal(polytex, format = :html)
       output = []
       lines = polytex.split("\n")
@@ -25,8 +25,12 @@ module Polytexnic
     #   lorem ipsum
     # gets includes the internal literal text without stopping after the first
     # \end{verbatim}.
+    #
+    # The control flow here is really nasty, but attempts to refactor it
+    # into a multi-pass solution have only resulted in even more complexity,
+    # and even then I've failed to get it to work. Thus, it shall for now
+    # follow the "ball of mud" pattern.
     def cache_literal_environments(lines, output, format)
-      i = 1
       latex = (format == :latex)
       language = nil
       in_verbatim = false
@@ -65,13 +69,21 @@ module Polytexnic
             end
             raise "Missing \\end{#{line.literal_type}}" if count != 0
             content = text.join("\n")
-            key = digest(content)
             if math
+              key = digest(content)
               literal_cache[key] = content
             elsif language.nil?
+              key = digest(content)
               literal_cache[key] = content
               tag = 'literal'
             else
+              format = latex ? 'latex' : 'html'
+              # Make the digests effectively unguessable.
+              # (We just want to keep people from accidentally including them
+              #  in their source files.)
+              permanent_salt = 'fbbc13ed4a51e27608037365e1d27a5f992b6339'
+              key = digest("#{content}--#{language}--#{format}",
+                           salt: permanent_salt)
               code_cache[key] = [content, language]
               tag = 'code'
             end
@@ -100,6 +112,48 @@ module Polytexnic
         else
           output << line
         end
+      end
+    end
+
+    def cache_display_inline_math(output)
+      output.tap do
+        cache_display_math(output)
+        cache_inline_math(output)
+      end
+    end
+
+    # Caches display math.
+    # We support both TeX-style $$...$$ and LaTeX-style \[ ... \].
+    def cache_display_math(output)
+      output.gsub!(/\\\[(.*?)\\\]|\$\$(.*?)\$\$/m) do
+        math = "\\[ #{$1 || $2} \\]"
+        equation_element(math)
+      end
+    end
+
+    # Returns an equation element while caching the given content.
+    def equation_element(content)
+      key = digest(content)
+      literal_cache[key] = content
+      "\\begin{xmlelement*}{equation}
+        \\begin{equation}
+        #{key}
+        \\end{equation}
+        \\end{xmlelement*}"
+    end
+
+    # Caches inline math.
+    # We support both TeX-style $...$ and LaTeX-style \( ... \).
+    # There's an annoying edge case involving literal dollar signs, as in \$.
+    # Handling it significantly complicates the regex, and necessesitates
+    # introducing an additional group to catch the character before the math
+    # dollar sign in $2 and prepend it to the inline math element.
+    def cache_inline_math(output)
+      output.gsub!(/(?:\\\((.*?)\\\)|([^\\]|^)\$(.*?[^\\])\$)/m) do
+        math = "\\( #{$1 || $3} \\)"
+        key = digest(math)
+        literal_cache[key] = math
+        $2.to_s + xmlelement('inline') { key }
       end
     end
 
@@ -159,27 +213,48 @@ def math_environments
      pmatrix smallmatrix split subarray
      Vmatrix vmatrix
     ]
+  %w{align align*
+     eqnarray eqnarray* equation equation*
+     gather gather* gathered
+     multline multline*
+    }
 end
 
 class String
+
+  def begin_verbatim?
+    return false unless include?('\begin')
+    literal_type = "(?:verbatim|Verbatim|code|metacode)"
+    match(/^\s*\\begin{#{literal_type}}\s*$/)
+  end
 
   # Returns true if self matches \begin{...} where ... is a literal environment.
   # Support for the 'metacode' environment exists solely to allow
   # meta-dicsussion of the 'code' environment.
   def begin_literal?(literal_type = nil)
-    literal_type ||= "(?:verbatim|Verbatim|code|metacode|#{math_environment_regex})"
+    return false unless include?('\begin')
+    literal_type ||= "(?:verbatim|Verbatim|code|metacode|" +
+                     "#{math_environment_regex})"
     match(/^\s*\\begin{#{literal_type}}\s*$/)
   end
 
   def end_literal?(literal_type)
+    return false unless include?('\end')
     match(/^\s*\\end{#{Regexp.escape(literal_type)}}\s*$/)
   end
 
   # Returns the type of literal environment.
   # '\begin{verbatim}' => 'verbatim'
   # '\begin{equation}' => 'equation'
+  # '\[' => 'display'
   def literal_type
-    scan(/\\begin{(.*?)}/).flatten.first
+    scan(/\\begin{(.*?)}/).flatten.first || 'display'
+  end
+
+  def begin_math?
+    return false unless include?('\begin')
+    literal_type = "(?:#{math_environment_regex})"
+    match(/^\s*\\begin{#{literal_type}}\s*$/)
   end
 
   def math_environment?

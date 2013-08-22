@@ -2,11 +2,13 @@
 require 'cgi'
 require 'polytexnic-core/postprocessors/html'
 require 'polytexnic-core/postprocessors/latex'
+require 'polytexnic-core/postprocessors/polytex'
 
 module Polytexnic
   module Postprocessor
     include Html
     include Latex
+    include Polytex
 
     def postprocess(format)
       if format == :html
@@ -14,7 +16,11 @@ module Polytexnic
       elsif format == :latex
         hyperrefs(@polytex)
         raw_source = replace_hashes(@polytex)
-        @latex = highlight_source_code(raw_source, 'latex')
+        @latex = highlight_source_code(raw_source)
+      elsif format == :polytex
+        remove_hypertarget
+        fix_verbatim_bug
+        write_polytex_code
       end
     end
   end

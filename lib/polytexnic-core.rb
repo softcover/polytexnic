@@ -7,6 +7,7 @@ require 'tempfile'
 require 'nokogiri'
 require 'digest/sha1'
 require 'pygments'
+require 'msgpack'
 
 module Polytexnic
   module Core
@@ -16,19 +17,39 @@ module Polytexnic
       include Polytexnic::Core::Utils
 
       attr_accessor :literal_cache, :code_cache, :polytex, :xml, :html,
-                    :math_label_cache
+                    :math_label_cache, :highlight_cache
 
-      def initialize(polytex)
+      def initialize(source, options = {})
         @literal_cache = {}
         @code_cache = {}
+        @highlight_cache_filename = f = '.highlight_cache'
+        @highlight_cache = File.exist?(f) ? MessagePack.unpack(File.read(f))
+                                          : {}
         @math_label_cache = {}
-        @polytex = polytex
+        @source_format = options[:source] || :polytex
+        @source = source
+        if markdown?
+          preprocess(:polytex)
+          postprocess(:polytex)
+        end
+        @polytex = @source
       end
 
       def to_html
+        if profiling?
+          require 'ruby-prof'
+          RubyProf.start
+        end
+
         preprocess(:html)
         postprocess(:html)
         puts @html if debug?
+
+        if profiling?
+          result = RubyProf.stop
+          printer = RubyProf::GraphPrinter.new(result)
+          printer.print(STDOUT, {})
+        end
         @html
       end
 
@@ -38,20 +59,15 @@ module Polytexnic
         @latex
       end
 
-      # Returns a digest for use in labels.
-      # I like to use labels of the form cha:foo_bar, but for some reason
-      # Tralics removes the underscore in this case.
-      def underscore_digest
-        pipeline_digest(:_)
-      end
-
       private
 
-        # Returns a digest for passing things through the pipeline.
-        def pipeline_digest(element)
-          value = digest("#{Time.now.to_s}::#{element}")
-          @literal_cache[element.to_s] ||= value
+        def markdown?
+          @source_format == :markdown || @source_format == :md
         end
-    end
+
+        def polytex?
+          @source_format == :polytex
+        end
+      end
   end
 end

@@ -5,33 +5,76 @@ describe Polytexnic::Core::Pipeline do
   let(:processed_text) { Polytexnic::Core::Pipeline.new(polytex).to_html }
   subject { processed_text }
 
-  describe "inline math" do
-
-    context "LaTeX-style" do
-      let(:equation) do <<-'EOS'
-        \( \int_\Omega d\omega = \int_{\partial\Omega} \omega \)
+    describe "display and inline math" do
+      let(:math) do <<-'EOS'
+        \begin{bmatrix}
+        1 & \cdots & 0 \\
+        \vdots & \ddots & \vdots \\
+        2 & \cdots & 0
+        \end{bmatrix}
         EOS
       end
-      let(:polytex) { equation }
-      let(:contents) { '\Omega' }
 
-      it { should resemble contents }
-      it { should resemble '<span class="inline_math">' }
-    end
-
-    context "TeX-style" do
-      let(:equation) do <<-'EOS'
-        $\int_\Omega d\omega = \int_{\partial\Omega} \omega$
+      let(:result) do <<-'EOS'
+        \begin{bmatrix}
+        1 &amp; \cdots &amp; 0 \\
+        \vdots &amp; \ddots &amp; \vdots \\
+        2 &amp; \cdots &amp; 0
+        \end{bmatrix}
         EOS
       end
-      let(:polytex) { equation }
-      let(:contents) { '\Omega' }
 
-      it { should resemble contents }
-      it { should resemble '<span class="inline_math">' }
-      it { should resemble '\(' }
+      context "TeX displaystyle" do
+        let(:equation) { "$$ #{math} $$"}
+        let(:polytex)  { equation }
+        let(:contents) { "\\[ #{result} \\]"}
+
+        it { should resemble contents }
+      end
+
+      context "LaTeX displaystyle" do
+        let(:equation) { "\\[ #{math} \\]"}
+        let(:polytex)  { equation }
+        let(:contents) { "\\[ #{result} \\]"}
+
+        it { should resemble contents }
+
+        context "with surrounding text" do
+          let(:polytex) { "lorem\n\\[ #{math} \\]\nipsum" }
+          it { should resemble '<p class="noindent">' }
+        end
+      end
+
+      context "TeX inline" do
+        let(:equation) { "$#{math}$"}
+        let(:polytex)  { equation }
+        let(:contents) { "\\( #{result} \\)"}
+
+        it { should resemble contents }
+      end
+
+      context "TeX inline with a dollar sign" do
+        let(:equation) { "$#{math} \\mbox{\\$2 bill}$"}
+        let(:polytex)  { equation }
+        let(:contents) { "\\( #{result} \\mbox{\\$2 bill} \\)"}
+
+        it { should resemble contents }
+      end
+
+      context "LaTeX inline" do
+        let(:equation) { "\\( #{math} \\)"}
+        let(:polytex)  { equation }
+        let(:contents) { "\\( #{result} \\)"}
+
+        it { should resemble contents }
+      end
+
+      context "with a space before a dollar sign" do
+        let(:polytex) { "foo $x$ bar" }
+        let(:contents) { "<p>foo <span class=\"inline_math\">\\( x \\)</span> bar" }
+        it { should include contents }
+      end
     end
-  end
 
   describe "multiple occurrences of inline math on one line" do
     let(:polytex) { '$\Omega > 0$ and \( x^2 - 2 \equiv 0 \) should work.' }
@@ -40,33 +83,6 @@ describe Polytexnic::Core::Pipeline do
     it { should resemble '\equiv' }
     it { should resemble '<span class="inline_math">' }
     it { should resemble '\(' }
-  end
-
-  describe "display math" do
-
-    context "LaTeX-style" do
-      let(:equation) do <<-'EOS'
-        \[ \int_\Omega d\omega = \int_{\partial\Omega} \omega \]
-        EOS
-      end
-      let(:polytex) { "lorem\n" + equation + "\nipsum" }
-      let(:contents) { '\Omega' }
-
-      it { should resemble contents }
-      it { should resemble '<div class="display_math">' }
-    end
-
-    context "TeX-style" do
-      let(:equation) do <<-'EOS'
-        $$ \int_\Omega d\omega = \int_{\partial\Omega} \omega $$
-        EOS
-      end
-      let(:polytex) { "lorem\n" + equation + "\nipsum" }
-      let(:contents) { '\Omega' }
-
-      it { should resemble contents }
-      it { should resemble '<div class="display_math">' }
-    end
   end
 
   describe "equation environments" do
@@ -103,7 +119,7 @@ describe Polytexnic::Core::Pipeline do
       end
       let(:polytex)  { equation }
       let(:contents) do <<-'EOS'
-        <div id="cid1" data-tralics-id="cid1" class="chapter" data-number="1"><h3><a href="#cid1" class="heading"><span class="number">1 </span>Foo</a></h3>
+        <div id="cid1" data-tralics-id="cid1" class="chapter" data-number="1"><h1><a href="#cid1" class="heading"><span class="number">Chapter 1 </span>Foo</a></h1>
         <div id="stokes_theorem" data-tralics-id="uid1" data-number="1.1" class="equation">
                \begin{equation}
                \label{stokes_theorem}
