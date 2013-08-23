@@ -2,7 +2,12 @@ module Polytexnic
   module Literal
 
     # Matches the line for syntax highlighting.
+    # %= lang:<language>
     LANG_REGEX = /^\s*%=\s+lang:(\w+)/
+
+    # Matches the line for code inclusion.
+    # %= <</path/to/code.ext
+    CODE_INCLUSION_REGEX = /^\s*%=\s+<<\s*([\w\/]+\.(\w+))/
 
     # Makes the caches for literal environments.
     def cache_literal(polytex, format = :html)
@@ -37,6 +42,26 @@ module Polytexnic
       while (line = lines.shift)
         if line =~ LANG_REGEX && !in_verbatim
           language = $1
+        elsif line =~ CODE_INCLUSION_REGEX && !in_verbatim
+          # Reduce to a previously solved problem.
+          # We transform
+          # %= <</path/to/file.rb
+          # to
+          # %= lang:rb
+          # \begin{code}
+          # <content of file.rb>
+          # \end{code}
+          # and then prepend the code to the current `lines` array.
+          filename = $1
+          if File.exist?(filename)
+            code = ["%= lang:#{$2}"]
+            code << '\begin{code}'
+            code.concat(File.read($1).split("\n"))
+            code << '\end{code}'
+            lines.unshift(*code)
+          else
+            lines.unshift("\\verb+ERROR: File '#{filename}' does not exist+")
+          end
         elsif line.begin_literal?
           in_verbatim = true
           literal_type = line.literal_type
