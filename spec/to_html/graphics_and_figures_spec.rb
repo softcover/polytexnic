@@ -190,6 +190,41 @@ describe 'Polytexnic::Core::Pipeline#to_html' do
           </div>
         EOS
       end
+
+      context "with a centered image" do
+        let(:polytex) do <<-'EOS'
+          \chapter{The chapter}
+          \label{cha:lorem_ipsum}
+
+          \begin{figure}
+          \centering
+          \includegraphics{foo.png}
+          \caption{This is a caption.\label{fig:foo}}
+          \end{figure}
+          EOS
+         end
+
+         it do
+           should resemble <<-'EOS'
+            <div id="cha-lorem_ipsum" data-tralics-id="cid1" class="chapter" data-number="1">
+            <h1>
+              <a href="#cha-lorem_ipsum" class="heading">
+              <span class="number">Chapter 1 </span>The chapter</a>
+            </h1>
+            <div class="center figure" id="fig-foo" data-tralics-id="uid1" data-number="1.1">
+              <div class="graphics">
+                <img src="foo.png" alt="foo" />
+              </div>
+              <div class="caption">
+                <span class="header">Figure 1.1: </span>
+                <span class="description">This is a caption.</span>
+              </div>
+            </div>
+            </div>
+          EOS
+        end
+
+      end
     end
   end
 end
