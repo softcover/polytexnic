@@ -49,7 +49,7 @@ module Polytexnic
           # Try a couple of common directories for executables.
           if File.exist?(bin_dir = File.join(ENV['HOME'], 'bin'))
             FileUtils.cp binary, bin_dir
-          elsif File.exist?(bin_dir = File.join('usr', 'local', 'bin'))
+          elsif File.exist?(bin_dir = File.join('/', 'usr', 'local', 'bin'))
             FileUtils.cp binary, bin_dir
           else
             message ||= "File '#{name}' not found"
