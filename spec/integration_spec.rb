@@ -25,6 +25,9 @@ describe Polytexnic::Core::Pipeline do
 
   filenames.each do |filename|
     it "should correctly process #{filename}" do
+      tmp = 'tmp'
+      File.mkdir(tmp) unless File.directory?(tmp)
+      File.write(File.join(tmp,filename), converted(filename))
       expect(converted(filename)).to resemble html(filename)
     end
   end

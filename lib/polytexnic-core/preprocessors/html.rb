@@ -24,7 +24,6 @@ module Polytexnic
           clean = double_backslashes(clean_document(polytex))
           clean.tap do |output|
             remove_comments(output)
-            double_backslashes(output)
             hyperrefs(output)
             title_fields(output)
             maketitle(output)

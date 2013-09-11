@@ -9,7 +9,12 @@ module Polytexnic
       output = []
       lines = polytex.split("\n")
       cache_literal_environments(lines, output, format)
-      output.join("\n")
+      output = output.join("\n")
+      if format == :html
+        cache_display_math(output)
+        cache_inline_math(output)
+      end
+      output
     end
 
     # Handles environments that should be passed through the pipeline intact.
@@ -107,6 +112,41 @@ module Polytexnic
       end
     end
 
+    # Caches display math.
+    # We support both TeX-style $$...$$ and LaTeX-style \[ ... \].
+    def cache_display_math(output)
+      output.gsub!(/\\\[(.*?)\\\]|\$\$(.*?)\$\$/m) do
+        math = "\\[ #{$1 || $2} \\]"
+        equation_element(math)
+      end
+    end
+
+    # Returns an equation element while caching the given content.
+    def equation_element(content)
+      key = digest(content)
+      literal_cache[key] = content
+      "\\begin{xmlelement*}{equation}
+        \\begin{equation}
+        #{key}
+        \\end{equation}
+        \\end{xmlelement*}"
+    end
+
+    # Caches inline math.
+    # We support both TeX-style $...$ and LaTeX-style \( ... \).
+    # There's an annoying edge case involving literal dollar signs, as in \$.
+    # Handling it significantly complicates the regex, and necessesitates
+    # introducing an additional group to catch the character before the math
+    # dollar sign in $2 and prepend it to the inline math element.
+    def cache_inline_math(output)
+      output.gsub!(/(?:\\\((.*?)\\\)|([^\\]|^)\$(.*?[^\\])\$)/m) do
+        math = "\\( #{$1 || $3} \\)"
+        key = digest(math)
+        literal_cache[key] = math
+        $2.to_s + xmlelement('inline') { key }
+      end
+    end
+
     # Converts references to hyperrefs.
     # We want to convert
     #   Chapter~\ref{cha:foo}
@@ -163,6 +203,11 @@ def math_environments
      pmatrix smallmatrix split subarray
      Vmatrix vmatrix
     ]
+  %w{align align*
+     eqnarray eqnarray* equation equation*
+     gather gather* gathered
+     multline multline*
+    }
 end
 
 class String
@@ -187,8 +232,9 @@ class String
   # Returns the type of literal environment.
   # '\begin{verbatim}' => 'verbatim'
   # '\begin{equation}' => 'equation'
+  # '\[' => 'display'
   def literal_type
-    scan(/\\begin{(.*?)}/).flatten.first
+    scan(/\\begin{(.*?)}/).flatten.first || 'display'
   end
 
   def begin_math?
