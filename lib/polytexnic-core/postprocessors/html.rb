@@ -235,11 +235,13 @@ module Polytexnic
         def footnotes_list(footnotes, chapter_number)
           doc = footnotes.values[0][0].document
           footnotes_node = Nokogiri::XML::Node.new('ol', doc)
+          footnotes_node['class'] = 'footnotes'
           footnotes[chapter_number].each_with_index do |footnote, i|
             n = i + 1
             note = Nokogiri::XML::Node.new('li', doc)
             note['id'] = footnote_id(chapter_number, n)
             reflink = Nokogiri::XML::Node.new('a', doc)
+            reflink['class'] = 'arrow'
             reflink.content = "↑"
             reflink['href'] = footnote_ref_href(chapter_number, n)
             note.inner_html = "#{footnote.inner_html} #{reflink.to_xhtml}"

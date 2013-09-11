@@ -32,9 +32,9 @@ describe 'Polytexnic::Core::Pipeline#to_html' do
         <p>Lorem ipsum.<sup id="cha-1_footnote-ref-1" class="footnote"><a href="#cha-1_footnote-1">1</a></sup></p>
       </div>
       <div id="cha-1_footnotes">
-        <ol>
+        <ol class="footnotes">
           <li id="cha-1_footnote-1">
-            Cicero <a href="#cha-1_footnote-ref-1">↑</a>
+            Cicero <a class="arrow" href="#cha-1_footnote-ref-1">↑</a>
           </li>
         </ol>
       </div>
@@ -78,9 +78,9 @@ describe 'Polytexnic::Core::Pipeline#to_html' do
         <p>Lorem ipsum.<sup id="cha-1_footnote-ref-1" class="footnote"><a href="#cha-1_footnote-1">1</a></sup></p>
       </div>
       <div id="cha-1_footnotes">
-        <ol>
+        <ol class="footnotes">
           <li id="cha-1_footnote-1">
-            Cicero <a href="#cha-1_footnote-ref-1">↑</a>
+            Cicero <a class="arrow" href="#cha-1_footnote-ref-1">↑</a>
           </li>
         </ol>
       </div>
@@ -90,12 +90,12 @@ describe 'Polytexnic::Core::Pipeline#to_html' do
         <p>Hey Jude.<sup id="cha-2_footnote-ref-2" class="footnote"><a href="#cha-2_footnote-2">2</a></sup></p>
       </div>
       <div id="cha-2_footnotes">
-        <ol>
+        <ol class="footnotes">
           <li id="cha-2_footnote-1">
-            <em>Still</em> Cicero <a href="#cha-2_footnote-ref-1">↑</a>
+            <em>Still</em> Cicero <a class="arrow" href="#cha-2_footnote-ref-1">↑</a>
           </li>
           <li id="cha-2_footnote-2">
-            Lennon/McCartney <a href="#cha-2_footnote-ref-2">↑</a>
+            Lennon/McCartney <a class="arrow" href="#cha-2_footnote-ref-2">↑</a>
           </li>
         </ol>
       </div>
