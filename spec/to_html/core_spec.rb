@@ -8,7 +8,48 @@ describe 'Polytexnic::Core::Pipeline#to_html' do
 
   describe "comments" do
     let(:polytex) { "% A LaTeX comment" }
-    it { should resemble "" }
+    it { should eq '' }
+
+    context "with a section and lable" do
+      let(:polytex) do <<-'EOS'
+        % \section{Foo}
+        % \label{sec:foo}
+        EOS
+      end
+      it { should eq '' }
+    end
+
+    context "with a code listing" do
+      let(:polytex) do <<-'EOS'
+        % \begin{codelisting}
+        % \heading{A hello program in Ruby.}
+        % \label{code:hello}
+        % %= lang:ruby
+        % \begin{code}
+        % def hello
+        %   "hello, world!"
+        % end
+        % \end{code}
+        % \end{codelisting}
+        EOS
+      end
+      it { should eq '' }
+    end
+
+    context "with a literal percent" do
+      let(:polytex) { '87.3\% of statistics are made up' }
+      it { should resemble '87.3% of statistics are made up' }
+    end
+
+    context "With characters before the percent" do
+      let(:polytex) { 'foo % bar' }
+      it { should resemble 'foo' }
+    end
+
+    context "with two percent signs" do
+      let(:polytex) { 'foo % bar % baz' }
+      it { should resemble 'foo' }
+    end
   end
 
   describe "a complete document" do

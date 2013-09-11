@@ -23,6 +23,7 @@ module Polytexnic
         def process_for_tralics(polytex)
           clean = double_backslashes(clean_document(polytex))
           clean.tap do |output|
+            remove_comments(output)
             double_backslashes(output)
             hyperrefs(output)
             title_fields(output)
@@ -40,6 +41,11 @@ module Polytexnic
         # global substitutions.
         def clean_document(polytex)
           cache_unicode(cache_literal(add_commands(polytex)))
+        end
+
+        # Removes commented-out lines.
+        def remove_comments(output)
+          output.gsub!(/[^\\]%.*$/, '')
         end
 
         # Converts LaTeX double backslashes to
