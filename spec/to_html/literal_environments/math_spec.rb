@@ -103,7 +103,7 @@ describe Polytexnic::Core::Pipeline do
       end
       let(:polytex)  { equation }
       let(:contents) do <<-'EOS'
-        <div id="cid1" data-tralics-id="cid1" class="chapter" data-number="1"><h3><a href="#cid1" class="heading"><span class="number">1 </span>Foo</a></h3>
+        <div id="cid1" data-tralics-id="cid1" class="chapter" data-number="1"><h1><a href="#cid1" class="heading"><span class="number">1 </span>Foo</a></h1>
         <div id="stokes_theorem" data-tralics-id="uid1" data-number="1.1" class="equation">
                \begin{equation}
                \label{stokes_theorem}

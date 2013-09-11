@@ -24,7 +24,7 @@ $ subl .gemrc
 
     it do
       should resemble <<-'EOS'
-        <div id="cid1" data-tralics-id="cid1" class="chapter" data-number="1"><h3><a href="#cid1" class="heading"><span class="number">1 </span>Foo bar</a></h3>
+        <div id="cid1" data-tralics-id="cid1" class="chapter" data-number="1"><h1><a href="#cid1" class="heading"><span class="number">1 </span>Foo bar</a></h1>
         <div class="codelisting" id="code-create_gemrc" data-tralics-id="uid1" data-number="1.1">
           <div class="heading">
             <span class="number">Listing 1.1.</span>
