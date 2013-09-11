@@ -21,4 +21,5 @@ Gem::Specification.new do |gem|
   gem.add_dependency 'nokogiri', '~> 1.5.0'
   gem.add_dependency 'pygments.rb', '~> 0.4.2'
   gem.add_dependency 'msgpack', '~> 0.4.2'
+  gem.add_dependency 'kramdown'
 end
