@@ -112,7 +112,7 @@ describe 'Polytexnic::Core::Pipeline#to_html' do
           <div id="cid1" data-tralics-id="cid1" class="chapter" data-number="1">
           <h1>
             <a href="#cid1" class="heading">
-            <span class="number">1 </span>The chapter</a>
+            <span class="number">Chapter 1 </span>The chapter</a>
           </h1>
           <div id="uid1" data-tralics-id="uid1" data-number="1.1" class="figure">
             <div class="graphics">
@@ -162,7 +162,7 @@ describe 'Polytexnic::Core::Pipeline#to_html' do
           <div id="cha-lorem_ipsum" data-tralics-id="cid1" class="chapter" data-number="1">
           <h1>
             <a href="#cha-lorem_ipsum" class="heading">
-            <span class="number">1 </span>The chapter</a>
+            <span class="number">Chapter 1 </span>The chapter</a>
           </h1>
           <div id="fig-foo" data-tralics-id="uid1" data-number="1.1" class="figure">
             <div class="graphics">

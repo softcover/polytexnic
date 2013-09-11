@@ -26,7 +26,7 @@ describe 'Polytexnic::Core::Pipeline#to_html' do
 
     it do
       should resemble <<-'EOS'
-        <div id="cid1" data-tralics-id="cid1" class="chapter" data-number="1"><h1><a href="#cid1" class="heading"><span class="number">1 </span>Foo bar</a></h1>
+        <div id="cid1" data-tralics-id="cid1" class="chapter" data-number="1"><h1><a href="#cid1" class="heading"><span class="number">Chapter 1 </span>Foo bar</a></h1>
         <div class="aside" id="aside-lorem" data-tralics-id="uid1" data-number="1.1">
           <div class="heading">
             <span class="number">Box 1.1.</span>

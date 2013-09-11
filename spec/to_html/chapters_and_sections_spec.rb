@@ -14,7 +14,7 @@ describe 'Polytexnic::Core::Pipeline#to_html' do
     end
     let(:output) do <<-'EOS'
       <div id="cha-foo" data-tralics-id="cid1" class="chapter" data-number="1">
-        <h1><a href="#cha-foo" class="heading"><span class="number">1 </span>Foo <em>bar</em></a></h1>
+        <h1><a href="#cha-foo" class="heading"><span class="number">Chapter 1 </span>Foo <em>bar</em></a></h1>
       </div>
       EOS
     end
@@ -105,7 +105,7 @@ describe 'Polytexnic::Core::Pipeline#to_html' do
     it do
       should resemble <<-'EOS'
         <div id="cha-foo_bar" data-tralics-id="cid1" class="chapter" data-number="1">
-          <h1><a href="#cha-foo_bar" class="heading"><span class="number">1 </span>Foo</a></h1>
+          <h1><a href="#cha-foo_bar" class="heading"><span class="number">Chapter 1 </span>Foo</a></h1>
           <p><a href="#cha-foo_bar" class="hyperref">Chapter <span class="ref">1</span></a>
           and
           <a href="#cha-foo_baz" class="hyperref">Chapter <span class="ref">2</span></a>
@@ -113,7 +113,7 @@ describe 'Polytexnic::Core::Pipeline#to_html' do
         </div>
 
         <div id="cha-foo_baz" data-tralics-id="cid2" class="chapter" data-number="2">
-          <h1><a href="#cha-foo_baz" class="heading"><span class="number">2 </span>Baz</a></h1>
+          <h1><a href="#cha-foo_baz" class="heading"><span class="number">Chapter 2 </span>Baz</a></h1>
           <p><a href="#cha-foo_baz" class="hyperref">Chapter <span class="ref">2</span></a>
           and
           <a href="#cha-foo_bar" class="hyperref">Chapter <span class="ref">1</span></a>
@@ -170,7 +170,7 @@ describe 'Polytexnic::Core::Pipeline#to_html' do
     it do
       should resemble <<-'EOS'
         <div id="cha-foo" data-tralics-id="cid1" class="chapter" data-number="1">
-        <h1><a href="#cha-foo" class="heading"><span class="number">1 </span>Foo</a></h1>
+        <h1><a href="#cha-foo" class="heading"><span class="number">Chapter 1 </span>Foo</a></h1>
         <p><a href="#cha-bar" class="hyperref">Chapter <span class="undefined_ref">cha:bar</span></a>
         </p>
         </div>
