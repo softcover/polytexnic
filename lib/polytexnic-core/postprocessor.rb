@@ -14,7 +14,7 @@ module Polytexnic
       elsif format == :latex
         hyperrefs(@polytex)
         raw_source = replace_hashes(@polytex)
-        @latex = highlight_source_code(raw_source, 'latex')
+        @latex = highlight_source_code(raw_source)
       end
     end
   end

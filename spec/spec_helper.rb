@@ -19,6 +19,11 @@ RSpec.configure do |config|
   config.run_all_when_everything_filtered = true
   config.filter_run :focus
 
+  Polytexnic::Core::Utils.set_test_mode!
+  config.before do
+    Polytexnic::Core::Utils.set_test_mode!
+  end
+
   # Disallow the old-style 'object.should' syntax.
   config.expect_with :rspec do |c|
     c.syntax = :expect

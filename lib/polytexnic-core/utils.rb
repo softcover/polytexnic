@@ -5,9 +5,9 @@ module Polytexnic
     module Utils
       extend self
       # Returns a salted hash digest of the string.
-      def digest(string)
-        salt = SecureRandom.base64
-        Digest::SHA1.hexdigest(salt + string)
+      def digest(string, options = {})
+        salt = options[:salt] || SecureRandom.base64
+        Digest::SHA1.hexdigest("#{salt}--#{string}")
       end
 
       # Escapes backslashes.
@@ -54,21 +54,35 @@ module Polytexnic
       end
 
       # Highlights source code.
-      def highlight_source_code(document, formatter = 'html')
-        document.tap do
-          code_cache.each do |key, (content, language)|
-            code = Pygments.highlight(content,
-                                      lexer: language,
-                                      formatter: formatter)
-            if formatter == 'latex'
+      def highlight_source_code(document)
+        if document.is_a?(String) # LaTeX
+          substitutions = {}
+          document.tap do
+            code_cache.each do |key, (content, language)|
+              code = highlight(key, content, language, 'latex')
               output = code.split("\n")
               horrible_backslash_kludge(add_font_info(output.first))
-              c = output.join("\n")
-              code = "\\begin{framed_shaded}\n" + c + "\n\\end{framed_shaded}"
+              code = output.join("\n")
+              substitutions[key] = "\\begin{framed_shaded}\n" + code +
+                                   "\n\\end{framed_shaded}"
             end
-            document.gsub!(key, code)
+            document.gsub!(Regexp.union(substitutions.keys), substitutions)
+          end
+        else # HTML
+          document.css('div.code').each do |code_block|
+            key = code_block.content
+            next unless (value = code_cache[key])
+            content, language = value
+            code_block.inner_html = highlight(key, content, language, 'html')
           end
         end
+      end
+
+      # Highlights a code sample.
+      def highlight(key, content, language, formatter)
+        highlight_cache[key] ||= Pygments.highlight(content,
+                                                    lexer: language,
+                                                    formatter: formatter)
       end
 
       # Adds some verbatim font info (including size).
@@ -91,12 +105,26 @@ module Polytexnic
       # How many? I literally had to just keep adding backslashes until
       # the output was correct when running `poly build:pdf`.
       def horrible_backslash_kludge(string)
-        string.gsub!(/commandchars=\\\\/, 'commandchars=\\\\\\\\\\\\\\')
+        string.gsub!(/commandchars=\\\\/, 'commandchars=\\\\\\\\')
       end
 
       # Returns true if we are debugging, false otherwise
       def debug?
         false
+      end
+
+      # Returns true if we are profiling the code, false otherwise.
+      def profiling?
+        return false if test?
+        false
+      end
+
+      def set_test_mode!
+        @@test_mode = true
+      end
+
+      def test?
+        defined?(@@test_mode) && @@test_mode
       end
     end
   end
