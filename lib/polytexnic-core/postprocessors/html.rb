@@ -702,7 +702,10 @@ module Polytexnic
               clean_node internal_paragraph, 'rend'
             end
             if node['file'] && node['extension']
-              filename = "#{node['file']}.#{node['extension']}"
+              extension = node['extension']
+              # Support PDF images in PDF documents and PNGs in HTML.
+              extension = 'png' if extension == 'pdf'
+              filename = "#{node['file']}.#{extension}"
               alt = File.basename(node['file'])
               img = %(<img src="#{filename}" alt="#{alt}" />)
               graphic = %(<div class="graphics">#{img}</div>)
