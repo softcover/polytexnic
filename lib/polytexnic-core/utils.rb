@@ -61,21 +61,29 @@ module Polytexnic
                                       lexer: language,
                                       formatter: formatter)
             if formatter == 'latex'
-              hbk = horrible_backslash_kludge(code)
-              code = "\\begin{framed_shaded}\n" + hbk + "\n\\end{framed_shaded}"
+              output = code.split("\n")
+              horrible_backslash_kludge(add_font_info(output.first))
+              c = output.join("\n")
+              code = "\\begin{framed_shaded}\n" + c + "\n\\end{framed_shaded}"
             end
             document.gsub!(key, code)
           end
         end
       end
 
+      # Adds some verbatim font info (including size).
+      def add_font_info(string)
+        string.gsub!('\begin{Verbatim}[',
+                     '\begin{Verbatim}[fontsize=\relsize{-1.5},fontseries=b,')
+      end
+
       # Does something horrible with backslashes.
       # OK, so the deal is that code highlighted for LaTeX contains the line
       # \begin{Verbatim}[commandchars=\\\{\}]
-      # Oh crap, there are backslashes there. This means we have no chance
-      # of getting things to work after interpolating,  gsubbing, and so on,
+      # Oh crap, there are backslashes in there. This means we have no chance
+      # of getting things to work after interpolating, gsubbing, and so on,
       # because in Ruby '\\foo' is the same as '\\\\foo', '\}' is '}', etc.
-      # I thought I escaped (heh) this problem with the escape_backslashes method,
+      # I thought I escaped this problem with the escape_backslashes method,
       # but here the problem is extremely specific. In particular,
       # \\\{\} is really \\ and \{ and \}, but Ruby doensn't know WTF to do
       # with it, and thinks that it's "\\{}", which is the same as '\{}'.
