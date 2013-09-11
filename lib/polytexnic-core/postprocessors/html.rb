@@ -33,6 +33,7 @@ module Polytexnic
         title(doc)
         smart_single_quotes(doc)
         restore_literal(doc)
+        restore_inline_verbatim(doc)
         make_cross_references(doc)
         hrefs(doc)
         graphics_and_figures(doc)
@@ -584,6 +585,15 @@ module Polytexnic
           end
         end
 
+        # Restores things inside \verb+...+
+        def restore_inline_verbatim(doc)
+          doc.xpath('//inlineverbatim').each do |node|
+            node.content = literal_cache[node.content]
+            node.name = 'span'
+            node['class'] = 'inline_verbatim'
+          end
+        end
+
         def make_cross_references(doc)
           # build numbering tree
           doc.xpath('//*[@data-tralics-id]').each do |node|
@@ -716,19 +726,21 @@ module Polytexnic
 
         # Converts XML to HTML tables.
         def tables(doc)
+
           doc.xpath('//table/row/cell').each do |node|
             node.name = 'td'
-            alignment = node['halign']
-            node['class'] = "align_#{alignment}"
-            clean_node node, %w[halign]
-            if node['right-border'] == 'true'
-              node['class'] += ' right_border'
-              clean_node node, %w[right-border]
-            end
-            if node['left-border'] == 'true'
-              node['class'] += ' left_border'
-              clean_node node, %w[left-border]
-            end
+            # if alignment = node['halign']
+            #   node['class'] = "align_#{alignment}"
+            #   clean_node node, %w[halign]
+            # end
+            # if node['right-border'] == 'true'
+            #   node['class'] += ' right_border'
+            #   clean_node node, %w[right-border]
+            # end
+            # if node['left-border'] == 'true'
+            #   node['class'] += ' left_border'
+            #   clean_node node, %w[left-border]
+            # end
           end
           doc.xpath('//table/row').each do |node|
             node.name = 'tr'
@@ -737,10 +749,13 @@ module Polytexnic
               clean_node node, %w[bottom-border]
             end
           end
+          tabular_count = 0
           doc.xpath('//table').each do |node|
             if tabular?(node)
               node['class'] = 'tabular'
               clean_node node, %w[rend]
+              add_cell_alignment(node, tabular_count)
+              tabular_count += 1
             elsif table?(node)
               node.name = 'div'
               node['class'] = 'table'
@@ -748,12 +763,35 @@ module Polytexnic
                 inner_table = Nokogiri::XML::Node.new('table', doc)
                 inner_table['class'] = 'tabular'
                 inner_table.children = node.children
+                add_cell_alignment(inner_table, tabular_count)
+                tabular_count += 1
                 node.add_child(inner_table)
               end
               clean_node node, %w[rend]
               add_caption(node, name: 'table')
             end
           end
+        end
+
+        # Adds the alignment (left, center, right) plus the border (if any).
+        def add_cell_alignment(table, tabular_count)
+          alignments = @tabular_alignment_cache[tabular_count]
+          cell_alignments = alignments.scan(/(\|*(?:l|c|r)\|*)/).flatten
+          table.css('tr').each do |row|
+            row.css('td').zip(cell_alignments).each do |cell, alignment|
+              cell['class'] = alignment_class(alignment)
+              clean_node cell, %w[halign right-border left-border]
+            end
+          end
+        end
+
+        # Returns the CSS class corresponding to the given table alignment.
+        def alignment_class(alignment)
+          alignment.sub('l', 'align_left')
+                   .sub('r', 'align_right')
+                   .sub('c', 'align_center')
+                   .sub(/^\|/, 'left_border ')
+                   .sub(/\|$/, ' right_border')
         end
 
         # Returns true if a table node is from a 'tabular' environment.
