@@ -124,8 +124,18 @@ describe 'Polytexnic::Core::Pipeline#to_html' do
   end
 
   describe "href" do
-    let(:polytex) { '\href{http://example.com/}{Example Site}' }
-    let(:output) { '<a href="http://example.com/">Example Site</a>' }
-    it { should resemble output }
+
+    context "standard URL" do
+      let(:polytex) { '\href{http://example.com/}{Example Site}' }
+      let(:output) { '<a href="http://example.com/">Example Site</a>' }
+      it { should resemble output }
+    end
+
+    context "URL needing encoding" do
+      let(:url) { 'https://groups.google.com/~forum/#!to pic/mathjax%20users' }
+      let(:polytex) { "\\href{#{url}}{Example Site}" }
+      let(:output) { %(<a href="#{URI::encode(url)}">Example Site</a>) }
+      it { should resemble output }
+    end
   end
 end
