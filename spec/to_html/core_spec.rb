@@ -138,4 +138,24 @@ describe 'Polytexnic::Core::Pipeline#to_html' do
       it { should resemble output }
     end
   end
+
+  describe "centering" do
+    let(:polytex) do <<-'EOS'
+      \begin{center}
+      Lorem ipsum
+
+      dolor sit amet
+      \end{center}
+      EOS
+    end
+    let(:output) do <<-'EOS'
+      <div class="center">
+      <p>Lorem ipsum</p>
+
+      <p>dolor sit amet</p>
+      </div>
+      EOS
+    end
+    it { should resemble output }
+  end
 end
