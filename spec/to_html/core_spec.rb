@@ -50,6 +50,20 @@ describe 'Polytexnic::Core::Pipeline#to_html' do
       let(:polytex) { 'foo % bar % baz' }
       it { should resemble 'foo' }
     end
+
+    context "with display math" do
+      let(:polytex) do <<-'EOS'
+        % \[
+        % \begin{bmatrix}
+        % 1 & \cdots & 0 \\
+        % \vdots & \ddots & \vdots \\
+        % 2 & \cdots & 0
+        % \end{bmatrix}
+        % \]
+        EOS
+      end
+      it { should eq '' }
+    end
   end
 
   describe "a complete document" do
