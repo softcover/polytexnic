@@ -58,4 +58,46 @@ describe Polytexnic::Core::Pipeline do
       it { should resemble '<pre>' }
     end
   end
+
+  describe "code inclusion" do
+    context "for an existent file" do
+
+      context "with an extension" do
+        let(:polytex) do <<-'EOS'
+          %= <<spec/to_html/literal_environments/code_spec.rb
+          EOS
+        end
+        let(:output) do <<-'EOS'
+          <div class="code">
+            <div class="highlight">
+              <pre><span class="c1"># encoding=utf-8</span>
+          EOS
+        end
+        it { should resemble output }
+        it { should_not include '<p></p>' }
+      end
+
+      context "with no extension" do
+        let(:polytex) do <<-'EOS'
+          %= <<Rakefile
+          EOS
+        end
+        let(:output) do <<-'EOS'
+          <span class="n">require</span>
+          EOS
+        end
+        it { should resemble output }
+      end
+    end
+
+
+
+    context "for a nonexistent file" do
+      let(:polytex) do <<-'EOS'
+        %= <<foobar.rb
+        EOS
+      end
+      it { should include "ERROR: File 'foobar.rb' does not exist" }
+    end
+  end
 end

@@ -39,7 +39,6 @@ module Polytexnic
         graphics_and_figures(doc)
         tables(doc)
         math(doc)
-        doc = trim_empty_paragraphs(doc)
         footnotes(doc)
         convert_to_html(doc)
       end
@@ -820,10 +819,8 @@ module Polytexnic
         # Trims empty paragraphs.
         # Sometimes a <p></p> creeps in due to idiosyncrasies of the
         # Tralics conversion.
-        def trim_empty_paragraphs(doc)
-          s = doc.to_xml
-          s.gsub!(/<p>\s*<\/p>/, '')
-          Nokogiri::XML(s)
+        def trim_empty_paragraphs(string)
+          string.gsub!(/<p>\s*<\/p>/, '')
         end
 
         # Converts a document to HTML.
@@ -838,8 +835,10 @@ module Polytexnic
         def convert_to_html(doc)
           highlight_source_code(doc)
           File.write(@highlight_cache_filename, highlight_cache.to_msgpack)
-          Nokogiri::HTML.fragment(doc.at_css('document').children.to_xhtml).
-                                  to_xhtml
+          body = doc.at_css('document').children.to_xhtml
+          Nokogiri::HTML.fragment(body).to_xhtml.tap do |html|
+            trim_empty_paragraphs(html)
+          end
         end
 
         # Cleans a node by removing all the given attributes.
