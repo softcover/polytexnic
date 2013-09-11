@@ -152,6 +152,15 @@ describe 'Polytexnic::Core::Pipeline#to_html' do
         \caption{This is another caption.\label{fig:bar}}
         \end{figure}
 
+        Figure~\ref{fig:baz}
+
+        \chapter{A second chapter}
+        \label{cha:two}
+
+        \begin{figure}
+        \includegraphics{baz.png}
+        \caption{Yet another.\label{fig:baz}}
+        \end{figure}
 
         Figure~\ref{fig:foo} and Figure~\ref{fig:bar}
         EOS
@@ -180,6 +189,24 @@ describe 'Polytexnic::Core::Pipeline#to_html' do
             <div class="caption">
               <span class="header">Figure 1.2: </span>
               <span class="description">This is another caption.</span>
+            </div>
+          </div>
+          <p>
+            <a href="#fig-baz" class="hyperref">Figure <span class="ref">2.1</span></a>
+          </p>
+          </div>
+          <div id="cha-two" data-tralics-id="cid2" class="chapter" data-number="2">
+          <h1>
+            <a href="#cha-two" class="heading">
+            <span class="number">Chapter 2 </span>A second chapter</a>
+          </h1>
+          <div id="fig-baz" data-tralics-id="uid3" data-number="2.1" class="figure">
+            <div class="graphics">
+              <img src="baz.png" alt="baz" />
+            </div>
+            <div class="caption">
+              <span class="header">Figure 2.1: </span>
+              <span class="description">Yet another.</span>
             </div>
           </div>
           <p>
