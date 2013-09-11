@@ -186,6 +186,9 @@ module Polytexnic
 
           # Handle \centering
           string.gsub! /\\centering/, '\AddAttToCurrent{class}{center}'
+
+          # Handle \image
+          string.gsub! /\\image/, '\includegraphics'
         end
 
         # Collects alignment information for tabular environments.
