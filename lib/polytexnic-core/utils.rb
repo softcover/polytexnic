@@ -10,6 +10,19 @@ module Polytexnic
         Digest::SHA1.hexdigest("#{salt}--#{string}")
       end
 
+      # Returns a digest for passing things through the pipeline.
+      def pipeline_digest(element)
+        value = digest("#{Time.now.to_s}::#{element}")
+        @literal_cache[element.to_s] ||= value
+      end
+
+      # Returns a digest for use in labels.
+      # I like to use labels of the form cha:foo_bar, but for some reason
+      # Tralics removes the underscore in this case.
+      def underscore_digest
+        pipeline_digest('_')
+      end
+
       # Escapes backslashes.
       # Interpolated backslashes need extra escaping.
       # We only escape '\\' by itself, i.e., a backslash followed by spaces
@@ -26,6 +39,27 @@ module Polytexnic
         output = (skip ? "" : "\\begin{xmlelement}{#{name}}")
         output << yield if block_given?
         output << (skip ? "" : "\\end{xmlelement}")
+      end
+
+      # Returns the executable on the path.
+      def executable(name, message = nil)
+        if (exec = `which #{name}`.chomp).empty?
+          dir = Gem::Specification.find_by_name('polytexnic-core').gem_dir
+          binary = File.join(dir, 'precompiled_binaries', name)
+          # Try a couple of common directories for executables.
+          if File.exist?(bin_dir = File.join(ENV['HOME'], 'bin'))
+            FileUtils.cp binary, bin_dir
+          elsif File.exist?(bin_dir = File.join('/', 'usr', 'local', 'bin'))
+            FileUtils.cp binary, bin_dir
+          else
+            message ||= "File '#{name}' not found"
+            $stderr.puts message
+            exit 1
+          end
+          executable(name, message)
+        else
+          exec
+        end
       end
 
       # Returns some new commands.

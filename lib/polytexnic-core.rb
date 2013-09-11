@@ -19,14 +19,20 @@ module Polytexnic
       attr_accessor :literal_cache, :code_cache, :polytex, :xml, :html,
                     :math_label_cache, :highlight_cache
 
-      def initialize(polytex)
+      def initialize(source, options = {})
         @literal_cache = {}
         @code_cache = {}
         @highlight_cache_filename = f = '.highlight_cache'
         @highlight_cache = File.exist?(f) ? MessagePack.unpack(File.read(f))
                                           : {}
         @math_label_cache = {}
-        @polytex = polytex
+        @format = options[:format] || :polytex
+        @polytex = case
+                   when polytex?
+                     source
+                   when markdown?
+                     to_polytex(source)
+                   end
       end
 
       def to_html
@@ -53,20 +59,40 @@ module Polytexnic
         @latex
       end
 
-      # Returns a digest for use in labels.
-      # I like to use labels of the form cha:foo_bar, but for some reason
-      # Tralics removes the underscore in this case.
-      def underscore_digest
-        pipeline_digest(:_)
-      end
-
       private
 
-        # Returns a digest for passing things through the pipeline.
-        def pipeline_digest(element)
-          value = digest("#{Time.now.to_s}::#{element}")
-          @literal_cache[element.to_s] ||= value
+        def markdown?
+          @format == :markdown || @format == :md
         end
-    end
+
+        def polytex?
+          @format == :polytex
+        end
+
+        def to_polytex(markdown)
+          pandoc_polytex(markdown)
+        end
+
+        def pandoc_polytex(markdown)
+          file = Tempfile.new(['markdown', '.md'])
+          puts markdown if debug?
+          file.write(markdown)
+          file.close
+          polytex_filename = file.path.sub('.md', '.tex')
+          system("#{pandoc} -s #{file.path} -o #{polytex_filename}")
+          raw_polytex =
+          polytex = File.read(polytex_filename)
+          puts polytex if debug?
+          polytex
+        ensure
+          file.delete
+          File.delete(polytex_filename)
+        end
+
+        # Returns the executable for Pandoc.
+        def pandoc
+          executable('pandoc')
+        end
+      end
   end
 end

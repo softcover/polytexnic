@@ -216,8 +216,7 @@ module Polytexnic
           file.write(polytex)
           file.close
           Dir.mkdir 'log' unless File.directory?('log')
-          t = tralics
-          system("#{t} -nomathml #{file.path} > log/tralics.log")
+          system("#{tralics} -nomathml #{file.path} > log/tralics.log")
           dirname = File.dirname(file.path)
           xml_filename = File.basename(file.path, '.tex') + '.xml'
           raw_xml = File.read(File.join(dirname, xml_filename))
@@ -257,31 +256,9 @@ module Polytexnic
           raw_xml.gsub('&#133;', '…')
         end
 
-        # Returns the executable on the path.
-        def executable(name)
-          `which #{name}`.strip
-        end
-
         # Returns the executable for the Tralics LaTeX-to-XML converter.
         def tralics
-          if (exec = executable('tralics')).empty?
-            dir = Gem::Specification.find_by_name('polytexnic-core').gem_dir
-            binary = File.join(dir, 'precompiled_binaries', 'tralics')
-            # Try a couple of common directories for executables.
-            if File.exist?(bin_dir = File.join(ENV['HOME'], 'bin'))
-              FileUtils.cp binary, bin_dir
-              executable('tralics')
-            elsif File.exist?(bin_dir = File.join('usr', 'local', 'bin'))
-              FileUtils.cp binary, bin_dir
-              executable('tralics')
-            else
-              $stderr.puts "Please install Tralics"
-              $stderr.puts "See http://polytexnic.com/install"
-              exit 1
-            end
-          else
-            exec
-          end
+          executable('tralics')
         end
     end
   end
