@@ -79,14 +79,19 @@ module Polytexnic
           file.write(markdown)
           file.close
           polytex_filename = file.path.sub('.md', '.tex')
-          system("#{pandoc} -s #{file.path} -o #{polytex_filename}")
-          raw_polytex =
-          polytex = File.read(polytex_filename)
+          system("#{pandoc} --chapters -s #{file.path} -o #{polytex_filename}")
+          raw_polytex = File.read(polytex_filename)
+          polytex = extract_document(raw_polytex)
           puts polytex if debug?
           polytex
         ensure
           file.delete
           File.delete(polytex_filename)
+        end
+
+        def extract_document(raw_polytex)
+          document_regex = /\\begin{document}\n(.*)\n\\end{document}/m
+          raw_polytex.scan(document_regex).flatten.first
         end
 
         # Returns the executable for Pandoc.

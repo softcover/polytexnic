@@ -21,7 +21,19 @@ describe Polytexnic::Core::Pipeline do
 
     describe "for vanilla Markdown" do
       let(:source) { '*foo* **bar**' }
-      it { should include('\emph{foo} \textbf{bar}') }
+      it { should include '\emph{foo} \textbf{bar}' }
+      it { should_not include '\begin{document}' }
+    end
+
+    describe "for multiline Markdown" do
+      let(:source) do <<-EOS
+# A chapter
+
+Hello, *world*!
+        EOS
+      end
+      it { should include '\chapter{A chapter}' }
+      it { should include '\emph{world}' }
     end
   end
 end
