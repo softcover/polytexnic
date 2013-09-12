@@ -678,6 +678,7 @@ module Polytexnic
         end
 
         def hrefs(doc)
+          require 'open-uri'
           doc.xpath('//xref').each do |node|
             node.name = 'a'
             node['href'] = URI::encode(literal_cache[node['url']])
