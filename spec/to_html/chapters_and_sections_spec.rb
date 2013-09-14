@@ -204,4 +204,30 @@ describe 'Polytexnic::Core::Pipeline#to_html' do
       EOS
     end
   end
+
+  describe "frontmatter and mainmatter" do
+    let(:polytex) do <<-'EOS'
+      \frontmatter
+      \chapter{Foo}
+
+      \mainmatter
+      \chapter{Bar}
+      \label{cha:bar}
+
+      Chapter~\ref{cha:bar}
+      EOS
+    end
+
+    it do
+      should resemble <<-'EOS'
+<div id="frontmatter" data-number="0">
+<div class="chapter"><h1><a href="#" class="heading">Foo</a></h1>
+</div></div>
+<div id="mainmatter">
+<div id="cha-bar" data-tralics-id="cid1" class="chapter" data-number="1"><h1><a href="#cha-bar" class="heading"><span class="number">Chapter 1 </span>Bar</a></h1>
+<p><a href="#cha-bar" class="hyperref">Chapter <span class="ref">1</span></a>
+</p></div></div>
+      EOS
+    end
+  end
 end

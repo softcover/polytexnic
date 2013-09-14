@@ -39,6 +39,8 @@ module Polytexnic
         graphics_and_figures(doc)
         tables(doc)
         math(doc)
+        frontmatter(doc)
+        mainmatter(doc)
         footnotes(doc)
         convert_to_html(doc)
       end
@@ -171,6 +173,23 @@ module Polytexnic
             node.content = literal_cache[node.content.strip]
             node['class'] = 'inline_math'
             clean_node node, ['textype', 'type']
+          end
+        end
+
+        # Handles frontmatter (if any).
+        def frontmatter(doc)
+          doc.xpath('//frontmatter').each do |node|
+            node.name = 'div'
+            node['id'] = 'frontmatter'
+            node['data-number'] = 0
+          end
+        end
+
+        # Change mainmatter to a div.
+        def mainmatter(doc)
+          doc.xpath('//mainmatter').each do |node|
+            node.name = 'div'
+            node['id'] = 'mainmatter'
           end
         end
 
