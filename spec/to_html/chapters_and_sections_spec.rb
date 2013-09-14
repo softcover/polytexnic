@@ -86,6 +86,33 @@ describe 'Polytexnic::Core::Pipeline#to_html' do
     it { should resemble output }
   end
 
+  describe '\section*, etc.' do
+    let(:polytex) do <<-'EOS'
+        \section*{Foo}
+
+        \subsection*{Bar}
+
+        Lorem ipsum
+
+        \section{Baz}
+      EOS
+    end
+    let(:output) do <<-'EOS'
+      <div class="section-star">
+        <h2><a href="#" class="heading">Foo</a></h2>
+        <div class="subsection-star">
+          <h3><a href="#" class="heading">Bar</a></h3>
+          <p>Lorem ipsum</p>
+        </div>
+      </div>
+      <div id="cid1" data-tralics-id="cid1" class="section" data-number="1">
+        <h2><a href="#cid1" class="heading"><span class="number">1 </span>Baz</a></h2>
+      </div>
+      EOS
+    end
+    it { should resemble output }
+  end
+
   describe 'chapter cross-references' do
     let(:polytex) do <<-'EOS'
         \chapter{Foo}
@@ -174,6 +201,37 @@ describe 'Polytexnic::Core::Pipeline#to_html' do
         <p><a href="#cha-bar" class="hyperref">Chapter <span class="undefined_ref">cha:bar</span></a>
         </p>
         </div>
+      EOS
+    end
+  end
+
+  describe "frontmatter and mainmatter" do
+    let(:polytex) do <<-'EOS'
+      \frontmatter
+      \chapter{Foo}
+
+      Lorem ipsum.\footnote{Foo bar.}
+
+      \mainmatter
+      \chapter{Bar}
+      \label{cha:bar}
+
+      Chapter~\ref{cha:bar}
+      EOS
+    end
+
+    it do
+      should resemble <<-'EOS'
+<div id="frontmatter" data-number="0">
+<div class="chapter-star"><h1><a href="#" class="heading">Foo</a></h1>
+<p>Lorem ipsum.<sup id="cha-0_footnote-ref-1" class="footnote"><a href="#cha-0_footnote-1">1</a></sup></p>
+</div></div>
+<div id="cha-0_footnotes">
+         <ol class="footnotes"><li id="cha-0_footnote-1">Foo bar. <a class="arrow" href="#cha-0_footnote-ref-1">↑</a></li>
+         </ol></div>
+<div id="cha-bar" data-tralics-id="cid1" class="chapter" data-number="1"><h1><a href="#cha-bar" class="heading"><span class="number">Chapter 1 </span>Bar</a></h1>
+<p><a href="#cha-bar" class="hyperref">Chapter <span class="ref">1</span></a>
+</p></div>
       EOS
     end
   end
