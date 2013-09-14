@@ -201,9 +201,6 @@ module Polytexnic
           end
           # Handle chapters 1 through n-1.
           doc.xpath('//div[@class="chapter"]').each_with_index do |chapter, i|
-            # Skip the first chapter since no footnotes can be placed before it.
-            # TODO: allow this placement once we can handle frontmatter.
-            next if i == 0
             make_footnotes(footnotes, i, chapter)
           end
           # Place the footnotes for Chapter n (if any).
