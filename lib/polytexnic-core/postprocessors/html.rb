@@ -185,11 +185,11 @@ module Polytexnic
           end
         end
 
-        # Change mainmatter to a div.
+        # Handles mainmatter.
         def mainmatter(doc)
           doc.xpath('//mainmatter').each do |node|
-            node.name = 'div'
-            node['id'] = 'mainmatter'
+            node.parent << node.children
+            node.remove
           end
         end
 
@@ -459,6 +459,9 @@ module Polytexnic
               node['class'] = 'section'
               heading = 'h2'
             end
+            if node['rend'] == 'nonumber'
+              node['class'] += '-star'
+            end
             clean_node node, %w{type rend}
             make_headings(doc, node, heading)
           end
@@ -468,6 +471,9 @@ module Polytexnic
           doc.xpath('//div1').each do |node|
             node.name = 'div'
             node['class'] = 'subsection'
+            if node['rend'] == 'nonumber'
+              node['class'] += '-star'
+            end
             clean_node node, %w{rend}
             make_headings(doc, node, 'h3')
           end

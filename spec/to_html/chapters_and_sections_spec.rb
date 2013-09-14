@@ -98,9 +98,9 @@ describe 'Polytexnic::Core::Pipeline#to_html' do
       EOS
     end
     let(:output) do <<-'EOS'
-      <div class="section">
+      <div class="section-star">
         <h2><a href="#" class="heading">Foo</a></h2>
-        <div class="subsection">
+        <div class="subsection-star">
           <h3><a href="#" class="heading">Bar</a></h3>
           <p>Lorem ipsum</p>
         </div>
@@ -221,12 +221,11 @@ describe 'Polytexnic::Core::Pipeline#to_html' do
     it do
       should resemble <<-'EOS'
 <div id="frontmatter" data-number="0">
-<div class="chapter"><h1><a href="#" class="heading">Foo</a></h1>
+<div class="chapter-star"><h1><a href="#" class="heading">Foo</a></h1>
 </div></div>
-<div id="mainmatter">
 <div id="cha-bar" data-tralics-id="cid1" class="chapter" data-number="1"><h1><a href="#cha-bar" class="heading"><span class="number">Chapter 1 </span>Bar</a></h1>
 <p><a href="#cha-bar" class="hyperref">Chapter <span class="ref">1</span></a>
-</p></div></div>
+</p></div>
       EOS
     end
   end
