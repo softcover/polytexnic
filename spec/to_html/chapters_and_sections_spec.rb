@@ -86,6 +86,33 @@ describe 'Polytexnic::Core::Pipeline#to_html' do
     it { should resemble output }
   end
 
+  describe '\section*, etc.' do
+    let(:polytex) do <<-'EOS'
+        \section*{Foo}
+
+        \subsection*{Bar}
+
+        Lorem ipsum
+
+        \section{Baz}
+      EOS
+    end
+    let(:output) do <<-'EOS'
+      <div class="section">
+        <h2><a href="#" class="heading">Foo</a></h2>
+        <div class="subsection">
+          <h3><a href="#" class="heading">Bar</a></h3>
+          <p>Lorem ipsum</p>
+        </div>
+      </div>
+      <div id="cid1" data-tralics-id="cid1" class="section" data-number="1">
+        <h2><a href="#cid1" class="heading"><span class="number">1 </span>Baz</a></h2>
+      </div>
+      EOS
+    end
+    it { should resemble output }
+  end
+
   describe 'chapter cross-references' do
     let(:polytex) do <<-'EOS'
         \chapter{Foo}

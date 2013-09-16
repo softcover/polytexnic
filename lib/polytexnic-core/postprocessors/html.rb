@@ -440,7 +440,7 @@ module Polytexnic
               node['class'] = 'section'
               heading = 'h2'
             end
-            clean_node node, %w{type}
+            clean_node node, %w{type rend}
             make_headings(doc, node, heading)
           end
         end
@@ -449,6 +449,7 @@ module Polytexnic
           doc.xpath('//div1').each do |node|
             node.name = 'div'
             node['class'] = 'subsection'
+            clean_node node, %w{rend}
             make_headings(doc, node, 'h3')
           end
         end
@@ -457,6 +458,7 @@ module Polytexnic
           doc.xpath('//div2').each do |node|
             node.name = 'div'
             node['class'] = 'subsubsection'
+            clean_node node, %w{rend}
             make_headings(doc, node, 'h4')
           end
         end
