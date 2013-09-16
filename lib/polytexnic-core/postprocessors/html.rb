@@ -39,6 +39,8 @@ module Polytexnic
         graphics_and_figures(doc)
         tables(doc)
         math(doc)
+        frontmatter(doc)
+        mainmatter(doc)
         footnotes(doc)
         convert_to_html(doc)
       end
@@ -174,6 +176,23 @@ module Polytexnic
           end
         end
 
+        # Handles frontmatter (if any).
+        def frontmatter(doc)
+          doc.xpath('//frontmatter').each do |node|
+            node.name = 'div'
+            node['id'] = 'frontmatter'
+            node['data-number'] = 0
+          end
+        end
+
+        # Handles mainmatter.
+        def mainmatter(doc)
+          doc.xpath('//mainmatter').each do |node|
+            node.parent << node.children
+            node.remove
+          end
+        end
+
         # Processes and places footnotes.
         def footnotes(doc)
           footnotes = Hash.new { |h, k| h[k] = [] }
@@ -182,9 +201,6 @@ module Polytexnic
           end
           # Handle chapters 1 through n-1.
           doc.xpath('//div[@class="chapter"]').each_with_index do |chapter, i|
-            # Skip the first chapter since no footnotes can be placed before it.
-            # TODO: allow this placement once we can handle frontmatter.
-            next if i == 0
             make_footnotes(footnotes, i, chapter)
           end
           # Place the footnotes for Chapter n (if any).
@@ -440,6 +456,9 @@ module Polytexnic
               node['class'] = 'section'
               heading = 'h2'
             end
+            if node['rend'] == 'nonumber'
+              node['class'] += '-star'
+            end
             clean_node node, %w{type rend}
             make_headings(doc, node, heading)
           end
@@ -449,6 +468,9 @@ module Polytexnic
           doc.xpath('//div1').each do |node|
             node.name = 'div'
             node['class'] = 'subsection'
+            if node['rend'] == 'nonumber'
+              node['class'] += '-star'
+            end
             clean_node node, %w{rend}
             make_headings(doc, node, 'h3')
           end
