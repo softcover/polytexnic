@@ -859,7 +859,9 @@ module Polytexnic
         #  <p>Preformatted text:</p> <pre>text</pre> <p>foo</p>
         def convert_to_html(doc)
           highlight_source_code(doc)
-          File.write(@highlight_cache_filename, highlight_cache.to_msgpack)
+          File.open(@highlight_cache_filename, 'wb') do |f|
+            f.write(highlight_cache.to_msgpack)
+          end
           body = doc.at_css('document').children.to_xhtml
           Nokogiri::HTML.fragment(body).to_xhtml.tap do |html|
             trim_empty_paragraphs(html)

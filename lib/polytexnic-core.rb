@@ -22,9 +22,12 @@ module Polytexnic
       def initialize(source, options = {})
         @literal_cache = {}
         @code_cache = {}
-        @highlight_cache_filename = f = '.highlight_cache'
-        @highlight_cache = File.exist?(f) ? MessagePack.unpack(File.read(f))
-                                          : {}
+        @highlight_cache_filename = '.highlight_cache'
+        if File.exist?(@highlight_cache_filename)
+          content = File.read(@highlight_cache_filename)
+          @highlight_cache = MessagePack.unpack(content) unless content.empty?
+        end
+        @highlight_cache ||= {}
         @math_label_cache = {}
         @source_format = options[:source] || :polytex
         @source = source
