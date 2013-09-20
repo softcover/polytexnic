@@ -115,6 +115,7 @@ describe 'Polytexnic::Core::Pipeline#to_html' do
 
   describe 'chapter cross-references' do
     let(:polytex) do <<-'EOS'
+        \tableofcontents
         \chapter{Foo}
         \label{cha:foo_bar}
 

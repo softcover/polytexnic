@@ -42,6 +42,7 @@ module Polytexnic
         frontmatter(doc)
         mainmatter(doc)
         footnotes(doc)
+        table_of_contents(doc)
         convert_to_html(doc)
       end
 
@@ -866,6 +867,35 @@ module Polytexnic
           Nokogiri::HTML.fragment(body).to_xhtml.tap do |html|
             trim_empty_paragraphs(html)
           end
+        end
+
+        # Handles table of contents (if present).
+        def table_of_contents(doc)
+          doc.xpath('//tableofcontents').each do |node|
+            node.name = 'div'
+            node['id'] = 'table_of_contents'
+          end
+
+
+      # # Extracts the table of contents.
+      # def extract_toc(xml)
+      #   toc = xml.css('#table_of_contents')
+      #   return if toc.empty?
+      #   html = []
+      #   in_chapter = in_section = in_subsection = in_subsubsection = false
+      #   xml.css('#book>div').each do |node|
+      #     if node['class'] == 'chapter'
+      #       if in_chapter || in_section || in_subsection || in_subsubsection
+      #         html << '</ol>'
+      #       end
+      #       in_chapter = true
+      #       html << '<ol>'
+      #       html << '<li>' << node.css('a.heading').to_xhtml << '</li>'
+      #     end
+      #   end
+      #   toc.first.add_child(Nokogiri::HTML::DocumentFragment.parse(html.join))
+      # end
+
         end
 
         # Cleans a node by removing all the given attributes.
