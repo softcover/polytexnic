@@ -880,16 +880,16 @@ module Polytexnic
           in_chapter = in_section = in_subsection = in_subsubsection = false
           doc.css('div').each do |node|
             if node['class'] == 'chapter'
-              if in_chapter || in_section || in_subsection || in_subsubsection
-                html << '</ol>'
-              end
+              html << '</ol>' if in_chapter
+              # if in_chapter || in_section || in_subsection || in_subsubsection
+              #   html << '</ol>'
+              #   in_chapter = false
               in_chapter = true
               html << '<ol>'
               html << '<li>' << node.css('a.heading').to_xhtml << '</li>'
             end
-
-            toc.add_child(Nokogiri::HTML::DocumentFragment.parse(html.join))
           end
+          toc.add_child(Nokogiri::HTML::DocumentFragment.parse(html.join))
         end
 
         # Cleans a node by removing all the given attributes.

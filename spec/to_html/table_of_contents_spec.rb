@@ -26,12 +26,19 @@ describe 'Polytexnic::Core::Pipeline#to_html' do
     subject(:toc) do
       Nokogiri::HTML(processed_text).css('div#table_of_contents')
     end
+
     it { should_not be_empty }
+
     it "should have a 'depth' attribute" do
       expect(toc.first['depth']).to be_nil
     end
+
     it "should have a link to the first chapter" do
-      expect(toc.css('li>a').first['href']).to eq '#cha-foo'
+      expect(toc.css('li>a')[0]['href']).to eq '#cha-foo'
+    end
+
+    it "should have a link to the second chapter" do
+      expect(toc.css('li>a')[1]['href']).to eq '#cha-lorem'
     end
   end
 end
