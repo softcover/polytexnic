@@ -42,6 +42,7 @@ module Polytexnic
         frontmatter(doc)
         mainmatter(doc)
         footnotes(doc)
+        table_of_contents(doc)
         convert_to_html(doc)
       end
 
@@ -866,6 +867,72 @@ module Polytexnic
           Nokogiri::HTML.fragment(body).to_xhtml.tap do |html|
             trim_empty_paragraphs(html)
           end
+        end
+
+        # Handles table of contents (if present).
+        # This code could no doubt be made much shorter, but probably at the
+        # cost of clarity.
+        def table_of_contents(doc)
+          toc = doc.at_css('tableofcontents')
+          return if toc.nil?
+          toc.add_previous_sibling('<h1 class="contents">Contents</h1>')
+          toc.name = 'div'
+          toc['id'] = 'table_of_contents'
+          toc.remove_attribute 'depth'
+          html = []
+          current_depth = 0
+          doc.css('div').each do |node|
+            case node['class']
+            when 'chapter'
+              html << '<ul>' if current_depth == 0
+              while current_depth > 1
+                close_list(html)
+                current_depth -= 1
+              end
+              current_depth = 1
+              insert_li(html, node)
+            when 'section'
+              open_list(html) if current_depth == 1
+              while current_depth > 2
+                close_list(html)
+                current_depth -= 1
+              end
+              current_depth = 2
+              insert_li(html, node)
+            when 'subsection'
+              open_list(html) if current_depth == 2
+              while current_depth > 3
+                close_list(html)
+                current_depth -= 1
+              end
+              current_depth = 3
+              insert_li(html, node)
+            when 'subsubsection'
+              open_list(html) if current_depth == 3
+              while current_depth > 4
+                close_list(html)
+                current_depth -= 1
+              end
+              current_depth = 4
+              insert_li(html, node)
+            end
+          end
+          toc.add_child(Nokogiri::HTML::DocumentFragment.parse(html.join))
+        end
+
+        def open_list(html, li=true)
+          html << '<li>' if li
+          html << '<ul>'
+        end
+
+        def close_list(html, li=true)
+          html << '</ul>'
+          html << '</li>' if li
+        end
+
+        def insert_li(html, node)
+          open = %(<li class="#{node['class']}">)
+          html << open << node.at_css('a.heading').to_xhtml << '</li>'
         end
 
         # Cleans a node by removing all the given attributes.
