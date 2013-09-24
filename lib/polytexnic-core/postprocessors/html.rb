@@ -875,6 +875,7 @@ module Polytexnic
         def table_of_contents(doc)
           toc = doc.at_css('tableofcontents')
           return if toc.nil?
+          toc.add_previous_sibling('<h1 class="contents">Contents</h1>')
           toc.name = 'div'
           toc['id'] = 'table_of_contents'
           toc.remove_attribute 'depth'

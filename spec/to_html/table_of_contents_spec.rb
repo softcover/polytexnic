@@ -31,6 +31,7 @@ describe 'Polytexnic::Core::Pipeline#to_html' do
     end
 
     let(:output) do <<-'EOS'
+<h1 class="contents">Contents</h1>
 <div id="table_of_contents">
   <ul><li class="chapter">
       <a href="#cha-foo" class="heading"><span class="number">Chapter 1 </span>Foo</a>
@@ -54,44 +55,46 @@ describe 'Polytexnic::Core::Pipeline#to_html' do
       EOS
     end
 
-    subject(:toc) do
-      Nokogiri::HTML(processed_text).css('div#table_of_contents')
+    it { should resemble output }
+
+    describe "HTML structure" do
+      subject(:toc) do
+        Nokogiri::HTML(processed_text).css('div#table_of_contents')
+      end
+
+      it { should_not be_empty }
+
+      it "should have a 'depth' attribute" do
+        expect(toc.first['depth']).to be_nil
+      end
+
+      it "should have a link to the first chapter" do
+        expect(toc.css('li>a')[0]['href']).to eq '#cha-foo'
+      end
+
+      it "should have a link to the first section" do
+        expect(toc.css('li>a')[1]['href']).to eq '#sec-bar'
+      end
+
+      it "should have a link to the first subsection" do
+        expect(toc.css('li>a')[2]['href']).to eq '#sec-baz'
+      end
+
+      it "should have a link to the first subsubsection" do
+        expect(toc.css('li>a')[3]['href']).to eq '#sec-null'
+      end
+
+      it "should have a link to the second section" do
+        expect(toc.css('li>a')[4]['href']).to eq '#sec-quux'
+      end
+
+      it "should have a link to the second chapter" do
+        expect(toc.css('li>a')[5]['href']).to eq '#cha-lorem'
+      end
+
+      it "should have the right number of lists" do
+        expect(toc.css('ul').length).to eq 6
+      end
     end
-
-    it { should_not be_empty }
-
-    it "should have a 'depth' attribute" do
-      expect(toc.first['depth']).to be_nil
-    end
-
-    it "should have a link to the first chapter" do
-      expect(toc.css('li>a')[0]['href']).to eq '#cha-foo'
-    end
-
-    it "should have a link to the first section" do
-      expect(toc.css('li>a')[1]['href']).to eq '#sec-bar'
-    end
-
-    it "should have a link to the first subsection" do
-      expect(toc.css('li>a')[2]['href']).to eq '#sec-baz'
-    end
-
-    it "should have a link to the first subsubsection" do
-      expect(toc.css('li>a')[3]['href']).to eq '#sec-null'
-    end
-
-    it "should have a link to the second section" do
-      expect(toc.css('li>a')[4]['href']).to eq '#sec-quux'
-    end
-
-    it "should have a link to the second chapter" do
-      expect(toc.css('li>a')[5]['href']).to eq '#cha-lorem'
-    end
-
-    it "should have the right number of lists" do
-      expect(toc.css('ul').length).to eq 6
-    end
-
-    its(:to_xhtml) { should resemble output }
   end
 end
