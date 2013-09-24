@@ -18,6 +18,12 @@ describe 'Polytexnic::Core::Pipeline#to_html' do
         \subsection{Baz}
         \label{sec:baz}
 
+        \subsubsection{Null}
+        \label{sec:null}
+
+        \section{Quux}
+        \label{sec:quux}
+
         \chapter{Lorem}
         \label{cha:lorem}
 
@@ -41,8 +47,20 @@ describe 'Polytexnic::Core::Pipeline#to_html' do
       expect(toc.css('li>a')[1]['href']).to eq '#sec-bar'
     end
 
+    it "should have a link to the first subsection" do
+      expect(toc.css('li>a')[2]['href']).to eq '#sec-baz'
+    end
+
+    it "should have a link to the first subsubsection" do
+      expect(toc.css('li>a')[3]['href']).to eq '#sec-null'
+    end
+
+    it "should have a link to the second section" do
+      expect(toc.css('li>a')[4]['href']).to eq '#sec-quux'
+    end
+
     it "should have a link to the second chapter" do
-      expect(toc.css('li>a')[2]['href']).to eq '#cha-lorem'
+      expect(toc.css('li>a')[5]['href']).to eq '#cha-lorem'
     end
   end
 end

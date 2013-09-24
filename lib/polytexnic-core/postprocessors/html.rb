@@ -871,7 +871,7 @@ module Polytexnic
 
         # Handles table of contents (if present).
         def table_of_contents(doc)
-          toc = doc.css('tableofcontents').first
+          toc = doc.at_css('tableofcontents')
       #   return if toc.empty?
           toc.name = 'div'
           toc['id'] = 'table_of_contents'
@@ -889,9 +889,18 @@ module Polytexnic
               html << '<ol>'
               html << '<li>' << node.at_css('a.heading').to_xhtml << '</li>'
             elsif cls == 'section'
-              puts node.css('a.heading').inspect
               html << '</ol>' if in_section
               in_section = true
+              html << '<ol>'
+              html << '<li>' << node.at_css('a.heading').to_xhtml << '</li>'
+            elsif cls == 'subsection'
+              html << '</ol>' if in_subsection
+              in_subsection = true
+              html << '<ol>'
+              html << '<li>' << node.at_css('a.heading').to_xhtml << '</li>'
+            elsif cls == 'subsubsection'
+              html << '</ol>' if in_subsubsection
+              in_subsubsection = true
               html << '<ol>'
               html << '<li>' << node.at_css('a.heading').to_xhtml << '</li>'
             end
