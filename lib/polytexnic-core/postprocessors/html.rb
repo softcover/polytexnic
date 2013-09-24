@@ -880,49 +880,54 @@ module Polytexnic
           toc['id'] = 'table_of_contents'
           toc.remove_attribute 'depth'
           html = []
-          in_chapter = in_section = in_subsection = in_subsubsection = false
+          current_depth = 0
           doc.css('div').each do |node|
             case node['class']
             when 'chapter'
-              close_list(html) if in_chapter
-              close_list(html) if in_section
-              close_list(html) if in_subsection
-              close_list(html) if in_subsubsection
-              in_chapter = true
-              in_section = in_subsection = in_subsubsection = false
-              open_list(html)
+              html << '<ul>' if current_depth == 0
+              while current_depth > 1
+                close_list(html)
+                current_depth -= 1
+              end
+              current_depth = 1
               insert_li(html, node)
             when 'section'
-              close_list(html) if in_section
-              close_list(html) if in_subsection
-              close_list(html) if in_subsubsection
-              in_section = true
-              in_subsection = in_subsubsection = false
-              open_list(html)
+              open_list(html) if current_depth == 1
+              while current_depth > 2
+                close_list(html)
+                current_depth -= 1
+              end
+              current_depth = 2
               insert_li(html, node)
             when 'subsection'
-              close_list(html) if in_subsection
-              close_list(html) if in_subsubsection
-              in_subsection = true
-              in_subsubsection = false
-              open_list(html)
+              open_list(html) if current_depth == 2
+              while current_depth > 3
+                close_list(html)
+                current_depth -= 1
+              end
+              current_depth = 3
               insert_li(html, node)
             when 'subsubsection'
-              close_list(html) if in_subsubsection
-              in_subsubsection = true
-              open_list(html)
+              open_list(html) if current_depth == 3
+              while current_depth > 4
+                close_list(html)
+                current_depth -= 1
+              end
+              current_depth = 4
               insert_li(html, node)
             end
           end
           toc.add_child(Nokogiri::HTML::DocumentFragment.parse(html.join))
         end
 
-        def open_list(html)
+        def open_list(html, li=true)
+          html << '<li>' if li
           html << '<ul>'
         end
 
-        def close_list(html)
+        def close_list(html, li=true)
           html << '</ul>'
+          html << '</li>' if li
         end
 
         def insert_li(html, node)
