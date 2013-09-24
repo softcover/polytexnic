@@ -137,15 +137,16 @@ module Polytexnic
           end
         end
 
-        # Mark environments with their types.
+        # Marks environments with their types.
         # Tralics strips some information when processing LaTeX, such as
         # whether a particular div defines a chapter. We remedy this by
         # using the \AddAttToCurrent pseudo-LaTeX command to mark such
         # environments with their types.
         def mark_environments(string)
 
-          # Mark chapters with a 'chapter' type.
-          string.gsub! /^\s*\\chapter\{(.*)\}/ do |s|
+          # Marks chapters with a 'chapter' type.
+          # Also handles \chapter*.
+          string.gsub! /^\s*\\chapter\*?\{(.*)\}/ do |s|
             "#{s}\n\\AddAttToCurrent{type}{chapter}"
           end
 

@@ -86,6 +86,15 @@ describe 'Polytexnic::Core::Pipeline#to_html' do
     it { should resemble output }
   end
 
+  describe '\chapter*' do
+    let(:polytex) do <<-'EOS'
+        \chapter*{Preface}
+        Lorem ipsum
+      EOS
+    end
+    it { should resemble '<div class="chapter-star">' }
+  end
+
   describe '\section*, etc.' do
     let(:polytex) do <<-'EOS'
         \section*{Foo}
