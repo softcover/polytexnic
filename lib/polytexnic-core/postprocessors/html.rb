@@ -870,6 +870,8 @@ module Polytexnic
         end
 
         # Handles table of contents (if present).
+        # This code could no doubt be made much shorter, but probably at the
+        # cost of clarity.
         def table_of_contents(doc)
           toc = doc.at_css('tableofcontents')
           return if toc.nil?
@@ -877,12 +879,36 @@ module Polytexnic
           toc['id'] = 'table_of_contents'
           toc.remove_attribute 'depth'
           html = []
-          in_level = {}
+          in_chapter = in_section = in_subsection = in_subsubsection = false
           doc.css('div').each do |node|
-            cls = node['class']
-            if %w[chapter section subsection subsubsection].include?(cls)
-              close_list(html) if in_level[cls]
-              in_level[cls] = true
+            case node['class']
+            when 'chapter'
+              close_list(html) if in_chapter
+              close_list(html) if in_section
+              close_list(html) if in_subsection
+              close_list(html) if in_subsubsection
+              in_chapter = true
+              in_section = in_subsection = in_subsubsection = false
+              open_list(html)
+              insert_li(html, node)
+            when 'section'
+              close_list(html) if in_section
+              close_list(html) if in_subsection
+              close_list(html) if in_subsubsection
+              in_section = true
+              in_subsection = in_subsubsection = false
+              open_list(html)
+              insert_li(html, node)
+            when 'subsection'
+              close_list(html) if in_subsection
+              close_list(html) if in_subsubsection
+              in_subsection = true
+              in_subsubsection = false
+              open_list(html)
+              insert_li(html, node)
+            when 'subsubsection'
+              close_list(html) if in_subsubsection
+              in_subsubsection = true
               open_list(html)
               insert_li(html, node)
             end

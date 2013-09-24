@@ -29,11 +29,33 @@ describe 'Polytexnic::Core::Pipeline#to_html' do
 
       EOS
     end
+
+    let(:output) do <<-'EOS'
+<div id="table_of_contents">
+  <ul><li>
+      <a href="#cha-foo" class="heading"><span class="number">Chapter 1 </span>Foo</a>
+    </li>
+    <ul><li>
+        <a href="#sec-bar" class="heading"><span class="number">1.1 </span>Bar</a>
+      </li>
+      <ul><li>
+          <a href="#sec-baz" class="heading"><span class="number">1.1.1 </span>Baz</a>
+        </li>
+        <ul><li>
+            <a href="#sec-null" class="heading"><span class="number">1.1.1.1 </span>Null</a>
+          </li>
+        </ul></ul></ul><ul><li>
+        <a href="#sec-quux" class="heading"><span class="number">1.2 </span>Quux</a>
+      </li>
+    </ul></ul><ul><li>
+      <a href="#cha-lorem" class="heading"><span class="number">Chapter 2 </span>Lorem</a>
+    </li>
+  </ul></div>
+      EOS
+    end
+
     subject(:toc) do
       Nokogiri::HTML(processed_text).css('div#table_of_contents')
-      File.write('/Users/mhartl/tmp/foo.html',
-              Nokogiri::HTML(processed_text).css('div#table_of_contents').to_xhtml
-)
     end
 
     it { should_not be_empty }
@@ -69,5 +91,7 @@ describe 'Polytexnic::Core::Pipeline#to_html' do
     it "should have the right number of lists" do
       expect(toc.css('ul').length).to eq 6
     end
+
+    its(:to_xhtml) { should resemble output }
   end
 end
