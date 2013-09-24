@@ -879,14 +879,21 @@ module Polytexnic
           html = []
           in_chapter = in_section = in_subsection = in_subsubsection = false
           doc.css('div').each do |node|
-            if node['class'] == 'chapter'
-              html << '</ol>' if in_chapter
+            cls = node['class']
+            if cls == 'chapter'
+              html << '</ol>' if in_chapter || in_section
               # if in_chapter || in_section || in_subsection || in_subsubsection
               #   html << '</ol>'
               #   in_chapter = false
               in_chapter = true
               html << '<ol>'
-              html << '<li>' << node.css('a.heading').to_xhtml << '</li>'
+              html << '<li>' << node.at_css('a.heading').to_xhtml << '</li>'
+            elsif cls == 'section'
+              puts node.css('a.heading').inspect
+              html << '</ol>' if in_section
+              in_section = true
+              html << '<ol>'
+              html << '<li>' << node.at_css('a.heading').to_xhtml << '</li>'
             end
           end
           toc.add_child(Nokogiri::HTML::DocumentFragment.parse(html.join))

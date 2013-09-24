@@ -37,8 +37,12 @@ describe 'Polytexnic::Core::Pipeline#to_html' do
       expect(toc.css('li>a')[0]['href']).to eq '#cha-foo'
     end
 
+    it "should have a link to the first section" do
+      expect(toc.css('li>a')[1]['href']).to eq '#sec-bar'
+    end
+
     it "should have a link to the second chapter" do
-      expect(toc.css('li>a')[1]['href']).to eq '#cha-lorem'
+      expect(toc.css('li>a')[2]['href']).to eq '#cha-lorem'
     end
   end
 end
