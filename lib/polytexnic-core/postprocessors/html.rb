@@ -925,7 +925,8 @@ module Polytexnic
         end
 
         def insert_li(html, node)
-          html << '<li>' << node.at_css('a.heading').to_xhtml << '</li>'
+          open = %(<li class="#{node['class']}">)
+          html << open << node.at_css('a.heading').to_xhtml << '</li>'
         end
 
         # Cleans a node by removing all the given attributes.

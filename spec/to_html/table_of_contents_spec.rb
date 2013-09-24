@@ -32,22 +32,22 @@ describe 'Polytexnic::Core::Pipeline#to_html' do
 
     let(:output) do <<-'EOS'
 <div id="table_of_contents">
-  <ul><li>
+  <ul><li class="chapter">
       <a href="#cha-foo" class="heading"><span class="number">Chapter 1 </span>Foo</a>
     </li>
-    <ul><li>
+    <ul><li class="section">
         <a href="#sec-bar" class="heading"><span class="number">1.1 </span>Bar</a>
       </li>
-      <ul><li>
+      <ul><li class="subsection">
           <a href="#sec-baz" class="heading"><span class="number">1.1.1 </span>Baz</a>
         </li>
-        <ul><li>
+        <ul><li class="subsubsection">
             <a href="#sec-null" class="heading"><span class="number">1.1.1.1 </span>Null</a>
           </li>
-        </ul></ul></ul><ul><li>
+        </ul></ul></ul><ul><li class="section">
         <a href="#sec-quux" class="heading"><span class="number">1.2 </span>Quux</a>
       </li>
-    </ul></ul><ul><li>
+    </ul></ul><ul><li class="chapter">
       <a href="#cha-lorem" class="heading"><span class="number">Chapter 2 </span>Lorem</a>
     </li>
   </ul></div>
