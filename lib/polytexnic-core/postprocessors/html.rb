@@ -872,40 +872,34 @@ module Polytexnic
         # Handles table of contents (if present).
         def table_of_contents(doc)
           toc = doc.at_css('tableofcontents')
-      #   return if toc.empty?
+          return if toc.nil?
           toc.name = 'div'
           toc['id'] = 'table_of_contents'
           toc.remove_attribute 'depth'
           html = []
-          in_chapter = in_section = in_subsection = in_subsubsection = false
+          in_level = {}
           doc.css('div').each do |node|
             cls = node['class']
-            if cls == 'chapter'
-              html << '</ol>' if in_chapter || in_section
-              # if in_chapter || in_section || in_subsection || in_subsubsection
-              #   html << '</ol>'
-              #   in_chapter = false
-              in_chapter = true
-              html << '<ol>'
-              html << '<li>' << node.at_css('a.heading').to_xhtml << '</li>'
-            elsif cls == 'section'
-              html << '</ol>' if in_section
-              in_section = true
-              html << '<ol>'
-              html << '<li>' << node.at_css('a.heading').to_xhtml << '</li>'
-            elsif cls == 'subsection'
-              html << '</ol>' if in_subsection
-              in_subsection = true
-              html << '<ol>'
-              html << '<li>' << node.at_css('a.heading').to_xhtml << '</li>'
-            elsif cls == 'subsubsection'
-              html << '</ol>' if in_subsubsection
-              in_subsubsection = true
-              html << '<ol>'
-              html << '<li>' << node.at_css('a.heading').to_xhtml << '</li>'
+            if %w[chapter section subsection subsubsection].include?(cls)
+              close_list(html) if in_level[cls]
+              in_level[cls] = true
+              open_list(html)
+              insert_li(html, node)
             end
           end
           toc.add_child(Nokogiri::HTML::DocumentFragment.parse(html.join))
+        end
+
+        def open_list(html)
+          html << '<ul>'
+        end
+
+        def close_list(html)
+          html << '</ul>'
+        end
+
+        def insert_li(html, node)
+          html << '<li>' << node.at_css('a.heading').to_xhtml << '</li>'
         end
 
         # Cleans a node by removing all the given attributes.

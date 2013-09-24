@@ -31,6 +31,9 @@ describe 'Polytexnic::Core::Pipeline#to_html' do
     end
     subject(:toc) do
       Nokogiri::HTML(processed_text).css('div#table_of_contents')
+      File.write('/Users/mhartl/tmp/foo.html',
+              Nokogiri::HTML(processed_text).css('div#table_of_contents').to_xhtml
+)
     end
 
     it { should_not be_empty }
@@ -61,6 +64,10 @@ describe 'Polytexnic::Core::Pipeline#to_html' do
 
     it "should have a link to the second chapter" do
       expect(toc.css('li>a')[5]['href']).to eq '#cha-lorem'
+    end
+
+    it "should have the right number of lists" do
+      expect(toc.css('ul').length).to eq 6
     end
   end
 end
