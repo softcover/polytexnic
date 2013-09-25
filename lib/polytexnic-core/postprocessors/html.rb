@@ -559,7 +559,8 @@ module Polytexnic
 
         def title(doc)
           doc.xpath('//maketitle').each do |node|
-            node.name = 'h1'
+            node.name = 'div'
+            node['id'] = 'title_page'
             %w{title subtitle author date}.each do |field|
               class_var = Polytexnic.instance_variable_get "@#{field}"
               if class_var
