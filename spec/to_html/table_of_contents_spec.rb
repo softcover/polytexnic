@@ -34,25 +34,25 @@ describe 'Polytexnic::Core::Pipeline#to_html' do
 <h1 class="contents">Contents</h1>
 <div id="table_of_contents">
 <ul>
-  <li class="chapter"><a href="#cha-foo" class="heading"><span class="number">Chapter 1 </span>Foo</a></li>
+  <li class="chapter"><a href="#cha-foo" class="heading hyperref"><span class="number">Chapter 1 </span>Foo</a></li>
   <li>
     <ul>
-      <li class="section"><a href="#sec-bar" class="heading"><span class="number">1.1 </span>Bar</a></li>
+      <li class="section"><a href="#sec-bar" class="heading hyperref"><span class="number">1.1 </span>Bar</a></li>
       <li>
         <ul>
-          <li class="subsection"><a href="#sec-baz" class="heading"><span class="number">1.1.1 </span>Baz</a></li>
+          <li class="subsection"><a href="#sec-baz" class="heading hyperref"><span class="number">1.1.1 </span>Baz</a></li>
           <li>
             <ul>
-              <li class="subsubsection"><a href="#sec-null" class="heading"><span class="number">1.1.1.1 </span>Null</a></li>
+              <li class="subsubsection"><a href="#sec-null" class="heading hyperref"><span class="number">1.1.1.1 </span>Null</a></li>
             </ul>
           </li>
         </ul>
       </li>
       <li class="section">
-       <a href="#sec-quux" class="heading"><span class="number">1.2 </span>Quux</a></li>
+       <a href="#sec-quux" class="heading hyperref"><span class="number">1.2 </span>Quux</a></li>
     </ul>
   </li>
-  <li class="chapter"><a href="#cha-lorem" class="heading"><span class="number">Chapter 2 </span>Lorem</a></li>
+  <li class="chapter"><a href="#cha-lorem" class="heading hyperref"><span class="number">Chapter 2 </span>Lorem</a></li>
 </ul>
 </div>
       EOS

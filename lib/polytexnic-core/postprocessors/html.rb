@@ -441,7 +441,7 @@ module Polytexnic
           head_node = node.children.first
           head_node.name = name
           a = doc.create_element 'a'
-          a['href'] = "##{node['id']}"
+          a['href'] = "##{node['id']}" unless node['id'].nil?
           a['class'] = 'heading'
           a << head_node.children
           head_node << a
@@ -933,7 +933,9 @@ module Polytexnic
 
         def insert_li(html, node)
           open = %(<li class="#{node['class']}">)
-          html << open << node.at_css('a.heading').to_xhtml << '</li>'
+          link = node.at_css('a.heading')
+          link['class'] += ' hyperref'
+          html << open << link.to_xhtml << '</li>'
         end
 
         # Cleans a node by removing all the given attributes.
