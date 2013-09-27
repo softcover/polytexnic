@@ -86,6 +86,15 @@ describe 'Polytexnic::Core::Pipeline#to_html' do
     it { should resemble output }
   end
 
+  describe '\chapter*' do
+    let(:polytex) do <<-'EOS'
+        \chapter*{Preface}
+        Lorem ipsum
+      EOS
+    end
+    it { should resemble '<div class="chapter-star">' }
+  end
+
   describe '\section*, etc.' do
     let(:polytex) do <<-'EOS'
         \section*{Foo}
@@ -99,9 +108,9 @@ describe 'Polytexnic::Core::Pipeline#to_html' do
     end
     let(:output) do <<-'EOS'
       <div class="section-star">
-        <h2><a href="#" class="heading">Foo</a></h2>
+        <h2><a class="heading">Foo</a></h2>
         <div class="subsection-star">
-          <h3><a href="#" class="heading">Bar</a></h3>
+          <h3><a class="heading">Bar</a></h3>
           <p>Lorem ipsum</p>
         </div>
       </div>
@@ -223,7 +232,7 @@ describe 'Polytexnic::Core::Pipeline#to_html' do
     it do
       should resemble <<-'EOS'
 <div id="frontmatter" data-number="0">
-<div class="chapter-star"><h1><a href="#" class="heading">Foo</a></h1>
+<div class="chapter-star"><h1><a class="heading">Foo</a></h1>
 <p>Lorem ipsum.<sup id="cha-0_footnote-ref-1" class="footnote"><a href="#cha-0_footnote-1">1</a></sup></p>
 </div></div>
 <div id="cha-0_footnotes">
