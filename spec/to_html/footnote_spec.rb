@@ -103,29 +103,4 @@ describe 'Polytexnic::Core::Pipeline#to_html' do
     end
     it { should resemble output }
   end
-
-  describe "Markdown footnotes" do
-    subject do
-      Polytexnic::Core::Pipeline.new(markdown, source: :markdown).polytex
-    end
-
-    context "first chapter with footnotes" do
-      let(:markdown) do <<-'EOS'
-To add a footnote, you insert a footnote tag like this.[^foo]
-
-Then you add the footnote content later in the text, using the same tag, with a colon and a space:[^foo2]
-
-[^foo]: This is the footnote content.
-
-That is it.  You can keep writing your text after the footnote content.
-
-[^foo2]: This is the footnote text. We are now going to add a second line
-    after typing in four spaces.
-        EOS
-      end
-
-      it { should include '\footnote{This is the footnote content.}' }
-      it { should include 'after typing in four spaces.}' }
-    end
-  end
 end
