@@ -22,12 +22,13 @@ module Polytexnic
       # (but why not just use LaTeX?). At this point, I fear that "Markdown"
       # has become little more than a marketing term.</rant>
       def to_polytex
-        require 'kramdown'
+        require 'Kramdown'
         cleaned_markdown = cache_code_environments
+        math_cache = cache_math(cleaned_markdown)
         # Override the header ordering, which starts with 'section' by default.
         lh = 'chapter,section,subsection,subsubsection,paragraph,subparagraph'
         kramdown = Kramdown::Document.new(cleaned_markdown, latex_headers: lh)
-        @source = kramdown.to_latex
+        @source = restore_math(kramdown.to_latex, math_cache)
       end
 
       def cache_code_environments
@@ -52,6 +53,23 @@ module Polytexnic
           end
         end
         output.join("\n")
+      end
+
+      def cache_math(text)
+        cache = {}
+        text.gsub!(/\{\$\$\}(.*?)\{\/\$\$\}/) do
+          key = digest($1)
+          cache[[:inline, key]] = $1
+          key
+        end
+        cache
+      end
+
+      def restore_math(text, cache)
+        cache.each do |(kind, key), value|
+          text.gsub!(key, '\(' + value + '\)')
+        end
+        text
       end
     end
   end

@@ -253,4 +253,24 @@ describe Polytexnic::Core::Pipeline do
       it_behaves_like "an equation environment"
     end
   end
+
+  describe "Markdown math" do
+    subject do
+      Polytexnic::Core::Pipeline.new(markdown, source: :markdown).polytex
+    end
+
+    context "inline math" do
+      let(:markdown) do <<-'EOS'
+This is inline math: {$$} x^2 {/$$}.
+        EOS
+      end
+
+      it { should include '\( x^2 \)' }
+    end
+
+    context "literal math" do
+      pending
+
+    end
+  end
 end

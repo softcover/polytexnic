@@ -109,7 +109,7 @@ describe 'Polytexnic::Core::Pipeline#to_html' do
       Polytexnic::Core::Pipeline.new(markdown, source: :markdown).polytex
     end
 
-    describe "first chapter with footnotes" do
+    context "first chapter with footnotes" do
       let(:markdown) do <<-'EOS'
 To add a footnote, you insert a footnote tag like this.[^foo]
 
