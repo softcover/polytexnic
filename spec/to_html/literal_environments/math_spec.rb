@@ -277,12 +277,7 @@ x^2
         EOS
       end
 
-      it { puts markdown; should resemble '\[ x^2 \]' }
-    end
-
-    context "literal math" do
-      pending
-
+      it { should resemble '\[ x^2 \]' }
     end
   end
 end

@@ -55,6 +55,16 @@ module Polytexnic
         output.join("\n")
       end
 
+      # Caches Leanpub-style math.
+      # Leanpub uses the notation {$$}...{/$$} for both inline and block math,
+      # with the only difference being the presences of newlines:
+      #     {$$} x^2 {/$$}  % inline
+      # and
+      #     {$$}
+      #     x^2             % block
+      #     {/$$}
+      # I personally hate this notation and convention, but anyone who really
+      # cares should just use PolyTeX instead of Markdown.
       def cache_math(text)
         cache = {}
         text.gsub!(/\{\$\$\}\n(.*?)\n\{\/\$\$\}/) do
@@ -70,14 +80,20 @@ module Polytexnic
         cache
       end
 
+      # Restores the Markdown math.
+      # This is easy because we're running everything through our LaTeX
+      # pipeline.
       def restore_math(text, cache)
         cache.each do |(kind, key), value|
           case kind
           when :inline
-            text.gsub!(key, '\(' + value + '\)')
+            open  = '\('
+            close =  '\)'
           when :block
-            text.gsub!(key, '\[ ' + value + ' \]')
+            open  = '\[' + "\n"
+            close = "\n" + '\]'
           end
+          text.gsub!(key, open + value + close)
         end
         text
       end
