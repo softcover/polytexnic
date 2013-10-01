@@ -39,7 +39,6 @@ module Polytexnic
           if line =~ /\{lang="(.*?)"\}/
             language = $1
             code = []
-
             while (line = lines.shift) && line.match(/^#{indentation}(.*)$/) do
               code << $1
             end
@@ -48,11 +47,21 @@ module Polytexnic
             code_cache[key] = [code, language]
             output << key
             output << line
-          elsif line =~ /^```\s*$/
+          elsif line =~ /^```\s*$/        # basic code fences
             while (line = lines.shift) && !line.match(/^```\s*$/)
               output << indentation + line
             end
             output << "\n"
+          elsif line =~ /^```(\w+)\s*$/   # syntax-highlighted code fences
+            language = $1
+            code = []
+            while (line = lines.shift) && !line.match(/^```\s*$/) do
+              code << line
+            end
+            code = code.join("\n")
+            key = digest(code)
+            code_cache[key] = [code, language]
+            output << key
           else
             output << line
           end

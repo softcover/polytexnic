@@ -130,26 +130,53 @@ lorem
       end
 
       describe "GitHub-flavored code fencing" do
-        let(:source) do <<-EOS
+
+        context "without highlighting" do
+          let(:source) do <<-EOS
 ```
 def foo
   "bar"
 end
 ```
 lorem
-          EOS
-        end
+            EOS
+          end
 
-        let(:output) do <<-'EOS'
+          let(:output) do <<-'EOS'
 \begin{verbatim}
 def foo
   "bar"
 end
 \end{verbatim}
 lorem
-          EOS
+            EOS
+          end
+          it { should resemble output }
         end
-        it { should resemble output }
+
+        context "with highlighting" do
+          let(:source) do <<-EOS
+```ruby
+def foo
+  "bar"
+end
+```
+lorem
+            EOS
+          end
+
+          let(:output) do <<-'EOS'
+%= lang:ruby
+\begin{code}
+def foo
+  "bar"
+end
+\end{code}
+lorem
+            EOS
+          end
+          it { should resemble output }
+        end
       end
     end
   end
