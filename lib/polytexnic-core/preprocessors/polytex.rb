@@ -34,11 +34,11 @@ module Polytexnic
       def cache_code_environments
         output = []
         lines = @source.split("\n")
+        indentation = ' ' * 4
         while (line = lines.shift)
           if line =~ /\{lang="(.*?)"\}/
             language = $1
             code = []
-            indentation = ' ' * 4
 
             while (line = lines.shift) && line.match(/^#{indentation}(.*)$/) do
               code << $1
@@ -48,6 +48,11 @@ module Polytexnic
             code_cache[key] = [code, language]
             output << key
             output << line
+          elsif line =~ /^```\s*$/
+            while (line = lines.shift) && !line.match(/^```\s*$/)
+              output << indentation + line
+            end
+            output << "\n"
           else
             output << line
           end
