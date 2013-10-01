@@ -57,6 +57,11 @@ module Polytexnic
 
       def cache_math(text)
         cache = {}
+        text.gsub!(/\{\$\$\}\n(.*?)\n\{\/\$\$\}/) do
+          key = digest($1)
+          cache[[:block, key]] = $1
+          key
+        end
         text.gsub!(/\{\$\$\}(.*?)\{\/\$\$\}/) do
           key = digest($1)
           cache[[:inline, key]] = $1
@@ -67,7 +72,12 @@ module Polytexnic
 
       def restore_math(text, cache)
         cache.each do |(kind, key), value|
-          text.gsub!(key, '\(' + value + '\)')
+          case kind
+          when :inline
+            text.gsub!(key, '\(' + value + '\)')
+          when :block
+            text.gsub!(key, '\[ ' + value + ' \]')
+          end
         end
         text
       end

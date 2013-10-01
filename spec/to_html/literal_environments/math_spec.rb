@@ -268,6 +268,18 @@ This is inline math: {$$} x^2 {/$$}.
       it { should include '\( x^2 \)' }
     end
 
+    context "block math" do
+      let(:markdown) do <<-'EOS'
+This is block math:
+{$$}
+x^2
+{/$$}.
+        EOS
+      end
+
+      it { puts markdown; should resemble '\[ x^2 \]' }
+    end
+
     context "literal math" do
       pending
 
