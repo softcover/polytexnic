@@ -22,23 +22,23 @@ module Polytexnic
       # (but why not just use LaTeX?). At this point, I fear that "Markdown"
       # has become little more than a marketing term.</rant>
       def to_polytex
-        require 'kramdown'
+        require 'Kramdown'
         cleaned_markdown = cache_code_environments
+        math_cache = cache_math(cleaned_markdown)
         # Override the header ordering, which starts with 'section' by default.
         lh = 'chapter,section,subsection,subsubsection,paragraph,subparagraph'
         kramdown = Kramdown::Document.new(cleaned_markdown, latex_headers: lh)
-        @source = kramdown.to_latex
+        @source = restore_math(kramdown.to_latex, math_cache)
       end
 
       def cache_code_environments
         output = []
         lines = @source.split("\n")
+        indentation = ' ' * 4
         while (line = lines.shift)
           if line =~ /\{lang="(.*?)"\}/
             language = $1
             code = []
-            indentation = ' ' * 4
-
             while (line = lines.shift) && line.match(/^#{indentation}(.*)$/) do
               code << $1
             end
@@ -47,11 +47,69 @@ module Polytexnic
             code_cache[key] = [code, language]
             output << key
             output << line
+          elsif line =~ /^```\s*$/        # basic code fences
+            while (line = lines.shift) && !line.match(/^```\s*$/)
+              output << indentation + line
+            end
+            output << "\n"
+          elsif line =~ /^```(\w+)\s*$/   # syntax-highlighted code fences
+            language = $1
+            code = []
+            while (line = lines.shift) && !line.match(/^```\s*$/) do
+              code << line
+            end
+            code = code.join("\n")
+            key = digest(code)
+            code_cache[key] = [code, language]
+            output << key
           else
             output << line
           end
         end
         output.join("\n")
+      end
+
+      # Caches Leanpub-style math.
+      # Leanpub uses the notation {$$}...{/$$} for both inline and block math,
+      # with the only difference being the presences of newlines:
+      #     {$$} x^2 {/$$}  % inline
+      # and
+      #     {$$}
+      #     x^2             % block
+      #     {/$$}
+      # I personally hate this notation and convention, but anyone who really
+      # cares should just use PolyTeX instead of Markdown.
+      def cache_math(text)
+        cache = {}
+        text.gsub!(/\{\$\$\}\n(.*?)\n\{\/\$\$\}/) do
+          key = digest($1)
+          cache[[:block, key]] = $1
+          key
+        end
+        text.gsub!(/\{\$\$\}(.*?)\{\/\$\$\}/) do
+          key = digest($1)
+          cache[[:inline, key]] = $1
+          key
+        end
+        cache
+      end
+
+      # Restores the Markdown math.
+      # This is easy because we're running everything through our LaTeX
+      # pipeline.
+      def restore_math(text, cache)
+        cache.each do |(kind, key), value|
+          case kind
+          when :inline
+            open  = '\('
+            close =  '\)'
+          when :block
+            open  = '\[' + "\n"
+            close = "\n" + '\]'
+          end
+          text.gsub!(key, open + value + close)
+        end
+        text
       end
     end
   end
