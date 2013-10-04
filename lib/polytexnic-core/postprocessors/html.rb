@@ -707,9 +707,20 @@ module Polytexnic
           require 'open-uri'
           doc.xpath('//xref').each do |node|
             node.name = 'a'
-            node['href'] = URI::encode(literal_cache[node['url']])
+            node['href'] = encode(literal_cache[node['url']])
             clean_node node, 'url'
           end
+        end
+
+        # Encodes the URL.
+        # We take care to preserve '#' symbols, as they are needed to link
+        # to CSS ids within HTML documents.
+        # This uses 'sub' instead of 'gsub' because only the first '#' can
+        # link to an id.
+        def encode(url)
+          pound_hash = digest('#')
+          encoded_url = URI::encode(url.sub('#', pound_hash))
+          encoded_url.sub(pound_hash, '#')
         end
 
         # Handles both \includegraphics and figure environments.
