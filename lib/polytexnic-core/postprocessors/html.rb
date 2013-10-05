@@ -574,7 +574,9 @@ module Polytexnic
               if class_var
                 type = %w{title subtitle}.include?(field) ? 'h1' : 'h2'
                 el = Nokogiri::XML::Node.new(type, doc)
-                el.content = class_var
+                raw = Polytexnic::Core::Pipeline.new(class_var).to_html
+                content = Nokogiri::HTML.fragment(raw).at_css('p')
+                el.inner_html = content.inner_html
                 el['class'] = field
                 node.add_child el
               end

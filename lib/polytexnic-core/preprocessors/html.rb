@@ -76,7 +76,7 @@ module Polytexnic
           output.gsub!(/[^\\]%.*$/, '')
         end
 
-        # Converts LaTeX double backslashes to
+        # Converts LaTeX double backslashes to HTML breaks.
         def double_backslashes(string)
           lines = []
           in_table = false
