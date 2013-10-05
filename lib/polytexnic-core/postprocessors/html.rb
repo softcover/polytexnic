@@ -544,9 +544,13 @@ module Polytexnic
         end
 
         # Add in breaks from '\\'.
+        # We use a span instead of '<br />' because breaks can't be styled
+        # easily, and are also invalid in some contexts where we want a
+        # break (e.g., inside h1 tags).
         def backslash_break(doc)
           doc.xpath('//backslashbreak').each do |node|
-            node.name  = 'br'
+            node.name  = 'span'
+            node['class'] = 'break'
           end
         end
 
