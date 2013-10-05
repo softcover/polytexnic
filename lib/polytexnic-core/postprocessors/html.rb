@@ -24,6 +24,7 @@ module Polytexnic
         subsection(doc)
         subsubsection(doc)
         headings(doc)
+        sout(doc)
         kode(doc)
         codelistings(doc)
         backslash_break(doc)
@@ -496,7 +497,14 @@ module Polytexnic
           end
         end
 
-        # Converts inline code (\kode) to the proper tag
+        # Converts strikeout text (\sout) to the proper tag.
+        def sout(doc)
+          doc.xpath('//sout').each do |node|
+            node.name  = 'del'
+          end
+        end
+
+        # Converts inline code (\kode) to the proper tag.
         def kode(doc)
           doc.xpath('//kode').each do |node|
             node.name  = 'code'
