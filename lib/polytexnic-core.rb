@@ -17,11 +17,12 @@ module Polytexnic
       include Polytexnic::Core::Utils
 
       attr_accessor :literal_cache, :code_cache, :polytex, :xml, :html,
-                    :math_label_cache, :highlight_cache
+                    :math_label_cache, :highlight_cache, :maketitle_elements
 
       def initialize(source, options = {})
         @literal_cache = {}
         @code_cache = {}
+        @maketitle_elements = {}
         @highlight_cache_filename = '.highlight_cache'
         if File.exist?(@highlight_cache_filename)
           content = File.read(@highlight_cache_filename)

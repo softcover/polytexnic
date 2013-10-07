@@ -3,8 +3,7 @@ require 'spec_helper'
 
 describe 'Polytexnic::Core::Pipeline#to_html' do
 
-  let(:processed_text) { Polytexnic::Core::Pipeline.new(polytex).to_html }
-  subject { processed_text }
+  subject(:processed_text) { Polytexnic::Core::Pipeline.new(polytex).to_html }
 
   describe "Tralics installation" do
     before { File.delete(Polytexnic::Core::Utils.executable('tralics')) }
@@ -16,7 +15,7 @@ describe 'Polytexnic::Core::Pipeline#to_html' do
     let(:polytex) { "% A LaTeX comment" }
     it { should eq '' }
 
-    context "with a section and lable" do
+    context "with a section and label" do
       let(:polytex) do <<-'EOS'
         % \section{Foo}
         % \label{sec:foo}
@@ -47,7 +46,7 @@ describe 'Polytexnic::Core::Pipeline#to_html' do
       it { should resemble '87.3% of statistics are made up' }
     end
 
-    context "With characters before the percent" do
+    context "with characters before the percent" do
       let(:polytex) { 'foo % bar' }
       it { should resemble 'foo' }
     end
@@ -92,30 +91,73 @@ describe 'Polytexnic::Core::Pipeline#to_html' do
   end
 
   describe '\maketitle' do
-    let(:polytex) do <<-'EOS'
-        \title{Foo \\ \emph{Bar}}
-        \subtitle{Baz}
-        \author{Leslie Lamport}
-        \date{Jan 1, 1971}
-        \begin{document}
-          \maketitle
-        \end{document}
-      EOS
+
+    context "with all element filled out explicitly" do
+      let(:polytex) do <<-'EOS'
+          \title{Foo \\ \emph{Bar}}
+          \subtitle{Baz}
+          \author{Michael Hartl}
+          \date{January 1, 2013}
+          \begin{document}
+            \maketitle
+          \end{document}
+        EOS
+      end
+
+      it do
+        should resemble <<-'EOS'
+          <div id="title_page">
+          <h1 class="title">Foo <span class="break"></span> <em>Bar</em></h1>
+          <h1 class="subtitle">Baz</h1>
+          <h2 class="author">Michael Hartl</h2>
+          <h2 class="date">January 1, 2013</h2>
+          </div>
+        EOS
+      end
+
+      it "should not have repeated title elements" do
+        expect(processed_text.scan(/Michael Hartl/).length).to eq 1
+      end
     end
 
-    it do
-      should resemble <<-'EOS'
-        <div id="title_page">
-        <h1 class="title">Foo <span class="break"></span> <em>Bar</em></h1>
-        <h1 class="subtitle">Baz</h1>
-        <h2 class="author">Leslie Lamport</h2>
-        <h2 class="date">Jan 1, 1971</h2>
-        </div>
-      EOS
+    context "when date is blank" do
+      let(:polytex) do <<-'EOS'
+          \title{Foo \\ \emph{Bar}}
+          \subtitle{Baz}
+          \author{Michael Hartl}
+          \date{}
+          \begin{document}
+            \maketitle
+          \end{document}
+        EOS
+      end
+
+      it do
+        should resemble <<-'EOS'
+          <div id="title_page">
+          <h1 class="title">Foo <span class="break"></span> <em>Bar</em></h1>
+          <h1 class="subtitle">Baz</h1>
+          <h2 class="author">Michael Hartl</h2>
+          </div>
+        EOS
+      end
     end
 
-    it "should not have repeated title elements" do
-      expect(processed_text.scan(/Leslie Lamport/).length).to eq 1
+    context "when date is missing" do
+      let(:polytex) do <<-'EOS'
+          \title{Foo \\ \emph{Bar}}
+          \subtitle{Baz}
+          \author{Michael Hartl}
+          \begin{document}
+            \maketitle
+          \end{document}
+        EOS
+      end
+
+      it { should resemble '<h2 class="date">' }
+      it "should include today's date" do
+        expect(processed_text).to resemble Date.today.strftime("%A, %b %e")
+      end
     end
   end
 

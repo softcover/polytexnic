@@ -103,7 +103,7 @@ module Polytexnic
         def title_fields(string)
           %w{title subtitle author date}.each do |field|
             string.gsub! /\\#{field}\{(.*)\}/ do |s|
-              Polytexnic.instance_variable_set "@#{field}", $1
+              maketitle_elements[field] = $1
               ''
             end
           end

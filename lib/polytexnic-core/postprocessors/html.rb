@@ -574,14 +574,22 @@ module Polytexnic
             node.name = 'div'
             node['id'] = 'title_page'
             %w{title subtitle author date}.each do |field|
-              class_var = Polytexnic.instance_variable_get "@#{field}"
-              if class_var
+              title_element = maketitle_elements[field]
+              if title_element
                 type = %w{title subtitle}.include?(field) ? 'h1' : 'h2'
                 el = Nokogiri::XML::Node.new(type, doc)
-                raw = Polytexnic::Core::Pipeline.new(class_var).to_html
+                raw = Polytexnic::Core::Pipeline.new(title_element).to_html
                 content = Nokogiri::HTML.fragment(raw).at_css('p')
-                el.inner_html = content.inner_html
-                el['class'] = field
+                unless (content.nil? && field == 'date')
+                  el.inner_html = content.inner_html
+                  el['class'] = field
+                  node.add_child el
+                end
+              elsif field == 'date'
+                # Date is missing, so insert today's date.
+                el = Nokogiri::XML::Node.new('h2', doc)
+                el['class'] ='date'
+                el.inner_html = Date.today.strftime("%A, %b %e")
                 node.add_child el
               end
             end
