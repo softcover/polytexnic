@@ -138,9 +138,16 @@ describe 'Polytexnic::Core::Pipeline#to_html' do
     end
 
     context "URL needing encoding" do
-      let(:url) { 'https://groups.google.com/~forum/#!to pic/mathjax%20users' }
+      let(:url) { 'https://groups.google.com/~forum/!topic/mathjax%20users' }
       let(:polytex) { "\\href{#{url}}{Example Site}" }
       let(:output) { %(<a href="#{URI::encode(url)}">Example Site</a>) }
+      it { should resemble output }
+    end
+
+    context "URL with hash for CSS id" do
+      let(:url) { 'http://example.com/post#comments' }
+      let(:polytex) { "\\href{#{url}}{Example Site}" }
+      let(:output) { %(<a href="#{url}">Example Site</a>) }
       it { should resemble output }
     end
   end
