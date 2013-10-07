@@ -77,7 +77,7 @@ describe 'Polytexnic::Core::Pipeline#to_html' do
       it do
         should resemble <<-'EOS'
           <blockquote class="verse">
-            <p>lorem ipsum<br />
+            <p>lorem ipsum<span class="break"></span>
             dolor sit amet</p>
           </blockquote>
         EOS

@@ -93,8 +93,8 @@ describe 'Polytexnic::Core::Pipeline#to_html' do
 
   describe '\maketitle' do
     let(:polytex) do <<-'EOS'
-        \title{Foo}
-        \subtitle{Bar}
+        \title{Foo \\ \emph{Bar}}
+        \subtitle{Baz}
         \author{Leslie Lamport}
         \date{Jan 1, 1971}
         \begin{document}
@@ -105,10 +105,12 @@ describe 'Polytexnic::Core::Pipeline#to_html' do
 
     it do
       should resemble <<-'EOS'
-        <h1 class="title">Foo</h1>
-        <h1 class="subtitle">Bar</h1>
+        <div id="title_page">
+        <h1 class="title">Foo <span class="break"></span> <em>Bar</em></h1>
+        <h1 class="subtitle">Baz</h1>
         <h2 class="author">Leslie Lamport</h2>
         <h2 class="date">Jan 1, 1971</h2>
+        </div>
       EOS
     end
 
@@ -119,7 +121,7 @@ describe 'Polytexnic::Core::Pipeline#to_html' do
 
   describe "double backslashes" do
     let(:polytex) { 'foo \\\\ bar' }
-    let(:output) { 'foo <br /> bar' }
+    let(:output) { 'foo <span class="break"></span> bar' }
     it { should resemble output }
   end
 

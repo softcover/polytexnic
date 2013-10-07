@@ -544,9 +544,13 @@ module Polytexnic
         end
 
         # Add in breaks from '\\'.
+        # We use a span instead of '<br />' because breaks can't be styled
+        # easily, and are also invalid in some contexts where we want a
+        # break (e.g., inside h1 tags).
         def backslash_break(doc)
           doc.xpath('//backslashbreak').each do |node|
-            node.name  = 'br'
+            node.name  = 'span'
+            node['class'] = 'break'
           end
         end
 
@@ -574,7 +578,9 @@ module Polytexnic
               if class_var
                 type = %w{title subtitle}.include?(field) ? 'h1' : 'h2'
                 el = Nokogiri::XML::Node.new(type, doc)
-                el.content = class_var
+                raw = Polytexnic::Core::Pipeline.new(class_var).to_html
+                content = Nokogiri::HTML.fragment(raw).at_css('p')
+                el.inner_html = content.inner_html
                 el['class'] = field
                 node.add_child el
               end

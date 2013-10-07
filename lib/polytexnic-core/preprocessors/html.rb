@@ -76,7 +76,7 @@ module Polytexnic
           output.gsub!(/[^\\]%.*$/, '')
         end
 
-        # Converts LaTeX double backslashes to
+        # Converts LaTeX double backslashes to HTML breaks.
         def double_backslashes(string)
           lines = []
           in_table = false
@@ -102,7 +102,7 @@ module Polytexnic
         # Handles title fields.
         def title_fields(string)
           %w{title subtitle author date}.each do |field|
-            string.gsub! /\\#{field}\{(.*?)\}/ do |s|
+            string.gsub! /\\#{field}\{(.*)\}/ do |s|
               Polytexnic.instance_variable_set "@#{field}", $1
               ''
             end
