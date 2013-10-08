@@ -249,6 +249,7 @@ module Polytexnic
           doc = footnotes.values[0][0].document
           footnotes_node = Nokogiri::XML::Node.new('ol', doc)
           footnotes_node['class'] = 'footnotes'
+          footnotes_node['class'] += ' nonumbers' if footnote_symbols?
           footnotes[chapter_number].each_with_index do |footnote, i|
             n = i + 1
             note = Nokogiri::XML::Node.new('li', doc)
@@ -257,7 +258,9 @@ module Polytexnic
             reflink['class'] = 'arrow'
             reflink.content = "↑"
             reflink['href'] = footnote_ref_href(chapter_number, n)
-            note.inner_html = "#{footnote.inner_html} #{reflink.to_xhtml}"
+            html = "#{footnote.inner_html} #{reflink.to_xhtml}"
+            html = "<sup>#{fnsymbol(i)}</sup> #{html}" if footnote_symbols?
+            note.inner_html = html
             footnotes_node.add_child note
           end
           footnotes_node
@@ -287,10 +290,17 @@ module Polytexnic
               node['class'] = 'footnote'
               link = Nokogiri::XML::Node.new('a', node.document)
               link['href'] = footnote_href(chapter_number, n)
-              link.content = n.to_s
+              content = footnote_symbols? ? fnsymbol(i) : n.to_s
+              link.content = content
               node.inner_html = link
             end
           end
+        end
+
+        # Returns footnote symbol for use in non-numerical footnotes.
+        def fnsymbol(i)
+          symbols = %w[* † ‡ § ¶ ‖ ** †† ‡‡]
+          symbols[i % symbols.size]
         end
 
         # Returns the chapter number for a given node.
