@@ -103,4 +103,62 @@ describe 'Polytexnic::Core::Pipeline#to_html' do
     end
     it { should resemble output }
   end
+
+  describe "symbols in place of numbers" do
+    let(:polytex) do <<-'EOS'
+        \documentclass{book}
+        \renewcommand{\thefootnote}{\fnsymbol{footnote}}
+        \begin{document}
+        \chapter{Foo \emph{bar}}
+        \label{cha:foo}
+
+        \section{Foobar}
+        \label{sec:foobar}
+
+        Lorem ipsum.\footnote{Cicero}
+
+        \chapter{Bar}
+        \label{cha:bar}
+
+        Dolor sit amet.\footnote{\emph{Still} Cicero}
+
+        Hey Jude.\footnote{Lennon/McCartney}
+        \end{document}
+      EOS
+    end
+
+    let(:output) do <<-'EOS'
+      <div id="cha-foo" data-tralics-id="cid1" class="chapter" data-number="1">
+        <h1><a href="#cha-foo" class="heading"><span class="number">Chapter 1 </span>Foo <em>bar</em></a></h1>
+      </div>
+      <div id="sec-foobar" data-tralics-id="cid2" class="section" data-number="1.1">
+        <h2><a href="#sec-foobar" class="heading"><span class="number">1.1 </span>Foobar</a></h2>
+        <p>Lorem ipsum.<sup id="cha-1_footnote-ref-1" class="footnote"><a href="#cha-1_footnote-1">*</a></sup></p>
+      </div>
+      <div id="cha-1_footnotes">
+        <ol class="footnotes nonumbers">
+          <li id="cha-1_footnote-1">
+            <sup>*</sup> Cicero <a class="arrow" href="#cha-1_footnote-ref-1">↑</a>
+          </li>
+        </ol>
+      </div>
+      <div id="cha-bar" data-tralics-id="cid3" class="chapter" data-number="2">
+        <h1><a href="#cha-bar" class="heading"><span class="number">Chapter 2 </span>Bar</a></h1>
+        <p>Dolor sit amet.<sup id="cha-2_footnote-ref-1" class="footnote"><a href="#cha-2_footnote-1">*</a></sup></p>
+        <p>Hey Jude.<sup id="cha-2_footnote-ref-2" class="footnote"><a href="#cha-2_footnote-2">†</a></sup></p>
+      </div>
+      <div id="cha-2_footnotes">
+        <ol class="footnotes nonumbers">
+          <li id="cha-2_footnote-1">
+            <sup>*</sup> <em>Still</em> Cicero <a class="arrow" href="#cha-2_footnote-ref-1">↑</a>
+          </li>
+          <li id="cha-2_footnote-2">
+            <sup>†</sup> Lennon/McCartney <a class="arrow" href="#cha-2_footnote-ref-2">↑</a>
+          </li>
+        </ol>
+      </div>
+      EOS
+    end
+    it { should resemble output }
+  end
 end

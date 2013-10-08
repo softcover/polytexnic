@@ -18,10 +18,11 @@ module Polytexnic
       private
 
         # Processes the input PolyTeX for Tralics.
-        # The key steps are creating a clean document safe for makin global
+        # The key steps are creating a clean document safe for making global
         # substitutions (gsubs), and then making a bunch of gsubs.
         def process_for_tralics(polytex)
           clean_document(polytex).tap do |output|
+            remove_commands(output)
             hyperrefs(output)
             title_fields(output)
             maketitle(output)
@@ -43,6 +44,20 @@ module Polytexnic
           cache_hrefs(doc)
           remove_comments(doc)
           double_backslashes(cache_display_inline_math(doc))
+        end
+
+        # Removes commands that might screw up Tralics.
+        def remove_commands(doc)
+          # Determine if we're using footnote symbols.
+          symbols_cmd = '\renewcommand{\thefootnote}{\fnsymbol{footnote}}'
+          @footnote_symbols = !!doc.match(/^\s*#{Regexp.escape(symbols_cmd)}/)
+
+          doc.gsub!(/^\s*\\renewcommand.*$/, '')
+        end
+
+        # Returns true if we should use footnote symbols in place of numbers.
+        def footnote_symbols?
+          @footnote_symbols
         end
 
         # Handles \verb environments.
