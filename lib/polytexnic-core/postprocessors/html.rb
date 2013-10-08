@@ -247,7 +247,11 @@ module Polytexnic
         # Returns a list of footnotes ready for placement.
         def footnotes_list(footnotes, chapter_number)
           doc = footnotes.values[0][0].document
-          footnotes_node = Nokogiri::XML::Node.new('ol', doc)
+          # For symbolic footnotes, we want to suppress numbers, which can be
+          # done in CSS, but it doesn't work in many EPUB & MOBI readers.
+          # As a kludge, we switch to ul in this case, which looks nicer.
+          list_type = footnote_symbols? ? 'ul' : 'ol'
+          footnotes_node = Nokogiri::XML::Node.new(list_type, doc)
           footnotes_node['class'] = 'footnotes'
           footnotes_node['class'] += ' nonumbers' if footnote_symbols?
           footnotes[chapter_number].each_with_index do |footnote, i|
@@ -591,14 +595,14 @@ module Polytexnic
                 raw = Polytexnic::Core::Pipeline.new(title_element).to_html
                 content = Nokogiri::HTML.fragment(raw).at_css('p')
                 unless (content.nil? && field == 'date')
-                  el.inner_html = content.inner_html
+                  el.inner_html = content.inner_html.strip
                   el['class'] = field
                   node.add_child el
                 end
               elsif field == 'date'
                 # Date is missing, so insert today's date.
                 el = Nokogiri::XML::Node.new('h2', doc)
-                el['class'] ='date'
+                el['class'] = field
                 el.inner_html = Date.today.strftime("%A, %b %e")
                 node.add_child el
               end
