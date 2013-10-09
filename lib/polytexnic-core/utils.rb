@@ -73,11 +73,13 @@ module Polytexnic
 \newcommand{\codecaption}[1]{\xmlelt{heading}{#1}}
 \newcommand{\sout}[1]{\xmlelt{sout}{#1}}
 \newcommand{\kode}[1]{\xmlelt{kode}{#1}}
+\newcommand{\fpath}[1]{\xmlelt{fpath}{#1}}
 
 % Code listings
 \usepackage{amsthm}
 \theoremstyle{definition}
 \newtheorem{codelisting}{Listing}[chapter]
+\newtheorem{aside}{Box}[chapter]
         EOS
       end
       def new_commands
@@ -141,9 +143,19 @@ module Polytexnic
       end
 
       # Adds some verbatim font info (including size).
+      # We prepend rather than replace the styles because the Pygments output
+      # includes a required override of the default commandchars.
+      # Since the substitution is only important in the context of a PDF book,
+      # it only gets made if there's a style in 'polytexnic.sty' in the
+      # current directory
       def add_font_info(string)
-        string.gsub!('\begin{Verbatim}[',
-                     '\begin{Verbatim}[fontsize=\relsize{-1.5},fontseries=b,')
+        if File.exist?('polytexnic.sty')
+          regex = '{code}{Verbatim}{(.*)}'
+          styles = File.read('polytexnic.sty').scan(/#{regex}/).flatten.first
+          string.gsub!("\\begin{Verbatim}[",
+                       "\\begin{Verbatim}[#{styles},")
+        end
+        string
       end
 
       # Does something horrible with backslashes.

@@ -26,6 +26,7 @@ module Polytexnic
         headings(doc)
         sout(doc)
         kode(doc)
+        fpath(doc)
         codelistings(doc)
         backslash_break(doc)
         asides(doc)
@@ -525,8 +526,16 @@ module Polytexnic
           end
         end
 
+        # Converts filesystem path (\fpath) to the proper tag.
+        def fpath(doc)
+          doc.xpath('//fpath').each do |node|
+            node.name  = 'span'
+            node['class'] = 'fpath'
+          end
+        end
+
         # Builds the full heading for codelisting-like environments.
-        # The full heading, such as "Listing 1.1. Foo bars." needs to be
+        # The full heading, such as "Listing 1.1: Foo bars." needs to be
         # extracted and manipulated to produce the right tags and classes.
         def build_heading(node, css_class)
           node.name  = 'div'
@@ -543,7 +552,11 @@ module Polytexnic
           number = heading.at_css('strong')
           number.name = 'span'
           number['class'] = 'number'
-          number.content += '.'
+          if css_class == 'codelisting'
+            number.content += ':'
+          else
+            number.content += '.'
+          end
 
           heading
         end
