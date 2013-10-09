@@ -10,7 +10,7 @@ describe 'Polytexnic::Core::Pipeline#to_html' do
       \chapter{Foo bar}
 
       \begin{codelisting}
-      \heading{Creating a \texttt{gem} configuration file. \\ filename}
+      \codecaption{Creating a \texttt{gem} configuration file.}
       \label{code:create_gemrc}
       %= lang:console
       \begin{code}
@@ -28,7 +28,7 @@ $ subl .gemrc
         <div class="codelisting" id="code-create_gemrc" data-tralics-id="uid1" data-number="1.1">
           <div class="heading">
             <span class="number">Listing 1.1.</span>
-            <span class="description">Creating a <span class="tt">gem</span> configuration file. <span class="break"></span> filename</span>
+            <span class="description">Creating a <span class="tt">gem</span> configuration file.</span>
           </div>
           <div class="code">
             <div class="highlight">

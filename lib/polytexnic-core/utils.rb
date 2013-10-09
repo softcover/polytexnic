@@ -70,8 +70,14 @@ module Polytexnic
 % Commands specific to Tralics
 \def\hyperref[#1]#2{\xmlelt{a}{\XMLaddatt{target}{#1}#2}}
 \newcommand{\heading}[1]{\xmlelt{heading}{#1}}
+\newcommand{\codecaption}[1]{\xmlelt{heading}{#1}}
 \newcommand{\sout}[1]{\xmlelt{sout}{#1}}
 \newcommand{\kode}[1]{\xmlelt{kode}{#1}}
+
+% Code listings
+\usepackage{amsthm}
+\theoremstyle{definition}
+\newtheorem{codelisting}{Listing}[chapter]
         EOS
       end
       def new_commands
@@ -79,12 +85,19 @@ module Polytexnic
 \newcommand{\PolyTeX}{Poly\TeX}
 \newcommand{\PolyTeXnic}{Poly{\TeX}nic}
 
-% Codelisting and similar environments
+% Asides
 \usepackage{amsthm}
-\newtheorem{theorem}{Theorem}
 \theoremstyle{definition}
-\newtheorem{codelisting}{Listing}[chapter]
 \newtheorem{aside}{Box}[chapter]
+        EOS
+      end
+
+      def non_tralics_commands
+        <<-'EOS'
+% Codelistings
+\newcounter{listing_count}
+\setcounter{listing_count}{0}
+\newenvironment{codelisting}{\stepcounter{listing_count}}{}
         EOS
       end
 
@@ -98,8 +111,7 @@ module Polytexnic
               output = code.split("\n")
               horrible_backslash_kludge(add_font_info(output.first))
               code = output.join("\n")
-              substitutions[key] = "\\begin{framed_shaded}\n" + code +
-                                   "\n\\end{framed_shaded}"
+              substitutions[key] = framed(code)
             end
             document.gsub!(Regexp.union(substitutions.keys), substitutions)
           end
@@ -111,6 +123,14 @@ module Polytexnic
             code_block.inner_html = highlight(key, content, language, 'html')
           end
         end
+      end
+
+      # Puts a frame around code.
+      def framed(code)
+        %(\\vspace{-0.667\\baselineskip}
+          \\begin{framed_shaded}
+          #{code}
+          \\end{framed_shaded})
       end
 
       # Highlights a code sample.
