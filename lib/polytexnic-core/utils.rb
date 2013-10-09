@@ -99,7 +99,7 @@ module Polytexnic
 % Codelistings
 \newcounter{listing_count}
 \setcounter{listing_count}{0}
-\newenvironment{codelisting}{\stepcounter{listing_count}}{}
+\newenvironment{codelisting}{\begin{container}\stepcounter{listing_count}}{\end{container}}
         EOS
       end
 
