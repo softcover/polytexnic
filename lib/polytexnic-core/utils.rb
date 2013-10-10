@@ -122,7 +122,7 @@ module Polytexnic
 % Codelistings
 \newcounter{listing_count}
 \setcounter{listing_count}{0}
-\newenvironment{codelisting}{\begin{framed_shaded}\stepcounter{listing_count}}%
+\newenvironment{codelisting}{\begin{framed_shaded}\vspace{-0.2em}\stepcounter{listing_count}}%
 {\end{framed_shaded}}
         EOS
       end
