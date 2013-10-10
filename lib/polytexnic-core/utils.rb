@@ -107,8 +107,8 @@ module Polytexnic
       end
       def new_commands
         <<-'EOS'
-\newcommand{\PolyTeX}{Poly\TeX}
-\newcommand{\PolyTeXnic}{Poly{\TeX}nic}
+\newcommand{\PolyTeX}{Poly\-\TeX}
+\newcommand{\PolyTeXnic}{Poly\-{\TeX}\-nic}
 
 % Asides
 \usepackage{amsthm}
