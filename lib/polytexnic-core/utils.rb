@@ -117,16 +117,6 @@ module Polytexnic
         EOS
       end
 
-      def non_tralics_commands
-        <<-'EOS'
-% Codelistings
-\newcounter{listing_count}
-\setcounter{listing_count}{0}
-\newenvironment{codelisting}{\begin{framed_shaded}\vspace{-0.2em}\stepcounter{listing_count}}%
-{\end{framed_shaded}}
-        EOS
-      end
-
       # Highlights source code.
       def highlight_source_code(document)
         if document.is_a?(String) # LaTeX
