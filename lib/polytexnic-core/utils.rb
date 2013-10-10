@@ -96,7 +96,7 @@ module Polytexnic
 \newcommand{\codecaption}[1]{\xmlelt{heading}{#1}}
 \newcommand{\sout}[1]{\xmlelt{sout}{#1}}
 \newcommand{\kode}[1]{\xmlelt{kode}{#1}}
-\newcommand{\fpath}[1]{\xmlelt{fpath}{#1}}
+\newcommand{\filepath}[1]{\xmlelt{filepath}{#1}}
 
 % Code listings
 \usepackage{amsthm}

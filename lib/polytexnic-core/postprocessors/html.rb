@@ -26,7 +26,7 @@ module Polytexnic
         headings(doc)
         sout(doc)
         kode(doc)
-        fpath(doc)
+        filepath(doc)
         codelistings(doc)
         backslash_break(doc)
         asides(doc)
@@ -526,11 +526,11 @@ module Polytexnic
           end
         end
 
-        # Converts filesystem path (\fpath) to the proper tag.
-        def fpath(doc)
-          doc.xpath('//fpath').each do |node|
+        # Converts filesystem path (\filepath) to the proper tag.
+        def filepath(doc)
+          doc.xpath('//filepath').each do |node|
             node.name  = 'span'
-            node['class'] = 'fpath'
+            node['class'] = 'filepath'
           end
         end
 
