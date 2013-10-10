@@ -31,6 +31,29 @@ module Polytexnic
         string.gsub(/\\(\s+|$)/) { '\\\\' + $1.to_s }
       end
 
+      # Caches URLs for \href commands.
+      def cache_hrefs(doc)
+        doc.tap do |text|
+          text.gsub!(/\\href{(.*?)}/) do
+            key = digest($1)
+            literal_cache[key] = encode($1)
+            "\\href{#{key}}"
+          end
+        end
+      end
+
+      # Encodes the URL.
+      # We take care to preserve '#' symbols, as they are needed to link
+      # to CSS ids within HTML documents.
+      # This uses 'sub' instead of 'gsub' because only the first '#' can
+      # link to an id.
+      def encode(url)
+        require 'open-uri'
+        pound_hash = digest('#')
+        encoded_url = URI::encode(url.sub('#', pound_hash))
+        encoded_url.sub(pound_hash, '#')
+      end
+
       # Returns a Tralics pseudo-LaTeX XML element.
       # The use of the 'skip' flag is a hack to be able to use xmlelement
       # even when generating, e.g., LaTeX, where we simply want to yield the
