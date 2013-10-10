@@ -129,8 +129,7 @@ module Polytexnic
 
       # Puts a frame around code.
       def framed(code)
-        %(\\vspace{-0.667\\baselineskip}
-          \\begin{framed_shaded}
+        %(\\begin{framed_shaded}
           #{code}
           \\end{framed_shaded})
       end
