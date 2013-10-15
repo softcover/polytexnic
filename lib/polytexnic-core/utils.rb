@@ -32,26 +32,14 @@ module Polytexnic
       end
 
       # Caches URLs for \href commands.
-      def cache_hrefs(doc)
+      def cache_hrefs(doc, latex=false)
         doc.tap do |text|
           text.gsub!(/\\href{(.*?)}/) do
             key = digest($1)
-            literal_cache[key] = encode($1)
+            literal_cache[key] = $1
             "\\href{#{key}}"
           end
         end
-      end
-
-      # Encodes the URL.
-      # We take care to preserve '#' symbols, as they are needed to link
-      # to CSS ids within HTML documents.
-      # This uses 'sub' instead of 'gsub' because only the first '#' can
-      # link to an id.
-      def encode(url)
-        require 'open-uri'
-        pound_hash = digest('#')
-        encoded_url = URI::encode(url.sub('#', pound_hash))
-        encoded_url.sub(pound_hash, '#')
       end
 
       # Returns a Tralics pseudo-LaTeX XML element.
