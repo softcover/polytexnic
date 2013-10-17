@@ -17,7 +17,8 @@ module Polytexnic
       include Polytexnic::Core::Utils
 
       attr_accessor :literal_cache, :code_cache, :polytex, :xml, :html,
-                    :math_label_cache, :highlight_cache, :maketitle_elements
+                    :math_label_cache, :highlight_cache, :maketitle_elements,
+                    :custom_commands
 
       def initialize(source, options = {})
         @literal_cache = {}
@@ -31,6 +32,7 @@ module Polytexnic
         @highlight_cache ||= {}
         @math_label_cache = {}
         @source_format = options[:source] || :polytex
+        @custom_commands = options[:custom_commands] || ''
         @source = source
         if markdown?
           preprocess(:polytex)
