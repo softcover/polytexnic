@@ -265,8 +265,9 @@ module Polytexnic
 
         # Returns the executable for the Tralics LaTeX-to-XML converter.
         def tralics
-
-          executable('tralics')
+          # If possible, use the local tralics from the `polytexnic` template.
+          local_tralics = 'bin/tralics'
+          File.exist?(local_tralics) ? local_tralics : executable('tralics')
         end
     end
   end
