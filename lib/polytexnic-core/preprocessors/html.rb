@@ -265,6 +265,7 @@ module Polytexnic
 
         # Returns the executable for the Tralics LaTeX-to-XML converter.
         def tralics
+
           executable('tralics')
         end
     end
