@@ -105,22 +105,6 @@ module Polytexnic
         EOS
       end
 
-      # Adds some valid LaTeX commands.
-      # These are commands that would ordinarily be defined in a LaTeX
-      # style file for production of a PDF, but in this case Tralics
-      # itself needs the new commands to produce its XML output.
-      def latex_commands
-        <<-'EOS'
-\newcommand{\PolyTeX}{Poly\-\TeX}
-\newcommand{\PolyTeXnic}{Poly\-{\TeX}\-nic}
-
-% Asides
-\usepackage{amsthm}
-\theoremstyle{definition}
-\newtheorem{aside}{Box}[chapter]
-        EOS
-      end
-
       # Highlights source code.
       def highlight_source_code(document)
         if document.is_a?(String) # LaTeX

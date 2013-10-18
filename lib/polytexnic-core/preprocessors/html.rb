@@ -97,7 +97,7 @@ module Polytexnic
 
         # Adds some default commands.
         def add_commands(polytex)
-          latex_commands + line(custom_commands) + tralics_commands + polytex
+          line(custom_commands) + tralics_commands + polytex
         end
 
         # Pads a string with newlines.

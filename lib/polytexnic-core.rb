@@ -11,6 +11,20 @@ require 'msgpack'
 
 module Polytexnic
   module Core
+
+    def self.polytexnic_style_file
+      'polytexnic_commands.sty'
+    end
+
+    # Writes the contents of the custom polytexnic style file.
+    # This is used by the `generate` method in the `polytenic` gem.
+    # We put it here because `custom.sty` lives inside `polytexnic-core`
+    # so that core can support, e.g., '\PolyTeXnic'.
+    def self.write_polytexnic_style_file(dir)
+      csf = File.join(File.dirname(__FILE__), '..', polytexnic_style_file)
+      File.write(File.join(dir, polytexnic_style_file), File.read(csf))
+    end
+
     class Pipeline
       include Polytexnic::Preprocessor
       include Polytexnic::Postprocessor
@@ -32,7 +46,8 @@ module Polytexnic
         @highlight_cache ||= {}
         @math_label_cache = {}
         @source_format = options[:source] || :polytex
-        @custom_commands = options[:custom_commands] || ''
+        @custom_commands = File.read(Core.polytexnic_style_file) rescue ''
+        @custom_commands += "\n" + (options[:custom_commands] || '')
         @source = source
         if markdown?
           preprocess(:polytex)
