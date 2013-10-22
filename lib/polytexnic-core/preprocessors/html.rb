@@ -22,6 +22,7 @@ module Polytexnic
         # substitutions (gsubs), and then making a bunch of gsubs.
         def process_for_tralics(polytex)
           clean_document(polytex).tap do |output|
+            process_spaces(output)
             remove_commands(output)
             hyperrefs(output)
             title_fields(output)
@@ -44,6 +45,24 @@ module Polytexnic
           cache_hrefs(doc)
           remove_comments(doc)
           double_backslashes(cache_display_inline_math(doc))
+        end
+
+        # Prepares thin spaces ('\,') and normal spaces ('\ ')
+        # to be passed through the pipeline.
+        def process_spaces(doc)
+          doc.gsub!(/\\,/, xmlelement('thinspace'))
+          doc.gsub!(/\\ /, xmlelement('normalspace'))
+          num_or_lower_case_letter = //
+          doc.gsub!(/([^A-Z])\.[ ]+([^\s])/) do
+            $1 + '.' + xmlelement('intersentencespace') + ' ' + $2
+          end
+          doc.gsub!(/([^A-Z])\.\n[ ]+([^\s])/) do
+            $1 + '.' + xmlelement('intersentencespace') + ' ' + $2
+          end
+          doc.gsub!(/([^A-Z])\.\n([^\n])/) do
+            $1 + '.' + xmlelement('intersentencespace') + ' ' + $2
+          end
+          doc.gsub!(/\\@\. /, '.' + xmlelement('intersentencespace') + ' ')
         end
 
         # Removes commands that might screw up Tralics.

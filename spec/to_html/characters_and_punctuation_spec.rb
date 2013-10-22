@@ -42,8 +42,46 @@ describe 'Polytexnic::Core::Pipeline#to_html' do
   end
 
   describe 'end-of-sentence punctuation' do
+
+
+    describe "spaces" do
+
+      context "thin" do
+        let(:polytex) { 'a\,b' }
+        it { should resemble 'a<span class="thinspace">&thinsp;</span>b' }
+      end
+
+      context "normal" do
+        let(:polytex) { 'Dr.\ No' }
+        it { should resemble 'Dr. No' }
+      end
+
+      context "intersentence" do
+
+        context "separated by a space" do
+          let(:polytex) { 'I am. You are.' }
+          it { should resemble 'I am.<span class="intersentencespace"></span> You are.' }
+        end
+
+        context "separated by n spaces" do
+          let(:polytex) { 'I am.     You are.' }
+          it { should resemble 'I am.<span class="intersentencespace"></span> You are.' }
+        end
+
+        context "separated by a newline" do
+          let(:polytex) { "I am.\nYou are." }
+          it { should resemble 'I am.<span class="intersentencespace"></span> You are.' }
+        end
+
+        context "separated by two newlines" do
+          let(:polytex) { "I am.\n\nYou are." }
+          it { should resemble 'I am.</p><p>You are.' }
+        end
+      end
+    end
+
     let(:polytex) { 'Superman II\@. Lorem ipsum.' }
-    it { should resemble 'Superman II. Lorem ipsum.' }
+    it { should resemble 'Superman II.<span class="intersentencespace"></span> Lorem ipsum.' }
   end
 
   describe 'unbreakable interword space' do

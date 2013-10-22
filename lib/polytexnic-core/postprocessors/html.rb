@@ -29,6 +29,7 @@ module Polytexnic
         filepath(doc)
         codelistings(doc)
         backslash_break(doc)
+        spaces(doc)
         asides(doc)
         center(doc)
         title(doc)
@@ -578,6 +579,21 @@ module Polytexnic
           doc.xpath('//backslashbreak').each do |node|
             node.name  = 'span'
             node['class'] = 'break'
+          end
+        end
+
+        def spaces(doc)
+          doc.xpath('//thinspace').each do |node|
+            node.name  = 'span'
+            node['class'] = 'thinspace'
+            node.inner_html = '&thinsp;'
+          end
+          doc.xpath('//normalspace').each do |node|
+            node.replace(' ')
+          end
+          doc.xpath('//intersentencespace').each do |node|
+            node.name = 'span'
+            node['class'] = 'intersentencespace'
           end
         end
 
