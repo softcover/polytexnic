@@ -956,14 +956,6 @@ module Polytexnic
               end
               current_depth = 3
               insert_li(html, node)
-            when 'subsubsection'
-              open_list(html) if current_depth == 3
-              while current_depth > 4
-                close_list(html)
-                current_depth -= 1
-              end
-              current_depth = 4
-              insert_li(html, node)
             end
           end
           toc.add_child(Nokogiri::HTML::DocumentFragment.parse(html.join))

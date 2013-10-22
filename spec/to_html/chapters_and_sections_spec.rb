@@ -192,7 +192,7 @@ describe 'Polytexnic::Core::Pipeline#to_html' do
         <p><a href="#sec-foo" class="hyperref">Section <span class="ref">1</span></a>
         </p>
         <div id="sec-baz" data-tralics-id="uid2" class="subsubsection" data-number="1.1.1">
-          <h4><a href="#sec-baz" class="heading"><span class="number">1.1.1 </span>Baz</a></h4>
+          <h4><a href="#sec-baz" class="heading">Baz</a></h4>
         </div></div></div>
       EOS
     end
