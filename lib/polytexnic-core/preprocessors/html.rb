@@ -51,17 +51,21 @@ module Polytexnic
         # to be passed through the pipeline.
         def process_spaces(doc)
           doc.gsub!(/\\,/, xmlelement('thinspace'))
-          doc.gsub!(/\\ /, xmlelement('normalspace'))
-          num_or_lower_case_letter = //
-          doc.gsub!(/([^A-Z])\.[ ]+([^\s])/) do
-            $1 + '.' + xmlelement('intersentencespace') + ' ' + $2
+          end_of_sentence = '[.?!]'
+          doc.gsub!(/(#{end_of_sentence})\\ /) do
+            $1 + xmlelement('normalspace')
           end
-          doc.gsub!(/([^A-Z])\.\n[ ]+([^\s])/) do
-            $1 + '.' + xmlelement('intersentencespace') + ' ' + $2
+          not_a_capital = '[^A-Z]'
+          doc.gsub!(/(#{not_a_capital})(#{end_of_sentence})[ ]+([^\s])/) do
+            $1 + $2 + xmlelement('intersentencespace') + ' ' + $3
           end
-          doc.gsub!(/([^A-Z])\.\n([^\n])/) do
-            $1 + '.' + xmlelement('intersentencespace') + ' ' + $2
+          doc.gsub!(/(#{not_a_capital})(#{end_of_sentence})\n[ ]+([^\s])/) do
+            $1 + $2 + xmlelement('intersentencespace') + ' ' + $3
           end
+          doc.gsub!(/(#{not_a_capital})(#{end_of_sentence})\n([^\n])/) do
+            $1 + $2 + xmlelement('intersentencespace') + ' ' + $3
+          end
+          # Handles the manual override to force an inter-sentence space.
           doc.gsub!(/\\@\. /, '.' + xmlelement('intersentencespace') + ' ')
         end
 

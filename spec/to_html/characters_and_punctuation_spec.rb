@@ -64,13 +64,13 @@ describe 'Polytexnic::Core::Pipeline#to_html' do
         end
 
         context "separated by n spaces" do
-          let(:polytex) { 'I am.     You are.' }
-          it { should resemble 'I am.<span class="intersentencespace"></span> You are.' }
+          let(:polytex) { 'I am!     You are.' }
+          it { should resemble 'I am!<span class="intersentencespace"></span> You are.' }
         end
 
         context "separated by a newline" do
-          let(:polytex) { "I am.\nYou are." }
-          it { should resemble 'I am.<span class="intersentencespace"></span> You are.' }
+          let(:polytex) { "I am?\nYou are." }
+          it { should resemble 'I am?<span class="intersentencespace"></span> You are.' }
         end
 
         context "separated by two newlines" do
