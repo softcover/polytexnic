@@ -823,7 +823,6 @@ module Polytexnic
             node.name = 'td'
             if node['cols']
               node['colspan'] = node['cols']
-              node.remove_attribute 'cols'
             end
           end
           doc.xpath('//table/row').each do |node|
@@ -868,15 +867,15 @@ module Polytexnic
               else
                 cell['class'] = alignment_class(alignment)
               end
-              clean_node cell, %w[halign right-border left-border]
+              clean_node cell, %w[halign right-border left-border cols]
             end
           end
         end
 
         # Returns true if the cell comes with custom alignment.
-        # This is typically the case with a multicolumn row.
+        # This is the case with a multicolumn row.
         def custom_alignment?(cell)
-          cell['halign'] || cell['right-border'] || cell['left-border']
+          cell['cols']
         end
 
         # Returns the custom class for a cell.
