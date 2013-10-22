@@ -710,7 +710,7 @@ module Polytexnic
                                   end
             clean_node node, 'id-text'
             # Add number span
-            if head = node.css('h1 a, h2 a, h3 a, h4 a').first
+            if (head = node.css('h1 a, h2 a, h3 a').first)
               el = doc.create_element 'span'
               number = node['data-number']
               prefix = (@cha.nil? || number.match(/\./)) ? '' : 'Chapter '
