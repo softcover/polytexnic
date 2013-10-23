@@ -299,6 +299,16 @@ module Polytexnic
               content = footnote_symbols? ? fnsymbol(i) : n.to_s
               link.content = content
               node.inner_html = link
+              # Add an inter-sentence space if appropriate.
+              previous_character = node.previous_sibling.content[-1]
+              end_of_sentence = %w[. ! ?].include?(previous_character)
+              after = node.next_sibling
+              end_of_paragraph = after.nil? || after.content.strip.empty?
+              if end_of_sentence && !end_of_paragraph
+                space = Nokogiri::XML::Node.new('span', node.document)
+                space['class'] = 'intersentencespace'
+                node.add_next_sibling(space)
+              end
             end
           end
         end

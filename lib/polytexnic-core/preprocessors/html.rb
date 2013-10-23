@@ -47,8 +47,9 @@ module Polytexnic
           double_backslashes(cache_display_inline_math(doc))
         end
 
-        # Prepares thin spaces ('\,') and normal spaces ('\ ')
-        # to be passed through the pipeline.
+        # Prepares spaces to be passed through the pipeline.
+        # Handles thin spaces ('\,') and normal spaces ('\ '), as well as
+        # end-of-sentence spaces.
         def process_spaces(doc)
           doc.gsub!(/\\,/, xmlelement('thinspace'))
           end_of_sentence = '[.?!]'
