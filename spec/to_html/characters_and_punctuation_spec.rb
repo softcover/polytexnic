@@ -57,31 +57,44 @@ describe 'Polytexnic::Core::Pipeline#to_html' do
       end
 
       context "intersentence" do
+        let(:intsp) { '<span class="intersentencespace"></span>' }
 
         context "separated by a space" do
           let(:polytex) { 'I am. You are.' }
-          it { should resemble 'I am.<span class="intersentencespace"></span> You are.' }
+          it { should resemble "I am.#{intsp} You are." }
         end
 
         context "separated by n spaces" do
           let(:polytex) { 'I am!     You are.' }
-          it { should resemble 'I am!<span class="intersentencespace"></span> You are.' }
+          it { should resemble "I am!#{intsp} You are." }
         end
 
         context "separated by a newline" do
           let(:polytex) { "I am?\nYou are." }
-          it { should resemble 'I am?<span class="intersentencespace"></span> You are.' }
+          it { should resemble "I am?#{intsp} You are." }
         end
 
         context "separated by two newlines" do
           let(:polytex) { "I am.\n\nYou are." }
           it { should resemble 'I am.</p><p>You are.' }
         end
+
+        context "with a sentence ending in a closing parenthesis" do
+          let(:polytex) { "(Or otherwise.) A new sentence." }
+          it { should resemble "(Or otherwise.)#{intsp} A new sentence." }
+        end
+
+        context "with a sentence ending in a closing quote" do
+          let(:polytex) { "``Yes, indeed!'' A new sentence." }
+          it { should resemble "“Yes, indeed!”#{intsp} A new sentence." }
+        end
+
+        context "forced inter-sentence override" do
+          let(:polytex) { 'Superman II\@. Lorem ipsum.' }
+          it { should resemble "Superman II.#{intsp} Lorem ipsum." }
+        end
       end
     end
-
-    let(:polytex) { 'Superman II\@. Lorem ipsum.' }
-    it { should resemble 'Superman II.<span class="intersentencespace"></span> Lorem ipsum.' }
   end
 
   describe 'unbreakable interword space' do
