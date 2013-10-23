@@ -294,13 +294,6 @@ module Polytexnic
         def nokogiri_ellipsis_workaround(raw_xml)
           raw_xml.gsub('&#133;', '…')
         end
-
-        # Returns the executable for the Tralics LaTeX-to-XML converter.
-        def tralics
-          # If possible, use the local tralics from the `polytexnic` template.
-          local_tralics = 'bin/tralics'
-          File.exist?(local_tralics) ? local_tralics : executable('tralics')
-        end
     end
   end
 end

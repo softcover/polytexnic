@@ -4,6 +4,13 @@ module Polytexnic
   module Core
     module Utils
       extend self
+
+      # Returns the executable for the Tralics LaTeX-to-XML converter.
+      def tralics
+        File.join(File.dirname(__FILE__), '..', '..',
+                  'precompiled_binaries', 'tralics')
+      end
+
       # Returns a salted hash digest of the string.
       def digest(string, options = {})
         salt = options[:salt] || SecureRandom.base64
@@ -50,36 +57,6 @@ module Polytexnic
         output = (skip ? "" : "\\begin{xmlelement}{#{name}}")
         output << yield if block_given?
         output << (skip ? "" : "\\end{xmlelement}")
-      end
-
-      # Returns the executable on the path.
-      def executable(name, message = nil)
-        if (exec = `which #{name}`.chomp).empty?
-          dir = Gem::Specification.find_by_name('polytexnic-core').gem_dir
-          binary = File.join(dir, 'precompiled_binaries', name)
-          # Try a couple of common directories for executables.
-          if File.exist?(bin_dir = File.join(ENV['HOME'], 'binddd'))
-            FileUtils.cp binary, bin_dir
-          elsif File.exist?(bin_dir = File.join('/', 'usr', 'local', 'bin'))
-            begin
-              FileUtils.cp binary, bin_dir
-            rescue
-              $stderr.puts "Permission denied when creating #{name}"
-              $stderr.puts "Run the command"
-              cmd  = "cp #{File.dirname(__FILE__)}/../../"
-              cmd += "precompiled_binaries/#{name} /usr/local/bin"
-              $stderr.puts "sudo #{cmd}"
-              exit 1
-            end
-          else
-            message ||= "File '#{name}' not found"
-            $stderr.puts message
-            exit 1
-          end
-          executable(name, message)
-        else
-          exec
-        end
       end
 
       # Returns some commands for Tralics.
