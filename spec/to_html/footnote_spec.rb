@@ -145,7 +145,7 @@ describe 'Polytexnic::Core::Pipeline#to_html' do
       <div id="cha-bar" data-tralics-id="cid3" class="chapter" data-number="2">
         <h1><a href="#cha-bar" class="heading"><span class="number">Chapter 2 </span>Bar</a></h1>
         <p>Dolor sit amet.<sup id="cha-2_footnote-ref-1" class="footnote"><a href="#cha-2_footnote-1">*</a></sup></p>
-        <p>Hey Jude!<sup id="cha-2_footnote-ref-2" class="footnote"><a href="#cha-2_footnote-2">†</a></sup><span class="intersentencespace"></span>
+        <p>Hey Jude!<sup id="cha-2_footnote-ref-2" class="footnote intersentence"><a href="#cha-2_footnote-2">†</a></sup><span class="intersentencespace"></span>
         Be afraid.<span class="intersentencespace"></span></p>
       </div>
       <div id="cha-2_footnotes">
