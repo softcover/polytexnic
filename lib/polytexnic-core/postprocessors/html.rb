@@ -307,6 +307,7 @@ module Polytexnic
               if end_of_sentence && !end_of_paragraph
                 space = Nokogiri::XML::Node.new('span', node.document)
                 space['class'] = 'intersentencespace'
+                node['class'] += ' intersentence'
                 node.add_next_sibling(space)
               end
             end
