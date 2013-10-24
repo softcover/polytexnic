@@ -743,7 +743,12 @@ module Polytexnic
               prefix = (@cha.nil? || number.match(/\./)) ? '' : 'Chapter '
               el.content = prefix + node['data-number'] + ' '
               el['class'] = 'number'
-              head.children.first.add_previous_sibling el
+              chapter_name = head.children.first
+              if chapter_name.nil?
+                head.add_child(el)
+              else
+                chapter_name.add_previous_sibling(el)
+              end
             end
           end
 
