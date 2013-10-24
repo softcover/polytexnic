@@ -119,10 +119,10 @@ module Polytexnic
           lines = []
           in_table = false
           string.split("\n").each do |line|
-            in_table ||= (line =~ /\\begin{tabular}/)
+            in_table ||= (line =~ /^\s*\\begin{tabular}/)
             line.gsub!('\\\\', xmlelement('backslashbreak')) unless in_table
             lines << line
-            in_table = (in_table && line !~ /\\end{tabular}/)
+            in_table = (in_table && line !~ /^\s*\\end{tabular}/)
           end
           lines.join("\n")
         end
@@ -237,7 +237,7 @@ module Polytexnic
         # I've tried in vain to figure out WTF is going on in the Tralics
         # source, but it's easy enough in Ruby so I'm throwing it in here.
         def make_tabular_alignment_cache(output)
-          alignment_regex = /\\begin{tabular}{((?:\|*[lcr]+\|*)+)}/
+          alignment_regex = /^\s*\\begin{tabular}{((?:\|*[lcr]+\|*)+)}/
           @tabular_alignment_cache = output.scan(alignment_regex).flatten
         end
 
