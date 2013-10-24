@@ -18,12 +18,25 @@ describe Polytexnic::Core::Pipeline do
 
     describe "with source code highlighting" do
       let(:polytex) do <<-'EOS'
-        %= lang:ruby
-        \begin{code}
-        def foo
-          "bar"
-        end
-        \end{code}
+%= lang:ruby
+\begin{code}
+def hello
+  "hello, world!"
+end
+\end{code}
+
+Make a code listing as in Listing~\ref{code:hello}.
+
+\begin{codelisting}
+\label{code:hello}
+\codecaption{A hello program in Ruby.}
+%= lang:ruby
+\begin{code}
+def hello
+  "hello, world!"
+end
+\end{code}
+\end{codelisting}
 
         \noindent lorem ipsum
       EOS
@@ -35,7 +48,7 @@ describe Polytexnic::Core::Pipeline do
       it { should resemble '\begin{Verbatim}' }
       it { should resemble 'commandchars' }
       it { should resemble '\end{Verbatim}' }
-      it { should_not resemble 'def foo' }
+      it { should_not resemble 'def hello' }
       it { should resemble '\noindent lorem ipsum' }
 
       describe "in the middle of a line" do
