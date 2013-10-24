@@ -30,7 +30,7 @@ module Polytexnic
             label_names(output)
             restore_eq_labels(output)
             mark_environments(output)
-            make_tabular_alignmnt_cache(output)
+            make_tabular_alignment_cache(output)
           end
         end
 
@@ -236,7 +236,7 @@ module Polytexnic
         # The reason is that we need to work around a couple of bugs in Tralics.
         # I've tried in vain to figure out WTF is going on in the Tralics
         # source, but it's easy enough in Ruby so I'm throwing it in here.
-        def make_tabular_alignmnt_cache(output)
+        def make_tabular_alignment_cache(output)
           alignment_regex = /\\begin{tabular}{((?:\|*[lcr]+\|*)+)}/
           @tabular_alignment_cache = output.scan(alignment_regex).flatten
         end
