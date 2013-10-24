@@ -798,12 +798,14 @@ module Polytexnic
         def graphics_and_figures(doc)
           doc.xpath('//figure').each do |node|
             node.name = 'div'
-            if node['class']
-              node['class'] += ' figure'
-            else
-              node['class'] = 'figure'
-            end
             raw_graphic = (node['rend'] == 'inline')
+            unless raw_graphic
+              if node['class']
+                node['class'] += ' figure'
+              else
+                node['class'] = 'figure'
+              end
+            end
             if internal_paragraph = node.at_css('p')
               clean_node internal_paragraph, 'rend'
             end

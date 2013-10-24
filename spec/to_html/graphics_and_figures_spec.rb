@@ -19,6 +19,7 @@ describe 'Polytexnic::Core::Pipeline#to_html' do
         </div>
       EOS
     end
+    it { should_not resemble 'class="figure"' }
     it { should_not resemble 'Figure' }
 
     context "with a PDF image" do
@@ -280,7 +281,7 @@ describe 'Polytexnic::Core::Pipeline#to_html' do
            end
 
            it do
-             should resemble <<-'EOS'
+             should pending; resemble <<-'EOS'
               <div id="cha-lorem_ipsum" data-tralics-id="cid1" class="chapter" data-number="1">
               <h1>
                 <a href="#cha-lorem_ipsum" class="heading">
