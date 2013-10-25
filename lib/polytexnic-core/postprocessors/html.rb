@@ -838,16 +838,21 @@ module Polytexnic
         # Handles \image and \imagebox commands.
         def images_and_imageboxes(doc)
           doc.xpath('//image').each do |node|
-            handle_image(node)
+            handle_image(node, klass: 'image')
+          end
+
+          doc.xpath('//imagebox').each do |node|
+            handle_image(node, klass: 'image box')
           end
         end
 
         def handle_image(node, options={})
+          klass = options[:klass]
           container = node.parent
           container.name = 'div'
           container['class'] = 'graphics'
           node.name = 'img'
-          node['class'] = 'image'
+          node['class'] = klass
           node['src'] = node.content
           node['alt'] = node['src'].split('.').first
           node.content = ""
