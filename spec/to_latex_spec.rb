@@ -179,7 +179,7 @@ end
       let(:output) do <<-'EOS'
         \begin{table}
         \begin{center}
-        \footnotesize
+        \small
         lorem ipsum
         \end{center}
         \end{table}

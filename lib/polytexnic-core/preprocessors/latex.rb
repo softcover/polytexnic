@@ -16,7 +16,7 @@ module Polytexnic
       def polish_tables(text)
         text.tap do
           text.gsub!(/^\s*(\\begin\{table\})/) do
-            "#{$1}\n\\begin{center}\n\\footnotesize\n"
+            "#{$1}\n\\begin{center}\n\\small\n"
           end
           text.gsub!(/^\s*(\\end\{table\})/) { "\\end{center}\n#{$1}" }
         end
