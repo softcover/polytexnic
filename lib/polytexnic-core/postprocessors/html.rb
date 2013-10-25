@@ -40,6 +40,7 @@ module Polytexnic
         make_cross_references(doc)
         hrefs(doc)
         graphics_and_figures(doc)
+        images_and_imageboxes(doc)
         tables(doc)
         math(doc)
         frontmatter(doc)
@@ -797,36 +798,59 @@ module Polytexnic
         # in both cases.
         def graphics_and_figures(doc)
           doc.xpath('//figure').each do |node|
-            node.name = 'div'
-            raw_graphic = (node['rend'] == 'inline')
-            unless raw_graphic
-              if node['class']
-                node['class'] += ' figure'
-              else
-                node['class'] = 'figure'
-              end
-            end
-            if internal_paragraph = node.at_css('p')
-              clean_node internal_paragraph, 'rend'
-            end
-            if node['file'] && node['extension']
-              extension = node['extension']
-              # Support PDF images in PDF documents and PNGs in HTML.
-              extension = 'png' if extension == 'pdf'
-              filename = "#{node['file']}.#{extension}"
-              alt = File.basename(node['file'])
-              img = %(<img src="#{filename}" alt="#{alt}" />)
-              graphic = %(<div class="graphics">#{img}</div>)
-              graphic_node = Nokogiri::HTML.fragment(graphic)
-              if description_node = node.children.first
-                description_node.add_previous_sibling(graphic_node)
-              else
-                node.add_child(graphic_node)
-              end
-              clean_node node, %w[file extension rend]
-            end
-            add_caption(node, name: 'figure') unless raw_graphic
+            process_graphic(node, klass: 'figure')
           end
+        end
+
+        def process_graphic(node, options={})
+          klass = options[:klass]
+          node.name = 'div'
+          raw_graphic = (node['rend'] == 'inline')
+          unless raw_graphic
+            if node['class']
+              node['class'] += " #{klass}"
+            else
+              node['class'] = klass
+            end
+          end
+          if internal_paragraph = node.at_css('p')
+            clean_node internal_paragraph, 'rend'
+          end
+          if node['file'] && node['extension']
+            extension = node['extension']
+            # Support PDF images in PDF documents and PNGs in HTML.
+            extension = 'png' if extension == 'pdf'
+            filename = "#{node['file']}.#{extension}"
+            alt = File.basename(node['file'])
+            img = %(<img src="#{filename}" alt="#{alt}" />)
+            graphic = %(<div class="graphics">#{img}</div>)
+            graphic_node = Nokogiri::HTML.fragment(graphic)
+            if description_node = node.children.first
+              description_node.add_previous_sibling(graphic_node)
+            else
+              node.add_child(graphic_node)
+            end
+            clean_node node, %w[file extension rend]
+          end
+          add_caption(node, name: 'figure') unless raw_graphic
+        end
+
+        # Handles \image and \imagebox commands.
+        def images_and_imageboxes(doc)
+          doc.xpath('//image').each do |node|
+            handle_image(node)
+          end
+        end
+
+        def handle_image(node, options={})
+          container = node.parent
+          container.name = 'div'
+          container['class'] = 'graphics'
+          node.name = 'img'
+          node['class'] = 'image'
+          node['src'] = node.content
+          node['alt'] = node['src'].split('.').first
+          node.content = ""
         end
 
         # Adds a caption to a node.

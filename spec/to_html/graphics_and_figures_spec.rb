@@ -3,8 +3,7 @@ require 'spec_helper'
 
 describe 'Polytexnic::Core::Pipeline#to_html' do
 
-  let(:processed_text) { Polytexnic::Core::Pipeline.new(polytex).to_html }
-  subject { processed_text }
+  subject(:processed_text) { Polytexnic::Core::Pipeline.new(polytex).to_html }
 
   describe "graphics" do
     let(:polytex) do <<-'EOS'
@@ -273,7 +272,6 @@ describe 'Polytexnic::Core::Pipeline#to_html' do
             \label{cha:lorem_ipsum}
 
             \begin{figure}
-            \centering
             \image{foo.png}
             \caption{This is a caption.\label{fig:foo}}
             \end{figure}
@@ -281,15 +279,15 @@ describe 'Polytexnic::Core::Pipeline#to_html' do
            end
 
            it do
-             should pending; resemble <<-'EOS'
+             should resemble <<-'EOS'
               <div id="cha-lorem_ipsum" data-tralics-id="cid1" class="chapter" data-number="1">
               <h1>
                 <a href="#cha-lorem_ipsum" class="heading">
                 <span class="number">Chapter 1 </span>The chapter</a>
               </h1>
-              <div class="center figure" id="fig-foo" data-tralics-id="uid1" data-number="1.1">
+              <div id="fig-foo" data-tralics-id="uid1" data-number="1.1" class="figure">
                 <div class="graphics">
-                  <img src="foo.png" alt="foo" />
+                  <img class="image" src="foo.png" alt="foo" />
                 </div>
                 <div class="caption">
                   <span class="header">Figure 1.1: </span>

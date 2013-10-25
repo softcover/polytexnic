@@ -73,6 +73,8 @@ module Polytexnic
 \newcommand{\sout}[1]{\xmlelt{sout}{#1}}
 \newcommand{\kode}[1]{\xmlelt{kode}{#1}}
 \newcommand{\filepath}[1]{\xmlelt{filepath}{#1}}
+\newcommand{\image}[1]{\xmlelt{image}{#1}}
+\newcommand{\imagebox}[1]{\xmlelt{imagebox}{#1}}
 
 % Code listings
 \usepackage{amsthm}
@@ -155,7 +157,7 @@ module Polytexnic
 
       # Returns true if we are debugging, false otherwise
       def debug?
-        false
+        true
       end
 
       # Returns true if we are profiling the code, false otherwise.
