@@ -93,6 +93,11 @@ end
           "bar"
         end
         \end{Verbatim}
+
+        \begin{Verbatim}
+          x
+        \end{equation}
+        \end{Verbatim}
         EOS
       end
 

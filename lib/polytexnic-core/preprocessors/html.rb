@@ -6,7 +6,7 @@ module Polytexnic
       # Converts HTML to XML.
       # The heart of the process is using Tralics to convert the input PolyTeX
       # to XML. The raw PolyTeX needs to be processed first to make everything
-      # go smoothly, but after that the steps to producing the corresponging
+      # go smoothly, but after that the steps to producing the corresponding
       # XML is straightforward.
       def to_xml
         polytex = process_for_tralics(@polytex)

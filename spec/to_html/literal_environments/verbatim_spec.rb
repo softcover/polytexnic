@@ -111,6 +111,22 @@ describe Polytexnic::Core::Pipeline do
 
       it { should resemble output }
     end
+
+    context "containing a code inclusion" do
+      let(:polytex) do <<-'EOS'
+        \begin{verbatim}
+        %= <</path/to/file.rb
+        \end{verbatim}
+        EOS
+      end
+
+      let(:output) do <<-'EOS'
+        %= &lt;&lt;/path/to/file.rb
+        EOS
+      end
+
+      it { should resemble output }
+    end
   end
 
   describe "Verbatim environments" do
