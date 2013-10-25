@@ -272,7 +272,7 @@ describe 'Polytexnic::Core::Pipeline#to_html' do
             \label{cha:lorem_ipsum}
 
             \begin{figure}
-            \image{foo.png}
+            \image{foo_bar.png}
             \caption{This is a caption.\label{fig:foo}}
             \end{figure}
             EOS
@@ -286,8 +286,8 @@ describe 'Polytexnic::Core::Pipeline#to_html' do
                 <span class="number">Chapter 1 </span>The chapter</a>
               </h1>
               <div id="fig-foo" data-tralics-id="uid1" data-number="1.1" class="figure">
-                <div class="graphics">
-                  <img class="image" src="foo.png" alt="foo" />
+                <div class="graphics image">
+                  <img src="foo_bar.png" alt="foo_bar" />
                 </div>
                 <div class="caption">
                   <span class="header">Figure 1.1: </span>
@@ -305,7 +305,7 @@ describe 'Polytexnic::Core::Pipeline#to_html' do
             \label{cha:lorem_ipsum}
 
             \begin{figure}
-            \imagebox{foo.png}
+            \imagebox{foo_bar.png}
             \caption{This is a caption.\label{fig:foo}}
             \end{figure}
             EOS
@@ -319,8 +319,8 @@ describe 'Polytexnic::Core::Pipeline#to_html' do
                 <span class="number">Chapter 1 </span>The chapter</a>
               </h1>
               <div id="fig-foo" data-tralics-id="uid1" data-number="1.1" class="figure">
-                <div class="graphics">
-                  <img class="image box" src="foo.png" alt="foo" />
+                <div class="graphics image box">
+                  <img src="foo_bar.png" alt="foo_bar" />
                 </div>
                 <div class="caption">
                   <span class="header">Figure 1.1: </span>

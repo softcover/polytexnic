@@ -850,10 +850,9 @@ module Polytexnic
           klass = options[:klass]
           container = node.parent
           container.name = 'div'
-          container['class'] = 'graphics'
+          container['class'] = 'graphics ' + klass
           node.name = 'img'
-          node['class'] = klass
-          node['src'] = node.content
+          node['src'] = node.content.gsub(underscore_digest, '_')
           node['alt'] = node['src'].split('.').first
           node.content = ""
         end

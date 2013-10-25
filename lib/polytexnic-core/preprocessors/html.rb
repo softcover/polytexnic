@@ -28,6 +28,7 @@ module Polytexnic
             title_fields(output)
             maketitle(output)
             label_names(output)
+            image_names(output)
             restore_eq_labels(output)
             mark_environments(output)
             make_tabular_alignment_cache(output)
@@ -165,6 +166,20 @@ module Polytexnic
           string.gsub! /\\label\{(.*?)\}/ do |s|
             label = $1.gsub(':', '-').gsub('_', underscore_digest)
             "#{s}\n\\xbox{data-label}{#{label}}"
+          end
+        end
+
+        # Handles image names with underscores.
+        # This is a terrible kludge, and it's annoying that it's
+        # apparently necessary.
+        def image_names(string)
+          string.gsub! /\\image\{(.*?)\}/ do |s|
+            escaped_filename = $1.gsub('_', underscore_digest)
+            "\\image{#{escaped_filename}}"
+          end
+          string.gsub! /\\imagebox\{(.*?)\}/ do |s|
+            escaped_filename = $1.gsub('_', underscore_digest)
+            "\\imagebox{#{escaped_filename}}"
           end
         end
 
