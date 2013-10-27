@@ -166,13 +166,15 @@ module Polytexnic
     end
 
     # Returns an equation element while caching the given content.
+    # We use this only for unnumbered, display equations, which requires using
+    # the `equation*` environment in place of `equation`.
     def equation_element(content)
       key = digest(content)
       literal_cache[key] = content
       "\\begin{xmlelement*}{equation}
-        \\begin{equation}
+        \\begin{equation*}
         #{key}
-        \\end{equation}
+        \\end{equation*}
         \\end{xmlelement*}"
     end
 
