@@ -77,15 +77,6 @@ module Polytexnic
           end
         end
 
-        # Caches URLs for \href commands.
-        def cache_hrefs(doc)
-          doc.gsub!(/\\href{(.*?)}/) do
-            key = digest($1)
-            literal_cache[key] = $1
-            "\\href{#{key}}"
-          end
-        end
-
         # Removes commented-out lines.
         def remove_comments(output)
           output.gsub!(/[^\\]%.*$/, '')

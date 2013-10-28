@@ -153,5 +153,14 @@ describe Polytexnic::Core::Pipeline do
         it { should resemble output }
       end
     end
+
+    describe "href escaping" do
+      context "URL needing encoding" do
+        let(:url) { 'https://groups.google.com/~forum/!topic/mathjax users' }
+        let(:polytex) { "\\href{#{url}}{Example Site}" }
+        let(:output) { "\\href{#{URI::encode(url)}}" }
+        it { should resemble output }
+      end
+    end
   end
 end
