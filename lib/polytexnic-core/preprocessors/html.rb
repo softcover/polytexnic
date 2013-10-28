@@ -28,6 +28,7 @@ module Polytexnic
             title_fields(output)
             maketitle(output)
             label_names(output)
+            image_names(output)
             restore_eq_labels(output)
             mark_environments(output)
             make_tabular_alignment_cache(output)
@@ -119,10 +120,10 @@ module Polytexnic
           lines = []
           in_table = false
           string.split("\n").each do |line|
-            in_table ||= (line =~ /\\begin{tabular}/)
+            in_table ||= (line =~ /^\s*\\begin{tabular}/)
             line.gsub!('\\\\', xmlelement('backslashbreak')) unless in_table
             lines << line
-            in_table = (in_table && line !~ /\\end{tabular}/)
+            in_table = (in_table && line !~ /^\s*\\end{tabular}/)
           end
           lines.join("\n")
         end
@@ -165,6 +166,20 @@ module Polytexnic
           string.gsub! /\\label\{(.*?)\}/ do |s|
             label = $1.gsub(':', '-').gsub('_', underscore_digest)
             "#{s}\n\\xbox{data-label}{#{label}}"
+          end
+        end
+
+        # Handles image names with underscores.
+        # This is a terrible kludge, and it's annoying that it's
+        # apparently necessary.
+        def image_names(string)
+          string.gsub! /\\image\{(.*?)\}/ do |s|
+            escaped_filename = $1.gsub('_', underscore_digest)
+            "\\image{#{escaped_filename}}"
+          end
+          string.gsub! /\\imagebox\{(.*?)\}/ do |s|
+            escaped_filename = $1.gsub('_', underscore_digest)
+            "\\imagebox{#{escaped_filename}}"
           end
         end
 
@@ -226,8 +241,8 @@ module Polytexnic
           # Handle \centering
           string.gsub! /\\centering/, '\AddAttToCurrent{class}{center}'
 
-          # Handle \image
-          string.gsub! /\\image/, '\includegraphics'
+          # # Handle \image
+          # string.gsub! /\\image/, '\includegraphics'
         end
 
         # Collects alignment information for tabular environments.
@@ -237,7 +252,7 @@ module Polytexnic
         # I've tried in vain to figure out WTF is going on in the Tralics
         # source, but it's easy enough in Ruby so I'm throwing it in here.
         def make_tabular_alignment_cache(output)
-          alignment_regex = /\\begin{tabular}{((?:\|*[lcr]+\|*)+)}/
+          alignment_regex = /^\s*\\begin{tabular}{((?:\|*[lcr]+\|*)+)}/
           @tabular_alignment_cache = output.scan(alignment_regex).flatten
         end
 

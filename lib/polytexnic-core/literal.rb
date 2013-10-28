@@ -115,7 +115,8 @@ module Polytexnic
               # (We just want to keep people from accidentally including them
               #  in their source files.)
               permanent_salt = 'fbbc13ed4a51e27608037365e1d27a5f992b6339'
-              key = digest("#{content}--#{language}--#{format}",
+              key = digest("#{content}--#{language}--#{format}" +
+                           "--#{in_codelisting}",
                            salt: permanent_salt)
               code_cache[key] = [content, language, in_codelisting]
               tag = 'code'
