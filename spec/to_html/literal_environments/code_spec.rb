@@ -5,8 +5,7 @@ describe Polytexnic::Core::Pipeline do
   before(:all) do
     FileUtils.rm('.highlight_cache') if File.exist?('.highlight_cache')
   end
-  let(:processed_text) { Polytexnic::Core::Pipeline.new(polytex).to_html }
-  subject { processed_text }
+  subject(:processed_text) { Polytexnic::Core::Pipeline.new(polytex).to_html }
 
   describe "code blocks" do
 

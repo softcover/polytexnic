@@ -3,8 +3,7 @@ require 'spec_helper'
 
 describe 'Polytexnic::Core::Pipeline#to_html' do
 
-  let(:processed_text) { Polytexnic::Core::Pipeline.new(polytex).to_html }
-  subject { processed_text }
+  subject(:processed_text) { Polytexnic::Core::Pipeline.new(polytex).to_html }
 
   describe "quoted strings" do
     context "with single quotes" do

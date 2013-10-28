@@ -2,8 +2,7 @@
 require 'spec_helper'
 
 describe Polytexnic::Core::Pipeline do
-  let(:processed_text) { Polytexnic::Core::Pipeline.new(polytex).to_html }
-  subject { processed_text }
+  subject(:processed_text) { Polytexnic::Core::Pipeline.new(polytex).to_html }
 
   describe "\\verb environments" do
     let(:polytex) { '\verb+\begin{center}+ \verb-$foo-' }
@@ -106,6 +105,22 @@ describe Polytexnic::Core::Pipeline do
         \begin{code}
         foo ||= bar
         \end{code}
+        EOS
+      end
+
+      it { should resemble output }
+    end
+
+    context "containing a code inclusion" do
+      let(:polytex) do <<-'EOS'
+        \begin{verbatim}
+        %= <</path/to/file.rb
+        \end{verbatim}
+        EOS
+      end
+
+      let(:output) do <<-'EOS'
+        %= &lt;&lt;/path/to/file.rb
         EOS
       end
 

@@ -315,10 +315,12 @@ module Polytexnic
           end
         end
 
-        # Returns footnote symbol for use in non-numerical footnotes.
-        def fnsymbol(i)
+        # Returns the nth footnote symbol for use in non-numerical footnotes.
+        # By using the modulus operator %, we arrange to loop around to the
+        # front if the number footnotes exceeds the number of symbols.
+        def fnsymbol(n)
           symbols = %w[* † ‡ § ¶ ‖ ** †† ‡‡]
-          symbols[i % symbols.size]
+          symbols[n % symbols.size]
         end
 
         # Returns the chapter number for a given node.
@@ -334,16 +336,6 @@ module Polytexnic
           end
         end
 
-        # Returns HTML for a nicely styled TeX logo.
-        def tex
-          %(<span class="texhtml" style="font-family: 'CMU Serif', cmr10, LMRoman10-Regular, 'Times New Roman', 'Nimbus Roman No9 L', Times, serif;">T<span style="text-transform: uppercase; vertical-align: -0.5ex; margin-left: -0.1667em; margin-right: -0.125em;">E</span>X</span>)
-        end
-
-        # Returns HTML for a nicely styled LaTeX logo.
-        def latex
-          %(<span class="texhtml" style="font-family: 'CMU Serif', cmr10, LMRoman10-Regular, 'Times New Roman', 'Nimbus Roman No9 L', Times, serif;">L<span style="text-transform: uppercase; font-size: 70%; margin-left: -0.36em; vertical-align: 0.3em; line-height: 0; margin-right: -0.15em;">A</span>T<span style="text-transform: uppercase; margin-left: -0.1667em; vertical-align: -0.5ex; line-height: 0; margin-right: -0.125em;">E</span>X</span>)
-        end
-
         # Handles logos for TeX and LaTeX.
         def tex_logos(doc)
           doc.xpath('//TeX').each do |node|
@@ -354,6 +346,17 @@ module Polytexnic
           end
         end
 
+        # Returns HTML for a nicely styled TeX logo.
+        def tex
+          %(<span class="texhtml" style="font-family: 'CMU Serif', cmr10, LMRoman10-Regular, 'Times New Roman', 'Nimbus Roman No9 L', Times, serif;">T<span style="text-transform: uppercase; vertical-align: -0.5ex; margin-left: -0.1667em; margin-right: -0.125em;">E</span>X</span>)
+        end
+
+        # Returns HTML for a nicely styled LaTeX logo.
+        def latex
+          %(<span class="texhtml" style="font-family: 'CMU Serif', cmr10, LMRoman10-Regular, 'Times New Roman', 'Nimbus Roman No9 L', Times, serif;">L<span style="text-transform: uppercase; font-size: 70%; margin-left: -0.36em; vertical-align: 0.3em; line-height: 0; margin-right: -0.15em;">A</span>T<span style="text-transform: uppercase; margin-left: -0.1667em; vertical-align: -0.5ex; line-height: 0; margin-right: -0.125em;">E</span>X</span>)
+        end
+
+        # Handles \begin{quote} ... \end{quote}.
         def quote(doc)
           doc.xpath('//p[@rend="quoted"]').each do |node|
             clean_node node, 'rend'
@@ -362,6 +365,7 @@ module Polytexnic
           end
         end
 
+        # Handles \begin{verse} ... \end{verse}.
         def verse(doc)
           doc.xpath('//p[@rend="verse"]').each do |node|
             clean_node node, %w{rend noindent}
@@ -370,6 +374,7 @@ module Polytexnic
           end
         end
 
+        # Converts itemized lists to uls.
         def itemize(doc)
           doc.xpath('//list[@type="simple"]').each do |node|
             clean_node node, 'type'
@@ -377,6 +382,7 @@ module Polytexnic
           end
         end
 
+        # Converts enumerated lists to ols.
         def enumerate(doc)
           doc.xpath('//list[@type="ordered"]').each do |node|
             clean_node node, 'type'
@@ -384,6 +390,7 @@ module Polytexnic
           end
         end
 
+        # Returns the node for a list item (li).
         def item(doc)
           doc.xpath('//item').each do |node|
             clean_node node, %w{id-text id label}
@@ -446,6 +453,7 @@ module Polytexnic
           end
         end
 
+        # Convert data-labels to valid CSS ids.
         def convert_labels(node)
           node.children.each do |child|
             if child.name == 'data-label'
@@ -456,7 +464,7 @@ module Polytexnic
           end
         end
 
-        # Restore the label.
+        # Restores the label.
         # Tralics does weird stuff with underscores, so they are subbed out
         # so that they can be passed through the pipeline intact. This is where
         # we restore them.
@@ -464,7 +472,7 @@ module Polytexnic
           node.inner_html.gsub(underscore_digest, '_')
         end
 
-        # Given a section node, process the <head> tag.
+        # Processes the <head> tag given a section node.
         # Supports chapter, section, and subsection.
         def make_headings(doc, node, name)
           head_node = node.children.first
@@ -476,6 +484,7 @@ module Polytexnic
           head_node << a
         end
 
+        # Converts div0 to chapters and sections depending on node type.
         def chapters_and_section(doc)
           doc.xpath('//div0').each do |node|
             node.name = 'div'
@@ -494,6 +503,7 @@ module Polytexnic
           end
         end
 
+        # Converts div1 to subsections.
         def subsection(doc)
           doc.xpath('//div1').each do |node|
             node.name = 'div'
@@ -506,6 +516,7 @@ module Polytexnic
           end
         end
 
+        # Converts div2 to subsections.
         def subsubsection(doc)
           doc.xpath('//div2').each do |node|
             node.name = 'div'
@@ -516,8 +527,7 @@ module Polytexnic
         end
 
         # Converts heading elements to the proper spans.
-        # Headings are used in codelisting-like environments such as asides
-        # and codelistings.
+        # Headings are used in theorem-like environments like asides.
         def headings(doc)
           doc.xpath('//heading').each do |node|
             node.name  = 'span'
@@ -594,6 +604,7 @@ module Polytexnic
           end
         end
 
+        # Handles normal, thin, and intersentence spaces.
         def spaces(doc)
           doc.xpath('//thinspace').each do |node|
             node.name  = 'span'
@@ -624,6 +635,7 @@ module Polytexnic
           end
         end
 
+        # Handles the title, author, date, etc., produced by \maketitle.
         def title(doc)
           doc.xpath('//maketitle').each do |node|
             node.name = 'div'
@@ -695,47 +707,11 @@ module Polytexnic
           end
         end
 
+        # Creates linked cross-references.
         def make_cross_references(doc)
           # build numbering tree
           doc.xpath('//*[@data-tralics-id]').each do |node|
-            node['data-number'] = if node['class'] == 'chapter'
-                                    # Tralics numbers figures & equations
-                                    # overall, not per chapter, so we need
-                                    # counters.
-                                    @equation = 0
-                                    @figure = 0
-                                    @cha = node['id-text']
-                                  elsif node['class'] == 'section'
-                                    @sec = node['id-text']
-                                    label_number(@cha, @sec)
-                                  elsif node['class'] == 'subsection'
-                                    @subsec = node['id-text']
-                                    label_number(@cha, @sec, @subsec)
-                                  elsif node['class'] == 'subsubsection'
-                                    @ssubsec = node['id-text']
-                                    label_number(@cha, @sec, @subsec, @ssubsec)
-                                  elsif node['textype'] == 'equation'
-                                    if @cha.nil?
-                                      @equation = node['id-text']
-                                    else
-                                      @equation += 1
-                                    end
-                                    label_number(@cha, @equation)
-                                  elsif node['class'] == 'codelisting'
-                                    node['id-text']
-                                  elsif node['class'] == 'aside'
-                                    node['id-text']
-                                  elsif node.name == 'table' && node['id-text']
-                                    @table = node['id-text']
-                                    label_number(@cha, @table)
-                                  elsif node.name == 'figure'
-                                    if @cha.nil?
-                                      @figure = node['id-text']
-                                    else
-                                      @figure += 1
-                                    end
-                                    label_number(@cha, @figure)
-                                  end
+            node['data-number'] = formatted_number(node)
             clean_node node, 'id-text'
             # Add number span
             if (head = node.css('h1 a, h2 a, h3 a').first)
@@ -779,6 +755,50 @@ module Polytexnic
           end
         end
 
+        # Returns the formatted number appropriate for the node.
+        # E.g., "2.1" for a section.
+        # Note: sets @cha as a side-effect. Yes, this is gross.
+        def formatted_number(node)
+          if node['class'] == 'chapter'
+            # Tralics numbers figures & equations
+            # overall, not per chapter, so we need
+            # counters.
+            @equation = 0
+            @figure = 0
+            @cha = node['id-text']
+          elsif node['class'] == 'section'
+            @sec = node['id-text']
+            label_number(@cha, @sec)
+          elsif node['class'] == 'subsection'
+            @subsec = node['id-text']
+            label_number(@cha, @sec, @subsec)
+          elsif node['class'] == 'subsubsection'
+            @ssubsec = node['id-text']
+            label_number(@cha, @sec, @subsec, @ssubsec)
+          elsif node['textype'] == 'equation'
+            if @cha.nil?
+              @equation = node['id-text']
+            else
+              @equation += 1
+            end
+            label_number(@cha, @equation)
+          elsif node['class'] == 'codelisting'
+            node['id-text']
+          elsif node['class'] == 'aside'
+            node['id-text']
+          elsif node.name == 'table' && node['id-text']
+            @table = node['id-text']
+            label_number(@cha, @table)
+          elsif node.name == 'figure'
+            if @cha.nil?
+              @figure = node['id-text']
+            else
+              @figure += 1
+            end
+            label_number(@cha, @figure)
+          end
+        end
+
         # Returns a label number for use in headings.
         # For example, label_number("1", "2") returns "1.2".
         def label_number(*args)
@@ -802,6 +822,7 @@ module Polytexnic
           end
         end
 
+        # Processes a graphic, including the description.
         def process_graphic(node, options={})
           klass = options[:klass]
           node.name = 'div'
@@ -846,6 +867,7 @@ module Polytexnic
           end
         end
 
+        # Processes custom image environment to use a div and the right class.
         def handle_image(node, options={})
           klass = options[:klass]
           container = node.parent
@@ -880,7 +902,6 @@ module Polytexnic
 
         # Converts XML to HTML tables.
         def tables(doc)
-
           doc.xpath('//table/row/cell').each do |node|
             node.name = 'td'
             if node['cols']

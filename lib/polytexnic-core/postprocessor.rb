@@ -11,13 +11,14 @@ module Polytexnic
     include Polytex
 
     def postprocess(format)
-      if format == :html
+      case format
+      when :html
         @html = xml_to_html(@xml)
-      elsif format == :latex
+      when :latex
         hyperrefs(@polytex)
         raw_source = replace_hashes(@polytex)
         @latex = highlight_source_code(raw_source)
-      elsif format == :polytex
+      when :polytex
         remove_hypertarget
         fix_verbatim_bug
         write_polytex_code

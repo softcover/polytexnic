@@ -2,8 +2,7 @@
 require 'spec_helper'
 
 describe Polytexnic::Core::Pipeline do
-  let(:processed_text) { Polytexnic::Core::Pipeline.new(polytex).to_html }
-  subject { processed_text }
+  subject(:processed_text) { Polytexnic::Core::Pipeline.new(polytex).to_html }
 
   describe "non-ASCII Unicode" do
     let(:polytex) { 'Алексей Разуваев' }

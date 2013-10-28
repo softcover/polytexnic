@@ -62,8 +62,8 @@ module Polytexnic
       # Returns some commands for Tralics.
       # For various reasons, we don't actually want to include these in
       # the style file that gets passed to LaTeX. For example,
-      # the commands with 'xmlelt' aren't even valid LaTeX, but rather have
-      # special meaning to the Tralics processor.
+      # the commands with 'xmlelt' aren't even valid LaTeX; they're actually
+      # pseudo-LaTeX that has special meaning to the Tralics processor.
       def tralics_commands
         <<-'EOS'
 % Commands specific to Tralics
@@ -90,7 +90,7 @@ module Polytexnic
           substitutions = {}
           document.tap do
             code_cache.each do |key, (content, language, in_codelisting)|
-              code = highlight(key, content, language, 'latex')
+              code   = highlight(key, content, language, 'latex')
               output = code.split("\n")
               horrible_backslash_kludge(add_font_info(output.first))
               code = output.join("\n")
@@ -110,9 +110,7 @@ module Polytexnic
 
       # Puts a frame around code.
       def framed(code)
-        %(\\begin{framed_shaded}
-          #{code}
-          \\end{framed_shaded})
+        "\\begin{framed_shaded}\n#{code}\n\\end{framed_shaded})"
       end
 
       # Highlights a code sample.
@@ -144,8 +142,8 @@ module Polytexnic
       # Oh crap, there are backslashes in there. This means we have no chance
       # of getting things to work after interpolating, gsubbing, and so on,
       # because in Ruby '\\foo' is the same as '\\\\foo', '\}' is '}', etc.
-      # I thought I escaped this problem with the escape_backslashes method,
-      # but here the problem is extremely specific. In particular,
+      # I thought I escaped (heh) this problem with the `escape_backslashes`
+      # method, but here the problem is extremely specific. In particular,
       # \\\{\} is really \\ and \{ and \}, but Ruby doensn't know WTF to do
       # with it, and thinks that it's "\\{}", which is the same as '\{}'.
       # The solution is to replace '\\\\' with some number of backslashes.
@@ -155,12 +153,14 @@ module Polytexnic
         string.gsub!(/commandchars=\\\\/, 'commandchars=\\\\\\\\')
       end
 
-      # Returns true if we are debugging, false otherwise
+      # Returns true if we are debugging, false otherwise.
+      # Manually change to `true` on an as-needed basis.
       def debug?
         false
       end
 
       # Returns true if we are profiling the code, false otherwise.
+      # Manually change to `true` on an as-needed basis.
       def profiling?
         return false if test?
         false
