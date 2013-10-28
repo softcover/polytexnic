@@ -153,5 +153,27 @@ describe Polytexnic::Core::Pipeline do
         it { should resemble output }
       end
     end
+
+    describe "tables" do
+
+      let(:polytex) do <<-'EOS'
+        \begin{table}
+        lorem ipsum
+        \end{table}
+        EOS
+      end
+
+      let(:output) do <<-'EOS'
+        \begin{table}
+        \begin{center}
+        \footnotesize
+        lorem ipsum
+        \end{center}
+        \end{table}
+        EOS
+      end
+
+      it { should resemble output }
+    end
   end
 end
