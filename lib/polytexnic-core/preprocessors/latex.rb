@@ -3,7 +3,7 @@ module Polytexnic
     module Latex
 
       def to_processed_latex
-        @polytex = process_asides(cache_hrefs(clean_latex_document))
+        @polytex = process_asides(clean_latex_document)
       end
 
       # Returns LaTeX with hashed versions of literal environments.
