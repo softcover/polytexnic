@@ -20,7 +20,7 @@ module Polytexnic
         item(doc)
         remove_errors(doc)
         set_ids(doc)
-        chapters_and_section(doc)
+        chapters_and_sections(doc)
         subsection(doc)
         subsubsection(doc)
         headings(doc)
@@ -509,7 +509,7 @@ module Polytexnic
         end
 
         # Converts div0 to chapters and sections depending on node type.
-        def chapters_and_section(doc)
+        def chapters_and_sections(doc)
           doc.xpath('//div0').each do |node|
             node.name = 'div'
             if node['type'] == 'chapter'
