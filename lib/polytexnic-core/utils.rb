@@ -99,7 +99,8 @@ module Polytexnic
 % Codelistings
 \newcounter{listing_count}
 \setcounter{listing_count}{0}
-\newenvironment{codelisting}{\begin{container}\stepcounter{listing_count}}{\end{container}}
+\newenvironment{codelisting}{\begin{framed_shaded}\stepcounter{listing_count}}%
+{\end{framed_shaded}}
         EOS
       end
 
@@ -108,12 +109,12 @@ module Polytexnic
         if document.is_a?(String) # LaTeX
           substitutions = {}
           document.tap do
-            code_cache.each do |key, (content, language)|
+            code_cache.each do |key, (content, language, in_codelisting)|
               code = highlight(key, content, language, 'latex')
               output = code.split("\n")
               horrible_backslash_kludge(add_font_info(output.first))
               code = output.join("\n")
-              substitutions[key] = framed(code)
+              substitutions[key] = in_codelisting ? code : framed(code)
             end
             document.gsub!(Regexp.union(substitutions.keys), substitutions)
           end

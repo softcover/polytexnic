@@ -39,9 +39,16 @@ module Polytexnic
       latex = (format == :latex)
       language = nil
       in_verbatim = false
+      in_codelisting = false
       while (line = lines.shift)
         if line =~ LANG_REGEX && !in_verbatim
           language = $1
+        elsif line =~ /\s*\\begin\{codelisting\}/ && !in_verbatim
+          in_codelisting = true
+          output << line
+        elsif line =~ /\s*\\end\{codelisting\}/ && !in_verbatim
+          in_codelisting = false
+          output << line
         elsif line =~ CODE_INCLUSION_REGEX && !in_verbatim
           # Reduce to a previously solved problem.
           # We transform
@@ -110,7 +117,7 @@ module Polytexnic
               permanent_salt = 'fbbc13ed4a51e27608037365e1d27a5f992b6339'
               key = digest("#{content}--#{language}--#{format}",
                            salt: permanent_salt)
-              code_cache[key] = [content, language]
+              code_cache[key] = [content, language, in_codelisting]
               tag = 'code'
             end
             if latex || tag == 'code' || math
