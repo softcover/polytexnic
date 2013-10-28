@@ -136,11 +136,11 @@ describe 'Polytexnic::Core::Pipeline#to_html' do
         <p>Lorem ipsum.<sup id="cha-1_footnote-ref-1" class="footnote"><a href="#cha-1_footnote-1">*</a></sup></p>
       </div>
       <div id="cha-1_footnotes">
-        <ol class="footnotes nonumbers">
+        <ul class="footnotes nonumbers">
           <li id="cha-1_footnote-1">
             <sup>*</sup> Cicero <a class="arrow" href="#cha-1_footnote-ref-1">↑</a>
           </li>
-        </ol>
+        </ul>
       </div>
       <div id="cha-bar" data-tralics-id="cid3" class="chapter" data-number="2">
         <h1><a href="#cha-bar" class="heading"><span class="number">Chapter 2 </span>Bar</a></h1>
@@ -148,14 +148,14 @@ describe 'Polytexnic::Core::Pipeline#to_html' do
         <p>Hey Jude.<sup id="cha-2_footnote-ref-2" class="footnote"><a href="#cha-2_footnote-2">†</a></sup></p>
       </div>
       <div id="cha-2_footnotes">
-        <ol class="footnotes nonumbers">
+        <ul class="footnotes nonumbers">
           <li id="cha-2_footnote-1">
             <sup>*</sup> <em>Still</em> Cicero <a class="arrow" href="#cha-2_footnote-ref-1">↑</a>
           </li>
           <li id="cha-2_footnote-2">
             <sup>†</sup> Lennon/McCartney <a class="arrow" href="#cha-2_footnote-ref-2">↑</a>
           </li>
-        </ol>
+        </ul>
       </div>
       EOS
     end
