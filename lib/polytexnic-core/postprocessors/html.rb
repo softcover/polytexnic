@@ -805,7 +805,7 @@ module Polytexnic
           n = node['data-number']
           if description_node = node.at_css('head')
             h = %(<span class="header">#{name} #{n}: </span>)
-            d = %(<span class="description">#{description_node.content}</span>)
+            d = %(<span class="description">#{description_node.inner_html}</span>)
             description_node.remove
             full_caption.inner_html = Nokogiri::HTML.fragment(h + d)
           else
