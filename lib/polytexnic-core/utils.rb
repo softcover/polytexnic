@@ -82,9 +82,11 @@ module Polytexnic
         end
       end
 
-      # Returns some new commands.
-      # For example, we arrange for '\PolyTeXnic' to produce
-      # the PolyTeXnic logo.
+      # Returns some commands for Tralics.
+      # For various reasons, we don't actually want to include these in
+      # the style file that gets passed to LaTeX. For example,
+      # the commands with 'xmlelt' aren't even valid LaTeX, but rather have
+      # special meaning to the Tralics processor.
       def tralics_commands
         <<-'EOS'
 % Commands specific to Tralics
@@ -99,17 +101,6 @@ module Polytexnic
 \usepackage{amsthm}
 \theoremstyle{definition}
 \newtheorem{codelisting}{Listing}[chapter]
-\newtheorem{aside}{Box}[chapter]
-        EOS
-      end
-      def new_commands
-        <<-'EOS'
-\newcommand{\PolyTeX}{Poly\-\TeX}
-\newcommand{\PolyTeXnic}{Poly\-{\TeX}\-nic}
-
-% Asides
-\usepackage{amsthm}
-\theoremstyle{definition}
 \newtheorem{aside}{Box}[chapter]
         EOS
       end

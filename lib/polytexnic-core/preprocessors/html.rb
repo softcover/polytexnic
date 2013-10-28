@@ -96,13 +96,13 @@ module Polytexnic
         end
 
         # Adds some default commands.
-        # These are commands that would ordinarily be defined in a LaTeX
-        # style file for production of a PDF, but in this case Tralics
-        # itself needs the new commands to produce its XML output.
-        # The new_commands are currently in utils, but probably should
-        # eventually be refactored into a file.
         def add_commands(polytex)
-          new_commands + tralics_commands + polytex
+          line(custom_commands) + tralics_commands + polytex
+        end
+
+        # Pads a string with newlines.
+        def line(string)
+          "\n#{string}\n"
         end
 
         # Handles title fields.
