@@ -96,7 +96,7 @@ module Polytexnic
 \newcommand{\codecaption}[1]{\xmlelt{heading}{#1}}
 \newcommand{\sout}[1]{\xmlelt{sout}{#1}}
 \newcommand{\kode}[1]{\xmlelt{kode}{#1}}
-\newcommand{\fpath}[1]{\xmlelt{fpath}{#1}}
+\newcommand{\filepath}[1]{\xmlelt{filepath}{#1}}
 
 % Code listings
 \usepackage{amsthm}
@@ -107,23 +107,13 @@ module Polytexnic
       end
       def new_commands
         <<-'EOS'
-\newcommand{\PolyTeX}{Poly\TeX}
-\newcommand{\PolyTeXnic}{Poly{\TeX}nic}
+\newcommand{\PolyTeX}{Poly\-\TeX}
+\newcommand{\PolyTeXnic}{Poly\-{\TeX}\-nic}
 
 % Asides
 \usepackage{amsthm}
 \theoremstyle{definition}
 \newtheorem{aside}{Box}[chapter]
-        EOS
-      end
-
-      def non_tralics_commands
-        <<-'EOS'
-% Codelistings
-\newcounter{listing_count}
-\setcounter{listing_count}{0}
-\newenvironment{codelisting}{\begin{framed_shaded}\stepcounter{listing_count}}%
-{\end{framed_shaded}}
         EOS
       end
 
