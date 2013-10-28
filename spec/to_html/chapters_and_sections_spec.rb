@@ -60,6 +60,9 @@ describe 'Polytexnic::Core::Pipeline#to_html' do
 
   describe '\subsubsection' do
     let(:polytex) do <<-'EOS'
+        \chapter{The Chapter}
+        \label{cha:the_chapter}
+
         \section{Foo}
         \label{sec:foo}
 
@@ -72,14 +75,15 @@ describe 'Polytexnic::Core::Pipeline#to_html' do
     end
 
     let(:output) do <<-'EOS'
-      <div id="sec-foo" data-tralics-id="cid1" class="section" data-number="1">
-        <h2><a href="#sec-foo" class="heading"><span class="number">1 </span>Foo</a></h2>
-        <div id="sec-bar" data-tralics-id="uid1" class="subsection" data-number="1.1">
-          <h3><a href="#sec-bar" class="heading"><span class="number">1.1 </span>Bar</a></h3>
-          <div id="sec-baz" data-tralics-id="uid2" class="subsubsection" data-number="1.1.1">
-            <h4><a href="#sec-baz" class="heading"><span class="number">1.1.1 </span>Baz</a></h4>
-          </div>
-        </div>
+      <div id="cha-the_chapter" data-tralics-id="cid1" class="chapter" data-number="1"><h1><a href="#cha-the_chapter" class="heading"><span class="number">Chapter 1 </span>The Chapter</a></h1>
+       </div>
+       <div id="sec-foo" data-tralics-id="cid2" class="section" data-number="1.1"><h2><a href="#sec-foo" class="heading"><span class="number">1.1 </span>Foo</a></h2>
+
+       <div id="sec-bar" data-tralics-id="uid1" class="subsection" data-number="1.1.1"><h3><a href="#sec-bar" class="heading"><span class="number">1.1.1 </span>Bar</a></h3>
+
+       <div id="sec-baz" data-tralics-id="uid2" class="subsubsection" data-number="1.1.1.1"><h4><a href="#sec-baz" class="heading">Baz</a></h4>
+       </div>
+       </div>
       </div>
       EOS
     end
@@ -188,7 +192,7 @@ describe 'Polytexnic::Core::Pipeline#to_html' do
         <p><a href="#sec-foo" class="hyperref">Section <span class="ref">1</span></a>
         </p>
         <div id="sec-baz" data-tralics-id="uid2" class="subsubsection" data-number="1.1.1">
-          <h4><a href="#sec-baz" class="heading"><span class="number">1.1.1 </span>Baz</a></h4>
+          <h4><a href="#sec-baz" class="heading">Baz</a></h4>
         </div></div></div>
       EOS
     end
