@@ -13,12 +13,10 @@ module Polytexnic
 
     # Preprocesses the input based on output format.
     def preprocess(format)
-      if format == :html
-        to_xml
-      elsif format == :latex
-        to_processed_latex
-      elsif format == :polytex
-        to_polytex
+      case format
+      when :html    then to_xml
+      when :latex   then to_processed_latex
+      when :polytex then to_polytex
       end
     end
   end

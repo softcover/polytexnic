@@ -8,8 +8,7 @@ describe Polytexnic::Core::Pipeline do
   end
 
   describe '#to_latex' do
-    let(:processed_text) { Polytexnic::Core::Pipeline.new(polytex).to_latex }
-    subject { processed_text }
+    subject(:processed_text) { Polytexnic::Core::Pipeline.new(polytex).to_latex }
 
     describe "for vanilla LaTeX" do
       let(:polytex) { '\emph{foo}' }
@@ -92,6 +91,11 @@ end
         def foo
           "bar"
         end
+        \end{Verbatim}
+
+        \begin{Verbatim}
+          x
+        \end{equation}
         \end{Verbatim}
         EOS
       end
