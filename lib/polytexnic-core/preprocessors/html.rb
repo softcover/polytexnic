@@ -30,7 +30,7 @@ module Polytexnic
             label_names(output)
             restore_eq_labels(output)
             mark_environments(output)
-            make_tabular_alignmnt_cache(output)
+            make_tabular_alignment_cache(output)
           end
         end
 
@@ -236,7 +236,7 @@ module Polytexnic
         # The reason is that we need to work around a couple of bugs in Tralics.
         # I've tried in vain to figure out WTF is going on in the Tralics
         # source, but it's easy enough in Ruby so I'm throwing it in here.
-        def make_tabular_alignmnt_cache(output)
+        def make_tabular_alignment_cache(output)
           alignment_regex = /\\begin{tabular}{((?:\|*[lcr]+\|*)+)}/
           @tabular_alignment_cache = output.scan(alignment_regex).flatten
         end
@@ -293,13 +293,6 @@ module Polytexnic
         # which does work.
         def nokogiri_ellipsis_workaround(raw_xml)
           raw_xml.gsub('&#133;', '…')
-        end
-
-        # Returns the executable for the Tralics LaTeX-to-XML converter.
-        def tralics
-          # If possible, use the local tralics from the `polytexnic` template.
-          local_tralics = 'bin/tralics'
-          File.exist?(local_tralics) ? local_tralics : executable('tralics')
         end
     end
   end
