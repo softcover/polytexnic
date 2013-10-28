@@ -112,7 +112,7 @@ describe 'Polytexnic::Core::Pipeline#to_html' do
 
         \begin{figure}
         \includegraphics{foo.png}
-        \caption{This is a caption.}
+        \caption{This is a \emph{caption} with $x$.}
         \end{figure}
 
         \begin{figure}
@@ -135,7 +135,7 @@ describe 'Polytexnic::Core::Pipeline#to_html' do
             </div>
             <div class="caption">
               <span class="header">Figure 1.1: </span>
-              <span class="description">This is a caption.</span>
+              <span class="description">This is a <em>caption</em> with <span class="inline_math">\( x \)</span>.</span>
             </div>
           </div>
           <div id="uid2" data-tralics-id="uid2" data-number="1.2" class="figure">
