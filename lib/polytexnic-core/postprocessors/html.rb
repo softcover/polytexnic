@@ -710,7 +710,7 @@ module Polytexnic
                                   end
             clean_node node, 'id-text'
             # Add number span
-            if head = node.css('h1 a, h2 a, h3 a, h4 a').first
+            if (head = node.css('h1 a, h2 a, h3 a').first)
               el = doc.create_element 'span'
               number = node['data-number']
               prefix = (@cha.nil? || number.match(/\./)) ? '' : 'Chapter '
@@ -955,14 +955,6 @@ module Polytexnic
                 current_depth -= 1
               end
               current_depth = 3
-              insert_li(html, node)
-            when 'subsubsection'
-              open_list(html) if current_depth == 3
-              while current_depth > 4
-                close_list(html)
-                current_depth -= 1
-              end
-              current_depth = 4
               insert_li(html, node)
             end
           end
