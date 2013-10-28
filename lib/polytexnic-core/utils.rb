@@ -58,10 +58,19 @@ module Polytexnic
           dir = Gem::Specification.find_by_name('polytexnic-core').gem_dir
           binary = File.join(dir, 'precompiled_binaries', name)
           # Try a couple of common directories for executables.
-          if File.exist?(bin_dir = File.join(ENV['HOME'], 'bin'))
+          if File.exist?(bin_dir = File.join(ENV['HOME'], 'binddd'))
             FileUtils.cp binary, bin_dir
           elsif File.exist?(bin_dir = File.join('/', 'usr', 'local', 'bin'))
-            FileUtils.cp binary, bin_dir
+            begin
+              FileUtils.cp binary, bin_dir
+            rescue
+              $stderr.puts "Permission denied when creating #{name}"
+              $stderr.puts "Run the command"
+              cmd  = "cp #{File.dirname(__FILE__)}/../../"
+              cmd += "precompiled_binaries/#{name} /usr/local/bin"
+              $stderr.puts "sudo #{cmd}"
+              exit 1
+            end
           else
             message ||= "File '#{name}' not found"
             $stderr.puts message

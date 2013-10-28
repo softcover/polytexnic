@@ -5,12 +5,6 @@ describe 'Polytexnic::Core::Pipeline#to_html' do
 
   subject(:processed_text) { Polytexnic::Core::Pipeline.new(polytex).to_html }
 
-  describe "Tralics installation" do
-    before { File.delete(Polytexnic::Core::Utils.executable('tralics')) }
-    subject { Polytexnic::Core::Utils.executable('tralics') }
-    it { should include 'tralics' }
-  end
-
   describe "comments" do
     let(:polytex) { "% A LaTeX comment" }
     it { should resemble '' }
