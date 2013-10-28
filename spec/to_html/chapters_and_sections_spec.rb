@@ -7,18 +7,36 @@ describe 'Polytexnic::Core::Pipeline#to_html' do
   subject { processed_text }
 
   describe '\chapter' do
-    let(:polytex) do <<-'EOS'
-        \chapter{Foo \emph{bar}}
-        \label{cha:foo}
-      EOS
+    context "with a name" do
+      let(:polytex) do <<-'EOS'
+          \chapter{Foo \emph{bar}}
+          \label{cha:foo}
+        EOS
+      end
+      let(:output) do <<-'EOS'
+        <div id="cha-foo" data-tralics-id="cid1" class="chapter" data-number="1">
+          <h1><a href="#cha-foo" class="heading"><span class="number">Chapter 1 </span>Foo <em>bar</em></a></h1>
+        </div>
+        EOS
+      end
+      it { should resemble output }
     end
-    let(:output) do <<-'EOS'
-      <div id="cha-foo" data-tralics-id="cid1" class="chapter" data-number="1">
-        <h1><a href="#cha-foo" class="heading"><span class="number">Chapter 1 </span>Foo <em>bar</em></a></h1>
-      </div>
-      EOS
+
+    context "with no name" do
+      let(:polytex) do <<-'EOS'
+          \chapter{}
+          \label{cha:foo}
+        EOS
+      end
+      let(:output) do <<-'EOS'
+        <div id="cha-foo" data-tralics-id="cid1" class="chapter" data-number="1">
+          <h1><a href="#cha-foo" class="heading"><span class="number">Chapter 1 </span></a></h1>
+        </div>
+        EOS
+      end
+      it { should resemble output }
     end
-    it { should resemble output }
+
   end
 
   describe '\section' do
