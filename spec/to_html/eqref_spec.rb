@@ -9,6 +9,8 @@ describe Polytexnic::Core::Pipeline do
       let(:equation) do <<-'EOS'
         \chapter{Equation test}
 
+        \[ x^2 \]
+
         \begin{equation}
         \label{eq:foobar}
         x

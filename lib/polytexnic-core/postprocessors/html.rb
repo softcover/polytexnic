@@ -164,6 +164,30 @@ module Polytexnic
               nil
             end
           end
+          doc.xpath('//equation//texmath[@textype="equation*"]').each do |node|
+            node.name = 'div'
+            node['class'] = 'equation'
+            node.content = literal_cache[node.content.strip] + "\n"
+            clean_node node, ['textype', 'type']
+            node.parent.replace(node)
+            begin
+            # Mimic default Tralics behavior of giving paragraph tags after
+            # math a 'noindent' class. This allows the HTML to be styled with
+            # CSS in a way that replicates the default behavior of LaTeX, where
+            # math can be included in a paragraph. In such a case, paragraphs
+            # are indented by default, but text after math environments isn't
+            # indented. In HTML, including a math div inside a p tag is illegal,
+            # so the next best thing is to add a 'noindent' class to the p tag
+            # following the math. Most documents won't use this, as the HTML
+            # convention is not to indent paragraphs anyway, but we want to
+            # support that case for completeness (mainly because Tralics does).
+              next_paragraph = node.next_sibling
+              next_paragraph['noindent'] = 'true'
+            rescue
+              # We rescue nil in case the math isn't followed by any text.
+              nil
+            end
+          end
 
           # Paragraphs with noindent
           # See the long comment above.
