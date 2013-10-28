@@ -22,6 +22,7 @@ module Polytexnic
         # substitutions (gsubs), and then making a bunch of gsubs.
         def process_for_tralics(polytex)
           clean_document(polytex).tap do |output|
+            process_spaces(output)
             remove_commands(output)
             hyperrefs(output)
             title_fields(output)
@@ -44,6 +45,37 @@ module Polytexnic
           cache_hrefs(doc)
           remove_comments(doc)
           double_backslashes(cache_display_inline_math(doc))
+        end
+
+        # Prepares spaces to be passed through the pipeline.
+        # Handles thin spaces ('\,') and normal spaces ('\ '), as well as
+        # end-of-sentence spaces.
+        def process_spaces(doc)
+          doc.gsub!(/\\,/, xmlelement('thinspace'))
+          # Match an end of sentence character, while also recognizing
+          # things like (Or otherwise.) and ``Yes, indeed!'' as being the
+          # ends of sentences.
+          end_of_sentence = '[.?!](?:\)|\'+)?'
+          # Handle a forced normal space '\ '.
+          doc.gsub!(/(#{end_of_sentence})\\ /) do
+            $1 + xmlelement('normalspace')
+          end
+          not_a_capital = '[^A-Z]'
+          # Case of "foo. A"
+          doc.gsub!(/(#{not_a_capital})(#{end_of_sentence})[ ]+([^\s])/) do
+            $1 + $2 + xmlelement('intersentencespace') + ' ' + $3
+          end
+          # Case of "foo.\n A"
+          doc.gsub!(/(#{not_a_capital})(#{end_of_sentence})\n[ ]+([^\s])/) do
+            $1 + $2 + xmlelement('intersentencespace') + ' ' + $3
+          end
+          # Case of "foo.\nA"
+          doc.gsub!(/(#{not_a_capital})(#{end_of_sentence})\n([^\n])/) do
+            $1 + $2 + xmlelement('intersentencespace') + ' ' + $3
+          end
+          # Handle the manual override to force an inter-sentence space, '\@',
+          # as in 'Superman II\@. A new sentence'.
+          doc.gsub!(/\\@\. /, '.' + xmlelement('intersentencespace') + ' ')
         end
 
         # Removes commands that might screw up Tralics.
