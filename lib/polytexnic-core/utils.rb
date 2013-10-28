@@ -110,7 +110,7 @@ module Polytexnic
 
       # Puts a frame around code.
       def framed(code)
-        "\\begin{framed_shaded}\n#{code}\n\\end{framed_shaded})"
+        "\\begin{framed_shaded}\n#{code}\n\\end{framed_shaded}"
       end
 
       # Highlights a code sample.
