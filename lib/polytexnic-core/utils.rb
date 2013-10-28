@@ -70,8 +70,16 @@ module Polytexnic
 % Commands specific to Tralics
 \def\hyperref[#1]#2{\xmlelt{a}{\XMLaddatt{target}{#1}#2}}
 \newcommand{\heading}[1]{\xmlelt{heading}{#1}}
+\newcommand{\codecaption}[1]{\xmlelt{heading}{#1}}
 \newcommand{\sout}[1]{\xmlelt{sout}{#1}}
 \newcommand{\kode}[1]{\xmlelt{kode}{#1}}
+\newcommand{\fpath}[1]{\xmlelt{fpath}{#1}}
+
+% Code listings
+\usepackage{amsthm}
+\theoremstyle{definition}
+\newtheorem{codelisting}{Listing}[chapter]
+\newtheorem{aside}{Box}[chapter]
         EOS
       end
       def new_commands
@@ -79,12 +87,19 @@ module Polytexnic
 \newcommand{\PolyTeX}{Poly\TeX}
 \newcommand{\PolyTeXnic}{Poly{\TeX}nic}
 
-% Codelisting and similar environments
+% Asides
 \usepackage{amsthm}
-\newtheorem{theorem}{Theorem}
 \theoremstyle{definition}
-\newtheorem{codelisting}{Listing}[chapter]
 \newtheorem{aside}{Box}[chapter]
+        EOS
+      end
+
+      def non_tralics_commands
+        <<-'EOS'
+% Codelistings
+\newcounter{listing_count}
+\setcounter{listing_count}{0}
+\newenvironment{codelisting}{\begin{container}\stepcounter{listing_count}}{\end{container}}
         EOS
       end
 
@@ -98,8 +113,7 @@ module Polytexnic
               output = code.split("\n")
               horrible_backslash_kludge(add_font_info(output.first))
               code = output.join("\n")
-              substitutions[key] = "\\begin{framed_shaded}\n" + code +
-                                   "\n\\end{framed_shaded}"
+              substitutions[key] = framed(code)
             end
             document.gsub!(Regexp.union(substitutions.keys), substitutions)
           end
@@ -113,6 +127,13 @@ module Polytexnic
         end
       end
 
+      # Puts a frame around code.
+      def framed(code)
+        %(\\begin{framed_shaded}
+          #{code}
+          \\end{framed_shaded})
+      end
+
       # Highlights a code sample.
       def highlight(key, content, language, formatter)
         highlight_cache[key] ||= Pygments.highlight(content,
@@ -121,9 +142,19 @@ module Polytexnic
       end
 
       # Adds some verbatim font info (including size).
+      # We prepend rather than replace the styles because the Pygments output
+      # includes a required override of the default commandchars.
+      # Since the substitution is only important in the context of a PDF book,
+      # it only gets made if there's a style in 'polytexnic.sty' in the
+      # current directory
       def add_font_info(string)
-        string.gsub!('\begin{Verbatim}[',
-                     '\begin{Verbatim}[fontsize=\relsize{-1.5},fontseries=b,')
+        if File.exist?('polytexnic.sty')
+          regex = '{code}{Verbatim}{(.*)}'
+          styles = File.read('polytexnic.sty').scan(/#{regex}/).flatten.first
+          string.gsub!("\\begin{Verbatim}[",
+                       "\\begin{Verbatim}[#{styles},")
+        end
+        string
       end
 
       # Does something horrible with backslashes.
