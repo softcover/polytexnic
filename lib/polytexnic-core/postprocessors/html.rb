@@ -821,6 +821,9 @@ module Polytexnic
 
           doc.xpath('//table/row/cell').each do |node|
             node.name = 'td'
+            if node['cols']
+              node['colspan'] = node['cols']
+            end
           end
           doc.xpath('//table/row').each do |node|
             node.name = 'tr'
@@ -859,10 +862,29 @@ module Polytexnic
           cell_alignments = alignments.scan(/(\|*(?:l|c|r)\|*)/).flatten
           table.css('tr').each do |row|
             row.css('td').zip(cell_alignments).each do |cell, alignment|
-              cell['class'] = alignment_class(alignment)
-              clean_node cell, %w[halign right-border left-border]
+              if custom_alignment?(cell)
+                cell['class'] = custom_class(cell)
+              else
+                cell['class'] = alignment_class(alignment)
+              end
+              clean_node cell, %w[halign right-border left-border cols]
             end
           end
+        end
+
+        # Returns true if the cell comes with custom alignment.
+        # This is the case with a multicolumn row.
+        def custom_alignment?(cell)
+          cell['cols']
+        end
+
+        # Returns the custom class for a cell.
+        def custom_class(cell)
+          [].tap do |klass|
+            klass << 'left_border' if cell['left-border']
+            klass << "align_#{cell['halign']}" if cell['halign']
+            klass << 'right_border' if cell['right-border']
+          end.join(' ')
         end
 
         # Returns the CSS class corresponding to the given table alignment.
