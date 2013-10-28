@@ -3,8 +3,7 @@ require 'spec_helper'
 
 describe 'Polytexnic::Core::Pipeline#to_html' do
 
-  let(:processed_text) { Polytexnic::Core::Pipeline.new(polytex).to_html }
-  subject { processed_text }
+  subject(:processed_text) { Polytexnic::Core::Pipeline.new(polytex).to_html }
 
   describe "graphics" do
     let(:polytex) do <<-'EOS'
@@ -19,6 +18,7 @@ describe 'Polytexnic::Core::Pipeline#to_html' do
         </div>
       EOS
     end
+    it { should_not resemble 'class="figure"' }
     it { should_not resemble 'Figure' }
 
     context "with a PDF image" do
@@ -272,8 +272,7 @@ describe 'Polytexnic::Core::Pipeline#to_html' do
             \label{cha:lorem_ipsum}
 
             \begin{figure}
-            \centering
-            \image{foo.png}
+            \image{foo_bar.png}
             \caption{This is a caption.\label{fig:foo}}
             \end{figure}
             EOS
@@ -286,9 +285,42 @@ describe 'Polytexnic::Core::Pipeline#to_html' do
                 <a href="#cha-lorem_ipsum" class="heading">
                 <span class="number">Chapter 1 </span>The chapter</a>
               </h1>
-              <div class="center figure" id="fig-foo" data-tralics-id="uid1" data-number="1.1">
-                <div class="graphics">
-                  <img src="foo.png" alt="foo" />
+              <div id="fig-foo" data-tralics-id="uid1" data-number="1.1" class="figure">
+                <div class="graphics image">
+                  <img src="foo_bar.png" alt="foo_bar" />
+                </div>
+                <div class="caption">
+                  <span class="header">Figure 1.1: </span>
+                  <span class="description">This is a caption.</span>
+                </div>
+              </div>
+              </div>
+            EOS
+          end
+        end
+
+        context "using the \\imagebox command" do
+          let(:polytex) do <<-'EOS'
+            \chapter{The chapter}
+            \label{cha:lorem_ipsum}
+
+            \begin{figure}
+            \imagebox{foo_bar.png}
+            \caption{This is a caption.\label{fig:foo}}
+            \end{figure}
+            EOS
+           end
+
+           it do
+             should resemble <<-'EOS'
+              <div id="cha-lorem_ipsum" data-tralics-id="cid1" class="chapter" data-number="1">
+              <h1>
+                <a href="#cha-lorem_ipsum" class="heading">
+                <span class="number">Chapter 1 </span>The chapter</a>
+              </h1>
+              <div id="fig-foo" data-tralics-id="uid1" data-number="1.1" class="figure">
+                <div class="graphics image box">
+                  <img src="foo_bar.png" alt="foo_bar" />
                 </div>
                 <div class="caption">
                   <span class="header">Figure 1.1: </span>
