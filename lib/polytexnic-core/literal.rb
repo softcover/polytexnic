@@ -135,7 +135,7 @@ module Polytexnic
             end
             output << '\end{xmlelement*}'
           end
-          # language = nil
+          language = nil
           (output << '') unless latex # Force the next element to be a paragraph
         else
           output << line
@@ -249,13 +249,6 @@ def math_environments
 end
 
 class String
-
-  # Returns true if self matches the beginning of a verbatim environment.
-  def begin_verbatim?
-    return false unless include?('\begin')
-    literal_type = "(?:verbatim|Verbatim|code|metacode)"
-    match(/^\s*\\begin{#{literal_type}}\s*$/)
-  end
 
   # Returns true if self matches \begin{...} where ... is a literal environment.
   # Note: Support for the 'metacode' environment exists solely to allow
