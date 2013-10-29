@@ -252,7 +252,7 @@ class String
 
   # Returns true if self matches \begin{...} where ... is a literal environment.
   # Note: Support for the 'metacode' environment exists solely to allow
-  # meta-dicsussion of the 'code' environment.
+  # meta-discussion of the 'code' environment.
   def begin_literal?(literal_type = nil)
     return false unless include?('\begin')
     literal_type ||= "(?:verbatim|Verbatim|code|metacode|" +

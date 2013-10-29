@@ -48,8 +48,8 @@ $ subl .gemrc
   describe "metacode listings" do
     let(:polytex) do <<-'EOS'
       \begin{codelisting}
-      \heading{The heading.}
       \label{code:listing}
+      \codecaption{The heading.}
       %= lang:latex
       \begin{metacode}
       %= lang:ruby
