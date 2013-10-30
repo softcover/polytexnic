@@ -3,7 +3,7 @@ module Polytexnic
 
     # Matches the line for syntax highlighting.
     # %= lang:<language>
-    LANG_REGEX = /^\s*%=\s+lang:(\w+)/
+    LANG_REGEX = /^\s*%=\s+lang:\s*(\w+)/
 
     # Matches the line for code inclusion.
     # %= <</path/to/code.ext
