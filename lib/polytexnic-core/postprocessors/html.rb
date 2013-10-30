@@ -10,6 +10,7 @@ module Polytexnic
         boldface(doc)
         small_caps(doc)
         typewriter(doc)
+        skips(doc)
         verbatim(doc)
         code(doc)
         metacode(doc)
@@ -74,6 +75,14 @@ module Polytexnic
             node.name = 'span'
             node['class'] = 'sc'
             node.remove_attribute('rend')
+          end
+        end
+
+        # Handles \bigskip, etc.
+        def skips(doc)
+          doc.xpath('//p[@spacebefore]').each do |node|
+            node['style'] = "margin-top: #{node['spacebefore']}"
+            node.remove_attribute('spacebefore')
           end
         end
 

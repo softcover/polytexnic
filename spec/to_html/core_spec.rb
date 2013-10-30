@@ -195,4 +195,22 @@ describe 'Polytexnic::Core::Pipeline#to_html' do
     end
     it { should resemble output }
   end
+
+  describe "skips" do
+
+    context "bigskip" do
+      let(:polytex) { '\bigskip' }
+      it { should resemble '<p style="margin-top: 12.0pt"' }
+    end
+
+    context "medskip" do
+      let(:polytex) { '\medskip' }
+      it { should resemble '<p style="margin-top: 6.0pt"' }
+    end
+
+    context "smallskip" do
+      let(:polytex) { '\smallskip' }
+      it { should resemble '<p style="margin-top: 3.0pt"' }
+    end
+  end
 end
