@@ -2,13 +2,14 @@
 require 'spec_helper'
 
 describe Polytexnic::Core::Pipeline do
-  let(:processed_text) { Polytexnic::Core::Pipeline.new(polytex).to_html }
-  subject { processed_text }
+  subject(:processed_text) { Polytexnic::Core::Pipeline.new(polytex).to_html }
 
   describe 'equation \ref' do
 
       let(:equation) do <<-'EOS'
         \chapter{Equation test}
+
+        \[ x^2 \]
 
         \begin{equation}
         \label{eq:foobar}

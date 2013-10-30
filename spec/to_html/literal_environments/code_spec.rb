@@ -5,8 +5,7 @@ describe Polytexnic::Core::Pipeline do
   before(:all) do
     FileUtils.rm('.highlight_cache') if File.exist?('.highlight_cache')
   end
-  let(:processed_text) { Polytexnic::Core::Pipeline.new(polytex).to_html }
-  subject { processed_text }
+  subject(:processed_text) { Polytexnic::Core::Pipeline.new(polytex).to_html }
 
   describe "code blocks" do
 
@@ -60,7 +59,19 @@ describe Polytexnic::Core::Pipeline do
   end
 
   describe "code inclusion" do
-    context "for an existent file" do
+    context "for an existing file" do
+
+      context "with no extension" do
+        let(:polytex) do <<-'EOS'
+          %= <<Rakefile
+          EOS
+        end
+        let(:output) do <<-'EOS'
+          <span class="n">require</span>
+          EOS
+        end
+        it { should resemble output }
+      end
 
       context "with an extension" do
         let(:polytex) do <<-'EOS'
@@ -77,16 +88,17 @@ describe Polytexnic::Core::Pipeline do
         it { should_not include '<p></p>' }
       end
 
-      context "with no extension" do
+      context "with a custom language override" do
         let(:polytex) do <<-'EOS'
-          %= <<Rakefile
+          %= << polytexnic_commands.sty, lang: tex
           EOS
         end
         let(:output) do <<-'EOS'
-          <span class="n">require</span>
+          <span class="c">% Add some custom commands needed by PolyTeXnic.</span>
           EOS
         end
         it { should resemble output }
+        it { should_not include '<p></p>' }
       end
     end
 

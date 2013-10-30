@@ -10,7 +10,7 @@ describe 'Polytexnic::Core::Pipeline#to_html' do
       \chapter{Foo bar}
 
       \begin{codelisting}
-      \heading{Creating a \texttt{gem} configuration file. \\ filename}
+      \codecaption{Creating a \texttt{gem} configuration file. \\ \filepath{path/to/file}}
       \label{code:create_gemrc}
       %= lang:console
       \begin{code}
@@ -27,8 +27,11 @@ $ subl .gemrc
         <div id="cid1" data-tralics-id="cid1" class="chapter" data-number="1"><h1><a href="#cid1" class="heading"><span class="number">Chapter 1 </span>Foo bar</a></h1>
         <div class="codelisting" id="code-create_gemrc" data-tralics-id="uid1" data-number="1.1">
           <div class="heading">
-            <span class="number">Listing 1.1.</span>
-            <span class="description">Creating a <span class="tt">gem</span> configuration file. <span class="break"></span> filename</span>
+            <span class="number">Listing 1.1:</span>
+            <span class="description">Creating a <span class="tt">gem</span> configuration file.<span class="intersentencespace"></span>
+              <span class="break"></span>
+              <span class="filepath">path/to/file</span>
+            </span>
           </div>
           <div class="code">
             <div class="highlight">
@@ -45,8 +48,8 @@ $ subl .gemrc
   describe "metacode listings" do
     let(:polytex) do <<-'EOS'
       \begin{codelisting}
-      \heading{The heading.}
       \label{code:listing}
+      \codecaption{The heading.}
       %= lang:latex
       \begin{metacode}
       %= lang:ruby

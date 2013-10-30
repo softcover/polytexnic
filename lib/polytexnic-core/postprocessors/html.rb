@@ -20,14 +20,16 @@ module Polytexnic
         item(doc)
         remove_errors(doc)
         set_ids(doc)
-        chapters_and_section(doc)
+        chapters_and_sections(doc)
         subsection(doc)
         subsubsection(doc)
         headings(doc)
         sout(doc)
         kode(doc)
+        filepath(doc)
         codelistings(doc)
         backslash_break(doc)
+        spaces(doc)
         asides(doc)
         center(doc)
         title(doc)
@@ -38,6 +40,7 @@ module Polytexnic
         make_cross_references(doc)
         hrefs(doc)
         graphics_and_figures(doc)
+        images_and_imageboxes(doc)
         tables(doc)
         math(doc)
         frontmatter(doc)
@@ -161,6 +164,30 @@ module Polytexnic
               nil
             end
           end
+          doc.xpath('//equation//texmath[@textype="equation*"]').each do |node|
+            node.name = 'div'
+            node['class'] = 'equation'
+            node.content = literal_cache[node.content.strip] + "\n"
+            clean_node node, ['textype', 'type']
+            node.parent.replace(node)
+            begin
+            # Mimic default Tralics behavior of giving paragraph tags after
+            # math a 'noindent' class. This allows the HTML to be styled with
+            # CSS in a way that replicates the default behavior of LaTeX, where
+            # math can be included in a paragraph. In such a case, paragraphs
+            # are indented by default, but text after math environments isn't
+            # indented. In HTML, including a math div inside a p tag is illegal,
+            # so the next best thing is to add a 'noindent' class to the p tag
+            # following the math. Most documents won't use this, as the HTML
+            # convention is not to indent paragraphs anyway, but we want to
+            # support that case for completeness (mainly because Tralics does).
+              next_paragraph = node.next_sibling
+              next_paragraph['noindent'] = 'true'
+            rescue
+              # We rescue nil in case the math isn't followed by any text.
+              nil
+            end
+          end
 
           # Paragraphs with noindent
           # See the long comment above.
@@ -247,8 +274,13 @@ module Polytexnic
         # Returns a list of footnotes ready for placement.
         def footnotes_list(footnotes, chapter_number)
           doc = footnotes.values[0][0].document
-          footnotes_node = Nokogiri::XML::Node.new('ol', doc)
+          # For symbolic footnotes, we want to suppress numbers, which can be
+          # done in CSS, but it doesn't work in many EPUB & MOBI readers.
+          # As a kludge, we switch to ul in this case, which looks nicer.
+          list_type = footnote_symbols? ? 'ul' : 'ol'
+          footnotes_node = Nokogiri::XML::Node.new(list_type, doc)
           footnotes_node['class'] = 'footnotes'
+          footnotes_node['class'] += ' nonumbers' if footnote_symbols?
           footnotes[chapter_number].each_with_index do |footnote, i|
             n = i + 1
             note = Nokogiri::XML::Node.new('li', doc)
@@ -257,7 +289,9 @@ module Polytexnic
             reflink['class'] = 'arrow'
             reflink.content = "↑"
             reflink['href'] = footnote_ref_href(chapter_number, n)
-            note.inner_html = "#{footnote.inner_html} #{reflink.to_xhtml}"
+            html = "#{footnote.inner_html} #{reflink.to_xhtml}"
+            html = "<sup>#{fnsymbol(i)}</sup> #{html}" if footnote_symbols?
+            note.inner_html = html
             footnotes_node.add_child note
           end
           footnotes_node
@@ -287,10 +321,30 @@ module Polytexnic
               node['class'] = 'footnote'
               link = Nokogiri::XML::Node.new('a', node.document)
               link['href'] = footnote_href(chapter_number, n)
-              link.content = n.to_s
+              content = footnote_symbols? ? fnsymbol(i) : n.to_s
+              link.content = content
               node.inner_html = link
+              # Add an inter-sentence space if appropriate.
+              previous_character = node.previous_sibling.content[-1]
+              end_of_sentence = %w[. ! ?].include?(previous_character)
+              after = node.next_sibling
+              end_of_paragraph = after.nil? || after.content.strip.empty?
+              if end_of_sentence && !end_of_paragraph
+                space = Nokogiri::XML::Node.new('span', node.document)
+                space['class'] = 'intersentencespace'
+                node['class'] += ' intersentence'
+                node.add_next_sibling(space)
+              end
             end
           end
+        end
+
+        # Returns the nth footnote symbol for use in non-numerical footnotes.
+        # By using the modulus operator %, we arrange to loop around to the
+        # front if the number footnotes exceeds the number of symbols.
+        def fnsymbol(n)
+          symbols = %w[* † ‡ § ¶ ‖ ** †† ‡‡]
+          symbols[n % symbols.size]
         end
 
         # Returns the chapter number for a given node.
@@ -306,16 +360,6 @@ module Polytexnic
           end
         end
 
-        # Returns HTML for a nicely styled TeX logo.
-        def tex
-          %(<span class="texhtml" style="font-family: 'CMU Serif', cmr10, LMRoman10-Regular, 'Times New Roman', 'Nimbus Roman No9 L', Times, serif;">T<span style="text-transform: uppercase; vertical-align: -0.5ex; margin-left: -0.1667em; margin-right: -0.125em;">E</span>X</span>)
-        end
-
-        # Returns HTML for a nicely styled LaTeX logo.
-        def latex
-          %(<span class="texhtml" style="font-family: 'CMU Serif', cmr10, LMRoman10-Regular, 'Times New Roman', 'Nimbus Roman No9 L', Times, serif;">L<span style="text-transform: uppercase; font-size: 70%; margin-left: -0.36em; vertical-align: 0.3em; line-height: 0; margin-right: -0.15em;">A</span>T<span style="text-transform: uppercase; margin-left: -0.1667em; vertical-align: -0.5ex; line-height: 0; margin-right: -0.125em;">E</span>X</span>)
-        end
-
         # Handles logos for TeX and LaTeX.
         def tex_logos(doc)
           doc.xpath('//TeX').each do |node|
@@ -326,6 +370,17 @@ module Polytexnic
           end
         end
 
+        # Returns HTML for a nicely styled TeX logo.
+        def tex
+          %(<span class="texhtml" style="font-family: 'CMU Serif', cmr10, LMRoman10-Regular, 'Times New Roman', 'Nimbus Roman No9 L', Times, serif;">T<span style="text-transform: uppercase; vertical-align: -0.5ex; margin-left: -0.1667em; margin-right: -0.125em;">E</span>X</span>)
+        end
+
+        # Returns HTML for a nicely styled LaTeX logo.
+        def latex
+          %(<span class="texhtml" style="font-family: 'CMU Serif', cmr10, LMRoman10-Regular, 'Times New Roman', 'Nimbus Roman No9 L', Times, serif;">L<span style="text-transform: uppercase; font-size: 70%; margin-left: -0.36em; vertical-align: 0.3em; line-height: 0; margin-right: -0.15em;">A</span>T<span style="text-transform: uppercase; margin-left: -0.1667em; vertical-align: -0.5ex; line-height: 0; margin-right: -0.125em;">E</span>X</span>)
+        end
+
+        # Handles \begin{quote} ... \end{quote}.
         def quote(doc)
           doc.xpath('//p[@rend="quoted"]').each do |node|
             clean_node node, 'rend'
@@ -334,6 +389,7 @@ module Polytexnic
           end
         end
 
+        # Handles \begin{verse} ... \end{verse}.
         def verse(doc)
           doc.xpath('//p[@rend="verse"]').each do |node|
             clean_node node, %w{rend noindent}
@@ -342,6 +398,7 @@ module Polytexnic
           end
         end
 
+        # Converts itemized lists to uls.
         def itemize(doc)
           doc.xpath('//list[@type="simple"]').each do |node|
             clean_node node, 'type'
@@ -349,6 +406,7 @@ module Polytexnic
           end
         end
 
+        # Converts enumerated lists to ols.
         def enumerate(doc)
           doc.xpath('//list[@type="ordered"]').each do |node|
             clean_node node, 'type'
@@ -356,6 +414,7 @@ module Polytexnic
           end
         end
 
+        # Returns the node for a list item (li).
         def item(doc)
           doc.xpath('//item').each do |node|
             clean_node node, %w{id-text id label}
@@ -418,6 +477,7 @@ module Polytexnic
           end
         end
 
+        # Convert data-labels to valid CSS ids.
         def convert_labels(node)
           node.children.each do |child|
             if child.name == 'data-label'
@@ -428,7 +488,7 @@ module Polytexnic
           end
         end
 
-        # Restore the label.
+        # Restores the label.
         # Tralics does weird stuff with underscores, so they are subbed out
         # so that they can be passed through the pipeline intact. This is where
         # we restore them.
@@ -436,7 +496,7 @@ module Polytexnic
           node.inner_html.gsub(underscore_digest, '_')
         end
 
-        # Given a section node, process the <head> tag.
+        # Processes the <head> tag given a section node.
         # Supports chapter, section, and subsection.
         def make_headings(doc, node, name)
           head_node = node.children.first
@@ -448,7 +508,8 @@ module Polytexnic
           head_node << a
         end
 
-        def chapters_and_section(doc)
+        # Converts div0 to chapters and sections depending on node type.
+        def chapters_and_sections(doc)
           doc.xpath('//div0').each do |node|
             node.name = 'div'
             if node['type'] == 'chapter'
@@ -466,6 +527,7 @@ module Polytexnic
           end
         end
 
+        # Converts div1 to subsections.
         def subsection(doc)
           doc.xpath('//div1').each do |node|
             node.name = 'div'
@@ -478,6 +540,7 @@ module Polytexnic
           end
         end
 
+        # Converts div2 to subsections.
         def subsubsection(doc)
           doc.xpath('//div2').each do |node|
             node.name = 'div'
@@ -488,8 +551,7 @@ module Polytexnic
         end
 
         # Converts heading elements to the proper spans.
-        # Headings are used in codelisting-like environments such as asides
-        # and codelistings.
+        # Headings are used in theorem-like environments like asides.
         def headings(doc)
           doc.xpath('//heading').each do |node|
             node.name  = 'span'
@@ -511,8 +573,16 @@ module Polytexnic
           end
         end
 
+        # Converts filesystem path (\filepath) to the proper tag.
+        def filepath(doc)
+          doc.xpath('//filepath').each do |node|
+            node.name  = 'span'
+            node['class'] = 'filepath'
+          end
+        end
+
         # Builds the full heading for codelisting-like environments.
-        # The full heading, such as "Listing 1.1. Foo bars." needs to be
+        # The full heading, such as "Listing 1.1: Foo bars." needs to be
         # extracted and manipulated to produce the right tags and classes.
         def build_heading(node, css_class)
           node.name  = 'div'
@@ -529,7 +599,11 @@ module Polytexnic
           number = heading.at_css('strong')
           number.name = 'span'
           number['class'] = 'number'
-          number.content += '.'
+          if css_class == 'codelisting'
+            number.content += ':'
+          else
+            number.content += '.'
+          end
 
           heading
         end
@@ -554,6 +628,22 @@ module Polytexnic
           end
         end
 
+        # Handles normal, thin, and intersentence spaces.
+        def spaces(doc)
+          doc.xpath('//thinspace').each do |node|
+            node.name  = 'span'
+            node['class'] = 'thinspace'
+            node.inner_html = '&thinsp;'
+          end
+          doc.xpath('//normalspace').each do |node|
+            node.replace(' ')
+          end
+          doc.xpath('//intersentencespace').each do |node|
+            node.name = 'span'
+            node['class'] = 'intersentencespace'
+          end
+        end
+
         # Processes boxes/asides.
         def asides(doc)
           doc.xpath('//aside').each do |node|
@@ -569,6 +659,7 @@ module Polytexnic
           end
         end
 
+        # Handles the title, author, date, etc., produced by \maketitle.
         def title(doc)
           doc.xpath('//maketitle').each do |node|
             node.name = 'div'
@@ -581,14 +672,14 @@ module Polytexnic
                 raw = Polytexnic::Core::Pipeline.new(title_element).to_html
                 content = Nokogiri::HTML.fragment(raw).at_css('p')
                 unless (content.nil? && field == 'date')
-                  el.inner_html = content.inner_html
+                  el.inner_html = content.inner_html.strip
                   el['class'] = field
                   node.add_child el
                 end
               elsif field == 'date'
                 # Date is missing, so insert today's date.
                 el = Nokogiri::XML::Node.new('h2', doc)
-                el['class'] ='date'
+                el['class'] = field
                 el.inner_html = Date.today.strftime("%A, %b %e")
                 node.add_child el
               end
@@ -640,56 +731,25 @@ module Polytexnic
           end
         end
 
+        # Creates linked cross-references.
         def make_cross_references(doc)
           # build numbering tree
           doc.xpath('//*[@data-tralics-id]').each do |node|
-            node['data-number'] = if node['class'] == 'chapter'
-                                    # Tralics numbers figures & equations
-                                    # overall, not per chapter, so we need
-                                    # counters.
-                                    @equation = 0
-                                    @figure = 0
-                                    @cha = node['id-text']
-                                  elsif node['class'] == 'section'
-                                    @sec = node['id-text']
-                                    label_number(@cha, @sec)
-                                  elsif node['class'] == 'subsection'
-                                    @subsec = node['id-text']
-                                    label_number(@cha, @sec, @subsec)
-                                  elsif node['class'] == 'subsubsection'
-                                    @ssubsec = node['id-text']
-                                    label_number(@cha, @sec, @subsec, @ssubsec)
-                                  elsif node['textype'] == 'equation'
-                                    if @cha.nil?
-                                      @equation = node['id-text']
-                                    else
-                                      @equation += 1
-                                    end
-                                    label_number(@cha, @equation)
-                                  elsif node['class'] == 'codelisting'
-                                    node['id-text']
-                                  elsif node['class'] == 'aside'
-                                    node['id-text']
-                                  elsif node.name == 'table' && node['id-text']
-                                    @table = node['id-text']
-                                    label_number(@cha, @table)
-                                  elsif node.name == 'figure'
-                                    if @cha.nil?
-                                      @figure = node['id-text']
-                                    else
-                                      @figure += 1
-                                    end
-                                    label_number(@cha, @figure)
-                                  end
+            node['data-number'] = formatted_number(node)
             clean_node node, 'id-text'
             # Add number span
-            if head = node.css('h1 a, h2 a, h3 a, h4 a').first
+            if (head = node.css('h1 a, h2 a, h3 a').first)
               el = doc.create_element 'span'
               number = node['data-number']
               prefix = (@cha.nil? || number.match(/\./)) ? '' : 'Chapter '
               el.content = prefix + node['data-number'] + ' '
               el['class'] = 'number'
-              head.children.first.add_previous_sibling el
+              chapter_name = head.children.first
+              if chapter_name.nil?
+                head.add_child(el)
+              else
+                chapter_name.add_previous_sibling(el)
+              end
             end
           end
 
@@ -719,6 +779,50 @@ module Polytexnic
           end
         end
 
+        # Returns the formatted number appropriate for the node.
+        # E.g., "2.1" for a section.
+        # Note: sets @cha as a side-effect. Yes, this is gross.
+        def formatted_number(node)
+          if node['class'] == 'chapter'
+            # Tralics numbers figures & equations
+            # overall, not per chapter, so we need
+            # counters.
+            @equation = 0
+            @figure = 0
+            @cha = node['id-text']
+          elsif node['class'] == 'section'
+            @sec = node['id-text']
+            label_number(@cha, @sec)
+          elsif node['class'] == 'subsection'
+            @subsec = node['id-text']
+            label_number(@cha, @sec, @subsec)
+          elsif node['class'] == 'subsubsection'
+            @ssubsec = node['id-text']
+            label_number(@cha, @sec, @subsec, @ssubsec)
+          elsif node['textype'] == 'equation'
+            if @cha.nil?
+              @equation = node['id-text']
+            else
+              @equation += 1
+            end
+            label_number(@cha, @equation)
+          elsif node['class'] == 'codelisting'
+            node['id-text']
+          elsif node['class'] == 'aside'
+            node['id-text']
+          elsif node.name == 'table' && node['id-text']
+            @table = node['id-text']
+            label_number(@cha, @table)
+          elsif node.name == 'figure'
+            if @cha.nil?
+              @figure = node['id-text']
+            else
+              @figure += 1
+            end
+            label_number(@cha, @figure)
+          end
+        end
+
         # Returns a label number for use in headings.
         # For example, label_number("1", "2") returns "1.2".
         def label_number(*args)
@@ -726,23 +830,11 @@ module Polytexnic
         end
 
         def hrefs(doc)
-          require 'open-uri'
           doc.xpath('//xref').each do |node|
             node.name = 'a'
-            node['href'] = encode(literal_cache[node['url']])
+            node['href'] = literal_cache[node['url']]
             clean_node node, 'url'
           end
-        end
-
-        # Encodes the URL.
-        # We take care to preserve '#' symbols, as they are needed to link
-        # to CSS ids within HTML documents.
-        # This uses 'sub' instead of 'gsub' because only the first '#' can
-        # link to an id.
-        def encode(url)
-          pound_hash = digest('#')
-          encoded_url = URI::encode(url.sub('#', pound_hash))
-          encoded_url.sub(pound_hash, '#')
         end
 
         # Handles both \includegraphics and figure environments.
@@ -750,34 +842,65 @@ module Polytexnic
         # in both cases.
         def graphics_and_figures(doc)
           doc.xpath('//figure').each do |node|
-            node.name = 'div'
-            if node['class']
-              node['class'] += ' figure'
-            else
-              node['class'] = 'figure'
-            end
-            raw_graphic = (node['rend'] == 'inline')
-            if internal_paragraph = node.at_css('p')
-              clean_node internal_paragraph, 'rend'
-            end
-            if node['file'] && node['extension']
-              extension = node['extension']
-              # Support PDF images in PDF documents and PNGs in HTML.
-              extension = 'png' if extension == 'pdf'
-              filename = "#{node['file']}.#{extension}"
-              alt = File.basename(node['file'])
-              img = %(<img src="#{filename}" alt="#{alt}" />)
-              graphic = %(<div class="graphics">#{img}</div>)
-              graphic_node = Nokogiri::HTML.fragment(graphic)
-              if description_node = node.children.first
-                description_node.add_previous_sibling(graphic_node)
-              else
-                node.add_child(graphic_node)
-              end
-              clean_node node, %w[file extension rend]
-            end
-            add_caption(node, name: 'figure') unless raw_graphic
+            process_graphic(node, klass: 'figure')
           end
+        end
+
+        # Processes a graphic, including the description.
+        def process_graphic(node, options={})
+          klass = options[:klass]
+          node.name = 'div'
+          raw_graphic = (node['rend'] == 'inline')
+          unless raw_graphic
+            if node['class']
+              node['class'] += " #{klass}"
+            else
+              node['class'] = klass
+            end
+          end
+          if internal_paragraph = node.at_css('p')
+            clean_node internal_paragraph, 'rend'
+          end
+          if node['file'] && node['extension']
+            extension = node['extension']
+            # Support PDF images in PDF documents and PNGs in HTML.
+            extension = 'png' if extension == 'pdf'
+            filename = "#{node['file']}.#{extension}"
+            alt = File.basename(node['file'])
+            img = %(<img src="#{filename}" alt="#{alt}" />)
+            graphic = %(<div class="graphics">#{img}</div>)
+            graphic_node = Nokogiri::HTML.fragment(graphic)
+            if description_node = node.children.first
+              description_node.add_previous_sibling(graphic_node)
+            else
+              node.add_child(graphic_node)
+            end
+            clean_node node, %w[file extension rend]
+          end
+          add_caption(node, name: 'figure') unless raw_graphic
+        end
+
+        # Handles \image and \imagebox commands.
+        def images_and_imageboxes(doc)
+          doc.xpath('//image').each do |node|
+            handle_image(node, klass: 'image')
+          end
+
+          doc.xpath('//imagebox').each do |node|
+            handle_image(node, klass: 'image box')
+          end
+        end
+
+        # Processes custom image environment to use a div and the right class.
+        def handle_image(node, options={})
+          klass = options[:klass]
+          container = node.parent
+          container.name = 'div'
+          container['class'] = 'graphics ' + klass
+          node.name = 'img'
+          node['src'] = node.content.gsub(underscore_digest, '_')
+          node['alt'] = node['src'].split('.').first
+          node.content = ""
         end
 
         # Adds a caption to a node.
@@ -790,7 +913,7 @@ module Polytexnic
           n = node['data-number']
           if description_node = node.at_css('head')
             h = %(<span class="header">#{name} #{n}: </span>)
-            d = %(<span class="description">#{description_node.content}</span>)
+            d = %(<span class="description">#{description_node.inner_html}</span>)
             description_node.remove
             full_caption.inner_html = Nokogiri::HTML.fragment(h + d)
           else
@@ -803,9 +926,11 @@ module Polytexnic
 
         # Converts XML to HTML tables.
         def tables(doc)
-
           doc.xpath('//table/row/cell').each do |node|
             node.name = 'td'
+            if node['cols']
+              node['colspan'] = node['cols']
+            end
           end
           doc.xpath('//table/row').each do |node|
             node.name = 'tr'
@@ -844,10 +969,29 @@ module Polytexnic
           cell_alignments = alignments.scan(/(\|*(?:l|c|r)\|*)/).flatten
           table.css('tr').each do |row|
             row.css('td').zip(cell_alignments).each do |cell, alignment|
-              cell['class'] = alignment_class(alignment)
-              clean_node cell, %w[halign right-border left-border]
+              if custom_alignment?(cell)
+                cell['class'] = custom_class(cell)
+              else
+                cell['class'] = alignment_class(alignment)
+              end
+              clean_node cell, %w[halign right-border left-border cols]
             end
           end
+        end
+
+        # Returns true if the cell comes with custom alignment.
+        # This is the case with a multicolumn row.
+        def custom_alignment?(cell)
+          cell['cols']
+        end
+
+        # Returns the custom class for a cell.
+        def custom_class(cell)
+          [].tap do |klass|
+            klass << 'left_border' if cell['left-border']
+            klass << "align_#{cell['halign']}" if cell['halign']
+            klass << 'right_border' if cell['right-border']
+          end.join(' ')
         end
 
         # Returns the CSS class corresponding to the given table alignment.
@@ -940,14 +1084,6 @@ module Polytexnic
                 current_depth -= 1
               end
               current_depth = 3
-              insert_li(html, node)
-            when 'subsubsection'
-              open_list(html) if current_depth == 3
-              while current_depth > 4
-                close_list(html)
-                current_depth -= 1
-              end
-              current_depth = 4
               insert_li(html, node)
             end
           end

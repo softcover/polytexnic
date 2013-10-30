@@ -4,6 +4,13 @@ module Polytexnic
   module Core
     module Utils
       extend self
+
+      # Returns the executable for the Tralics LaTeX-to-XML converter.
+      def tralics
+        File.join(File.dirname(__FILE__), '..', '..',
+                  'precompiled_binaries', 'tralics')
+      end
+
       # Returns a salted hash digest of the string.
       def digest(string, options = {})
         salt = options[:salt] || SecureRandom.base64
@@ -31,6 +38,17 @@ module Polytexnic
         string.gsub(/\\(\s+|$)/) { '\\\\' + $1.to_s }
       end
 
+      # Caches URLs for \href commands.
+      def cache_hrefs(doc, latex=false)
+        doc.tap do |text|
+          text.gsub!(/\\href{(.*?)}/) do
+            key = digest($1)
+            literal_cache[key] = $1
+            "\\href{#{key}}"
+          end
+        end
+      end
+
       # Returns a Tralics pseudo-LaTeX XML element.
       # The use of the 'skip' flag is a hack to be able to use xmlelement
       # even when generating, e.g., LaTeX, where we simply want to yield the
@@ -41,47 +59,25 @@ module Polytexnic
         output << (skip ? "" : "\\end{xmlelement}")
       end
 
-      # Returns the executable on the path.
-      def executable(name, message = nil)
-        if (exec = `which #{name}`.chomp).empty?
-          dir = Gem::Specification.find_by_name('polytexnic-core').gem_dir
-          binary = File.join(dir, 'precompiled_binaries', name)
-          # Try a couple of common directories for executables.
-          if File.exist?(bin_dir = File.join(ENV['HOME'], 'bin'))
-            FileUtils.cp binary, bin_dir
-          elsif File.exist?(bin_dir = File.join('/', 'usr', 'local', 'bin'))
-            FileUtils.cp binary, bin_dir
-          else
-            message ||= "File '#{name}' not found"
-            $stderr.puts message
-            exit 1
-          end
-          executable(name, message)
-        else
-          exec
-        end
-      end
-
-      # Returns some new commands.
-      # For example, we arrange for '\PolyTeXnic' to produce
-      # the PolyTeXnic logo.
+      # Returns some commands for Tralics.
+      # For various reasons, we don't actually want to include these in
+      # the style file that gets passed to LaTeX. For example,
+      # the commands with 'xmlelt' aren't even valid LaTeX; they're actually
+      # pseudo-LaTeX that has special meaning to the Tralics processor.
       def tralics_commands
         <<-'EOS'
 % Commands specific to Tralics
 \def\hyperref[#1]#2{\xmlelt{a}{\XMLaddatt{target}{#1}#2}}
 \newcommand{\heading}[1]{\xmlelt{heading}{#1}}
+\newcommand{\codecaption}[1]{\xmlelt{heading}{#1}}
 \newcommand{\sout}[1]{\xmlelt{sout}{#1}}
 \newcommand{\kode}[1]{\xmlelt{kode}{#1}}
-        EOS
-      end
-      def new_commands
-        <<-'EOS'
-\newcommand{\PolyTeX}{Poly\TeX}
-\newcommand{\PolyTeXnic}{Poly{\TeX}nic}
+\newcommand{\filepath}[1]{\xmlelt{filepath}{#1}}
+\newcommand{\image}[1]{\xmlelt{image}{#1}}
+\newcommand{\imagebox}[1]{\xmlelt{imagebox}{#1}}
 
-% Codelisting and similar environments
+% Code listings
 \usepackage{amsthm}
-\newtheorem{theorem}{Theorem}
 \theoremstyle{definition}
 \newtheorem{codelisting}{Listing}[chapter]
 \newtheorem{aside}{Box}[chapter]
@@ -93,13 +89,12 @@ module Polytexnic
         if document.is_a?(String) # LaTeX
           substitutions = {}
           document.tap do
-            code_cache.each do |key, (content, language)|
-              code = highlight(key, content, language, 'latex')
+            code_cache.each do |key, (content, language, in_codelisting)|
+              code   = highlight(key, content, language, 'latex')
               output = code.split("\n")
               horrible_backslash_kludge(add_font_info(output.first))
               code = output.join("\n")
-              substitutions[key] = "\\begin{framed_shaded}\n" + code +
-                                   "\n\\end{framed_shaded}"
+              substitutions[key] = in_codelisting ? code : framed(code)
             end
             document.gsub!(Regexp.union(substitutions.keys), substitutions)
           end
@@ -113,6 +108,11 @@ module Polytexnic
         end
       end
 
+      # Puts a frame around code.
+      def framed(code)
+        "\\begin{framed_shaded}\n#{code}\n\\end{framed_shaded}"
+      end
+
       # Highlights a code sample.
       def highlight(key, content, language, formatter)
         highlight_cache[key] ||= Pygments.highlight(content,
@@ -121,9 +121,19 @@ module Polytexnic
       end
 
       # Adds some verbatim font info (including size).
+      # We prepend rather than replace the styles because the Pygments output
+      # includes a required override of the default commandchars.
+      # Since the substitution is only important in the context of a PDF book,
+      # it only gets made if there's a style in 'polytexnic.sty' in the
+      # current directory
       def add_font_info(string)
-        string.gsub!('\begin{Verbatim}[',
-                     '\begin{Verbatim}[fontsize=\relsize{-1.5},fontseries=b,')
+        if File.exist?('polytexnic.sty')
+          regex = '{code}{Verbatim}{(.*)}'
+          styles = File.read('polytexnic.sty').scan(/#{regex}/).flatten.first
+          string.gsub!("\\begin{Verbatim}[",
+                       "\\begin{Verbatim}[#{styles},")
+        end
+        string
       end
 
       # Does something horrible with backslashes.
@@ -132,8 +142,8 @@ module Polytexnic
       # Oh crap, there are backslashes in there. This means we have no chance
       # of getting things to work after interpolating, gsubbing, and so on,
       # because in Ruby '\\foo' is the same as '\\\\foo', '\}' is '}', etc.
-      # I thought I escaped this problem with the escape_backslashes method,
-      # but here the problem is extremely specific. In particular,
+      # I thought I escaped (heh) this problem with the `escape_backslashes`
+      # method, but here the problem is extremely specific. In particular,
       # \\\{\} is really \\ and \{ and \}, but Ruby doensn't know WTF to do
       # with it, and thinks that it's "\\{}", which is the same as '\{}'.
       # The solution is to replace '\\\\' with some number of backslashes.
@@ -143,12 +153,14 @@ module Polytexnic
         string.gsub!(/commandchars=\\\\/, 'commandchars=\\\\\\\\')
       end
 
-      # Returns true if we are debugging, false otherwise
+      # Returns true if we are debugging, false otherwise.
+      # Manually change to `true` on an as-needed basis.
       def debug?
         false
       end
 
       # Returns true if we are profiling the code, false otherwise.
+      # Manually change to `true` on an as-needed basis.
       def profiling?
         return false if test?
         false

@@ -3,7 +3,7 @@ module Polytexnic
     module Latex
 
       def to_processed_latex
-        @polytex = process_asides(clean_latex_document)
+        @polytex = polish_tables(process_asides(clean_latex_document))
       end
 
       # Returns LaTeX with hashed versions of literal environments.
@@ -11,6 +11,15 @@ module Polytexnic
       # so that we can process things like refs to hyperrefs using gsubs.
       def clean_latex_document
         cache_literal(@polytex, :latex)
+      end
+
+      def polish_tables(text)
+        text.tap do
+          text.gsub!(/^\s*(\\begin\{table\})/) do
+            "#{$1}\n\\begin{center}\n\\small\n"
+          end
+          text.gsub!(/^\s*(\\end\{table\})/) { "\\end{center}\n#{$1}" }
+        end
       end
 
       # Processes aside environments.

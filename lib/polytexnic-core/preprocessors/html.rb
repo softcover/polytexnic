@@ -6,7 +6,7 @@ module Polytexnic
       # Converts HTML to XML.
       # The heart of the process is using Tralics to convert the input PolyTeX
       # to XML. The raw PolyTeX needs to be processed first to make everything
-      # go smoothly, but after that the steps to producing the corresponging
+      # go smoothly, but after that the steps to producing the corresponding
       # XML is straightforward.
       def to_xml
         polytex = process_for_tralics(@polytex)
@@ -18,17 +18,20 @@ module Polytexnic
       private
 
         # Processes the input PolyTeX for Tralics.
-        # The key steps are creating a clean document safe for makin global
+        # The key steps are creating a clean document safe for making global
         # substitutions (gsubs), and then making a bunch of gsubs.
         def process_for_tralics(polytex)
           clean_document(polytex).tap do |output|
+            process_spaces(output)
+            remove_commands(output)
             hyperrefs(output)
             title_fields(output)
             maketitle(output)
             label_names(output)
+            image_names(output)
             restore_eq_labels(output)
             mark_environments(output)
-            make_tabular_alignmnt_cache(output)
+            make_tabular_alignment_cache(output)
           end
         end
 
@@ -43,6 +46,51 @@ module Polytexnic
           cache_hrefs(doc)
           remove_comments(doc)
           double_backslashes(cache_display_inline_math(doc))
+        end
+
+        # Prepares spaces to be passed through the pipeline.
+        # Handles thin spaces ('\,') and normal spaces ('\ '), as well as
+        # end-of-sentence spaces.
+        def process_spaces(doc)
+          doc.gsub!(/\\,/, xmlelement('thinspace'))
+          # Match an end of sentence character, while also recognizing
+          # things like (Or otherwise.) and ``Yes, indeed!'' as being the
+          # ends of sentences.
+          end_of_sentence = '[.?!](?:\)|\'+)?'
+          # Handle a forced normal space '\ '.
+          doc.gsub!(/(#{end_of_sentence})\\ /) do
+            $1 + xmlelement('normalspace')
+          end
+          not_a_capital = '[^A-Z]'
+          # Case of "foo. A"
+          doc.gsub!(/(#{not_a_capital})(#{end_of_sentence})[ ]+([^\s])/) do
+            $1 + $2 + xmlelement('intersentencespace') + ' ' + $3
+          end
+          # Case of "foo.\n A"
+          doc.gsub!(/(#{not_a_capital})(#{end_of_sentence})\n[ ]+([^\s])/) do
+            $1 + $2 + xmlelement('intersentencespace') + ' ' + $3
+          end
+          # Case of "foo.\nA"
+          doc.gsub!(/(#{not_a_capital})(#{end_of_sentence})\n([^\n])/) do
+            $1 + $2 + xmlelement('intersentencespace') + ' ' + $3
+          end
+          # Handle the manual override to force an inter-sentence space, '\@',
+          # as in 'Superman II\@. A new sentence'.
+          doc.gsub!(/\\@\. /, '.' + xmlelement('intersentencespace') + ' ')
+        end
+
+        # Removes commands that might screw up Tralics.
+        def remove_commands(doc)
+          # Determine if we're using footnote symbols.
+          symbols_cmd = '\renewcommand{\thefootnote}{\fnsymbol{footnote}}'
+          @footnote_symbols = !!doc.match(/^\s*#{Regexp.escape(symbols_cmd)}/)
+
+          doc.gsub!(/^\s*\\renewcommand.*$/, '')
+        end
+
+        # Returns true if we should use footnote symbols in place of numbers.
+        def footnote_symbols?
+          @footnote_symbols
         end
 
         # Handles \verb environments.
@@ -62,15 +110,6 @@ module Polytexnic
           end
         end
 
-        # Caches URLs for \href commands.
-        def cache_hrefs(doc)
-          doc.gsub!(/\\href{(.*?)}/) do
-            key = digest($1)
-            literal_cache[key] = $1
-            "\\href{#{key}}"
-          end
-        end
-
         # Removes commented-out lines.
         def remove_comments(output)
           output.gsub!(/[^\\]%.*$/, '')
@@ -81,22 +120,22 @@ module Polytexnic
           lines = []
           in_table = false
           string.split("\n").each do |line|
-            in_table ||= (line =~ /\\begin{tabular}/)
+            in_table ||= (line =~ /^\s*\\begin{tabular}/)
             line.gsub!('\\\\', xmlelement('backslashbreak')) unless in_table
             lines << line
-            in_table = (in_table && line !~ /\\end{tabular}/)
+            in_table = (in_table && line !~ /^\s*\\end{tabular}/)
           end
           lines.join("\n")
         end
 
         # Adds some default commands.
-        # These are commands that would ordinarily be defined in a LaTeX
-        # style file for production of a PDF, but in this case Tralics
-        # itself needs the new commands to produce its XML output.
-        # The new_commands are currently in utils, but probably should
-        # eventually be refactored into a file.
         def add_commands(polytex)
-          new_commands + tralics_commands + polytex
+          line(custom_commands) + tralics_commands + polytex
+        end
+
+        # Pads a string with newlines.
+        def line(string)
+          "\n#{string}\n"
         end
 
         # Handles title fields.
@@ -127,6 +166,20 @@ module Polytexnic
           string.gsub! /\\label\{(.*?)\}/ do |s|
             label = $1.gsub(':', '-').gsub('_', underscore_digest)
             "#{s}\n\\xbox{data-label}{#{label}}"
+          end
+        end
+
+        # Handles image names with underscores.
+        # This is a terrible kludge, and it's annoying that it's
+        # apparently necessary.
+        def image_names(string)
+          string.gsub! /\\image\{(.*?)\}/ do |s|
+            escaped_filename = $1.gsub('_', underscore_digest)
+            "\\image{#{escaped_filename}}"
+          end
+          string.gsub! /\\imagebox\{(.*?)\}/ do |s|
+            escaped_filename = $1.gsub('_', underscore_digest)
+            "\\imagebox{#{escaped_filename}}"
           end
         end
 
@@ -188,8 +241,8 @@ module Polytexnic
           # Handle \centering
           string.gsub! /\\centering/, '\AddAttToCurrent{class}{center}'
 
-          # Handle \image
-          string.gsub! /\\image/, '\includegraphics'
+          # # Handle \image
+          # string.gsub! /\\image/, '\includegraphics'
         end
 
         # Collects alignment information for tabular environments.
@@ -198,8 +251,8 @@ module Polytexnic
         # The reason is that we need to work around a couple of bugs in Tralics.
         # I've tried in vain to figure out WTF is going on in the Tralics
         # source, but it's easy enough in Ruby so I'm throwing it in here.
-        def make_tabular_alignmnt_cache(output)
-          alignment_regex = /\\begin{tabular}{((?:\|*[lcr]+\|*)+)}/
+        def make_tabular_alignment_cache(output)
+          alignment_regex = /^\s*\\begin{tabular}{((?:\|*[lcr]+\|*)+)}/
           @tabular_alignment_cache = output.scan(alignment_regex).flatten
         end
 
@@ -255,11 +308,6 @@ module Polytexnic
         # which does work.
         def nokogiri_ellipsis_workaround(raw_xml)
           raw_xml.gsub('&#133;', '…')
-        end
-
-        # Returns the executable for the Tralics LaTeX-to-XML converter.
-        def tralics
-          executable('tralics')
         end
     end
   end

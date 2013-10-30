@@ -3,8 +3,7 @@ require 'spec_helper'
 
 describe 'Polytexnic::Core::Pipeline#to_html' do
 
-  let(:processed_text) { Polytexnic::Core::Pipeline.new(polytex).to_html }
-  subject { processed_text }
+  subject(:processed_text) { Polytexnic::Core::Pipeline.new(polytex).to_html }
 
   describe "tabular environments" do
 
@@ -35,6 +34,7 @@ describe 'Polytexnic::Core::Pipeline#to_html' do
     context "more complicated left-aligned cells with lines" do
       let(:polytex) do <<-'EOS'
         \begin{tabular}{|l|lll|}
+        \multicolumn{4}{|c|}{Cell spanning four columns} \\
         HTTP request & URL & Action & Purpose \\ \hline
 
         GET & /users & index & page to list all users \\
@@ -51,6 +51,10 @@ describe 'Polytexnic::Core::Pipeline#to_html' do
       it do
         should resemble <<-'EOS'
           <table class="tabular">
+
+            <tr>
+            <td colspan="4" class="left_border align_center right_border">Cell spanning four columns</td>
+            </tr>
             <tr class="bottom_border">
               <td class="left_border align_left right_border">HTTP request</td>
               <td class="align_left">URL</td>

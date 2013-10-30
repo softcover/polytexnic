@@ -8,10 +8,9 @@ describe Polytexnic::Core::Pipeline do
   end
 
   describe '#to_polytex' do
-    let(:processed_text) do
+    subject(:processed_text) do
       Polytexnic::Core::Pipeline.new(source, source: :markdown).polytex
     end
-    subject { processed_text }
 
     context "for vanilla Markdown" do
       let(:source) { '*foo* **bar**' }

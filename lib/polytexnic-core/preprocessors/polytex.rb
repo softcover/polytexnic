@@ -18,9 +18,9 @@ module Polytexnic
       # * <rant>The number of mutually incompatible markup languages going
       # by the name "Markdown" is truly mind-boggling. Most of them add things
       # to John Gruber's original Markdown language in an ever-expanding
-      # attempt to bolt on the functionality needed to write longer documents
-      # (but why not just use LaTeX?). At this point, I fear that "Markdown"
-      # has become little more than a marketing term.</rant>
+      # attempt to bolt on the functionality needed to write longer documents.
+      # At this point, I fear that "Markdown" has become little more than a
+      # marketing term.</rant>
       def to_polytex
         require 'Kramdown'
         cleaned_markdown = cache_code_environments

@@ -3,8 +3,7 @@ require 'spec_helper'
 
 describe 'Polytexnic::Core::Pipeline#to_html' do
 
-  let(:processed_text) { Polytexnic::Core::Pipeline.new(polytex).to_html }
-  subject { processed_text }
+  subject(:processed_text) { Polytexnic::Core::Pipeline.new(polytex).to_html }
 
   describe '\chapter' do
     let(:polytex) do <<-'EOS'
@@ -41,11 +40,6 @@ describe 'Polytexnic::Core::Pipeline#to_html' do
       <li>
         <ul>
           <li class="subsection"><a href="#sec-baz" class="heading hyperref"><span class="number">1.1.1 </span>Baz</a></li>
-          <li>
-            <ul>
-              <li class="subsubsection"><a href="#sec-null" class="heading hyperref"><span class="number">1.1.1.1 </span>Null</a></li>
-            </ul>
-          </li>
         </ul>
       </li>
       <li class="section">
@@ -83,20 +77,16 @@ describe 'Polytexnic::Core::Pipeline#to_html' do
         expect(toc.css('li>a')[2]['href']).to eq '#sec-baz'
       end
 
-      it "should have a link to the first subsubsection" do
-        expect(toc.css('li>a')[3]['href']).to eq '#sec-null'
-      end
-
       it "should have a link to the second section" do
-        expect(toc.css('li>a')[4]['href']).to eq '#sec-quux'
+        expect(toc.css('li>a')[3]['href']).to eq '#sec-quux'
       end
 
       it "should have a link to the second chapter" do
-        expect(toc.css('li>a')[5]['href']).to eq '#cha-lorem'
+        expect(toc.css('li>a')[4]['href']).to eq '#cha-lorem'
       end
 
       it "should have the right number of lists" do
-        expect(toc.css('ul').length).to eq 4
+        expect(toc.css('ul').length).to eq 3
       end
     end
   end

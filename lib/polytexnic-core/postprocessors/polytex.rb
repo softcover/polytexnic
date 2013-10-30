@@ -3,7 +3,10 @@ module Polytexnic
   module Postprocessor
     module Polytex
 
+      # Removes references to the hypertarget package.
       # TODO: Support hypertarget
+      # This isn't a priority, as you get most of what you need
+      # with hyperref.
       def remove_hypertarget
         @source.gsub!(/\\hypertarget.*$/, '')
       end
@@ -17,7 +20,7 @@ module Polytexnic
       end
 
       # Writes the PolyTeX code environments based on the code cache.
-      # I.e., code that looked like
+      # I.e., code that looks like
       # {lang="ruby"}
       #     def foo
       #       "bar"
@@ -31,7 +34,7 @@ module Polytexnic
       # \end{code}
       # which reduces syntax highlighting to a previously solved problem.
       def write_polytex_code
-        code_cache.each do |key, (code, lang)|
+        code_cache.each do |key, (code, lang, in_codelisting)|
           latex = "%= lang:#{lang}\n\\begin{code}\n#{code}\n\\end{code}"
           @source.gsub!(key, latex)
         end

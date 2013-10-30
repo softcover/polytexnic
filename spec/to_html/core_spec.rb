@@ -5,15 +5,9 @@ describe 'Polytexnic::Core::Pipeline#to_html' do
 
   subject(:processed_text) { Polytexnic::Core::Pipeline.new(polytex).to_html }
 
-  describe "Tralics installation" do
-    before { File.delete(Polytexnic::Core::Utils.executable('tralics')) }
-    subject { Polytexnic::Core::Utils.executable('tralics') }
-    it { should include 'tralics' }
-  end
-
   describe "comments" do
     let(:polytex) { "% A LaTeX comment" }
-    it { should eq '' }
+    it { should resemble '' }
 
     context "with a section and label" do
       let(:polytex) do <<-'EOS'
@@ -21,7 +15,7 @@ describe 'Polytexnic::Core::Pipeline#to_html' do
         % \label{sec:foo}
         EOS
       end
-      it { should eq '' }
+      it { should resemble '' }
     end
 
     context "with a code listing" do
@@ -38,7 +32,7 @@ describe 'Polytexnic::Core::Pipeline#to_html' do
         % \end{codelisting}
         EOS
       end
-      it { should eq '' }
+      it { should resemble '' }
     end
 
     context "with a literal percent" do
@@ -67,7 +61,7 @@ describe 'Polytexnic::Core::Pipeline#to_html' do
         % \]
         EOS
       end
-      it { should eq '' }
+      it { should resemble '' }
     end
   end
 
@@ -178,20 +172,6 @@ describe 'Polytexnic::Core::Pipeline#to_html' do
     context "standard URL" do
       let(:polytex) { '\href{http://example.com/}{Example Site}' }
       let(:output) { '<a href="http://example.com/">Example Site</a>' }
-      it { should resemble output }
-    end
-
-    context "URL needing encoding" do
-      let(:url) { 'https://groups.google.com/~forum/!topic/mathjax%20users' }
-      let(:polytex) { "\\href{#{url}}{Example Site}" }
-      let(:output) { %(<a href="#{URI::encode(url)}">Example Site</a>) }
-      it { should resemble output }
-    end
-
-    context "URL with hash for CSS id" do
-      let(:url) { 'http://example.com/post#comments' }
-      let(:polytex) { "\\href{#{url}}{Example Site}" }
-      let(:output) { %(<a href="#{url}">Example Site</a>) }
       it { should resemble output }
     end
   end

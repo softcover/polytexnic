@@ -8,8 +8,7 @@ describe Polytexnic::Core::Pipeline do
   end
 
   describe '#to_latex' do
-    let(:processed_text) { Polytexnic::Core::Pipeline.new(polytex).to_latex }
-    subject { processed_text }
+    subject(:processed_text) { Polytexnic::Core::Pipeline.new(polytex).to_latex }
 
     describe "for vanilla LaTeX" do
       let(:polytex) { '\emph{foo}' }
@@ -18,12 +17,25 @@ describe Polytexnic::Core::Pipeline do
 
     describe "with source code highlighting" do
       let(:polytex) do <<-'EOS'
-        %= lang:ruby
-        \begin{code}
-        def foo
-          "bar"
-        end
-        \end{code}
+%= lang:ruby
+\begin{code}
+def hello
+  "hello, world!"
+end
+\end{code}
+
+Make a code listing as in Listing~\ref{code:hello}.
+
+\begin{codelisting}
+\label{code:hello}
+\codecaption{A hello program in Ruby.}
+%= lang:ruby
+\begin{code}
+def hello
+  "hello, world!"
+end
+\end{code}
+\end{codelisting}
 
         \noindent lorem ipsum
       EOS
@@ -31,11 +43,12 @@ describe Polytexnic::Core::Pipeline do
 
       it { should resemble '\begin{framed_shaded}' + "\n" }
       it { should resemble "\n" + '\end{framed_shaded}' }
+      it { should_not resemble "\n" + '\end{framed_shaded})' }
       it { should resemble "commandchars=\\\\\\{" }
       it { should resemble '\begin{Verbatim}' }
       it { should resemble 'commandchars' }
       it { should resemble '\end{Verbatim}' }
-      it { should_not resemble 'def foo' }
+      it { should_not resemble 'def hello' }
       it { should resemble '\noindent lorem ipsum' }
 
       describe "in the middle of a line" do
@@ -79,6 +92,11 @@ describe Polytexnic::Core::Pipeline do
         def foo
           "bar"
         end
+        \end{Verbatim}
+
+        \begin{Verbatim}
+          x
+        \end{equation}
         \end{Verbatim}
         EOS
       end
@@ -152,6 +170,28 @@ describe Polytexnic::Core::Pipeline do
 
         it { should resemble output }
       end
+    end
+
+    describe "tables" do
+
+      let(:polytex) do <<-'EOS'
+        \begin{table}
+        lorem ipsum
+        \end{table}
+        EOS
+      end
+
+      let(:output) do <<-'EOS'
+        \begin{table}
+        \begin{center}
+        \small
+        lorem ipsum
+        \end{center}
+        \end{table}
+        EOS
+      end
+
+      it { should resemble output }
     end
   end
 end
