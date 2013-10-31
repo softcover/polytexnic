@@ -56,6 +56,27 @@ describe 'Polytexnic::Core::Pipeline#to_html' do
       EOS
     end
 
+    context "with an explicit center environment" do
+      let(:polytex) do <<-'EOS'
+        \begin{figure}
+        \begin{center}
+        lorem
+        \end{center}
+        \end{figure}
+        EOS
+      end
+      it do
+        should resemble <<-'EOS'
+          <div class="center figure" id="uid1" data-tralics-id="uid1" data-number="1">
+            <p>lorem</p>
+            <div class="caption">
+              <span class="header">Figure 1</span>
+            </div>
+          </div>
+        EOS
+      end
+    end
+
     context "with a label and a cross-reference" do
       let(:polytex) do <<-'EOS'
         \begin{figure}
