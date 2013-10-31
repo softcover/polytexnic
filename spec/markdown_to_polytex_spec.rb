@@ -128,6 +128,16 @@ lorem
         it { should resemble output }
       end
 
+      describe "code inclusion" do
+        let(:source) { '<<(/path/to/code)' }
+        it { should resemble '%= <</path/to/code' }
+
+        context "with an alternate lang" do
+          let(:source) { '<<(/path/to/code.md, lang: text)' }
+          it { should resemble '%= <</path/to/code.md, lang: text' }
+        end
+      end
+
       describe "GitHub-flavored code fencing" do
 
         context "without highlighting" do
