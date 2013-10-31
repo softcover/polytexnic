@@ -126,6 +126,28 @@ describe Polytexnic::Core::Pipeline do
 
       it { should resemble output }
     end
+
+    context "preceded by a highlighted code environment" do
+      let(:polytex) do <<-'EOS'
+
+        %= lang:scheme
+        \begin{code}
+        (define tau 6.283185)
+        \end{code}
+
+        \begin{verbatim}
+        <start-quote/>
+        \end{verbatim}
+        EOS
+      end
+
+      let(:output) do <<-'EOS'
+        &lt;start-quote/&gt;
+        EOS
+      end
+
+      it { should resemble output }
+    end
   end
 
   describe "Verbatim environments" do
