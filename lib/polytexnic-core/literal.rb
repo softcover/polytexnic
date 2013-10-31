@@ -7,7 +7,7 @@ module Polytexnic
 
     # Matches the line for code inclusion.
     # %= <</path/to/code.ext
-    CODE_INCLUSION_REGEX = /\s*%=\s+<<\s*([\w\/]+\.?(\w*))/
+    CODE_INCLUSION_REGEX = /\s*%=\s+<<\s*([\w\/]+\.?(\w*))(?:,\s*lang:\s*(\w+))?/
 
     # Makes the caches for literal environments.
     def cache_literal(polytex, format = :html)
@@ -62,7 +62,7 @@ module Polytexnic
           # and then prepend the code to the current `lines` array.
           filename = $1
           if File.exist?(filename)
-            language = $2 || 'text'
+            language = $3 || $2 || 'text'
             code = ["%= lang:#{language}"]
             code << '\begin{code}'
             code.concat(File.read($1).split("\n"))
