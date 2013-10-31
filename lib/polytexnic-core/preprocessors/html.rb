@@ -31,6 +31,7 @@ module Polytexnic
             image_names(output)
             restore_eq_labels(output)
             convert_figure_centering(output)
+            convert_longtable(output)
             mark_environments(output)
             make_tabular_alignment_cache(output)
           end
@@ -121,7 +122,7 @@ module Polytexnic
           lines = []
           in_table = false
           string.split("\n").each do |line|
-            in_table ||= (line =~ /^\s*\\begin{tabular}/)
+            in_table ||= (line =~ /^\s*\\begin{(?:tabular|longtable)}/)
             line.gsub!('\\\\', xmlelement('backslashbreak')) unless in_table
             lines << line
             in_table = (in_table && line !~ /^\s*\\end{tabular}/)
@@ -213,6 +214,15 @@ module Polytexnic
             end
           end.join("\n")
           output.replace(centered)
+        end
+
+        # Converts the longtable environment to simple tabular.
+        # This is mainly because kramdown outputs longtables by default,
+        # but as a side-effect you can also use longtables in PolyTeX
+        # input documents.
+        def convert_longtable(output)
+          output.gsub!('\begin{longtable}', '\begin{tabular}')
+          output.gsub!('\end{longtable}',   '\end{tabular}')
         end
 
         # Marks environments with their types.
