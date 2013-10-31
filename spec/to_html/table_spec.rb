@@ -11,7 +11,9 @@ describe 'Polytexnic::Core::Pipeline#to_html' do
 
       let(:polytex) do <<-'EOS'
         \begin{tabular}{cc}
+        \hline
         HTTP request & URL \\
+        \hline
         GET & /users \\
         GET & /users/1
         \end{tabular}
@@ -19,7 +21,8 @@ describe 'Polytexnic::Core::Pipeline#to_html' do
       end
 
       let(:output) do <<-'EOS'
-        <table class="tabular"><tr><td class="align_center">HTTP request</td>
+        <table class="tabular">
+        <tr class="top_border bottom_border"><td class="align_center">HTTP request</td>
         <td class="align_center">URL</td>
         </tr><tr><td class="align_center">GET</td>
         <td class="align_center">/users</td>
@@ -35,7 +38,9 @@ describe 'Polytexnic::Core::Pipeline#to_html' do
 
         let(:polytex) do <<-'EOS'
           \begin{longtable}{cc}
+          \hline
           HTTP request & URL \\
+          \hline
           GET & /users \\
           GET & /users/1
           \end{longtable}
