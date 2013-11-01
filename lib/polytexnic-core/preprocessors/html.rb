@@ -30,6 +30,8 @@ module Polytexnic
             label_names(output)
             image_names(output)
             restore_eq_labels(output)
+            convert_figure_centering(output)
+            convert_longtable(output)
             mark_environments(output)
             make_tabular_alignment_cache(output)
           end
@@ -120,7 +122,7 @@ module Polytexnic
           lines = []
           in_table = false
           string.split("\n").each do |line|
-            in_table ||= (line =~ /^\s*\\begin{tabular}/)
+            in_table ||= (line =~ /^\s*\\begin{(?:tabular|longtable)}/)
             line.gsub!('\\\\', xmlelement('backslashbreak')) unless in_table
             lines << line
             in_table = (in_table && line !~ /^\s*\\end{tabular}/)
@@ -188,6 +190,39 @@ module Polytexnic
           math_label_cache.each do |key, label|
             output.gsub!(key, label)
           end
+        end
+
+        # Handles centering in figures.
+        # The way we handle generic \begin{center}...\end{center} doesn't
+        # work in figures for some reason. Luckily, the preferred method
+        # is to use \centering anyway, so this kludge is actually better LaTeX.
+        def convert_figure_centering(output)
+          @in_figure = false
+          centered = output.split("\n").map do |line|
+            if line =~ /^\s*\\begin\{figure\}/
+              @in_figure = true
+              line
+            elsif @in_figure && line =~ /^\s*\\begin\{center\}/
+              '\centering'
+            elsif @in_figure && line =~ /^\s*\\end\{center\}/
+              ''
+            elsif @in_figure && line =~ /^\s*\\end\{figure\}/
+              @in_figure = false
+              line
+            else
+              line
+            end
+          end.join("\n")
+          output.replace(centered)
+        end
+
+        # Converts the longtable environment to simple tabular.
+        # This is mainly because kramdown outputs longtables by default,
+        # but as a side-effect you can also use longtables in PolyTeX
+        # input documents.
+        def convert_longtable(output)
+          output.gsub!('\begin{longtable}', '\begin{tabular}')
+          output.gsub!('\end{longtable}',   '\end{tabular}')
         end
 
         # Marks environments with their types.
