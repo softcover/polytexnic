@@ -11,23 +11,43 @@ describe 'Polytexnic::Core::Pipeline#to_html' do
 
       let(:polytex) do <<-'EOS'
         \begin{tabular}{cc}
+        \hline
         HTTP request & URL \\
+        \hline
         GET & /users \\
         GET & /users/1
         \end{tabular}
       EOS
       end
 
-      it do
-        should resemble <<-'EOS'
-          <table class="tabular"><tr><td class="align_center">HTTP request</td>
-          <td class="align_center">URL</td>
-          </tr><tr><td class="align_center">GET</td>
-          <td class="align_center">/users</td>
-          </tr><tr><td class="align_center">GET</td>
-          <td class="align_center">/users/1</td>
-          </tr></table>
+      let(:output) do <<-'EOS'
+        <table class="tabular">
+        <tr class="top_border bottom_border"><td class="align_center">HTTP request</td>
+        <td class="align_center">URL</td>
+        </tr><tr><td class="align_center">GET</td>
+        <td class="align_center">/users</td>
+        </tr><tr><td class="align_center">GET</td>
+        <td class="align_center">/users/1</td>
+        </tr></table>
+      EOS
+      end
+
+      it { should resemble output }
+
+      context "longtable" do
+
+        let(:polytex) do <<-'EOS'
+          \begin{longtable}{cc}
+          \hline
+          HTTP request & URL \\
+          \hline
+          GET & /users \\
+          GET & /users/1
+          \end{longtable}
         EOS
+        end
+
+        it { should resemble output }
       end
     end
 

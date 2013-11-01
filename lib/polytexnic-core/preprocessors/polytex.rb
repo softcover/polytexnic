@@ -24,11 +24,14 @@ module Polytexnic
       def to_polytex
         require 'Kramdown'
         cleaned_markdown = cache_code_environments
+        cleaned_markdown.tap do |markdown|
+          convert_code_inclusion(markdown)
+        end
         math_cache = cache_math(cleaned_markdown)
         # Override the header ordering, which starts with 'section' by default.
         lh = 'chapter,section,subsection,subsubsection,paragraph,subparagraph'
         kramdown = Kramdown::Document.new(cleaned_markdown, latex_headers: lh)
-        @source = restore_math(kramdown.to_latex, math_cache)
+        @source = restore_inclusion(restore_math(kramdown.to_latex, math_cache))
       end
 
       def cache_code_environments
@@ -111,6 +114,14 @@ module Polytexnic
         end
         text
       end
+    end
+
+    # Adds support for <<(path/to/code) inclusion.
+    def convert_code_inclusion(text)
+      text.gsub!(/^\s*<<\((.*?)\)/) { "<!-- inclusion= <<#{$1}-->" }
+    end
+    def restore_inclusion(text)
+      text.gsub(/% <!-- inclusion= (.*?)-->/) { "%= #{$1}" }
     end
   end
 end

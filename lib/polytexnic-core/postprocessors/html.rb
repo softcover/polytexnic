@@ -10,6 +10,7 @@ module Polytexnic
         boldface(doc)
         small_caps(doc)
         typewriter(doc)
+        skips(doc)
         verbatim(doc)
         code(doc)
         metacode(doc)
@@ -74,6 +75,14 @@ module Polytexnic
             node.name = 'span'
             node['class'] = 'sc'
             node.remove_attribute('rend')
+          end
+        end
+
+        # Handles \bigskip, etc.
+        def skips(doc)
+          doc.xpath('//p[@spacebefore]').each do |node|
+            node['style'] = "margin-top: #{node['spacebefore']}"
+            node.remove_attribute('spacebefore')
           end
         end
 
@@ -934,10 +943,16 @@ module Polytexnic
           end
           doc.xpath('//table/row').each do |node|
             node.name = 'tr'
+            klass = []
+            if node['top-border'] == 'true'
+              klass << 'top_border'
+              clean_node node, %w[top-border]
+            end
             if node['bottom-border'] == 'true'
-              node['class'] = 'bottom_border'
+              klass << 'bottom_border'
               clean_node node, %w[bottom-border]
             end
+            node['class'] = klass.join(' ') unless klass.empty?
           end
           tabular_count = 0
           doc.xpath('//table').each do |node|
@@ -991,6 +1006,7 @@ module Polytexnic
             klass << 'left_border' if cell['left-border']
             klass << "align_#{cell['halign']}" if cell['halign']
             klass << 'right_border' if cell['right-border']
+            klass << 'top-border' if cell['top-border']
           end.join(' ')
         end
 
