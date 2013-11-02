@@ -7,11 +7,11 @@ Gem::Specification.new do |gem|
   gem.name          = "polytexnic-core"
   gem.version       = Polytexnic::Core::VERSION
   gem.authors       = ["Michael Hartl", "Nick Merwin"]
-  gem.email         = ["michael@michaelhartl.com"]
-  gem.description   = %q{Translation to and from PolyTeX}
-  gem.summary       = %q{Provide utilities for converting PolyTeX
-                         to HTML and LaTeX, and from Markdown to PolyTeX}
-  gem.homepage      = "https://github.com/mhartl/polytexnic-core"
+  gem.email         = ["michael@softcover.io"]
+  gem.description   = %q{Core translation engine for the polytexnic gem}
+  gem.summary       = %q{Convert from PolyTeX & Markdown to HTML & LaTeX}
+  gem.homepage      = "https://polytexnic.org/"
+  gem.license       = "MIT"
 
   gem.files         = `git ls-files`.split($/)
   gem.executables   = gem.files.grep(%r{^bin/}).map{ |f| File.basename(f) }
