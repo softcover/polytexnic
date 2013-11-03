@@ -1,4 +1,5 @@
 require 'simplecov'
+require 'json'
 require 'coveralls'
 
 SimpleCov.formatter = SimpleCov::Formatter::MultiFormatter[
