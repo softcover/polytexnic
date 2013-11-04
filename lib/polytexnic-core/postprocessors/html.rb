@@ -842,6 +842,13 @@ module Polytexnic
           doc.xpath('//xref').each do |node|
             node.name = 'a'
             node['href'] = literal_cache[node['url']]
+            # Put a class on hrefs containing TeX to allow a style override.
+            node.traverse do |descendant|
+              if descendant['class'] == 'texhtml'
+                node['class'] = 'tex'
+                break
+              end
+            end
             clean_node node, 'url'
           end
         end

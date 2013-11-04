@@ -174,6 +174,12 @@ describe 'Polytexnic::Core::Pipeline#to_html' do
       let(:output) { '<a href="http://example.com/">Example Site</a>' }
       it { should resemble output }
     end
+
+    context "URL containing TeX" do
+      let(:polytex) { '\href{http://example.com/}{\emph{\TeX}}' }
+      let(:output) { '<a href="http://example.com/" class="tex">' }
+      it { should resemble output }
+    end
   end
 
   describe "centering" do
