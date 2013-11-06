@@ -3,11 +3,11 @@ require 'spec_helper'
 
 describe 'Polytexnic::Core::Pipeline#to_html' do
 
-  subject(:processed_text) { Polytexnic::Core::Pipeline.new(polytex).to_html.strip }
+  subject(:processed_text) { Polytexnic::Core::Pipeline.new(polytex).to_html }
 
   describe "comments" do
     let(:polytex) { "% A LaTeX comment" }
-    it { should resemble '' }
+    it { should eq '' }
 
     context "with a section and label" do
       let(:polytex) do <<-'EOS'
@@ -15,7 +15,7 @@ describe 'Polytexnic::Core::Pipeline#to_html' do
         % \label{sec:foo}
         EOS
       end
-      it { should resemble '' }
+      it { should eq '' }
     end
 
     context "with a code listing" do
@@ -66,7 +66,7 @@ describe 'Polytexnic::Core::Pipeline#to_html' do
         % \]
         EOS
       end
-      it { should resemble '' }
+      it { should eq '' }
     end
   end
 
