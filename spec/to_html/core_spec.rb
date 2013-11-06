@@ -3,7 +3,7 @@ require 'spec_helper'
 
 describe 'Polytexnic::Core::Pipeline#to_html' do
 
-  subject(:processed_text) { Polytexnic::Core::Pipeline.new(polytex).to_html }
+  subject(:processed_text) { Polytexnic::Core::Pipeline.new(polytex).to_html.strip }
 
   describe "comments" do
     let(:polytex) { "% A LaTeX comment" }
@@ -32,7 +32,12 @@ describe 'Polytexnic::Core::Pipeline#to_html' do
         % \end{codelisting}
         EOS
       end
-      it { should resemble '' }
+      it { should eq '' }
+    end
+
+    context "with a code inclusion" do
+      let(:polytex) { '% %= << spec/spec_helper.rb' }
+      it { should eq '' }
     end
 
     context "with a literal percent" do
