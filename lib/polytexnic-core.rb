@@ -71,7 +71,7 @@ module Polytexnic
           printer = RubyProf::GraphPrinter.new(result)
           printer.print(STDOUT, {})
         end
-        @html
+        @html.strip
       end
 
       def to_latex

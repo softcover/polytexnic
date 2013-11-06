@@ -4,76 +4,76 @@ require 'spec_helper'
 describe Polytexnic::Core::Pipeline do
   subject(:processed_text) { Polytexnic::Core::Pipeline.new(polytex).to_html }
 
-    describe "display and inline math" do
-      let(:math) do <<-'EOS'
-        \begin{bmatrix}
-        1 & \cdots & 0 \\
-        \vdots & \ddots & \vdots \\
-        2 & \cdots & 0
-        \end{bmatrix}
-        EOS
-      end
+  describe "display and inline math" do
+    let(:math) do <<-'EOS'
+      \begin{bmatrix}
+      1 & \cdots & 0 \\
+      \vdots & \ddots & \vdots \\
+      2 & \cdots & 0
+      \end{bmatrix}
+      EOS
+    end
 
-      let(:result) do <<-'EOS'
-        \begin{bmatrix}
-        1 &amp; \cdots &amp; 0 \\
-        \vdots &amp; \ddots &amp; \vdots \\
-        2 &amp; \cdots &amp; 0
-        \end{bmatrix}
-        EOS
-      end
+    let(:result) do <<-'EOS'
+      \begin{bmatrix}
+      1 &amp; \cdots &amp; 0 \\
+      \vdots &amp; \ddots &amp; \vdots \\
+      2 &amp; \cdots &amp; 0
+      \end{bmatrix}
+      EOS
+    end
 
-      context "TeX displaystyle" do
-        let(:equation) { "$$ #{math} $$"}
-        let(:polytex)  { equation }
-        let(:contents) { "\\[ #{result} \\]"}
+    context "TeX displaystyle" do
+      let(:equation) { "$$ #{math} $$"}
+      let(:polytex)  { equation }
+      let(:contents) { "\\[ #{result} \\]"}
 
-        it { should resemble contents }
-      end
+      it { should resemble contents }
+    end
 
-      context "LaTeX displaystyle" do
-        let(:equation) { "\\[ #{math} \\]"}
-        let(:polytex)  { equation }
-        let(:contents) { "\\[ #{result} \\]"}
+    context "LaTeX displaystyle" do
+      let(:equation) { "\\[ #{math} \\]"}
+      let(:polytex)  { equation }
+      let(:contents) { "\\[ #{result} \\]"}
 
-        it { should resemble contents }
+      it { should resemble contents }
 
-        context "with surrounding text" do
-          let(:polytex) { "lorem\n\\[ #{math} \\]\nipsum" }
-          it { should resemble '<p class="noindent">' }
-        end
-      end
-
-      context "TeX inline" do
-        let(:equation) { "$#{math}$"}
-        let(:polytex)  { equation }
-        let(:contents) { "\\( #{result} \\)"}
-
-        it { should resemble contents }
-      end
-
-      context "TeX inline with a dollar sign" do
-        let(:equation) { "$#{math} \\mbox{\\$2 bill}$"}
-        let(:polytex)  { equation }
-        let(:contents) { "\\( #{result} \\mbox{\\$2 bill} \\)"}
-
-        it { should resemble contents }
-      end
-
-      context "LaTeX inline" do
-        let(:equation) { "\\( #{math} \\)"}
-        let(:polytex)  { equation }
-        let(:contents) { "\\( #{result} \\)"}
-
-        it { should resemble contents }
-      end
-
-      context "with a space before a dollar sign" do
-        let(:polytex) { "foo $x$ bar" }
-        let(:contents) { "<p>foo <span class=\"inline_math\">\\( x \\)</span> bar" }
-        it { should include contents }
+      context "with surrounding text" do
+        let(:polytex) { "lorem\n\\[ #{math} \\]\nipsum" }
+        it { should resemble '<p class="noindent">' }
       end
     end
+
+    context "TeX inline" do
+      let(:equation) { "$#{math}$"}
+      let(:polytex)  { equation }
+      let(:contents) { "\\( #{result} \\)"}
+
+      it { should resemble contents }
+    end
+
+    context "TeX inline with a dollar sign" do
+      let(:equation) { "$#{math} \\mbox{\\$2 bill}$"}
+      let(:polytex)  { equation }
+      let(:contents) { "\\( #{result} \\mbox{\\$2 bill} \\)"}
+
+      it { should resemble contents }
+    end
+
+    context "LaTeX inline" do
+      let(:equation) { "\\( #{math} \\)"}
+      let(:polytex)  { equation }
+      let(:contents) { "\\( #{result} \\)"}
+
+      it { should resemble contents }
+    end
+
+    context "with a space before a dollar sign" do
+      let(:polytex) { "foo $x$ bar" }
+      let(:contents) { "<p>foo <span class=\"inline_math\">\\( x \\)</span> bar" }
+      it { should include contents }
+    end
+  end
 
   describe "multiple occurrences of inline math on one line" do
     let(:polytex) { '$\Omega > 0$ and \( x^2 - 2 \equiv 0 \) should work.' }

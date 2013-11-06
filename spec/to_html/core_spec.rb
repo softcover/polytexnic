@@ -7,7 +7,7 @@ describe 'Polytexnic::Core::Pipeline#to_html' do
 
   describe "comments" do
     let(:polytex) { "% A LaTeX comment" }
-    it { should resemble '' }
+    it { should eq '' }
 
     context "with a section and label" do
       let(:polytex) do <<-'EOS'
@@ -15,7 +15,7 @@ describe 'Polytexnic::Core::Pipeline#to_html' do
         % \label{sec:foo}
         EOS
       end
-      it { should resemble '' }
+      it { should eq '' }
     end
 
     context "with a code listing" do
@@ -32,7 +32,12 @@ describe 'Polytexnic::Core::Pipeline#to_html' do
         % \end{codelisting}
         EOS
       end
-      it { should resemble '' }
+      it { should eq '' }
+    end
+
+    context "with a code inclusion" do
+      let(:polytex) { '% %= << spec/spec_helper.rb' }
+      it { should eq '' }
     end
 
     context "with a literal percent" do
@@ -61,7 +66,7 @@ describe 'Polytexnic::Core::Pipeline#to_html' do
         % \]
         EOS
       end
-      it { should resemble '' }
+      it { should eq '' }
     end
   end
 

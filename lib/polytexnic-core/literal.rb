@@ -7,7 +7,10 @@ module Polytexnic
 
     # Matches the line for code inclusion.
     # %= <</path/to/code.ext
-    CODE_INCLUSION_REGEX = /\s*%=\s+<<\s*([\w\/]+\.?(\w*))(?:,\s*lang:\s*(\w+))?/
+    CODE_INCLUSION_REGEX = /^\s*%=\s+<<               # %= <<
+                             \s*([\w\/]+\.?(\w*))     # path
+                             (?:,\s*lang:\s*(\w+))?   # optional lang
+                             /x
 
     # Makes the caches for literal environments.
     def cache_literal(polytex, format = :html)
