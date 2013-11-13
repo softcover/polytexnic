@@ -89,7 +89,7 @@ describe Polytexnic::Core::Pipeline do
 
       context "with no extension" do
         let(:polytex) do <<-'EOS'
-          %= <<Rakefile
+          %= <<(Rakefile)
           EOS
         end
         let(:output) do <<-'EOS'
@@ -101,7 +101,7 @@ describe Polytexnic::Core::Pipeline do
 
       context "with an extension" do
         let(:polytex) do <<-'EOS'
-          %= <<spec/to_html/literal_environments/code_spec.rb
+          %= <<(spec/to_html/literal_environments/code_spec.rb)
           EOS
         end
         let(:output) do <<-'EOS'
@@ -116,7 +116,7 @@ describe Polytexnic::Core::Pipeline do
 
       context "with a custom language override" do
         let(:polytex) do <<-'EOS'
-          %= << polytexnic_commands.sty, lang: tex
+          %= << (polytexnic_commands.sty, lang: tex)
           EOS
         end
         let(:output) do <<-'EOS'
@@ -132,7 +132,7 @@ describe Polytexnic::Core::Pipeline do
 
     context "for a nonexistent file" do
       let(:polytex) do <<-'EOS'
-        %= <<foobar.rb
+        %= <<(foobar.rb)
         EOS
       end
       it { should include "ERROR: File 'foobar.rb' does not exist" }
