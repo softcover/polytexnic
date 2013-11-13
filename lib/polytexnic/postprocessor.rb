@@ -1,8 +1,8 @@
 # encoding=utf-8
 require 'cgi'
-require 'polytexnic-core/postprocessors/html'
-require 'polytexnic-core/postprocessors/latex'
-require 'polytexnic-core/postprocessors/polytex'
+require 'polytexnic/postprocessors/html'
+require 'polytexnic/postprocessors/latex'
+require 'polytexnic/postprocessors/polytex'
 
 module Polytexnic
   module Postprocessor

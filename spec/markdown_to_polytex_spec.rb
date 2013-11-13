@@ -1,7 +1,7 @@
 # encoding=utf-8
 require 'spec_helper'
 
-describe Polytexnic::Core::Pipeline do
+describe Polytexnic::Pipeline do
 
   before(:all) do
     FileUtils.rm('.highlight_cache') if File.exist?('.highlight_cache')
@@ -9,7 +9,7 @@ describe Polytexnic::Core::Pipeline do
 
   describe '#to_polytex' do
     subject(:processed_text) do
-      Polytexnic::Core::Pipeline.new(source, source: :markdown).polytex
+      Polytexnic::Pipeline.new(source, source: :markdown).polytex
     end
 
     context "for vanilla Markdown" do
@@ -36,7 +36,7 @@ Lorem ipsum
 
     describe "with math" do
       subject do
-        Polytexnic::Core::Pipeline.new(markdown, source: :markdown).polytex
+        Polytexnic::Pipeline.new(markdown, source: :markdown).polytex
       end
 
       context "inline math" do
@@ -63,7 +63,7 @@ x^2
 
     describe "footnotes" do
       subject do
-        Polytexnic::Core::Pipeline.new(markdown, source: :markdown).polytex
+        Polytexnic::Pipeline.new(markdown, source: :markdown).polytex
       end
 
       context "first chapter with footnotes" do

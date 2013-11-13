@@ -678,7 +678,7 @@ module Polytexnic
               if title_element
                 type = %w{title subtitle}.include?(field) ? 'h1' : 'h2'
                 el = Nokogiri::XML::Node.new(type, doc)
-                raw = Polytexnic::Core::Pipeline.new(title_element).to_html
+                raw = Polytexnic::Pipeline.new(title_element).to_html
                 content = Nokogiri::HTML.fragment(raw).at_css('p')
                 unless (content.nil? && field == 'date')
                   el.inner_html = content.inner_html.strip

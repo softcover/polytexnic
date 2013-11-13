@@ -8,7 +8,7 @@ end
 
 # Returns the results of converting the TeX filename to HTML.
 def converted(filename)
-  Polytexnic::Core::Pipeline.new(contents(filename, 'tex')).to_html
+  Polytexnic::Pipeline.new(contents(filename, 'tex')).to_html
 end
 
 # Returns the contents of the HTML filename fixture.
@@ -21,7 +21,7 @@ def contents(filename, extension)
   File.open(File.join('spec', 'fixtures', "#{filename}.#{extension}")).read
 end
 
-describe Polytexnic::Core::Pipeline do
+describe Polytexnic::Pipeline do
 
   filenames.each do |filename|
     it "should correctly process #{filename}" do

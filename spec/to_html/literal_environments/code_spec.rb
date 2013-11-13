@@ -1,11 +1,11 @@
 # encoding=utf-8
 require 'spec_helper'
 
-describe Polytexnic::Core::Pipeline do
+describe Polytexnic::Pipeline do
   before(:all) do
     FileUtils.rm('.highlight_cache') if File.exist?('.highlight_cache')
   end
-  subject(:processed_text) { Polytexnic::Core::Pipeline.new(polytex).to_html }
+  subject(:processed_text) { Polytexnic::Pipeline.new(polytex).to_html }
 
   describe "code blocks" do
 

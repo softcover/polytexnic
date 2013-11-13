@@ -1,5 +1,5 @@
 # encoding=utf-8
-require 'polytexnic-core'
+require 'polytexnic'
 
 RSpec::Matchers.define :resemble do |expected|
   match do |actual|
@@ -24,7 +24,7 @@ RSpec::Matchers.define :resemble do |expected|
 end
 
 def debug_output(expected, actual)
-  print_output expected, actual if Polytexnic::Core::Utils.debug?
+  print_output expected, actual if Polytexnic::Utils.debug?
 end
 
 # Prints the robust versions of the two strings
