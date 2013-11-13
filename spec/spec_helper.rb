@@ -8,7 +8,7 @@ SimpleCov.formatter = SimpleCov::Formatter::MultiFormatter[
 ]
 SimpleCov.start
 
-require 'polytexnic-core'
+require 'polytexnic'
 
 # Load support files.
 Dir.glob(File.join(File.dirname(__FILE__), "./support/**/*.rb")).each do |f|
@@ -20,9 +20,9 @@ RSpec.configure do |config|
   config.run_all_when_everything_filtered = true
   config.filter_run :focus
 
-  Polytexnic::Core::Utils.set_test_mode!
+  Polytexnic::Utils.set_test_mode!
   config.before do
-    Polytexnic::Core::Utils.set_test_mode!
+    Polytexnic::Utils.set_test_mode!
   end
 
   # Disallow the old-style 'object.should' syntax.

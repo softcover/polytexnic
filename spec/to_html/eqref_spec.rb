@@ -1,8 +1,8 @@
 # encoding=utf-8
 require 'spec_helper'
 
-describe Polytexnic::Core::Pipeline do
-  subject(:processed_text) { Polytexnic::Core::Pipeline.new(polytex).to_html }
+describe Polytexnic::Pipeline do
+  subject(:processed_text) { Polytexnic::Pipeline.new(polytex).to_html }
 
   describe 'equation \ref' do
 

@@ -1,6 +1,6 @@
-# polytexnic-core
+# polytexnic
 
-This is the `polytexnic-core` gem, which converts input in Markdown or PolyTeX to HTML and LaTeX. It currently has no standalone applications, but rather exists to support the `polytexnic` gem.
+This is the `polytexnic` gem, which converts input in Markdown or PolyTeX to HTML and LaTeX. It currently has no standalone applications, but rather exists to support the `polytexnic` gem.
 
 ## Installation
 

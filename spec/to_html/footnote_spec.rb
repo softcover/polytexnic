@@ -1,9 +1,9 @@
 # encoding=utf-8
 require 'spec_helper'
 
-describe 'Polytexnic::Core::Pipeline#to_html' do
+describe 'Polytexnic::Pipeline#to_html' do
 
-  subject(:processed_text) { Polytexnic::Core::Pipeline.new(polytex).to_html }
+  subject(:processed_text) { Polytexnic::Pipeline.new(polytex).to_html }
 
   describe "first chapter with footnotes" do
     let(:polytex) do <<-'EOS'

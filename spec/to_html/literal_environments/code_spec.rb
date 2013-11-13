@@ -1,11 +1,11 @@
 # encoding=utf-8
 require 'spec_helper'
 
-describe Polytexnic::Core::Pipeline do
+describe Polytexnic::Pipeline do
   before(:all) do
     FileUtils.rm('.highlight_cache') if File.exist?('.highlight_cache')
   end
-  subject(:processed_text) { Polytexnic::Core::Pipeline.new(polytex).to_html }
+  subject(:processed_text) { Polytexnic::Pipeline.new(polytex).to_html }
 
   describe "code blocks" do
 
@@ -89,7 +89,7 @@ describe Polytexnic::Core::Pipeline do
 
       context "with no extension" do
         let(:polytex) do <<-'EOS'
-          %= <<Rakefile
+          %= <<(Rakefile)
           EOS
         end
         let(:output) do <<-'EOS'
@@ -101,7 +101,7 @@ describe Polytexnic::Core::Pipeline do
 
       context "with an extension" do
         let(:polytex) do <<-'EOS'
-          %= <<spec/to_html/literal_environments/code_spec.rb
+          %= <<(spec/to_html/literal_environments/code_spec.rb)
           EOS
         end
         let(:output) do <<-'EOS'
@@ -116,7 +116,7 @@ describe Polytexnic::Core::Pipeline do
 
       context "with a custom language override" do
         let(:polytex) do <<-'EOS'
-          %= << polytexnic_commands.sty, lang: tex
+          %= << (polytexnic_commands.sty, lang: tex)
           EOS
         end
         let(:output) do <<-'EOS'
@@ -132,7 +132,7 @@ describe Polytexnic::Core::Pipeline do
 
     context "for a nonexistent file" do
       let(:polytex) do <<-'EOS'
-        %= <<foobar.rb
+        %= <<(foobar.rb)
         EOS
       end
       it { should include "ERROR: File 'foobar.rb' does not exist" }

@@ -1,4 +1,4 @@
-require 'polytexnic-core/literal'
+require 'polytexnic/literal'
 
 module Polytexnic
   module Postprocessor

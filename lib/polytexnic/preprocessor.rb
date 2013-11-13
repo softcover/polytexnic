@@ -1,8 +1,8 @@
 # encoding=utf-8
-require 'polytexnic-core/literal'
-require 'polytexnic-core/preprocessors/html'
-require 'polytexnic-core/preprocessors/latex'
-require 'polytexnic-core/preprocessors/polytex'
+require 'polytexnic/literal'
+require 'polytexnic/preprocessors/html'
+require 'polytexnic/preprocessors/latex'
+require 'polytexnic/preprocessors/polytex'
 
 module Polytexnic
   module Preprocessor

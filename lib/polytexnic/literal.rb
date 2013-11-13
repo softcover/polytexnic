@@ -7,9 +7,10 @@ module Polytexnic
 
     # Matches the line for code inclusion.
     # %= <</path/to/code.ext
-    CODE_INCLUSION_REGEX = /^\s*%=\s+<<               # %= <<
+    CODE_INCLUSION_REGEX = /^\s*%=\s+<<\s*\(          # opening
                              \s*([\w\/]+\.?(\w*))     # path
                              (?:,\s*lang:\s*(\w+))?   # optional lang
+                             \s*\)                    # closing paren
                              /x
 
     # Makes the caches for literal environments.
@@ -56,7 +57,7 @@ module Polytexnic
         elsif line =~ CODE_INCLUSION_REGEX && !in_verbatim
           # Reduce to a previously solved problem.
           # We transform
-          # %= <</path/to/file.rb
+          # %= <<(/path/to/file.rb)
           # to
           # %= lang:rb
           # \begin{code}

@@ -1,14 +1,14 @@
 # encoding=utf-8
 require 'spec_helper'
 
-describe Polytexnic::Core::Pipeline do
+describe Polytexnic::Pipeline do
 
   before(:all) do
     FileUtils.rm('.highlight_cache') if File.exist?('.highlight_cache')
   end
 
   describe '#to_latex' do
-    subject(:processed_text) { Polytexnic::Core::Pipeline.new(polytex).to_latex }
+    subject(:processed_text) { Polytexnic::Pipeline.new(polytex).to_latex }
 
     describe "for vanilla LaTeX" do
       let(:polytex) { '\emph{foo}' }

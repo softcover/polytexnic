@@ -118,7 +118,7 @@ module Polytexnic
 
     # Adds support for <<(path/to/code) inclusion.
     def convert_code_inclusion(text)
-      text.gsub!(/^\s*<<\((.*?)\)/) { "<!-- inclusion= <<#{$1}-->" }
+      text.gsub!(/^\s*<<(\(.*?\))/) { "<!-- inclusion= <<#{$1}-->" }
     end
     def restore_inclusion(text)
       text.gsub(/% <!-- inclusion= (.*?)-->/) { "%= #{$1}" }
