@@ -1,5 +1,6 @@
 module Polytexnic
   module Literal
+    extend self
 
     # Matches the line for syntax highlighting.
     # %= lang:<language>
@@ -21,6 +22,22 @@ module Polytexnic
       output.join("\n")
     end
 
+    # Returns supported math environments.
+    # Note that the custom AMS-TeX environments are supported
+    # in addition to the LaTeX defaults.
+    def math_environments
+      %w[align align*
+         eqnarray eqnarray* equation equation*
+         gather gather* gathered
+         multline multline*
+        ]
+    end
+
+    # Returns a list of all literal types.
+    def literal_types
+      %w[verbatim Vertatim code metadcode] + math_environments
+    end
+
     # Handles environments that should be passed through the pipeline intact.
     # The includes verbatim environments ('verbatim', 'Verbatim') and all the
     # equation environments handled by MathJax ('equation', 'align', etc.).
@@ -40,7 +57,7 @@ module Polytexnic
     # and even then I've failed to get it to work. Thus, it shall for now
     # follow the "ball of mud" pattern. (The only saving grace is that it's
     # very thoroughly tested.)
-    def cache_literal_environments(lines, output, format)
+    def cache_literal_environments(lines, output, format, cache = nil)
       latex = (format == :latex)
       language = nil
       in_verbatim = false
@@ -241,18 +258,9 @@ module Polytexnic
   end
 end
 
-# Returns supported math environments.
-# Note that the custom AMS-TeX environments are supported
-# in addition to the LaTeX defaults.
-def math_environments
-  %w[align align*
-     eqnarray eqnarray* equation equation*
-     gather gather* gathered
-     multline multline*
-    ]
-end
 
 class String
+  include Polytexnic::Literal
 
   # Returns true if self matches \begin{...} where ... is a literal environment.
   # Note: Support for the 'metacode' environment exists solely to allow
@@ -294,6 +302,8 @@ class String
 
     # Returns a regex matching valid math environments.
     def math_environment_regex
-      math_environments.map { |s| Regexp.escape(s) }.join('|')
+      Polytexnic::Literal.math_environments.map do |s|
+        Regexp.escape(s)
+      end.join('|')
     end
 end
