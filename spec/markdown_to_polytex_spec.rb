@@ -87,6 +87,44 @@ That is it.  You can keep writing your text after the footnote content.
       end
     end
 
+    context "with LaTeX containing" do
+
+      context "a normal command" do
+        let(:source) { 'This is a command: \foobar' }
+        it { should include source }
+      end
+
+      context "backslash space" do
+        let(:source) { 'Dr.\ No' }
+        it { should include source }
+      end
+
+      context "escaped special characters" do
+        let(:source) { '\% \& \$ \# \@ \_' }
+        it { should include source }
+      end
+
+      context "a label and cross-reference" do
+
+      end
+
+      context "an inline equation" do
+
+      end
+
+      context "a centered equation" do
+
+      end
+
+      context "an equation environment" do
+
+      end
+
+      context "a codelisting environment" do
+
+      end
+    end
+
     describe "source code" do
       context "without highlighting" do
         let(:source) do <<-EOS
