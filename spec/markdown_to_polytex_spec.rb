@@ -105,23 +105,57 @@ That is it.  You can keep writing your text after the footnote content.
       end
 
       context "a label and cross-reference" do
+        let(:source) do <<-'EOS'
+# Chapter One
+\label{cha:one}
 
+Chapter~\ref{cha:one}
+          EOS
+        end
+        it { should include '\label{cha:one}' }
+        it { should include 'Chapter~\ref{cha:one}' }
       end
 
       context "an inline equation" do
-
+        let(:source) { '\( x \) is a variable' }
+        it { should include source }
       end
 
       context "a centered equation" do
-
+        let(:source) { '\[ x^2 - 2 = 0 \] is an equation' }
+        it { should resemble source }
       end
 
       context "an equation environment" do
+        let(:source) do <<-'EOS'
+foo
 
+\begin{equation}
+\label{eq:phi}
+\phi = \frac{1+\sqrt{5}}{2}
+\end{equation}
+
+bar
+          EOS
+        end
+        it { should resemble source }
       end
 
       context "a codelisting environment" do
-
+        let(:source) do <<-'EOS'
+\begin{codelisting}
+\codecaption{Lorem ipsum.}
+\label{code:lorem}
+```ruby
+def foo; "bar"; end
+```
+\end{codelisting}
+          EOS
+        end
+        it { should resemble '\begin{codelisting}' }
+        it { should resemble '\codecaption{Lorem ipsum.}' }
+        it { should resemble '\label{code:lorem}' }
+        it { should resemble '\end{codelisting}' }
       end
     end
 
