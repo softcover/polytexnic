@@ -2,6 +2,7 @@
 module Polytexnic
   module Preprocessor
     module Polytex
+      include Polytexnic::Literal
 
       # Converts Markdown to PolyTeX.
       # We adopt a unified approach: rather than convert "Markdown" (I use
@@ -23,17 +24,83 @@ module Polytexnic
       # marketing term.</rant>
       def to_polytex
         require 'Kramdown'
+        cache = {}
+        math_cache = {}
         cleaned_markdown = cache_code_environments
         cleaned_markdown.tap do |markdown|
           convert_code_inclusion(markdown)
+          cache_latex_literal(markdown, cache)
+          cache_raw_latex(markdown, cache)
+          cache_math(markdown, math_cache)
         end
-        math_cache = cache_math(cleaned_markdown)
         # Override the header ordering, which starts with 'section' by default.
         lh = 'chapter,section,subsection,subsubsection,paragraph,subparagraph'
         kramdown = Kramdown::Document.new(cleaned_markdown, latex_headers: lh)
         @source = restore_inclusion(restore_math(kramdown.to_latex, math_cache))
+        restore_raw_latex(@source, cache)
       end
 
+      # Adds support for <<(path/to/code) inclusion.
+      # Yes, this is a bit of a hack, but it works.
+      def convert_code_inclusion(text)
+        text.gsub!(/^\s*<<(\(.*?\))/) { "<!-- inclusion= <<#{$1}-->" }
+      end
+      def restore_inclusion(text)
+        text.gsub(/% <!-- inclusion= (.*?)-->/) { "%= #{$1}" }
+      end
+
+      # Caches literal LaTeX environments.
+      def cache_latex_literal(markdown, cache)
+        Polytexnic::Literal.literal_types.each do |literal|
+          regex = /(\\begin\{#{Regexp.escape(literal)}\}
+                  .*?
+                  \\end\{#{Regexp.escape(literal)}\})
+                  /xm
+          markdown.gsub!(regex) do
+            key = digest($1)
+            cache[key] = $1
+            key
+          end
+        end
+      end
+
+      # Caches raw LaTeX commands to be passed through the pipeline.
+      def cache_raw_latex(markdown, cache)
+        command_regex = /(
+                          ~\\ref\{.*?\}     # reference with a tie
+                          |
+                          ~\\eqref\{.*?\}   # eq reference with a tie
+                          |
+                          \\\w+\{.*?\}      # command with one arg
+                          |
+                          \\\w+             # normal command
+                          |
+                          \\[ %&$#@]        # space or special character
+                          )
+                        /x
+        markdown.gsub!(command_regex) do
+          key = digest($1)
+          cache[key] = $1
+          key
+        end
+      end
+
+      # Restores raw LaTeX from the cache
+      def restore_raw_latex(text, cache)
+        cache.each do |key, value|
+          if value == '\&'
+            # Bizarrely, the default code doesn't work for '\&'.
+            # I actually suspect it may be a bug in Ruby. This hacks around it.
+            text.gsub!(key, value.sub(/\\/, '\\\\\\'))
+          else
+            text.gsub!(key, value)
+          end
+        end
+      end
+
+      # Caches Markdown code environments.
+      # Included are indented environments, Leanpub-style indented environments,
+      # and GitHub-style code fencing.
       def cache_code_environments
         output = []
         lines = @source.split("\n")
@@ -72,7 +139,7 @@ module Polytexnic
         output.join("\n")
       end
 
-      # Caches Leanpub-style math.
+      # Caches math.
       # Leanpub uses the notation {$$}...{/$$} for both inline and block math,
       # with the only difference being the presences of newlines:
       #     {$$} x^2 {/$$}  % inline
@@ -80,21 +147,19 @@ module Polytexnic
       #     {$$}
       #     x^2             % block
       #     {/$$}
-      # I personally hate this notation and convention, but anyone who really
-      # cares should just use PolyTeX instead of Markdown.
-      def cache_math(text)
-        cache = {}
-        text.gsub!(/\{\$\$\}\n(.*?)\n\{\/\$\$\}/) do
-          key = digest($1)
-          cache[[:block, key]] = $1
+      # I personally hate this notation and convention, so we also support
+      # LaTeX-style \( x \) and \[ x^2 - 2 = 0 \] notation.
+      def cache_math(text, cache)
+        text.gsub!(/(?:\{\$\$\}\n(.*?)\n\{\/\$\$\}|\\\[(.*?)\\\])/) do
+          key = digest($1 || $2)
+          cache[[:block, key]] = $1 || $2
           key
         end
-        text.gsub!(/\{\$\$\}(.*?)\{\/\$\$\}/) do
-          key = digest($1)
-          cache[[:inline, key]] = $1
+        text.gsub!(/(?:\{\$\$\}(.*?)\{\/\$\$\}|\\\((.*?)\\\))/) do
+          key = digest($1 || $2)
+          cache[[:inline, key]] = $1 || $2
           key
         end
-        cache
       end
 
       # Restores the Markdown math.
@@ -114,14 +179,6 @@ module Polytexnic
         end
         text
       end
-    end
-
-    # Adds support for <<(path/to/code) inclusion.
-    def convert_code_inclusion(text)
-      text.gsub!(/^\s*<<(\(.*?\))/) { "<!-- inclusion= <<#{$1}-->" }
-    end
-    def restore_inclusion(text)
-      text.gsub(/% <!-- inclusion= (.*?)-->/) { "%= #{$1}" }
     end
   end
 end
