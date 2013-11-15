@@ -141,10 +141,10 @@ bar
         it { should resemble source }
       end
 
-      context "a codelisting environment" do
+      context "a codelisting environment, including a nested command." do
         let(:source) do <<-'EOS'
 \begin{codelisting}
-\codecaption{Lorem ipsum.}
+\codecaption{Lorem \emph{ipsum}.}
 \label{code:lorem}
 ```ruby
 def foo; "bar"; end
@@ -153,7 +153,7 @@ def foo; "bar"; end
           EOS
         end
         it { should resemble '\begin{codelisting}' }
-        it { should resemble '\codecaption{Lorem ipsum.}' }
+        it { should resemble '\codecaption{Lorem \emph{ipsum}.}' }
         it { should resemble '\label{code:lorem}' }
         it { should resemble '\end{codelisting}' }
       end

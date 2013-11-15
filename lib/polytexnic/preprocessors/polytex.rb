@@ -67,6 +67,8 @@ module Polytexnic
       # Caches raw LaTeX commands to be passed through the pipeline.
       def cache_raw_latex(markdown, cache)
         command_regex = /(
+                          \s*\\.*\n         # Command on a single line
+                          |
                           ~\\ref\{.*?\}     # reference with a tie
                           |
                           ~\\eqref\{.*?\}   # eq reference with a tie
