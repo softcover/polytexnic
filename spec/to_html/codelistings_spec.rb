@@ -43,6 +43,26 @@ $ subl .gemrc
         </div>
       EOS
     end
+
+    context "with an empty caption" do
+    let(:polytex) do <<-'EOS'
+        \chapter{Foo bar}
+
+        \begin{codelisting}
+        \codecaption{}
+        \label{code:create_gemrc}
+        %= lang:console
+        \begin{code}
+  $ subl .gemrc
+        \end{code}
+        \end{codelisting}
+
+        Listing~\ref{code:create_gemrc}
+        EOS
+      end
+      it { should     include 'Listing 1.1' }
+      it { should_not include 'Listing 1.1:' }
+    end
   end
 
   describe "metacode listings" do
