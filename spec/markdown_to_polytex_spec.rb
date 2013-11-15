@@ -157,6 +157,18 @@ def foo; "bar"; end
         it { should resemble '\label{code:lorem}' }
         it { should resemble '\end{codelisting}' }
       end
+
+      context "code inclusion inside codelisting" do
+        let(:source) do <<-'EOS'
+\begin{codelisting}
+\codecaption{Lorem ipsum.}
+\label{code:lorem}
+<<(/path/to/code)
+\end{codelisting}
+          EOS
+        end
+        it { should resemble '%= <<(/path/to/code)' }
+      end
     end
 
     describe "source code" do
