@@ -104,6 +104,11 @@ That is it.  You can keep writing your text after the footnote content.
         it { should include source }
       end
 
+      context "an accented character" do
+        let(:source) { "\\`{e}" }
+        it { should include source }
+      end
+
       context "a label and cross-reference" do
         let(:source) do <<-'EOS'
 # Chapter One
@@ -131,8 +136,15 @@ Chapter~\ref{cha:one}
 foo
 
 \begin{equation}
-\label{eq:phi}
-\phi = \frac{1+\sqrt{5}}{2}
+\label{eq:maxwell}
+\left.\begin{aligned}
+\nabla\cdot\mathbf{E} & = \rho \\
+\nabla\cdot\mathbf{B} & = 0 \\
+\nabla\times\mathbf{E} & = -\dot{\mathbf{B}} \\
+\nabla\times\mathbf{B} & = \mathbf{J} + \dot{\mathbf{E}}
+\end{aligned}
+\right\}
+\quad\text{Maxwell equations}
 \end{equation}
 
 bar
