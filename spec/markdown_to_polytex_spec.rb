@@ -181,6 +181,20 @@ def foo; "bar"; end
         end
         it { should resemble '%= <<(/path/to/code)' }
       end
+
+      context "codelisting followed by a section" do
+        let(:source) do <<-'EOS'
+\begin{codelisting}
+\codecaption{Lorem ipsum.}
+\label{code:lorem}
+<<(/path/to/code)
+\end{codelisting}
+
+# Foo
+          EOS
+        end
+        it { should resemble '\chapter{Foo}' }
+      end
     end
 
     describe "source code" do
