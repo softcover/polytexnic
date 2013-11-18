@@ -92,7 +92,7 @@ module Polytexnic
         cache.each do |key, value|
           # Because of the way backslashes get interpolated, we need to add
           # some extra ones to cover all the cases.
-          text.gsub!(key, value.sub(/\\/, '\\\\\\'))
+          text.gsub!(key, value.gsub(/\\/, '\\\\\\'))
         end
       end
 

@@ -136,8 +136,15 @@ Chapter~\ref{cha:one}
 foo
 
 \begin{equation}
-\label{eq:phi}
-\phi = \frac{1+\sqrt{5}}{2}
+\label{eq:maxwell}
+\left.\begin{aligned}
+\nabla\cdot\mathbf{E} & = \rho \\
+\nabla\cdot\mathbf{B} & = 0 \\
+\nabla\times\mathbf{E} & = -\dot{\mathbf{B}} \\
+\nabla\times\mathbf{B} & = \mathbf{J} + \dot{\mathbf{E}}
+\end{aligned}
+\right\}
+\quad\text{Maxwell equations}
 \end{equation}
 
 bar
