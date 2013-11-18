@@ -104,6 +104,11 @@ That is it.  You can keep writing your text after the footnote content.
         it { should include source }
       end
 
+      context "an accented character" do
+        let(:source) { "\\`{e}" }
+        it { should include source }
+      end
+
       context "a label and cross-reference" do
         let(:source) do <<-'EOS'
 # Chapter One
