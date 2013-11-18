@@ -104,6 +104,11 @@ That is it.  You can keep writing your text after the footnote content.
         it { should include source }
       end
 
+      context "an accented character" do
+        let(:source) { "\\`{e}" }
+        it { should include source }
+      end
+
       context "a label and cross-reference" do
         let(:source) do <<-'EOS'
 # Chapter One
@@ -131,8 +136,15 @@ Chapter~\ref{cha:one}
 foo
 
 \begin{equation}
-\label{eq:phi}
-\phi = \frac{1+\sqrt{5}}{2}
+\label{eq:maxwell}
+\left.\begin{aligned}
+\nabla\cdot\mathbf{E} & = \rho \\
+\nabla\cdot\mathbf{B} & = 0 \\
+\nabla\times\mathbf{E} & = -\dot{\mathbf{B}} \\
+\nabla\times\mathbf{B} & = \mathbf{J} + \dot{\mathbf{E}}
+\end{aligned}
+\right\}
+\quad\text{Maxwell equations}
 \end{equation}
 
 bar
@@ -141,10 +153,10 @@ bar
         it { should resemble source }
       end
 
-      context "a codelisting environment" do
+      context "a codelisting environment, including a nested command." do
         let(:source) do <<-'EOS'
 \begin{codelisting}
-\codecaption{Lorem ipsum.}
+\codecaption{Lorem \emph{ipsum}.}
 \label{code:lorem}
 ```ruby
 def foo; "bar"; end
@@ -153,9 +165,35 @@ def foo; "bar"; end
           EOS
         end
         it { should resemble '\begin{codelisting}' }
-        it { should resemble '\codecaption{Lorem ipsum.}' }
+        it { should resemble '\codecaption{Lorem \emph{ipsum}.}' }
         it { should resemble '\label{code:lorem}' }
         it { should resemble '\end{codelisting}' }
+      end
+
+      context "code inclusion inside codelisting" do
+        let(:source) do <<-'EOS'
+\begin{codelisting}
+\codecaption{Lorem ipsum.}
+\label{code:lorem}
+<<(/path/to/code)
+\end{codelisting}
+          EOS
+        end
+        it { should resemble '%= <<(/path/to/code)' }
+      end
+
+      context "codelisting followed by a section" do
+        let(:source) do <<-'EOS'
+\begin{codelisting}
+\codecaption{Lorem ipsum.}
+\label{code:lorem}
+<<(/path/to/code)
+\end{codelisting}
+
+# Foo
+          EOS
+        end
+        it { should resemble '\chapter{Foo}' }
       end
     end
 

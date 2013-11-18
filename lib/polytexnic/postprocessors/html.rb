@@ -609,7 +609,8 @@ module Polytexnic
           number.name = 'span'
           number['class'] = 'number'
           if css_class == 'codelisting'
-            number.content += ':'
+            description = node.at_css('.description').content
+            number.content += ':' unless description.empty?
           else
             number.content += '.'
           end

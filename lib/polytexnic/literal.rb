@@ -9,7 +9,7 @@ module Polytexnic
     # Matches the line for code inclusion.
     # %= <</path/to/code.ext
     CODE_INCLUSION_REGEX = /^\s*%=\s+<<\s*\(          # opening
-                             \s*([\w\/]+\.?(\w*))     # path
+                             \s*([\w\/-]+\.?(\w*))     # path
                              (?:,\s*lang:\s*(\w+))?   # optional lang
                              \s*\)                    # closing paren
                              /x
