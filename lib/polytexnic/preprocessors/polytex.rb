@@ -67,11 +67,13 @@ module Polytexnic
       # Caches raw LaTeX commands to be passed through the pipeline.
       def cache_raw_latex(markdown, cache)
         command_regex = /(
+                          ^\s*\\\w+.*\}\s*$ # Command on line with arg
+                          |
                           ~\\ref\{.*?\}     # reference with a tie
                           |
                           ~\\eqref\{.*?\}   # eq reference with a tie
                           |
-                          \\\w+\{.*?\}      # command with one arg
+                          \\[^\s]+\{.*?\}   # command with one arg
                           |
                           \\\w+             # normal command
                           |
@@ -88,13 +90,9 @@ module Polytexnic
       # Restores raw LaTeX from the cache
       def restore_raw_latex(text, cache)
         cache.each do |key, value|
-          if value == '\&'
-            # Bizarrely, the default code doesn't work for '\&'.
-            # I actually suspect it may be a bug in Ruby. This hacks around it.
-            text.gsub!(key, value.sub(/\\/, '\\\\\\'))
-          else
-            text.gsub!(key, value)
-          end
+          # Because of the way backslashes get interpolated, we need to add
+          # some extra ones to cover all the cases.
+          text.gsub!(key, value.gsub(/\\/, '\\\\\\'))
         end
       end
 
