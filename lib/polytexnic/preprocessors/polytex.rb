@@ -27,12 +27,15 @@ module Polytexnic
         cache = {}
         math_cache = {}
         cleaned_markdown = cache_code_environments
+        puts cleaned_markdown if debug?
         cleaned_markdown.tap do |markdown|
           convert_code_inclusion(markdown)
           cache_latex_literal(markdown, cache)
           cache_raw_latex(markdown, cache)
+          puts markdown if debug?
           cache_math(markdown, math_cache)
         end
+        puts cleaned_markdown if debug?
         # Override the header ordering, which starts with 'section' by default.
         lh = 'chapter,section,subsection,subsubsection,paragraph,subparagraph'
         kramdown = Kramdown::Document.new(cleaned_markdown, latex_headers: lh)
@@ -67,7 +70,7 @@ module Polytexnic
       # Caches raw LaTeX commands to be passed through the pipeline.
       def cache_raw_latex(markdown, cache)
         command_regex = /(
-                          ^\s*\\\w+.*\}\s*$ # Command on line with arg
+                          ^\s*\\\w+.*\}[ \t]*$ # Command on line with arg
                           |
                           ~\\ref\{.*?\}     # reference with a tie
                           |
