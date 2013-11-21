@@ -92,8 +92,8 @@ module Polytexnic
           key = digest(content)
           cache[key] = content
 
-          if content =~ /\{table\}/
-            # Pad tables with newlines for compatibility with kramdown.
+          if content =~ /\{table\}|\\caption\{/
+            # Pad tables & captions with newlines for kramdown compatibility.
             "\n#{key}\n"
           else
             key
