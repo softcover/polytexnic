@@ -198,6 +198,12 @@ def foo; "bar"; end
     end
 
     describe "source code" do
+
+      context "inline" do
+        let(:source) { '`foo bar`' }
+        it { should include '\kode{foo bar}' }
+      end
+
       context "without highlighting" do
         let(:source) do <<-EOS
     def foo
