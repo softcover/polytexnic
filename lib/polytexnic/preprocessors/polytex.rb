@@ -88,9 +88,16 @@ module Polytexnic
                           )
                         /x
         markdown.gsub!(command_regex) do
-          key = digest($1)
-          cache[key] = $1
-          key
+          content = $1
+          key = digest(content)
+          cache[key] = content
+
+          if content =~ /\{table\}/
+            # Pad tables with newlines for compatibility with kramdown.
+            "\n#{key}\n"
+          else
+            key
+          end
         end
       end
 
