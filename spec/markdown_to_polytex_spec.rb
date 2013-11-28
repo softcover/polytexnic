@@ -59,7 +59,39 @@ x^2
 
         it { should resemble '\[ x^2 \]' }
       end
+
+      describe "tables" do
+        let(:markdown) do <<-'EOS'
+\begin{table}
+
+|**option**|**size**|**actual size**|
+| k | kilobytes | (1024 bytes) |
+| M | megabytes | (1024 kilobytes) |
+| G | gigabytes | (1024 megabytes) |
+| T | terabytes | (1024 gigabytes) |
+| P | petabytes | (1024 terabytes) |
+\end{table}
+
+\begin{table}
+
+|**option**|**size**|**actual size**|
+| k | kilobytes | (1024 bytes) |
+| M | megabytes | (1024 kilobytes) |
+| G | gigabytes | (1024 megabytes) |
+| T | terabytes | (1024 gigabytes) |
+| P | petabytes | (1024 terabytes) |
+\caption{A caption.}
+\end{table}
+
+          EOS
+        end
+        it { should include '\begin{table}' }
+        it { should include '\begin{longtable}' }
+        it { should_not include '\textbar' }
+      end
     end
+
+
 
     describe "footnotes" do
       subject do
@@ -153,7 +185,7 @@ bar
         it { should resemble source }
       end
 
-      context "a codelisting environment, including a nested command." do
+      context "a codelisting environment, including a nested command" do
         let(:source) do <<-'EOS'
 \begin{codelisting}
 \codecaption{Lorem \emph{ipsum}.}
@@ -168,6 +200,24 @@ def foo; "bar"; end
         it { should resemble '\codecaption{Lorem \emph{ipsum}.}' }
         it { should resemble '\label{code:lorem}' }
         it { should resemble '\end{codelisting}' }
+      end
+
+      context "a commented-out codelisting" do
+        let(:source) do <<-'EOS'
+%= foo:bar
+<!--
+\begin{codelisting}
+\codecaption{Lorem \emph{ipsum}.}
+\label{code:lorem}
+```ruby
+def foo; "bar"; end
+```
+\end{codelisting}
+-->
+          EOS
+        end
+        it { should include '%= foo:bar' }
+        it { should_not resemble '\begin{codelisting}' }
       end
 
       context "code inclusion inside codelisting" do
@@ -198,6 +248,12 @@ def foo; "bar"; end
     end
 
     describe "source code" do
+
+      context "inline" do
+        let(:source) { '`foo bar`' }
+        it { should include '\kode{foo bar}' }
+      end
+
       context "without highlighting" do
         let(:source) do <<-EOS
     def foo
