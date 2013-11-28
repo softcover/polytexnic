@@ -185,7 +185,7 @@ bar
         it { should resemble source }
       end
 
-      context "a codelisting environment, including a nested command." do
+      context "a codelisting environment, including a nested command" do
         let(:source) do <<-'EOS'
 \begin{codelisting}
 \codecaption{Lorem \emph{ipsum}.}
@@ -200,6 +200,24 @@ def foo; "bar"; end
         it { should resemble '\codecaption{Lorem \emph{ipsum}.}' }
         it { should resemble '\label{code:lorem}' }
         it { should resemble '\end{codelisting}' }
+      end
+
+      context "a commented-out codelisting" do
+        let(:source) do <<-'EOS'
+%= foo:bar
+<!--
+\begin{codelisting}
+\codecaption{Lorem \emph{ipsum}.}
+\label{code:lorem}
+```ruby
+def foo; "bar"; end
+```
+\end{codelisting}
+-->
+          EOS
+        end
+        it { should include '%= foo:bar' }
+        it { should_not resemble '\begin{codelisting}' }
       end
 
       context "code inclusion inside codelisting" do
