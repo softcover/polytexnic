@@ -155,7 +155,7 @@ module Polytexnic
       # Converts \includegraphics to \image.
       # The reason is that raw \includegraphics is almost always too wide
       # in the PDF. Instead, we use the custom-defined \image command, which
-      # is specifically desiged to fix this issue.
+      # is specifically designed to fix this issue.
       def convert_includegraphics(text)
         text.gsub!('\includegraphics', '\image')
       end
