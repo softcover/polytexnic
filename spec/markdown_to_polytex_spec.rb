@@ -91,8 +91,6 @@ x^2
       end
     end
 
-
-
     describe "footnotes" do
       subject do
         Polytexnic::Pipeline.new(markdown, source: :markdown).polytex
@@ -117,6 +115,24 @@ That is it.  You can keep writing your text after the footnote content.
         it { should include '\footnote{This is the footnote content.}' }
         it { should include 'after typing in four spaces.}' }
       end
+    end
+
+    describe "images" do
+      subject do
+        Polytexnic::Pipeline.new(markdown, source: :markdown).polytex
+      end
+
+      context "inclusion with a caption and a label" do
+        let(:markdown) do <<-'EOS'
+![Running the Softcover server in a separate tab.\label{fig:softcover_server}](images/figures/softcover_server.png)
+          EOS
+        end
+
+        it { should include '\caption{Running the Softcover server in a separate tab.\label{fig:softcover_server}}' }
+        it { should include '\image' }
+        it { should_not include '\includegraphics' }
+      end
+
     end
 
     context "with LaTeX containing" do

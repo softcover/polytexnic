@@ -41,6 +41,7 @@ module Polytexnic
         kramdown = Kramdown::Document.new(cleaned_markdown, latex_headers: lh)
         @source = kramdown.to_latex.tap do |polytex|
                     remove_comments(polytex)
+                    convert_includegraphics(polytex)
                     convert_tt(polytex)
                     restore_math(polytex, math_cache)
                     restore_hashed_content(polytex, cache)
@@ -151,13 +152,13 @@ module Polytexnic
         output.join("\n")
       end
 
-      # # Removes comments.
-      # # The main reason for doing this is so that commented-out cached objects,
-      # # such as '% <hash of a code sample>', get removed.
-      # # Code like '%= lang:ruby' gets preserved.
-      # def strip_comments(text)
-      #   text.gsub!(/^%.*$/, '')
-      # end
+      # Converts \includegraphics to \image.
+      # The reason is that raw \includegraphics is almost always too wide
+      # in the PDF. Instead, we use the custom-defined \image command, which
+      # is specifically desiged to fix this issue.
+      def convert_includegraphics(text)
+        text.gsub!('\includegraphics', '\image')
+      end
 
       # Converts {tt ...} to \kode{...}
       # This effectively converts `inline code`, which kramdown sets as
