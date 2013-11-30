@@ -22,7 +22,7 @@ Gem::Specification.new do |gem|
   gem.add_dependency 'pygments.rb', '~> 0.4.2'
   gem.add_dependency 'msgpack', '~> 0.4.2'
   gem.add_dependency 'kramdown'
-  gem.add_dependency 'active_support'
+  gem.add_dependency 'json'
 
   gem.add_development_dependency 'rspec'
   gem.add_development_dependency 'simplecov'
