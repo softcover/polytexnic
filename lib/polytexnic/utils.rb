@@ -1,4 +1,5 @@
 require 'securerandom'
+require 'json'
 
 module Polytexnic
   module Utils
@@ -120,7 +121,7 @@ module Polytexnic
 
     # Returns an array with the highlighted lines.
     def highlighted_lines(options)
-      ActiveSupport::JSON.decode('{' + options.to_s + '}')['hl_lines'] || []
+      JSON.parse('{' + options.to_s + '}')['hl_lines'] || []
     end
 
     # Puts a frame around code.
@@ -131,8 +132,7 @@ module Polytexnic
     # Highlights a code sample.
     def highlight(key, content, language, formatter, options)
       require 'pygments'
-      require 'active_support'
-      options = ActiveSupport::JSON.decode('{' + options.to_s + '}')
+      options = JSON.parse('{' + options.to_s + '}')
       if options['linenos'] && formatter == 'html'
         # Inline numbers look much better in HTML but are invalid in LaTeX.
         options['linenos'] = 'inline'
