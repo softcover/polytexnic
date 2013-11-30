@@ -118,6 +118,7 @@ describe Polytexnic::Pipeline do
   end
 
   describe "code inclusion" do
+
     context "for an existing file" do
 
       context "with no extension" do
@@ -149,7 +150,7 @@ describe Polytexnic::Pipeline do
 
       context "with a custom language override" do
         let(:polytex) do <<-'EOS'
-          %= << (polytexnic_commands.sty, lang: tex)
+          %= <<(polytexnic_commands.sty, lang: tex)
           EOS
         end
         let(:output) do <<-'EOS'
@@ -158,6 +159,18 @@ describe Polytexnic::Pipeline do
         end
         it { should resemble output }
         it { should_not include '<p></p>' }
+      end
+
+      context "with custom options" do
+        let(:polytex) do <<-'EOS'
+          %= <<(polytexnic_commands.sty, lang: tex, options: "hl_lines": [5])
+          EOS
+        end
+        let(:output) do <<-'EOS'
+          <span class="hll">
+          EOS
+        end
+        it { should resemble output }
       end
     end
 
