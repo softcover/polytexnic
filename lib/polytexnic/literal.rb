@@ -87,8 +87,7 @@ module Polytexnic
           if File.exist?(filename)
             language = $3 || $2 || 'text'
             highlight_options = $4
-            code = ["%= lang:#{language}"]
-            code << highlight_options unless highlight_options.nil?
+            code = ["%= lang:#{language}#{highlight_options}"]
             code << '\begin{code}'
             code.concat(File.read($1).split("\n"))
             code << '\end{code}'
