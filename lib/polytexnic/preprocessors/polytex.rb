@@ -135,15 +135,17 @@ module Polytexnic
               output << indentation + line
             end
             output << "\n"
-          elsif line =~ /^```(\w+)\s*$/   # syntax-highlighted code fences
+          elsif line =~ /^```(\w+)(,\s*options:.*)?$/  # highlighted fences
             language = $1
+            options  = $2
             code = []
             while (line = lines.shift) && !line.match(/^```\s*$/) do
               code << line
             end
             code = code.join("\n")
-            key = digest(code)
-            code_cache[key] = [code, language]
+            data = [code, language, false, options]
+            key = digest(data.join("--"))
+            code_cache[key] = data
             output << key
           else
             output << line

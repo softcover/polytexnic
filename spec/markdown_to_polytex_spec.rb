@@ -314,9 +314,9 @@ lorem
         let(:source) { '<<(/path/to/code)' }
         it { should resemble '%= <<(/path/to/code)' }
 
-        context "with an alternate lang" do
-          let(:source) { '<<(/path/to/code.md, lang: text)' }
-          it { should resemble '%= <<(/path/to/code.md, lang: text)' }
+        context "with an alternate lang and options" do
+          let(:source) { '<<(/path/to/code.md, lang: text, options: "hl_lines": [1, 2], "linenos": true)' }
+          it { should resemble '%= <<(/path/to/code.md, lang: text, options: "hl_lines": [1, 2], "linenos": true)' }
         end
       end
 
@@ -345,9 +345,9 @@ lorem
           it { should resemble output }
         end
 
-        context "with highlighting" do
+        context "with highlighting and options" do
           let(:source) do <<-EOS
-```ruby
+```ruby, options: "hl_lines": [1, 2], "linenos": true
 def foo
   "bar"
 end
@@ -357,7 +357,7 @@ lorem
           end
 
           let(:output) do <<-'EOS'
-%= lang:ruby
+%= lang:ruby, options: "hl_lines": [1, 2], "linenos": true
 \begin{code}
 def foo
   "bar"

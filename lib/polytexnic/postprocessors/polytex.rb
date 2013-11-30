@@ -34,8 +34,9 @@ module Polytexnic
       # \end{code}
       # which reduces syntax highlighting to a previously solved problem.
       def write_polytex_code
-        code_cache.each do |key, (code, lang, in_codelisting)|
-          latex = "%= lang:#{lang}\n\\begin{code}\n#{code}\n\\end{code}"
+        code_cache.each do |key, (code, lang, in_codelisting, options)|
+          latex = "%= lang:#{lang}#{options}\n" +
+                  "\\begin{code}\n#{code}\n\\end{code}"
           @source.gsub!(key, latex)
         end
       end
