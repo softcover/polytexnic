@@ -88,8 +88,8 @@ module Polytexnic
       if document.is_a?(String) # LaTeX
         substitutions = {}
         document.tap do
-          code_cache.each do |key, (content, language, in_codelisting)|
-            code   = highlight(key, content, language, 'latex')
+          code_cache.each do |key, (content, language, in_codelisting, opts)|
+            code   = highlight(key, content, language, 'latex', opts)
             output = code.split("\n")
             horrible_backslash_kludge(add_font_info(output.first))
             code = output.join("\n")
@@ -101,8 +101,8 @@ module Polytexnic
         document.css('div.code').each do |code_block|
           key = code_block.content
           next unless (value = code_cache[key])
-          content, language = value
-          code_block.inner_html = highlight(key, content, language, 'html')
+          content, language, _, opts = value
+          code_block.inner_html = highlight(key, content, language, 'html', opts)
         end
       end
     end
@@ -113,10 +113,18 @@ module Polytexnic
     end
 
     # Highlights a code sample.
-    def highlight(key, content, language, formatter)
-      highlight_cache[key] ||= Pygments.highlight(content,
-                                                  lexer: language,
-                                                  formatter: formatter)
+    def highlight(key, content, language, formatter, options)
+      require 'pygments'
+      require 'active_support'
+      options = ActiveSupport::JSON.decode('{' + options.to_s + '}')
+      if options['linenos'] == 'true' && formatter == 'html'
+        # Inline numbers look much better in HTML but are invalid in LaTeX.
+        options['linenos'] = 'inline'
+      end
+      opts = { 'lexer' => language, 'formatter' => formatter }.merge(options)
+      opts = opts.inject({}){|memo,(k,v)| memo[k.to_sym] = v; memo}
+      p opts
+      highlight_cache[key] ||= Pygments.highlight(content, opts)
     end
 
     # Adds some verbatim font info (including size).

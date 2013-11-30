@@ -84,6 +84,32 @@ describe Polytexnic::Pipeline do
     end
   end
 
+  context "with options" do
+    let(:polytex) do <<-'EOS'
+      %= lang:ruby, options: "hl_lines": [1, 2]
+      \begin{code}
+      def foo
+        "bar"
+      end
+      \end{code}
+      EOS
+    end
+
+    it do
+      should resemble <<-'EOS'
+        <div class="code">
+          <div class="highlight">
+            <pre>
+              <span class="k">def</span> <span class="nf">foo</span>
+              <span class="s2">"bar"</span>
+              <span class="k">end</span>
+            </pre>
+          </div>
+        </div>
+      EOS
+    end
+  end
+
   describe "code inclusion" do
     context "for an existing file" do
 
