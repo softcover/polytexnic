@@ -6,7 +6,6 @@ require "polytexnic/preprocessor"
 require 'tempfile'
 require 'nokogiri'
 require 'digest/sha1'
-require 'pygments'
 require 'msgpack'
 
 module Polytexnic

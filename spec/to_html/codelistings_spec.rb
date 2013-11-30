@@ -45,7 +45,7 @@ $ subl .gemrc
     end
 
     context "with an empty caption" do
-    let(:polytex) do <<-'EOS'
+      let(:polytex) do <<-'EOS'
         \chapter{Foo bar}
 
         \begin{codelisting}
@@ -62,6 +62,27 @@ $ subl .gemrc
       end
       it { should     include 'Listing 1.1' }
       it { should_not include 'Listing 1.1:' }
+    end
+
+    context "containing code inclusion with a hyphen" do
+      before do
+        File.write(File.join('spec', 'fixtures', 'name-with-hyphens.txt'), '')
+      end
+      after do
+        FileUtils.rm(File.join('spec', 'fixtures', 'name-with-hyphens.txt'))
+      end
+      let(:polytex) do <<-'EOS'
+  \begin{codelisting}
+  \codecaption{Foo}
+  \label{code:foo}
+  %= <<(spec/fixtures/name-with-hyphens.txt, lang: text)
+  \end{codelisting}
+        EOS
+      end
+
+      it "should not raise an error" do
+        expect { processed_text }.not_to raise_error
+      end
     end
   end
 
@@ -80,27 +101,6 @@ $ subl .gemrc
       \end{code}
       \end{metacode}
       \end{codelisting}
-      EOS
-    end
-
-    it "should not raise an error" do
-      expect { processed_text }.not_to raise_error
-    end
-  end
-
-  describe "containing code inclusion with a hyphen" do
-    before do
-      File.write(File.join('spec', 'fixtures', 'name-with-hyphens.txt'), '')
-    end
-    after do
-      FileUtils.rm(File.join('spec', 'fixtures', 'name-with-hyphens.txt'))
-    end
-    let(:polytex) do <<-'EOS'
-\begin{codelisting}
-\codecaption{Foo}
-\label{code:foo}
-%= <<(spec/fixtures/name-with-hyphens.txt, lang: text)
-\end{codelisting}
       EOS
     end
 

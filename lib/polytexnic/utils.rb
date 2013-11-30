@@ -88,10 +88,11 @@ module Polytexnic
       if document.is_a?(String) # LaTeX
         substitutions = {}
         document.tap do
-          code_cache.each do |key, (content, language, in_codelisting)|
-            code   = highlight(key, content, language, 'latex')
+          code_cache.each do |key, (content, language, in_codelisting, options)|
+            code   = highlight(key, content, language, 'latex', options)
             output = code.split("\n")
             horrible_backslash_kludge(add_font_info(output.first))
+            highlight_lines(output, options)
             code = output.join("\n")
             substitutions[key] = in_codelisting ? code : framed(code)
           end
@@ -101,10 +102,25 @@ module Polytexnic
         document.css('div.code').each do |code_block|
           key = code_block.content
           next unless (value = code_cache[key])
-          content, language = value
-          code_block.inner_html = highlight(key, content, language, 'html')
+          content, language, _, options = value
+          code_block.inner_html = highlight(key, content, language, 'html',
+                                            options)
         end
       end
+    end
+
+    # Highlight lines (i.e., with a yellow backgroun).
+    # This is needed due to a Pygments bug that fails to highlight lines
+    # in the LaTeX output.
+    def highlight_lines(output, options)
+      highlighted_lines(options).each do |i|
+        output[i] = '\colorbox{hilightyellow}{' + output[i] + '}'
+      end
+    end
+
+    # Returns an array with the highlighted lines.
+    def highlighted_lines(options)
+      ActiveSupport::JSON.decode('{' + options.to_s + '}')['hl_lines'] || []
     end
 
     # Puts a frame around code.
@@ -113,10 +129,17 @@ module Polytexnic
     end
 
     # Highlights a code sample.
-    def highlight(key, content, language, formatter)
-      highlight_cache[key] ||= Pygments.highlight(content,
-                                                  lexer: language,
-                                                  formatter: formatter)
+    def highlight(key, content, language, formatter, options)
+      require 'pygments'
+      require 'active_support'
+      options = ActiveSupport::JSON.decode('{' + options.to_s + '}')
+      if options['linenos'] && formatter == 'html'
+        # Inline numbers look much better in HTML but are invalid in LaTeX.
+        options['linenos'] = 'inline'
+      end
+      highlight_cache[key] ||= Pygments.highlight(content, lexer: language,
+                                                           formatter: formatter,
+                                                           options: options)
     end
 
     # Adds some verbatim font info (including size).
