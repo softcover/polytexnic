@@ -35,3 +35,4 @@ log
 .DS_Store
 .api_token
 .project_id
+.ruby-*
