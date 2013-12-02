@@ -59,7 +59,39 @@ x^2
 
         it { should resemble '\[ x^2 \]' }
       end
+
+      describe "tables" do
+        let(:markdown) do <<-'EOS'
+\begin{table}
+
+|**option**|**size**|**actual size**|
+| k | kilobytes | (1024 bytes) |
+| M | megabytes | (1024 kilobytes) |
+| G | gigabytes | (1024 megabytes) |
+| T | terabytes | (1024 gigabytes) |
+| P | petabytes | (1024 terabytes) |
+\end{table}
+
+\begin{table}
+
+|**option**|**size**|**actual size**|
+| k | kilobytes | (1024 bytes) |
+| M | megabytes | (1024 kilobytes) |
+| G | gigabytes | (1024 megabytes) |
+| T | terabytes | (1024 gigabytes) |
+| P | petabytes | (1024 terabytes) |
+\caption{A caption.}
+\end{table}
+
+          EOS
+        end
+        it { should include '\begin{table}' }
+        it { should include '\begin{longtable}' }
+        it { should_not include '\textbar' }
+      end
     end
+
+
 
     describe "footnotes" do
       subject do
@@ -198,6 +230,12 @@ def foo; "bar"; end
     end
 
     describe "source code" do
+
+      context "inline" do
+        let(:source) { '`foo bar`' }
+        it { should include '\kode{foo bar}' }
+      end
+
       context "without highlighting" do
         let(:source) do <<-EOS
     def foo

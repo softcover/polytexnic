@@ -39,8 +39,12 @@ module Polytexnic
         # Override the header ordering, which starts with 'section' by default.
         lh = 'chapter,section,subsection,subsubsection,paragraph,subparagraph'
         kramdown = Kramdown::Document.new(cleaned_markdown, latex_headers: lh)
-        @source = restore_inclusion(restore_math(kramdown.to_latex, math_cache))
-        restore_raw_latex(@source, cache)
+        @source = kramdown.to_latex.tap do |polytex|
+                    convert_tt(polytex)
+                    restore_math(polytex, math_cache)
+                    restore_inclusion(polytex)
+                    restore_raw_latex(polytex, cache)
+                  end
       end
 
       # Adds support for <<(path/to/code) inclusion.
@@ -49,7 +53,7 @@ module Polytexnic
         text.gsub!(/^\s*<<(\(.*?\))/) { "<!-- inclusion= <<#{$1}-->" }
       end
       def restore_inclusion(text)
-        text.gsub(/% <!-- inclusion= (.*?)-->/) { "%= #{$1}" }
+        text.gsub!(/% <!-- inclusion= (.*?)-->/) { "%= #{$1}" }
       end
 
       # Caches literal LaTeX environments.
@@ -84,9 +88,16 @@ module Polytexnic
                           )
                         /x
         markdown.gsub!(command_regex) do
-          key = digest($1)
-          cache[key] = $1
-          key
+          content = $1
+          key = digest(content)
+          cache[key] = content
+
+          if content =~ /\{table\}|\\caption\{/
+            # Pad tables & captions with newlines for kramdown compatibility.
+            "\n#{key}\n"
+          else
+            key
+          end
         end
       end
 
@@ -140,6 +151,14 @@ module Polytexnic
         output.join("\n")
       end
 
+      # Converts {tt ...} to \kode{...}
+      # This effectively converts `inline code`, which kramdown sets as
+      # {\tt inline code}, to PolyTeX's native \kode command, which in
+      # turns allows inline code to be separately styled.
+      def convert_tt(text)
+        text.gsub!(/\{\\tt (.*?)\}/, '\kode{\1}')
+      end
+
       # Caches math.
       # Leanpub uses the notation {$$}...{/$$} for both inline and block math,
       # with the only difference being the presences of newlines:
@@ -178,7 +197,6 @@ module Polytexnic
           end
           text.gsub!(key, open + value + close)
         end
-        text
       end
     end
   end
