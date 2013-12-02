@@ -84,7 +84,41 @@ describe Polytexnic::Pipeline do
     end
   end
 
+  context "with highlight and line numbering options" do
+    let(:polytex) do <<-'EOS'
+      %= lang:ruby, options: "hl_lines": [1, 2], "linenos": true
+      \begin{code}
+      def foo
+        "bar"
+      end
+      \end{code}
+      EOS
+    end
+
+    it do
+      should resemble <<-'EOS'
+        <div class="code">
+          <div class="highlight">
+            <pre>
+              <span class="lineno">1</span>
+              <span class="hll">
+                <span class="k">def</span> <span class="nf">foo</span>
+              </span>
+              <span class="lineno">2</span>
+              <span class="hll">
+                <span class="s2">"bar"</span>
+              </span>
+              <span class="lineno">3</span>
+              <span class="k">end</span>
+            </pre>
+          </div>
+        </div>
+      EOS
+    end
+  end
+
   describe "code inclusion" do
+
     context "for an existing file" do
 
       context "with no extension" do
@@ -116,7 +150,7 @@ describe Polytexnic::Pipeline do
 
       context "with a custom language override" do
         let(:polytex) do <<-'EOS'
-          %= << (polytexnic_commands.sty, lang: tex)
+          %= <<(polytexnic_commands.sty, lang: tex)
           EOS
         end
         let(:output) do <<-'EOS'
@@ -125,6 +159,18 @@ describe Polytexnic::Pipeline do
         end
         it { should resemble output }
         it { should_not include '<p></p>' }
+      end
+
+      context "with custom options" do
+        let(:polytex) do <<-'EOS'
+          %= <<(polytexnic_commands.sty, lang: tex, options: "hl_lines": [5])
+          EOS
+        end
+        let(:output) do <<-'EOS'
+          <span class="hll">
+          EOS
+        end
+        it { should resemble output }
       end
     end
 
