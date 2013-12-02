@@ -32,6 +32,7 @@ module Polytexnic
           convert_code_inclusion(markdown, cache)
           cache_latex_literal(markdown, cache)
           cache_raw_latex(markdown, cache)
+          cache_image_locations(markdown, cache)
           puts markdown if debug?
           cache_math(markdown, math_cache)
         end
@@ -39,6 +40,9 @@ module Polytexnic
         # Override the header ordering, which starts with 'section' by default.
         lh = 'chapter,section,subsection,subsubsection,paragraph,subparagraph'
         kramdown = Kramdown::Document.new(cleaned_markdown, latex_headers: lh)
+        puts kramdown.inspect if debug?
+        puts kramdown.to_html if debug?
+        puts kramdown.to_latex if debug?
         @source = kramdown.to_latex.tap do |polytex|
                     remove_comments(polytex)
                     convert_includegraphics(polytex)
@@ -99,6 +103,18 @@ module Polytexnic
           else
             key
           end
+        end
+      end
+
+      # Caches the locations of images to be passed through the pipeline.
+      # This works around a Kramdown bug, which fails to convert images
+      # properly when their location includes a URL.
+      def cache_image_locations(text, cache)
+        # Matches '![Image caption](/path/to/image)'
+        text.gsub!(/^\s*(!\[.*?\])\((.*?)\)/) do
+          key = digest($2)
+          cache[key] = $2
+          "\n#{$1}(#{key})"
         end
       end
 
