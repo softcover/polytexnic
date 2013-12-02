@@ -3,14 +3,15 @@ module Polytexnic
     extend self
 
     # Matches the line for syntax highlighting.
-    # %= lang:<language>
-    LANG_REGEX = /^\s*%=\s+lang:\s*(\w+)/
+    # %= lang: <language>[, options: ...]
+    LANG_REGEX = /^\s*%=\s+lang:\s*(\w+)(?:,\s*options:(.*))?/
 
     # Matches the line for code inclusion.
     # %= <</path/to/code.ext
     CODE_INCLUSION_REGEX = /^\s*%=\s+<<\s*\(          # opening
-                             \s*([\w\/-]+\.?(\w*))     # path
+                             \s*([\w\/-]+\.?(\w*))    # path
                              (?:,\s*lang:\s*(\w+))?   # optional lang
+                             (,\s*options:\s*.*)?     # optional options
                              \s*\)                    # closing paren
                              /x
 
@@ -65,6 +66,7 @@ module Polytexnic
       while (line = lines.shift)
         if line =~ LANG_REGEX && !in_verbatim
           language = $1
+          highlight_options = $2
         elsif line =~ /\s*\\begin\{codelisting\}/ && !in_verbatim
           in_codelisting = true
           output << line
@@ -84,7 +86,8 @@ module Polytexnic
           filename = $1
           if File.exist?(filename)
             language = $3 || $2 || 'text'
-            code = ["%= lang:#{language}"]
+            highlight_options = $4
+            code = ["%= lang:#{language}#{highlight_options}"]
             code << '\begin{code}'
             code.concat(File.read($1).split("\n"))
             code << '\end{code}'
@@ -131,9 +134,9 @@ module Polytexnic
               tag = 'literal'
             else
               format = latex ? 'latex' : 'html'
-              id = "#{content}--#{language}--#{format}--#{in_codelisting}"
+              id = "#{content}--#{language}--#{format}--#{in_codelisting}--#{highlight_options}"
               key = digest(id, salt: code_salt)
-              code_cache[key] = [content, language, in_codelisting]
+              code_cache[key] = [content, language, in_codelisting, highlight_options]
               tag = 'code'
             end
             if latex || tag == 'code' || math
