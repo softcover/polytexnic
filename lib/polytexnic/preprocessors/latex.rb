@@ -26,15 +26,15 @@ module Polytexnic
       # In order to get nice framed & shaded aside boxes, we need to
       # transform the default aside into a new environment.
       def process_asides(text)
-        # Transform asides with headings and labels.
+        # Transform asides with labels and headings.
         aside_regex = /\\begin{aside}\n\s*
-                       \\heading{(.*?)}\s*
-                       \\label{(.*?)}\n
+                       \\label{(.*?)}\s*
+                       \\heading{(.*?)}\n
                        (.*?)
                        \\end{aside}/mx
         text.tap do
           text.gsub!(aside_regex) do
-            %(\\begin{shaded_aside}{#{$1}}{#{$2}}\n#{$3}\n\\end{shaded_aside})
+            %(\\begin{shaded_aside}{#{$2}}{#{$1}}\n#{$3}\n\\end{shaded_aside})
           end
         end
       end

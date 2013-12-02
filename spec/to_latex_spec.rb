@@ -150,8 +150,8 @@ end
       context "with headings and labels" do
         let(:polytex) do <<-'EOS'
           \begin{aside}
-          \heading{Foo \emph{are} bar.}
           \label{aside:foo}
+          \heading{Foo \emph{are} bar.}
 
           lorem ipsum
 
