@@ -29,7 +29,7 @@ module Polytexnic
         cleaned_markdown = cache_code_environments
         puts cleaned_markdown if debug?
         cleaned_markdown.tap do |markdown|
-          convert_code_inclusion(markdown)
+          convert_code_inclusion(markdown, cache)
           cache_latex_literal(markdown, cache)
           cache_raw_latex(markdown, cache)
           puts markdown if debug?
@@ -40,20 +40,20 @@ module Polytexnic
         lh = 'chapter,section,subsection,subsubsection,paragraph,subparagraph'
         kramdown = Kramdown::Document.new(cleaned_markdown, latex_headers: lh)
         @source = kramdown.to_latex.tap do |polytex|
+                    remove_comments(polytex)
                     convert_tt(polytex)
                     restore_math(polytex, math_cache)
-                    restore_inclusion(polytex)
-                    restore_raw_latex(polytex, cache)
+                    restore_hashed_content(polytex, cache)
                   end
       end
 
       # Adds support for <<(path/to/code) inclusion.
-      # Yes, this is a bit of a hack, but it works.
-      def convert_code_inclusion(text)
-        text.gsub!(/^\s*<<(\(.*?\))/) { "<!-- inclusion= <<#{$1}-->" }
-      end
-      def restore_inclusion(text)
-        text.gsub!(/% <!-- inclusion= (.*?)-->/) { "%= #{$1}" }
+      def convert_code_inclusion(text, cache)
+        text.gsub!(/^\s*(<<\(.*?\))/) do
+          key = digest($1)
+          cache[key] = "%= #{$1}"  # reduce to a previously solved case
+          key
+        end
       end
 
       # Caches literal LaTeX environments.
@@ -101,11 +101,11 @@ module Polytexnic
         end
       end
 
-      # Restores raw LaTeX from the cache
-      def restore_raw_latex(text, cache)
+      # Restores raw code from the cache
+      def restore_hashed_content(text, cache)
         cache.each do |key, value|
           # Because of the way backslashes get interpolated, we need to add
-          # some extra ones to cover all the cases.
+          # some extra ones to cover all the cases of hashed LaTeX.
           text.gsub!(key, value.gsub(/\\/, '\\\\\\'))
         end
       end
@@ -150,6 +150,14 @@ module Polytexnic
         end
         output.join("\n")
       end
+
+      # # Removes comments.
+      # # The main reason for doing this is so that commented-out cached objects,
+      # # such as '% <hash of a code sample>', get removed.
+      # # Code like '%= lang:ruby' gets preserved.
+      # def strip_comments(text)
+      #   text.gsub!(/^%.*$/, '')
+      # end
 
       # Converts {tt ...} to \kode{...}
       # This effectively converts `inline code`, which kramdown sets as
