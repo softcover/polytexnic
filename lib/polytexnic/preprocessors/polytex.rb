@@ -79,7 +79,7 @@ module Polytexnic
       # Caches raw LaTeX commands to be passed through the pipeline.
       def cache_raw_latex(markdown, cache)
         command_regex = /(
-                          ^\s*\\\w+.*\}[ \t]*$ # Command on line with arg
+                          ^[ \t]*\\\w+.*\}[ \t]*$ # Command on line with arg
                           |
                           ~\\ref\{.*?\}     # reference with a tie
                           |
@@ -94,6 +94,7 @@ module Polytexnic
                         /x
         markdown.gsub!(command_regex) do
           content = $1
+          puts content.inspect if debug?
           key = digest(content)
           cache[key] = content
 

@@ -35,12 +35,9 @@ Lorem ipsum
     end
 
     describe "with math" do
-      subject do
-        Polytexnic::Pipeline.new(markdown, source: :markdown).polytex
-      end
 
       context "inline math" do
-        let(:markdown) do <<-'EOS'
+        let(:source) do <<-'EOS'
 This is inline math: {$$} x^2 {/$$}.
           EOS
         end
@@ -49,7 +46,7 @@ This is inline math: {$$} x^2 {/$$}.
       end
 
       context "block math" do
-        let(:markdown) do <<-'EOS'
+        let(:source) do <<-'EOS'
 This is block math:
 {$$}
 x^2
@@ -59,9 +56,27 @@ x^2
 
         it { should resemble '\[ x^2 \]' }
       end
+    end
 
-      describe "tables" do
-        let(:markdown) do <<-'EOS'
+    context "asides with internal lists" do
+      let(:source) do <<-'EOS'
+\begin{aside}
+\label{aside:softcover_uses}
+\heading{How to use Softcover}
+
+* Producing ebooks with `softcover` and giving them away
+* Producing ebooks with `softcover` and selling them from your own website
+
+\end{aside}
+
+        EOS
+      end
+      it { should include '\begin{aside}' }
+      it { should_not include "\\end{aside}\n\\end{itemize}" }
+    end
+
+    describe "tables" do
+      let(:source) do <<-'EOS'
 \begin{table}
 
 |**option**|**size**|**actual size**|
@@ -83,12 +98,11 @@ x^2
 \caption{A caption.}
 \end{table}
 
-          EOS
-        end
-        it { should include '\begin{table}' }
-        it { should include '\begin{longtable}' }
-        it { should_not include '\textbar' }
+        EOS
       end
+      it { should include '\begin{table}' }
+      it { should include '\begin{longtable}' }
+      it { should_not include '\textbar' }
     end
 
     describe "footnotes" do
