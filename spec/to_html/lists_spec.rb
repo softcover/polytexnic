@@ -61,7 +61,7 @@ describe 'Polytexnic::Pipeline#to_html' do
       end
     end
 
-    context "afollowed by text" do
+    context "followed by text" do
       let(:polytex) do <<-'EOS'
         \begin{itemize}
         \item Foo
@@ -78,6 +78,44 @@ describe 'Polytexnic::Pipeline#to_html' do
           <li>Bar</li>
           </ul><p>lorem ipsum
           </p>
+        EOS
+      end
+    end
+
+    context "nested" do
+      let(:polytex) do <<-'EOS'
+\begin{itemize}
+\item foo
+
+
+\begin{itemize}
+\item bar
+\item baz
+\end{itemize}
+\item quux
+
+
+\begin{itemize}
+\item dude
+\end{itemize}
+\end{itemize}
+        EOS
+      end
+      it do
+       should resemble <<-'EOS'
+<ul>
+  <li>foo
+    <ul>
+      <li>bar</li>
+      <li>baz</li>
+    </ul>
+  </li>
+  <li>quux
+    <ul>
+      <li>dude</li>
+    </ul>
+  </li>
+</ul>
         EOS
       end
     end
