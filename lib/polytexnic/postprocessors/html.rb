@@ -857,7 +857,7 @@ module Polytexnic
         end
 
         # Unescapes underscores, which are escaped by kramdown.
-        def unescape_underlines(url)
+        def unescape_underscores(url)
           url.gsub(/\\_/, '_')
         end
 
