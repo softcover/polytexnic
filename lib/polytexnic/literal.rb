@@ -9,7 +9,7 @@ module Polytexnic
     # Matches the line for code inclusion.
     # %= <</path/to/code.ext
     CODE_INCLUSION_REGEX = /^\s*%=\s+<<\s*\(          # opening
-                             \s*([\w\/-]+\.?(\w*))    # path
+                             \s*([^\s]+)              # path to file
                              (?:,\s*lang:\s*(\w+))?   # optional lang
                              (,\s*options:\s*.*)?     # optional options
                              \s*\)                    # closing paren
@@ -83,13 +83,14 @@ module Polytexnic
           # <content of file.rb>
           # \end{code}
           # and then prepend the code to the current `lines` array.
-          filename = $1
+          filename, custom_language, highlight_options = $1, $2, $3
+          extension_array = File.extname(filename).scan(/\.(.*)/).first
+          lang_from_extension = extension_array.nil? ? nil : extension_array[0]
           if File.exist?(filename)
-            language = $3 || $2 || 'text'
-            highlight_options = $4
+            language = custom_language || lang_from_extension || 'text'
             code = ["%= lang:#{language}#{highlight_options}"]
             code << '\begin{code}'
-            code.concat(File.read($1).split("\n"))
+            code.concat(File.read(filename).split("\n"))
             code << '\end{code}'
             lines.unshift(*code)
           else

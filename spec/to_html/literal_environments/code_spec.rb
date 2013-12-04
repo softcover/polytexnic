@@ -126,11 +126,7 @@ describe Polytexnic::Pipeline do
           %= <<(Rakefile)
           EOS
         end
-        let(:output) do <<-'EOS'
-          <span class="n">require</span>
-          EOS
-        end
-        it { should resemble output }
+        it { should include '<pre>require' }
       end
 
       context "with an extension" do

@@ -64,18 +64,19 @@ $ subl .gemrc
       it { should_not include 'Listing 1.1:' }
     end
 
-    context "containing code inclusion with a hyphen" do
+    context "containing code inclusion with a hyphen and a leading dot" do
+      let(:filename) { '.name-with-hyphens.txt' }
       before do
-        File.write(File.join('spec', 'fixtures', 'name-with-hyphens.txt'), '')
+        File.write(File.join('spec', 'fixtures', filename), '')
       end
       after do
-        FileUtils.rm(File.join('spec', 'fixtures', 'name-with-hyphens.txt'))
+        FileUtils.rm(File.join('spec', 'fixtures', filename))
       end
       let(:polytex) do <<-'EOS'
   \begin{codelisting}
   \codecaption{Foo}
   \label{code:foo}
-  %= <<(spec/fixtures/name-with-hyphens.txt, lang: text)
+  %= <<(spec/fixtures/.name-with-hyphens.txt, lang: text)
   \end{codelisting}
         EOS
       end
