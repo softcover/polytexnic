@@ -185,6 +185,11 @@ describe 'Polytexnic::Pipeline#to_html' do
       let(:output) { '<a href="http://example.com/" class="tex">' }
       it { should resemble output }
     end
+
+    context "URL containing escaped text" do
+      let(:polytex) { '\href{http://example.com/escaped\_text}{Example Site}' }
+      it { should include '<a href="http://example.com/escaped_text">Example Site</a>' }
+    end
   end
 
   describe "centering" do
