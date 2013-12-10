@@ -34,6 +34,11 @@ Lorem ipsum
       it { should_not include '\hypertarget' }
     end
 
+    describe "hyphenation" do
+      let(:source) { 'profes\-sional' }
+      it { should include source }
+    end
+
     describe "with math" do
 
       context "inline math" do
