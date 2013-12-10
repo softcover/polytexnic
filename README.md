@@ -1,16 +1,16 @@
 # polytexnic
 
-This is the `polytexnic` gem, which converts input in Markdown or PolyTeX to HTML and LaTeX. It currently has no standalone applications, but rather exists to support the `polytexnic` gem.
+This is the `polytexnic` gem, which converts input in Markdown or PolyTeX to HTML and LaTeX. It currently has no standalone applications, but rather exists to support the `softcover` gem.
 
 ## Installation
 
-This gem is installed automatically as a dependency of the `polytexnic` gem:
+This gem is installed automatically as a dependency of the `softcover` gem:
 
     $ gem install polytexnic
 
 ## Usage
 
-See [*The PolyTeXnic Book*](http://polytexnic.org/book) for more information.
+See [*The Softcover Book*](http://manual.softcover.io/book) for more information.
 
 ## Contributing
 
