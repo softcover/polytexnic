@@ -89,6 +89,8 @@ module Polytexnic
                           |
                           \\\w+             # normal command
                           |
+                          \\-               # hyphenation
+                          |
                           \\[ %&$#@]        # space or special character
                           )
                         /x
