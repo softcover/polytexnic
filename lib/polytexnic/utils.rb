@@ -7,8 +7,15 @@ module Polytexnic
 
     # Returns the executable for the Tralics LaTeX-to-XML converter.
     def tralics
+      filename = if RUBY_PLATFORM.match(/darwin/)
+                   'tralics-os-x'
+                 elsif RUBY_PLATFORM.match(/linux/)
+                   'tralics-linux'
+                 else
+                   raise "Platform #{RUBY_PLATFORM} not supported"
+                 end
       File.join(File.dirname(__FILE__), '..', '..',
-                'precompiled_binaries', 'tralics')
+                'precompiled_binaries', filename)
     end
 
     # Returns a salted hash digest of the string.
