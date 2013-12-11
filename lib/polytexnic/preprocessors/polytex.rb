@@ -23,7 +23,7 @@ module Polytexnic
       # At this point, I fear that "Markdown" has become little more than a
       # marketing term.</rant>
       def to_polytex
-        require 'Kramdown'
+        require 'kramdown'
         cache = {}
         math_cache = {}
         cleaned_markdown = cache_code_environments
@@ -91,7 +91,7 @@ module Polytexnic
                           |
                           \\-               # hyphenation
                           |
-                          \\[ %&$#@]        # space or special character
+                          \\[ %&$\#@]        # space or special character
                           )
                         /x
         markdown.gsub!(command_regex) do
