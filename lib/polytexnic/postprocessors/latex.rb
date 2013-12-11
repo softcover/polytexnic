@@ -9,9 +9,16 @@ module Polytexnic
         puts polytex if debug?
         polytex.tap do
           literal_cache.each do |key, value|
-            polytex.gsub!(key, escape_backslashes(value))
+            puts value.inspect if debug?
+            polytex.gsub!(key, extra_escape(escape_backslashes(value)))
           end
         end
+      end
+
+      # Escapes backslashes even more.
+      # Have I mentioned how much I hate backslashes?
+      def extra_escape(string)
+        string.gsub('\\', '\\\\\\')
       end
     end
   end

@@ -80,7 +80,7 @@ end
       it { should_not resemble '%= lang:ruby' }
     end
 
-    describe "verbatim environments" do
+    describe "Verbatim environments" do
       let(:polytex) do <<-'EOS'
         \begin{verbatim}
         def foo
@@ -133,6 +133,17 @@ end
           n_ends = processed_text.scan(/\\end{equation}/).length
           expect(n_ends).to eq 1
         end
+      end
+
+      context "with code from Urbit docs that broke things" do
+        let(:polytex) do <<-'EOS'
+          \begin{verbatim}
+          ~waclux-tomwyc/try=> 'Foo \'bar'
+          \end{verbatim}
+          EOS
+        end
+
+        it { should include "'Foo \\'bar'" }
       end
     end
 
