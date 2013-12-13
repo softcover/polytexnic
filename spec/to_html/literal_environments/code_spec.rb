@@ -59,20 +59,20 @@ describe Polytexnic::Pipeline do
 
     context "with Unicode in the highlighting cache" do
       let(:polytex) do <<-'EOS'
+        %= lang:console
+        \begin{code}
+        'foo★bar'
+        \end{code}
 
-%= lang:console
-\begin{code}
-'foo★bar'
-\end{code}
-
-%= lang:console
-\begin{code}
-foo
-\end{code}
-        EOS
+        %= lang:console
+        \begin{code}
+        foo
+        \end{code}
+      EOS
       end
       before do
-        Polytexnic::Pipeline.new(polytex).to_html # to create the broken highlight cache
+        # Create the broken highlight cache.
+        Polytexnic::Pipeline.new(polytex).to_html
       end
       it "should not crash" do
         expect(File.exist?('.highlight_cache')).to be_true
