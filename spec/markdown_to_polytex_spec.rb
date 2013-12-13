@@ -412,6 +412,8 @@ lorem
 'Foo \'bar'
 0x27
 ```
+
+foo
             EOS
           end
           it { should_not include "\\begin{code}\n'Foo \n"}
