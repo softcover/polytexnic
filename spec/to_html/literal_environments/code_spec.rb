@@ -56,6 +56,29 @@ describe Polytexnic::Pipeline do
       it { should resemble '<div class="highlight">' }
       it { should resemble '<pre>' }
     end
+
+    context "with Unicode in the highlighting cache" do
+      let(:polytex) do <<-'EOS'
+
+%= lang:console
+\begin{code}
+'foo★bar'
+\end{code}
+
+%= lang:console
+\begin{code}
+foo
+\end{code}
+        EOS
+      end
+      before do
+        Polytexnic::Pipeline.new(polytex).to_html # to create the broken highlight cache
+      end
+      it "should not crash" do
+        expect(File.exist?('.highlight_cache')).to be_true
+        expect { Polytexnic::Pipeline.new(polytex).to_html }.not_to raise_error
+      end
+    end
   end
 
   context "with a space after 'lang'" do
