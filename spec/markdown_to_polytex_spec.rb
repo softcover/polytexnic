@@ -403,6 +403,21 @@ lorem
           end
           it { should resemble output }
         end
+
+
+
+        context "with a code listing from Urbit that broke" do
+          let(:source) do <<-'EOS'
+```text
+'Foo \'bar'
+0x27
+```
+
+foo
+            EOS
+          end
+          it { should_not include "\\begin{code}\n'Foo \n"}
+        end
       end
     end
   end

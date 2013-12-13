@@ -111,7 +111,6 @@ module Polytexnic
             text = []
             text << line if line.math_environment? || (latex && !language)
             while (line = lines.shift)
-              puts line.inspect if debug?
               if line.begin_literal?(literal_type)
                 count += 1
               elsif line.end_literal?(literal_type)
@@ -127,7 +126,6 @@ module Polytexnic
             end
             raise "Missing \\end{#{line.literal_type}}" if count != 0
             content = text.join("\n")
-            puts content.inspect if debug?
             if math
               key = digest(content)
               literal_cache[key] = content

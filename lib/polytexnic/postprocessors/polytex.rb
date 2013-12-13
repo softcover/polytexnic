@@ -35,10 +35,19 @@ module Polytexnic
       # which reduces syntax highlighting to a previously solved problem.
       def write_polytex_code
         code_cache.each do |key, (code, lang, in_codelisting, options)|
+          # puts '*********'
+          # puts @source.inspect
+          # raise code.inspect
           latex = "%= lang:#{lang}#{options}\n" +
-                  "\\begin{code}\n#{code}\n\\end{code}"
+                  "\\begin{code}\n" + escape_hack(code) + "\n\\end{code}"
           @source.gsub!(key, latex)
         end
+      end
+
+      # Hacks some backslash escapes.
+      # Seriously, WTF is up with backslashes?
+      def escape_hack(string)
+        string.gsub('\\', '\\\\\\')
       end
     end
   end
