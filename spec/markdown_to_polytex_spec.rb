@@ -408,25 +408,13 @@ lorem
 
         context "with a code listing from Urbit that broke" do
           let(:source) do <<-'EOS'
-# Hoon Attacks
-
 ```text
-~waclux-tomwyc/try=> 'Foo \'bar'
 'Foo \'bar'
-~waclux-tomwyc/try=> `@ux`'\''
 0x27
 ```
-
-##Strings##
-
-Text in Hoon is generally manipulated in two ways, depending on
-what you're doing: as an atomic cord/span/te
-
-To generate a tape, use double quotes:
-
             EOS
           end
-          it { should include source }
+          it { should_not include "\\begin{code}\n'Foo \n"}
         end
       end
     end
