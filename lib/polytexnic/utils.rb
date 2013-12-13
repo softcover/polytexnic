@@ -1,3 +1,4 @@
+# encoding=utf-8
 require 'securerandom'
 require 'json'
 
@@ -7,15 +8,25 @@ module Polytexnic
 
     # Returns the executable for the Tralics LaTeX-to-XML converter.
     def tralics
-      filename = if RUBY_PLATFORM.match(/darwin/)
+      filename = if os_x?
                    'tralics-os-x'
-                 elsif RUBY_PLATFORM.match(/linux/)
+                 elsif linux?
                    'tralics-linux'
                  else
                    raise "Platform #{RUBY_PLATFORM} not supported"
                  end
-      File.join(File.dirname(__FILE__), '..', '..',
-                'precompiled_binaries', filename)
+      project_root = File.join(File.dirname(__FILE__), '..', '..')
+      File.join(project_root, 'precompiled_binaries', filename)
+    end
+
+    # Returns true if platform is OS X.
+    def os_x?
+      RUBY_PLATFORM.match(/darwin/)
+    end
+
+    # Returns true if platform is Linux.
+    def linux?
+      RUBY_PLATFORM.match(/linux/)
     end
 
     # Returns a salted hash digest of the string.
@@ -177,7 +188,7 @@ module Polytexnic
     # with it, and thinks that it's "\\{}", which is the same as '\{}'.
     # The solution is to replace '\\\\' with some number of backslashes.
     # How many? I literally had to just keep adding backslashes until
-    # the output was correct when running `poly build:pdf`.
+    # the output was correct when running `softcover build:pdf`.
     def horrible_backslash_kludge(string)
       string.gsub!(/commandchars=\\\\/, 'commandchars=\\\\\\\\')
     end
