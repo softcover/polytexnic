@@ -39,6 +39,7 @@ module Polytexnic
       @highlight_cache_filename = '.highlight_cache'
       if File.exist?(@highlight_cache_filename)
         content = File.read(@highlight_cache_filename)
+                      .force_encoding('ASCII-8BIT')
         @highlight_cache = MessagePack.unpack(content) unless content.empty?
       end
       @highlight_cache ||= {}
