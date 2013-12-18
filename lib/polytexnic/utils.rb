@@ -1,3 +1,4 @@
+# encoding=utf-8
 require 'securerandom'
 require 'json'
 
@@ -187,7 +188,7 @@ module Polytexnic
     # with it, and thinks that it's "\\{}", which is the same as '\{}'.
     # The solution is to replace '\\\\' with some number of backslashes.
     # How many? I literally had to just keep adding backslashes until
-    # the output was correct when running `poly build:pdf`.
+    # the output was correct when running `softcover build:pdf`.
     def horrible_backslash_kludge(string)
       string.gsub!(/commandchars=\\\\/, 'commandchars=\\\\\\\\')
     end
