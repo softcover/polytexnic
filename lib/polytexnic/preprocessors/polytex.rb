@@ -26,7 +26,7 @@ module Polytexnic
         require 'kramdown'
         cache = {}
         math_cache = {}
-        cleaned_markdown = cache_code_environments
+        cleaned_markdown = cache_code_environments(@source)
         puts cleaned_markdown if debug?
         cleaned_markdown.tap do |markdown|
           convert_code_inclusion(markdown, cache)
@@ -135,9 +135,9 @@ module Polytexnic
       # Caches Markdown code environments.
       # Included are indented environments, Leanpub-style indented environments,
       # and GitHub-style code fencing.
-      def cache_code_environments
+      def cache_code_environments(source)
         output = []
-        lines = @source.split("\n")
+        lines = source.split("\n")
         indentation = ' ' * 4
         while (line = lines.shift)
           if line =~ /\{lang="(.*?)"\}/
