@@ -18,6 +18,11 @@ describe 'Polytexnic::Pipeline#to_html' do
       it { should eq '' }
     end
 
+    context "with a manual break" do
+      let(:polytex) { 'foo \\\\ bar' }
+      it { should include '<span class="break">' }
+    end
+
     context "with a code listing" do
       let(:polytex) do <<-'EOS'
         % \begin{codelisting}

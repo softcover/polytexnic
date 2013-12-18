@@ -91,7 +91,9 @@ module Polytexnic
                           |
                           \\-               # hyphenation
                           |
-                          \\[ %&$\#@]        # space or special character
+                          \\[ %&$\#@]       # space or special character
+                          |
+                          \\\\              # double backslashes
                           )
                         /x
         markdown.gsub!(command_regex) do
