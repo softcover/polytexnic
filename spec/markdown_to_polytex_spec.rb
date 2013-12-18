@@ -18,6 +18,12 @@ describe Polytexnic::Pipeline do
       it { should_not include '\begin{document}' }
     end
 
+    context "with a manual break" do
+      let(:source) { '[Michael Hartl](http://www.michaelhartl.com/) \\\\ Author, [*The Ruby on Rails Tutorial*](http://railstutorial.org/)' }
+      it { should include '\\\\' }
+      it { should_not include '\textbackslash' }
+    end
+
     context "for multiline Markdown" do
       let(:source) do <<-EOS
 # A chapter
