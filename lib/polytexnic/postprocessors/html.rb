@@ -886,10 +886,7 @@ module Polytexnic
             clean_node internal_paragraph, 'rend'
           end
           if node['file'] && node['extension']
-            extension = node['extension']
-            # Support PDF images in PDF documents and PNGs in HTML.
-            extension = 'png' if extension == 'pdf'
-            filename = "#{node['file']}.#{extension}"
+            filename = png_for_pdf(node['file'], node['extension'])
             alt = File.basename(node['file'])
             img = %(<img src="#{filename}" alt="#{alt}" />)
             graphic = %(<div class="graphics">#{img}</div>)
@@ -922,9 +919,26 @@ module Polytexnic
           container.name = 'div'
           container['class'] = 'graphics ' + klass
           node.name = 'img'
-          node['src'] = node.content.gsub(underscore_digest, '_')
+          node['src'] = png_for_pdf(node.content.gsub(underscore_digest, '_'))
           node['alt'] = node['src'].split('.').first
           node.content = ""
+        end
+
+        # Returns the name of an image file with PNG for PDF if necessary.
+        # This is to support PDF images in the raw source, which look good in
+        # PDF document, but need to be web-friendly in the HTML. We standardize
+        # on PNG for simplicity. This means that, to do something like
+        #     \image{images/foo.pdf}
+        # authors need to have both foo.pdf and foo.png in their images/
+        # directory. In this case, foo.pdf will be used in the PDF output, while
+        # foo.png will automatically be used in the HTML, EPUB, & MOBI versions.
+        def png_for_pdf(name, extension=nil)
+          if extension.nil?
+            name.sub('.pdf', '.png')
+          else
+            ext = extension == 'pdf' ? 'png' : extension
+            "#{name}.#{ext}"
+          end
         end
 
         # Adds a caption to a node.
