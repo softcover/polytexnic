@@ -122,10 +122,10 @@ module Polytexnic
           lines = []
           in_table = false
           string.split("\n").each do |line|
-            in_table ||= (line =~ /^\s*\\begin{(?:tabular|longtable)}/)
+            in_table ||= (line =~ /^\s*\\begin{(?:tabularx?|longtable)}/)
             line.gsub!('\\\\', xmlelement('backslashbreak')) unless in_table
             lines << line
-            in_table = (in_table && line !~ /^\s*\\end{tabular}/)
+            in_table = (in_table && line !~ /^\s*\\end{tabularx?}/)
           end
           lines.join("\n")
         end
@@ -216,13 +216,19 @@ module Polytexnic
           output.replace(centered)
         end
 
-        # Converts the longtable environment to simple tabular.
-        # This is mainly because kramdown outputs longtables by default,
+        # Converts the alt table environments to simple tabular.
+        # This is was originaly because kramdown outputs longtables by default,
         # but as a side-effect you can also use longtables in PolyTeX
-        # input documents.
+        # input documents. The latest update includes support for the tabularx
+        # environment
         def convert_longtable(output)
           output.gsub!('\begin{longtable}', '\begin{tabular}')
           output.gsub!('\end{longtable}',   '\end{tabular}')
+          output.gsub!(/\\begin\{tabularx\}\{.*?\}\{(.*)\}/) do
+            alignment = $1.gsub('X', 'l')   # X becomes left-justified in HTML
+            "\\begin{tabular}{#{alignment}}"
+          end
+          output.gsub!('\end{tabularx}', '\end{tabular}')
         end
 
         # Marks environments with their types.
@@ -287,7 +293,7 @@ module Polytexnic
         # I've tried in vain to figure out WTF is going on in the Tralics
         # source, but it's easy enough in Ruby so I'm throwing it in here.
         def make_tabular_alignment_cache(output)
-          alignment_regex = /^\s*\\begin{tabular}{((?:\|*[lcr]+\|*)+)}/
+          alignment_regex = /^\s*\\begin{tabular}{\s*((?:\|*[lcr]+\|*)+)\s*}/
           @tabular_alignment_cache = output.scan(alignment_regex).flatten
         end
 

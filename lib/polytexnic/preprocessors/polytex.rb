@@ -63,7 +63,9 @@ module Polytexnic
 
       # Caches literal LaTeX environments.
       def cache_latex_literal(markdown, cache)
-        Polytexnic::Literal.literal_types.each do |literal|
+        # Add tabular and tabularx support.
+        literal_types = Polytexnic::Literal.literal_types + %w[tabular tabularx]
+        literal_types.each do |literal|
           regex = /(\\begin\{#{Regexp.escape(literal)}\}
                   .*?
                   \\end\{#{Regexp.escape(literal)}\})
