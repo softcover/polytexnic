@@ -3,7 +3,8 @@ require 'spec_helper'
 
 describe 'Polytexnic::Pipeline#to_html' do
 
-  subject(:processed_text) { Polytexnic::Pipeline.new(polytex).to_html }
+  let(:pipeline) { Polytexnic::Pipeline.new(polytex) }
+  subject(:processed_text) { pipeline.to_html }
 
   describe '\chapter' do
     context "with a name" do
@@ -30,6 +31,25 @@ describe 'Polytexnic::Pipeline#to_html' do
       let(:output) do <<-'EOS'
         <div id="cha-foo" data-tralics-id="cid1" class="chapter" data-number="1">
           <h1><a href="#cha-foo" class="heading"><span class="number">Chapter 1 </span></a></h1>
+        </div>
+        EOS
+      end
+      it { should resemble output }
+    end
+
+    context "with an alternate to 'Chapter'" do
+      before do
+        pipeline.stub(:custom_commands).
+                 and_return('\renewcommand{\chaptername}{Chapitre}')
+      end
+      let(:polytex) do <<-'EOS'
+          \chapter{Foo \emph{bar}}
+          \label{cha:foo}
+        EOS
+      end
+      let(:output) do <<-'EOS'
+        <div id="cha-foo" data-tralics-id="cid1" class="chapter" data-number="1">
+          <h1><a href="#cha-foo" class="heading"><span class="number">Chapitre 1 </span>Foo <em>bar</em></a></h1>
         </div>
         EOS
       end
