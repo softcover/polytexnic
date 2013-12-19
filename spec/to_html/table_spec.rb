@@ -51,6 +51,35 @@ describe 'Polytexnic::Pipeline#to_html' do
       end
     end
 
+    context "tabularx environments" do
+      let(:polytex) do <<-'EOS'
+\begin{tabularx}{\textwidth}{ |l|l|l|l| }
+  \hline
+  label 1 & label 2 & label 3 & label 4 \\
+  \hline
+  item 1  & item 2  & item 3  & item 4  \\
+  \hline
+\end{tabularx}
+        EOS
+      end
+      let(:output) do <<-'EOS'
+<table class="tabular">
+  <tr class="top_border bottom_border"><td class="left_border align_left right_border">label 1</td>
+<td class="align_left right_border">label 2</td>
+<td class="align_left right_border">label 3</td>
+<td class="align_left right_border">label 4</td>
+</tr>
+  <tr class="bottom_border"><td class="left_border align_left right_border">item 1</td>
+<td class="align_left right_border">item 2</td>
+<td class="align_left right_border">item 3</td>
+<td class="align_left right_border">item 4</td>
+</tr>
+</table>
+        EOS
+      end
+      it { should resemble output }
+    end
+
     context "more complicated left-aligned cells with lines" do
       let(:polytex) do <<-'EOS'
         \begin{tabular}{|l|lll|}

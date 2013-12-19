@@ -33,7 +33,7 @@ module Polytexnic
                   :custom_commands
 
     def initialize(source, options = {})
-      @literal_cache = {}
+      @literal_cache = options[:literal_cache] || {}
       @code_cache = {}
       @maketitle_elements = {}
       @highlight_cache_filename = '.highlight_cache'
