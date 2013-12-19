@@ -40,7 +40,7 @@ Lorem ipsum
       it { should_not include '\hypertarget' }
     end
 
-    describe "hyphenation" do
+    context "hyphenation" do
       let(:source) { 'profes\-sional' }
       it { should include source }
     end
@@ -301,6 +301,17 @@ def foo; "bar"; end
           EOS
         end
         it { should resemble '\chapter{Foo}' }
+      end
+
+      context "a tabular LaTeX environment" do
+        let(:source) do <<-'EOS'
+  \begin{tabularx}
+  a & b \\
+  c & d
+  \end{tabularx}
+          EOS
+        end
+        it { should resemble source }
       end
     end
 
