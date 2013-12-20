@@ -322,6 +322,11 @@ def foo; "bar"; end
         it { should include '\kode{foo bar}' }
       end
 
+      context "inline with a newline" do
+        let(:source) { "`foo\nbar`" }
+        it { should include "\\kode{foo\nbar}" }
+      end
+
       context "without highlighting" do
         let(:source) do <<-EOS
     def foo

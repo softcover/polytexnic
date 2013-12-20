@@ -1,4 +1,20 @@
 # encoding=utf-8
+
+require 'kramdown'
+
+module Kramdown
+  module Converter
+    class Latex < Base
+
+      # Convert `inline codespan`.
+      # This overrides kramdown's default to use `\kode` instead of `\tt`.
+      def convert_codespan(el, opts)
+        "\\kode{#{latex_link_target(el)}#{escape(el.value)}}"
+      end
+    end
+  end
+end
+
 module Polytexnic
   module Preprocessor
     module Polytex
@@ -23,7 +39,6 @@ module Polytexnic
       # At this point, I fear that "Markdown" has become little more than a
       # marketing term.</rant>
       def to_polytex
-        require 'kramdown'
         cache = {}
         math_cache = {}
         cleaned_markdown = cache_code_environments(@source)
@@ -46,7 +61,6 @@ module Polytexnic
         @source = kramdown.to_latex.tap do |polytex|
                     remove_comments(polytex)
                     convert_includegraphics(polytex)
-                    convert_tt(polytex)
                     restore_math(polytex, math_cache)
                     restore_hashed_content(polytex, cache)
                   end
@@ -183,14 +197,6 @@ module Polytexnic
       # is specifically designed to fix this issue.
       def convert_includegraphics(text)
         text.gsub!('\includegraphics', '\image')
-      end
-
-      # Converts {tt ...} to \kode{...}
-      # This effectively converts `inline code`, which kramdown sets as
-      # {\tt inline code}, to PolyTeX's native \kode command, which in
-      # turns allows inline code to be separately styled.
-      def convert_tt(text)
-        text.gsub!(/\{\\tt (.*?)\}/, '\kode{\1}')
       end
 
       # Caches math.
