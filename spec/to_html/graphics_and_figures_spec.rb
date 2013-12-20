@@ -287,13 +287,13 @@ describe 'Polytexnic::Pipeline#to_html' do
           EOS
         end
 
-        context "using the \\image command" do
+        context "using the \\image command and a PDF file image file" do
           let(:polytex) do <<-'EOS'
             \chapter{The chapter}
             \label{cha:lorem_ipsum}
 
             \begin{figure}
-            \image{foo_bar.png}
+            \image{foo_bar.pdf}
             \caption{This is a caption.\label{fig:foo}}
             \end{figure}
             EOS
@@ -320,13 +320,13 @@ describe 'Polytexnic::Pipeline#to_html' do
           end
         end
 
-        context "using the \\imagebox command" do
+        context "using the \\imagebox command and PDF image file" do
           let(:polytex) do <<-'EOS'
             \chapter{The chapter}
             \label{cha:lorem_ipsum}
 
             \begin{figure}
-            \imagebox{foo_bar.png}
+            \imagebox{foo_bar.pdf}
             \caption{This is a caption.\label{fig:foo}}
             \end{figure}
             EOS

@@ -18,6 +18,11 @@ describe 'Polytexnic::Pipeline#to_html' do
       it { should eq '' }
     end
 
+    context "with a manual break" do
+      let(:polytex) { 'foo \\\\ bar' }
+      it { should include '<span class="break">' }
+    end
+
     context "with a code listing" do
       let(:polytex) do <<-'EOS'
         % \begin{codelisting}
@@ -91,7 +96,7 @@ describe 'Polytexnic::Pipeline#to_html' do
 
   describe '\maketitle' do
 
-    context "with all element filled out explicitly" do
+    context "with all elements filled out explicitly" do
       let(:polytex) do <<-'EOS'
           \title{Foo \\ \emph{Bar}}
           \subtitle{Baz}
@@ -116,6 +121,30 @@ describe 'Polytexnic::Pipeline#to_html' do
 
       it "should not have repeated title elements" do
         expect(processed_text.scan(/Michael Hartl/).length).to eq 1
+      end
+    end
+
+    context "with Unicode" do
+      let(:polytex) do <<-'EOS'
+          \title{A könyv címe}
+          \subtitle{Alcím - itt lesz az alcím}
+          \author{Árvíztűrő fúrógép}
+          \date{January 1, 2013}
+          \begin{document}
+            \maketitle
+          \end{document}
+        EOS
+      end
+
+      it do
+        should resemble <<-'EOS'
+          <div id="title_page">
+            <h1 class="title">A k<span class="unicode">ö</span>nyv c<span class="unicode">í</span>me</h1>
+            <h1 class="subtitle">Alc<span class="unicode">í</span>m - itt lesz az alc<span class="unicode">í</span>m</h1>
+            <h2 class="author"><span class="unicode">Á</span>rv<span class="unicode">í</span>zt<span class="unicode">ű</span>r<span class="unicode">ő</span> f<span class="unicode">ú</span>r<span class="unicode">ó</span>g<span class="unicode">é</span>p</h2>
+            <h2 class="date">January 1, 2013</h2>
+          </div>
+        EOS
       end
     end
 

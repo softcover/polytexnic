@@ -681,8 +681,10 @@ module Polytexnic
               if title_element
                 type = %w{title subtitle}.include?(field) ? 'h1' : 'h2'
                 el = Nokogiri::XML::Node.new(type, doc)
-                raw = Polytexnic::Pipeline.new(title_element).to_html
-                content = Nokogiri::HTML.fragment(raw).at_css('p')
+                pipe = Polytexnic::Pipeline.new(title_element,
+                                                literal_cache: literal_cache)
+                raw_html = pipe.to_html
+                content = Nokogiri::HTML.fragment(raw_html).at_css('p')
                 unless (content.nil? && field == 'date')
                   el.inner_html = content.inner_html.strip
                   el['class'] = field
@@ -753,7 +755,8 @@ module Polytexnic
             if (head = node.css('h1 a, h2 a, h3 a').first)
               el = doc.create_element 'span'
               number = node['data-number']
-              prefix = (@cha.nil? || number.match(/\./)) ? '' : 'Chapter '
+              is_section = number.match(/\./)
+              prefix = (@cha.nil? || is_section) ? '' : "#{chaptername} "
               el.content = prefix + node['data-number'] + ' '
               el['class'] = 'number'
               chapter_name = head.children.first
@@ -789,6 +792,15 @@ module Polytexnic
             node['class'] = 'hyperref'
             clean_node node, 'target'
           end
+        end
+
+        # Returns the name to use for chapters.
+        # The default is 'Chapter', of course, but this can be overriden
+        # using '\renewcommand', especially in books other than Engilsh.
+        def chaptername
+          name_regex = /\\renewcommand\{\\chaptername\}\{(.*?)\}/
+          name = custom_commands.scan(name_regex).flatten.last
+          name || 'Chapter'
         end
 
         # Returns the formatted number appropriate for the node.
@@ -886,10 +898,7 @@ module Polytexnic
             clean_node internal_paragraph, 'rend'
           end
           if node['file'] && node['extension']
-            extension = node['extension']
-            # Support PDF images in PDF documents and PNGs in HTML.
-            extension = 'png' if extension == 'pdf'
-            filename = "#{node['file']}.#{extension}"
+            filename = png_for_pdf(node['file'], node['extension'])
             alt = File.basename(node['file'])
             img = %(<img src="#{filename}" alt="#{alt}" />)
             graphic = %(<div class="graphics">#{img}</div>)
@@ -922,9 +931,26 @@ module Polytexnic
           container.name = 'div'
           container['class'] = 'graphics ' + klass
           node.name = 'img'
-          node['src'] = node.content.gsub(underscore_digest, '_')
+          node['src'] = png_for_pdf(node.content.gsub(underscore_digest, '_'))
           node['alt'] = node['src'].split('.').first
           node.content = ""
+        end
+
+        # Returns the name of an image file with PNG for PDF if necessary.
+        # This is to support PDF images in the raw source, which look good in
+        # PDF document, but need to be web-friendly in the HTML. We standardize
+        # on PNG for simplicity. This means that, to do something like
+        #     \image{images/foo.pdf}
+        # authors need to have both foo.pdf and foo.png in their images/
+        # directory. In this case, foo.pdf will be used in the PDF output, while
+        # foo.png will automatically be used in the HTML, EPUB, & MOBI versions.
+        def png_for_pdf(name, extension=nil)
+          if extension.nil?
+            name.sub('.pdf', '.png')
+          else
+            ext = extension == 'pdf' ? 'png' : extension
+            "#{name}.#{ext}"
+          end
         end
 
         # Adds a caption to a node.

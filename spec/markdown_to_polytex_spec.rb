@@ -18,6 +18,12 @@ describe Polytexnic::Pipeline do
       it { should_not include '\begin{document}' }
     end
 
+    context "with a manual break" do
+      let(:source) { '[Michael Hartl](http://www.michaelhartl.com/) \\\\ Author, [*The Ruby on Rails Tutorial*](http://railstutorial.org/)' }
+      it { should include '\\\\' }
+      it { should_not include '\textbackslash' }
+    end
+
     context "for multiline Markdown" do
       let(:source) do <<-EOS
 # A chapter
@@ -34,7 +40,7 @@ Lorem ipsum
       it { should_not include '\hypertarget' }
     end
 
-    describe "hyphenation" do
+    context "hyphenation" do
       let(:source) { 'profes\-sional' }
       it { should include source }
     end
@@ -296,6 +302,17 @@ def foo; "bar"; end
         end
         it { should resemble '\chapter{Foo}' }
       end
+
+      context "a tabular LaTeX environment" do
+        let(:source) do <<-'EOS'
+  \begin{tabularx}
+  a & b \\
+  c & d
+  \end{tabularx}
+          EOS
+        end
+        it { should resemble source }
+      end
     end
 
     describe "source code" do
@@ -303,6 +320,11 @@ def foo; "bar"; end
       context "inline" do
         let(:source) { '`foo bar`' }
         it { should include '\kode{foo bar}' }
+      end
+
+      context "inline with a newline" do
+        let(:source) { "`foo\nbar`" }
+        it { should include "\\kode{foo\nbar}" }
       end
 
       context "without highlighting" do
@@ -402,6 +424,21 @@ lorem
             EOS
           end
           it { should resemble output }
+        end
+
+
+
+        context "with a code listing from Urbit that broke" do
+          let(:source) do <<-'EOS'
+```text
+'Foo \'bar'
+0x27
+```
+
+foo
+            EOS
+          end
+          it { should_not include "\\begin{code}\n'Foo \n"}
         end
       end
     end

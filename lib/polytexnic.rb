@@ -33,12 +33,13 @@ module Polytexnic
                   :custom_commands
 
     def initialize(source, options = {})
-      @literal_cache = {}
+      @literal_cache = options[:literal_cache] || {}
       @code_cache = {}
       @maketitle_elements = {}
       @highlight_cache_filename = '.highlight_cache'
       if File.exist?(@highlight_cache_filename)
         content = File.read(@highlight_cache_filename)
+                      .force_encoding('ASCII-8BIT')
         @highlight_cache = MessagePack.unpack(content) unless content.empty?
       end
       @highlight_cache ||= {}

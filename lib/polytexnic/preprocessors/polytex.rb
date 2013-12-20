@@ -1,4 +1,20 @@
 # encoding=utf-8
+
+require 'kramdown'
+
+module Kramdown
+  module Converter
+    class Latex < Base
+
+      # Convert `inline codespan`.
+      # This overrides kramdown's default to use `\kode` instead of `\tt`.
+      def convert_codespan(el, opts)
+        "\\kode{#{latex_link_target(el)}#{escape(el.value)}}"
+      end
+    end
+  end
+end
+
 module Polytexnic
   module Preprocessor
     module Polytex
@@ -23,10 +39,9 @@ module Polytexnic
       # At this point, I fear that "Markdown" has become little more than a
       # marketing term.</rant>
       def to_polytex
-        require 'kramdown'
         cache = {}
         math_cache = {}
-        cleaned_markdown = cache_code_environments
+        cleaned_markdown = cache_code_environments(@source)
         puts cleaned_markdown if debug?
         cleaned_markdown.tap do |markdown|
           convert_code_inclusion(markdown, cache)
@@ -46,7 +61,6 @@ module Polytexnic
         @source = kramdown.to_latex.tap do |polytex|
                     remove_comments(polytex)
                     convert_includegraphics(polytex)
-                    convert_tt(polytex)
                     restore_math(polytex, math_cache)
                     restore_hashed_content(polytex, cache)
                   end
@@ -63,7 +77,9 @@ module Polytexnic
 
       # Caches literal LaTeX environments.
       def cache_latex_literal(markdown, cache)
-        Polytexnic::Literal.literal_types.each do |literal|
+        # Add tabular and tabularx support.
+        literal_types = Polytexnic::Literal.literal_types + %w[tabular tabularx]
+        literal_types.each do |literal|
           regex = /(\\begin\{#{Regexp.escape(literal)}\}
                   .*?
                   \\end\{#{Regexp.escape(literal)}\})
@@ -91,7 +107,9 @@ module Polytexnic
                           |
                           \\-               # hyphenation
                           |
-                          \\[ %&$\#@]        # space or special character
+                          \\[ %&$\#@]       # space or special character
+                          |
+                          \\\\              # double backslashes
                           )
                         /x
         markdown.gsub!(command_regex) do
@@ -133,9 +151,9 @@ module Polytexnic
       # Caches Markdown code environments.
       # Included are indented environments, Leanpub-style indented environments,
       # and GitHub-style code fencing.
-      def cache_code_environments
+      def cache_code_environments(source)
         output = []
-        lines = @source.split("\n")
+        lines = source.split("\n")
         indentation = ' ' * 4
         while (line = lines.shift)
           if line =~ /\{lang="(.*?)"\}/
@@ -179,14 +197,6 @@ module Polytexnic
       # is specifically designed to fix this issue.
       def convert_includegraphics(text)
         text.gsub!('\includegraphics', '\image')
-      end
-
-      # Converts {tt ...} to \kode{...}
-      # This effectively converts `inline code`, which kramdown sets as
-      # {\tt inline code}, to PolyTeX's native \kode command, which in
-      # turns allows inline code to be separately styled.
-      def convert_tt(text)
-        text.gsub!(/\{\\tt (.*?)\}/, '\kode{\1}')
       end
 
       # Caches math.
