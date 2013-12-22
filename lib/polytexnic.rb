@@ -16,11 +16,11 @@ module Polytexnic
 
   # Writes the contents of the custom polytexnic style file.
   # This is used by the `generate` method in the `softcover` gem.
-  # We put it here because `custom.sty` lives inside `polytexnic`
+  # We put it here because `polytexnic_commands.sty` lives inside `polytexnic`
   # so that core can support, e.g., '\PolyTeXnic'.
   def self.write_polytexnic_style_file(dir)
-    csf = File.join(File.dirname(__FILE__), '..', style_file)
-    File.write(File.join(dir, style_file), File.read(csf))
+    core_style_file = File.join(File.dirname(__FILE__), '..', style_file)
+    File.write(File.join(dir, style_file), File.read(core_style_file))
   end
 
   class Pipeline
