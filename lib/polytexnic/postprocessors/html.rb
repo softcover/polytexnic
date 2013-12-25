@@ -531,6 +531,9 @@ module Polytexnic
               heading = 'h2'
             end
             if node['rend'] == 'nonumber'
+              # Add an id for linking based on the text of the section.
+              text = node.children.first.text
+              node['id'] = text.downcase.gsub(' ', '_')
               node['class'] += '-star'
             end
             clean_node node, %w{type rend}
@@ -1119,6 +1122,14 @@ module Polytexnic
           doc.css('div').each do |node|
             case node['class']
             when 'chapter'
+              html << '<ul>' if current_depth == 0
+              while current_depth > 1
+                close_list(html)
+                current_depth -= 1
+              end
+              current_depth = 1
+              insert_li(html, node)
+            when 'chapter-star'
               html << '<ul>' if current_depth == 0
               while current_depth > 1
                 close_list(html)
