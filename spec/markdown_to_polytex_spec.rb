@@ -165,10 +165,6 @@ That is it.  You can keep writing your text after the footnote content.
         it { should_not include '\image' }
       end
 
-      context "with only a caption" do
-        it { should pending }
-      end
-
       context "with only a label" do
         let(:markdown) do <<-'EOS'
 ![\label{fig:softcover_server}](images/figures/softcover_server.png)
@@ -204,14 +200,14 @@ That is it.  You can keep writing your text after the footnote content.
 a screenshot from [Lowdown](http://lowdownapp.com/), a web
 application that developers use for organizing user stories.
 
-![Lowdown for user stories](https://tutorials.railsapps.org/assets/learn-rails-lowdown-partial.png)
+![Lowdown for user stories\label{fig:lowdown}](https://tutorials.railsapps.org/assets/learn-rails-lowdown-partial.png)
 
 Just like Rails provides a structure for building a web application,
 user stories provide a structure for organizing your product plan.
           EOS
         end
 
-        it { should include '\caption{Lowdown for user stories}' }
+        it { should include '\caption{Lowdown for user stories' }
         it { should include '\image{https://tutorials.railsapps.org' }
       end
 
