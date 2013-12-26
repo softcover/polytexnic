@@ -177,14 +177,25 @@ That is it.  You can keep writing your text after the footnote content.
         it { should include '\caption'  }
       end
 
+      context "with alt text but no label" do
+        let(:markdown) do <<-'EOS'
+![Running the Softcover server in a separate tab.](images/figures/softcover_server.png)
+          EOS
+        end
+
+        it { should_not include '\begin{figure}' }
+        it { should_not include '\caption' }
+        it { should     include '\image' }
+      end
+
       context "with a caption and a label" do
         let(:markdown) do <<-'EOS'
 ![Running the Softcover server in a separate tab.\label{fig:softcover_server}](images/figures/softcover_server.png)
           EOS
         end
 
-        it { should include '\caption{Running the Softcover server in a separate tab.\label{fig:softcover_server}}' }
-        it { should include '\image' }
+        it { should     include '\caption{Running the Softcover server in a separate tab.\label{fig:softcover_server}}' }
+        it { should     include '\image' }
         it { should_not include '\includegraphics' }
       end
 
