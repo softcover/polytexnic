@@ -173,7 +173,21 @@ describe 'Polytexnic::Pipeline#to_html' do
       end
     end
 
-    context "with labels and cross-reference" do
+    context "with a caption containing only a label" do
+      let(:polytex) do <<-'EOS'
+        \chapter{The chapter}
+
+        \begin{figure}
+        \includegraphics{foo.png}
+        \caption{\label{fig:foo}}
+        \end{figure}
+         EOS
+       end
+       it { should     include 'Figure 1.1' }
+       it { should_not include 'Figure 1.1:' }
+     end
+
+    context "with labels and cross-references" do
       let(:polytex) do <<-'EOS'
         \chapter{The chapter}
         \label{cha:lorem_ipsum}

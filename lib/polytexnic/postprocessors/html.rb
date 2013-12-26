@@ -965,8 +965,10 @@ module Polytexnic
           full_caption['class'] = 'caption'
           n = node['data-number']
           if description_node = node.at_css('head')
-            h = %(<span class="header">#{name} #{n}: </span>)
-            d = %(<span class="description">#{description_node.inner_html}</span>)
+            content = description_node.inner_html
+            separator = content.empty? ? '' : ':'
+            h = %(<span class="header">#{name} #{n}#{separator} </span>)
+            d = %(<span class="description">#{content}</span>)
             description_node.remove
             full_caption.inner_html = Nokogiri::HTML.fragment(h + d)
           else
