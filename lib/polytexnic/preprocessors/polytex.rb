@@ -219,7 +219,17 @@ module Polytexnic
       # in the PDF. Instead, we use the custom-defined \image command, which
       # is specifically designed to fix this issue.
       def convert_includegraphics(text)
-        text.gsub!('\includegraphics', '\image')
+        in_figure = false
+        newtext = text.split("\n").map do |line|
+          line.gsub!('\includegraphics', '\image') if in_figure
+          if line =~ /^\s*\\begin\{figure\}/
+            in_figure = true
+          elsif line =~ /^\s*\\end\{figure\}/
+            in_figure = false
+          end
+          line
+        end.join("\n")
+        text.replace(newtext)
       end
 
       # Caches math.

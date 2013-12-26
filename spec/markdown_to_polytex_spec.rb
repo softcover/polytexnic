@@ -159,6 +159,12 @@ That is it.  You can keep writing your text after the footnote content.
         Polytexnic::Pipeline.new(markdown, source: :markdown).polytex
       end
 
+      context "inline" do
+        let(:markdown) { 'Inline ![Caption](img.png) image' }
+        it { should     include '\includegraphics{img.png}' }
+        it { should_not include '\image' }
+      end
+
       context "with a caption and a label" do
         let(:markdown) do <<-'EOS'
 ![Running the Softcover server in a separate tab.\label{fig:softcover_server}](images/figures/softcover_server.png)
@@ -354,7 +360,7 @@ end
 \end{verbatim}
           EOS
         end
-        it { should eq output }
+        it { should resemble output }
       end
 
       context "with highlighting" do
