@@ -1,8 +1,10 @@
 # encoding=utf-8
 
 require 'kramdown'
+require 'securerandom'
 
 $cache = {}
+$label_salt = SecureRandom.hex
 
 module Kramdown
   module Converter
@@ -50,15 +52,10 @@ module Kramdown
         end
       end
 
-      # Detects if text has a label by iterating through the cache keys.
-      # Yeah, I know---gross.
+      # Detects if text has a label.
       def has_label?(text)
-        $cache.keys.each do |key|
-          return true if text.include?(key)
-        end
-        return false
+        text.include?($label_salt)
       end
-
     end
   end
 end
@@ -132,8 +129,9 @@ module Polytexnic
                   \\end\{#{Regexp.escape(literal)}\})
                   /xm
           markdown.gsub!(regex) do
-            key = digest($1)
-            $cache[key] = $1
+            content = $1
+            key = digest(content)
+            $cache[key] = content
             key
           end
         end
@@ -163,6 +161,8 @@ module Polytexnic
           content = $1
           puts content.inspect if debug?
           key = digest(content)
+          # Used to speed up has_label? in convert_standalone_image.
+          key += $label_salt if content.include?('\label')
           $cache[key] = content
 
           if content =~ /\{table\}|\\caption\{/
