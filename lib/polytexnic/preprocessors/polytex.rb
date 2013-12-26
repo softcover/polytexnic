@@ -214,7 +214,7 @@ module Polytexnic
         text.gsub!(/^% (.*)$/, '')
       end
 
-      # Converts \includegraphics to \image.
+      # Converts \includegraphics to \image inside figures.
       # The reason is that raw \includegraphics is almost always too wide
       # in the PDF. Instead, we use the custom-defined \image command, which
       # is specifically designed to fix this issue.
