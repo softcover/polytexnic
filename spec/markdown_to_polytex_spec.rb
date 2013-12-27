@@ -252,8 +252,18 @@ Chapter~\ref{cha:one}
         it { should include source }
       end
 
+      context "an inline equation with a newline" do
+        let(:source) { '\( x' + "\n" + ' + y \) is a sum' }
+        it { should include source }
+      end
+
       context "a centered equation" do
         let(:source) { '\[ x^2 - 2 = 0 \] is an equation' }
+        it { should resemble source }
+      end
+
+      context "a centered equation with a newline" do
+        let(:source) { '\[ x^2 -' + "\n" + ' 2 = 0 \] is an equation' }
         it { should resemble source }
       end
 
