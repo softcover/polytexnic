@@ -296,8 +296,8 @@ module Polytexnic
             open  = '\('
             close =  '\)'
           when :block
-            open  = '\[' + "\n"
-            close = "\n" + '\]'
+            open  = '\['
+            close = '\]'
           end
           text.gsub!(key, open + value + close)
         end

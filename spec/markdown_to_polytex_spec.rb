@@ -77,7 +77,7 @@ x^2
           EOS
         end
 
-        it { should resemble '\[ x^2 \]' }
+        it { should resemble '\[x^2\]' }
       end
     end
 
@@ -263,8 +263,13 @@ Chapter~\ref{cha:one}
       end
 
       context "a centered equation with a newline" do
-        let(:source) { '\[ x^2 -' + "\n" + ' 2 = 0 \] is an equation' }
-        it { should resemble source }
+        let(:source) do <<-'EOS'
+\[
+\left(\frac{p}{q}\right) \left(\frac{q}{p}\right) = (-1)^{[(p-1)/2][(q-1)/2]} \quad\text{($p$, $q$ distinct odd primes)}
+\]
+          EOS
+        end
+        it { should include source.chomp }
       end
 
       context "an equation environment" do
