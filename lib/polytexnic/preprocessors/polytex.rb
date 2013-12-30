@@ -6,10 +6,26 @@ module Kramdown
   module Converter
     class Latex < Base
 
-      # Convert `inline codespan`.
+      # Converts `inline codespan`.
       # This overrides kramdown's default to use `\kode` instead of `\tt`.
       def convert_codespan(el, opts)
         "\\kode{#{latex_link_target(el)}#{escape(el.value)}}"
+      end
+
+      # Overrides default convert_a.
+      # Unfortunately, kramdown is too aggressive in escaping characters
+      # in hrefs, converting
+      #     [foo bar](http://example.com/foo%20bar)
+      # into
+      #     \href{http://example.com/foo\%20bar}{foo bar}
+      # The '\%20' in the href then won't work properly.
+      def convert_a(el, opts)
+        url = el.attr['href']
+        if url =~ /^#/
+          "\\hyperlink{#{escape(url[1..-1])}}{#{inner(el, opts)}}"
+        else
+          "\\href{#{url}}{#{inner(el, opts)}}"
+        end
       end
     end
   end
@@ -59,7 +75,7 @@ module Polytexnic
         puts kramdown.to_html if debug?
         puts kramdown.to_latex if debug?
         @source = kramdown.to_latex.tap do |polytex|
-                    remove_comments(polytex)
+                    remove_kramdown_comments(polytex)
                     convert_includegraphics(polytex)
                     restore_math(polytex, math_cache)
                     restore_hashed_content(polytex, cache)
@@ -189,6 +205,13 @@ module Polytexnic
           end
         end
         output.join("\n")
+      end
+
+      # Removes comments produced by kramdown.
+      # These have the special form of always being at the beginning of the
+      # line.
+      def remove_kramdown_comments(text)
+        text.gsub!(/^% (.*)$/, '')
       end
 
       # Converts \includegraphics to \image.

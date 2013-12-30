@@ -45,6 +45,18 @@ Lorem ipsum
       it { should include source }
     end
 
+    context "links" do
+      context "with normal text" do
+        let(:source) { '[foo](http://example.com/)' }
+        it { should include '\href{http://example.com/}{foo}' }
+      end
+
+      context "with a percent" do
+        let(:source) { '[foo bar](http://example.com/foo%20bar)' }
+        it { should include '\href{http://example.com/foo%20bar}{foo bar}' }
+      end
+    end
+
     describe "with math" do
 
       context "inline math" do
@@ -274,7 +286,7 @@ def foo; "bar"; end
           EOS
         end
         it { should include '%= foo:bar' }
-        it { should_not resemble '\begin{codelisting}' }
+        it { should_not match /^\\begin\{code\}/ }
       end
 
       context "code inclusion inside codelisting" do
