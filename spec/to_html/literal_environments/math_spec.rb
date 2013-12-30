@@ -61,9 +61,9 @@ describe Polytexnic::Pipeline do
     end
 
     context "LaTeX inline" do
-      let(:equation) { "\\( #{math} \\)"}
+      let(:equation) { "\\( #{math} \\)" }
       let(:polytex)  { equation }
-      let(:contents) { "\\( #{result} \\)"}
+      let(:contents) { "\\( #{result} \\)" }
 
       it { should resemble contents }
     end
@@ -71,6 +71,14 @@ describe Polytexnic::Pipeline do
     context "with a space before a dollar sign" do
       let(:polytex) { "foo $x$ bar" }
       let(:contents) { "<p>foo <span class=\"inline_math\">\\( x \\)</span> bar" }
+      it { should include contents }
+    end
+
+    context 'using \ensuremath' do
+      let(:math) { 'x^2 + y' }
+      let(:equation) { "\\ensuremath{#{math}}" }
+      let(:polytex)  { equation }
+      let(:contents) { "\\( #{math} \\)" }
       it { should include contents }
     end
   end
