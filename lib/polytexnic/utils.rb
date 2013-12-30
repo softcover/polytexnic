@@ -164,12 +164,12 @@ module Polytexnic
     # We prepend rather than replace the styles because the Pygments output
     # includes a required override of the default commandchars.
     # Since the substitution is only important in the context of a PDF book,
-    # it only gets made if there's a style in 'softcover.sty' in the
-    # current directory
+    # it only gets made if there's a style in the 'softcover.sty' file.
     def add_font_info(string)
-      if File.exist?('softcover.sty')
+      softcover_sty = File.join('latex_styles', 'softcover.sty')
+      if File.exist?(softcover_sty)
         regex = '{code}{Verbatim}{(.*)}'
-        styles = File.read('softcover.sty').scan(/#{regex}/).flatten.first
+        styles = File.read(softcover_sty).scan(/#{regex}/).flatten.first
         string.gsub!("\\begin{Verbatim}[",
                      "\\begin{Verbatim}[#{styles},")
       end
