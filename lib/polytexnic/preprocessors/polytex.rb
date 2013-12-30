@@ -274,12 +274,12 @@ module Polytexnic
       # I personally hate this notation and convention, so we also support
       # LaTeX-style \( x \) and \[ x^2 - 2 = 0 \] notation.
       def cache_math(text, cache)
-        text.gsub!(/(?:\{\$\$\}\n(.*?)\n\{\/\$\$\}|\\\[(.*?)\\\])/) do
+        text.gsub!(/(?:\{\$\$\}\n(.*?)\n\{\/\$\$\}|\\\[(.*?)\\\])/m) do
           key = digest($1 || $2)
           cache[[:block, key]] = $1 || $2
           key
         end
-        text.gsub!(/(?:\{\$\$\}(.*?)\{\/\$\$\}|\\\((.*?)\\\))/) do
+        text.gsub!(/(?:\{\$\$\}(.*?)\{\/\$\$\}|\\\((.*?)\\\))/m) do
           key = digest($1 || $2)
           cache[[:inline, key]] = $1 || $2
           key
@@ -296,8 +296,8 @@ module Polytexnic
             open  = '\('
             close =  '\)'
           when :block
-            open  = '\[' + "\n"
-            close = "\n" + '\]'
+            open  = '\['
+            close = '\]'
           end
           text.gsub!(key, open + value + close)
         end
