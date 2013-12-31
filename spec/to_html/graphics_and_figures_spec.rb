@@ -7,15 +7,15 @@ describe 'Polytexnic::Pipeline#to_html' do
 
   describe "graphics" do
     let(:polytex) do <<-'EOS'
-      \includegraphics{foo.png}
+      foo \includegraphics{foo.png} bar
       EOS
     end
 
     it do
       should resemble <<-'EOS'
-        <div class="graphics">
-        <img src="foo.png" alt="foo" />
-        </div>
+        foo <span><span class="graphics">
+        <img src="foo.png" alt="foo" /></span>
+        </span>
       EOS
     end
     it { should_not resemble 'class="figure"' }
@@ -29,9 +29,9 @@ describe 'Polytexnic::Pipeline#to_html' do
 
       it do
         should resemble <<-'EOS'
-          <div class="graphics">
+          <span class="graphics">
           <img src="foo.png" alt="foo" />
-          </div>
+          </span>
         EOS
       end
     end
@@ -116,9 +116,9 @@ describe 'Polytexnic::Pipeline#to_html' do
       it do
         should resemble <<-'EOS'
           <div id="fig-foo" data-tralics-id="uid1" data-number="1" class="figure">
-          <div class="graphics">
+          <span class="graphics">
             <img src="images/foo.png" alt="foo" />
-          </div>
+          </span>
           <div class="caption">
             <span class="header">Figure 1</span>
           </div>
@@ -151,18 +151,18 @@ describe 'Polytexnic::Pipeline#to_html' do
             <span class="number">Chapter 1 </span>The chapter</a>
           </h1>
           <div id="uid1" data-tralics-id="uid1" data-number="1.1" class="figure">
-            <div class="graphics">
+            <span class="graphics">
               <img src="foo.png" alt="foo" />
-            </div>
+            </span>
             <div class="caption">
               <span class="header">Figure 1.1: </span>
               <span class="description">This is a <em>caption</em> with <span class="inline_math">\( x \)</span>.</span>
             </div>
           </div>
           <div id="uid2" data-tralics-id="uid2" data-number="1.2" class="figure">
-            <div class="graphics">
+            <span class="graphics">
               <img src="bar.png" alt="bar" />
-            </div>
+            </span>
             <div class="caption">
               <span class="header">Figure 1.2: </span>
               <span class="description">This is another caption.</span>
@@ -173,7 +173,21 @@ describe 'Polytexnic::Pipeline#to_html' do
       end
     end
 
-    context "with labels and cross-reference" do
+    context "with a caption containing only a label" do
+      let(:polytex) do <<-'EOS'
+        \chapter{The chapter}
+
+        \begin{figure}
+        \includegraphics{foo.png}
+        \caption{\label{fig:foo}}
+        \end{figure}
+         EOS
+       end
+       it { should     include 'Figure 1.1' }
+       it { should_not include 'Figure 1.1:' }
+     end
+
+    context "with labels and cross-references" do
       let(:polytex) do <<-'EOS'
         \chapter{The chapter}
         \label{cha:lorem_ipsum}
@@ -210,18 +224,18 @@ describe 'Polytexnic::Pipeline#to_html' do
             <span class="number">Chapter 1 </span>The chapter</a>
           </h1>
           <div id="fig-foo" data-tralics-id="uid1" data-number="1.1" class="figure">
-            <div class="graphics">
+            <span class="graphics">
               <img src="foo.png" alt="foo" />
-            </div>
+            </span>
             <div class="caption">
               <span class="header">Figure 1.1: </span>
               <span class="description">This is a caption.</span>
             </div>
           </div>
           <div id="fig-bar" data-tralics-id="uid2" data-number="1.2" class="figure">
-            <div class="graphics">
+            <span class="graphics">
               <img src="bar.png" alt="bar" />
-            </div>
+            </span>
             <div class="caption">
               <span class="header">Figure 1.2: </span>
               <span class="description">This is another caption.</span>
@@ -237,9 +251,9 @@ describe 'Polytexnic::Pipeline#to_html' do
             <span class="number">Chapter 2 </span>A second chapter</a>
           </h1>
           <div id="fig-baz" data-tralics-id="uid3" data-number="2.1" class="figure">
-            <div class="graphics">
+            <span class="graphics">
               <img src="baz.png" alt="baz" />
-            </div>
+            </span>
             <div class="caption">
               <span class="header">Figure 2.1: </span>
               <span class="description">Yet another.</span>
@@ -275,9 +289,9 @@ describe 'Polytexnic::Pipeline#to_html' do
               <span class="number">Chapter 1 </span>The chapter</a>
             </h1>
             <div class="center figure" id="fig-foo" data-tralics-id="uid1" data-number="1.1">
-              <div class="graphics">
+              <span class="graphics">
                 <img src="foo.png" alt="foo" />
-              </div>
+              </span>
               <div class="caption">
                 <span class="header">Figure 1.1: </span>
                 <span class="description">This is a caption.</span>

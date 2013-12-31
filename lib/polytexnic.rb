@@ -14,13 +14,17 @@ module Polytexnic
     'polytexnic_commands.sty'
   end
 
+  # Returns style file (including absolute path) within the gem.
+  def self.core_style_file
+    File.join(File.dirname(__FILE__), '..', style_file)
+  end
+
   # Writes the contents of the custom polytexnic style file.
   # This is used by the `generate` method in the `softcover` gem.
-  # We put it here because `custom.sty` lives inside `polytexnic`
+  # We put it here because `polytexnic_commands.sty` lives inside `polytexnic`
   # so that core can support, e.g., '\PolyTeXnic'.
   def self.write_polytexnic_style_file(dir)
-    csf = File.join(File.dirname(__FILE__), '..', style_file)
-    File.write(File.join(dir, style_file), File.read(csf))
+    File.write(File.join(dir, style_file), File.read(self.core_style_file))
   end
 
   class Pipeline
@@ -45,7 +49,7 @@ module Polytexnic
       @highlight_cache ||= {}
       @math_label_cache = {}
       @source_format = options[:source] || :polytex
-      @custom_commands = File.read(Polytexnic.style_file) rescue ''
+      @custom_commands = File.read(Polytexnic.core_style_file) rescue ''
       @custom_commands += "\n" + (options[:custom_commands] || '')
       @source = source
       if markdown?

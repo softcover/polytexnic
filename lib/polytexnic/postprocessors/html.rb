@@ -212,6 +212,14 @@ module Polytexnic
             node['class'] = 'inline_math'
             clean_node node, ['textype', 'type']
           end
+
+          # using \ensuremath
+          doc.xpath('//texmath[@textype="inline"]').each do |node|
+            node.name = 'span'
+            node.content = "\\( #{node.content} \\)"
+            node['class'] = 'inline_math'
+            clean_node node, ['textype', 'type']
+          end
         end
 
         # Handles frontmatter (if any).
@@ -531,6 +539,9 @@ module Polytexnic
               heading = 'h2'
             end
             if node['rend'] == 'nonumber'
+              # Add an id for linking based on the text of the section.
+              text = node.children.first.text
+              node['id'] = text.downcase.gsub(' ', '_')
               node['class'] += '-star'
             end
             clean_node node, %w{type rend}
@@ -885,8 +896,8 @@ module Polytexnic
         # Processes a graphic, including the description.
         def process_graphic(node, options={})
           klass = options[:klass]
-          node.name = 'div'
           raw_graphic = (node['rend'] == 'inline')
+          node.name = raw_graphic ? 'span' : 'div'
           unless raw_graphic
             if node['class']
               node['class'] += " #{klass}"
@@ -901,7 +912,7 @@ module Polytexnic
             filename = png_for_pdf(node['file'], node['extension'])
             alt = File.basename(node['file'])
             img = %(<img src="#{filename}" alt="#{alt}" />)
-            graphic = %(<div class="graphics">#{img}</div>)
+            graphic = %(<span class="graphics">#{img}</span>)
             graphic_node = Nokogiri::HTML.fragment(graphic)
             if description_node = node.children.first
               description_node.add_previous_sibling(graphic_node)
@@ -962,8 +973,10 @@ module Polytexnic
           full_caption['class'] = 'caption'
           n = node['data-number']
           if description_node = node.at_css('head')
-            h = %(<span class="header">#{name} #{n}: </span>)
-            d = %(<span class="description">#{description_node.inner_html}</span>)
+            content = description_node.inner_html
+            separator = content.empty? ? '' : ':'
+            h = %(<span class="header">#{name} #{n}#{separator} </span>)
+            d = %(<span class="description">#{content}</span>)
             description_node.remove
             full_caption.inner_html = Nokogiri::HTML.fragment(h + d)
           else
@@ -1119,6 +1132,14 @@ module Polytexnic
           doc.css('div').each do |node|
             case node['class']
             when 'chapter'
+              html << '<ul>' if current_depth == 0
+              while current_depth > 1
+                close_list(html)
+                current_depth -= 1
+              end
+              current_depth = 1
+              insert_li(html, node)
+            when 'chapter-star'
               html << '<ul>' if current_depth == 0
               while current_depth > 1
                 close_list(html)

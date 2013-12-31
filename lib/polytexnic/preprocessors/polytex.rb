@@ -1,4 +1,65 @@
 # encoding=utf-8
+
+require 'kramdown'
+require 'securerandom'
+
+$cache = {}
+$label_salt = SecureRandom.hex
+
+module Kramdown
+  module Converter
+    class Latex < Base
+
+      # Converts `inline codespan`.
+      # This overrides kramdown's default to use `\kode` instead of `\tt`.
+      def convert_codespan(el, opts)
+        "\\kode{#{latex_link_target(el)}#{escape(el.value)}}"
+      end
+
+      # Overrides default convert_a.
+      # Unfortunately, kramdown is too aggressive in escaping characters
+      # in hrefs, converting
+      #     [foo bar](http://example.com/foo%20bar)
+      # into
+      #     \href{http://example.com/foo\%20bar}{foo bar}
+      # The '\%20' in the href then won't work properly.
+      def convert_a(el, opts)
+        url = el.attr['href']
+        if url =~ /^#/
+          "\\hyperlink{#{escape(url[1..-1])}}{#{inner(el, opts)}}"
+        else
+          "\\href{#{url}}{#{inner(el, opts)}}"
+        end
+      end
+
+      alias_method :original_convert_standalone_image, :convert_standalone_image
+
+      # Uses figures for images only when label is present.
+      # This allows users to put raw (centered) images in their documents.
+      # The default behavior of kramdown is to wrap such images in a figure
+      # environment, which causes LaTeX to (a) treat them as floats and (b)
+      # include a caption. This may not be what the user wants, and it's also
+      # nonstandard Markdown. On the other hand, it is really nice to be
+      # able to include captions using the default image syntax, so as a
+      # compromise we use Markdown behavior by default and kramdown behavior
+      # if the alt text contains a '\label' element.
+      def convert_standalone_image(el, opts, img)
+        alt_text = el.children.first.attr['alt']
+        if has_label?(alt_text)
+          original_convert_standalone_image(el, opts, img)
+        else
+          img.gsub('\includegraphics', '\image') + "\n"
+        end
+      end
+
+      # Detects if text has a label.
+      def has_label?(text)
+        text.include?($label_salt)
+      end
+    end
+  end
+end
+
 module Polytexnic
   module Preprocessor
     module Polytex
@@ -23,16 +84,14 @@ module Polytexnic
       # At this point, I fear that "Markdown" has become little more than a
       # marketing term.</rant>
       def to_polytex
-        require 'kramdown'
-        cache = {}
         math_cache = {}
         cleaned_markdown = cache_code_environments(@source)
         puts cleaned_markdown if debug?
         cleaned_markdown.tap do |markdown|
-          convert_code_inclusion(markdown, cache)
-          cache_latex_literal(markdown, cache)
-          cache_raw_latex(markdown, cache)
-          cache_image_locations(markdown, cache)
+          convert_code_inclusion(markdown)
+          cache_latex_literal(markdown)
+          cache_raw_latex(markdown)
+          cache_image_locations(markdown)
           puts markdown if debug?
           cache_math(markdown, math_cache)
         end
@@ -44,25 +103,24 @@ module Polytexnic
         puts kramdown.to_html if debug?
         puts kramdown.to_latex if debug?
         @source = kramdown.to_latex.tap do |polytex|
-                    remove_comments(polytex)
+                    remove_kramdown_comments(polytex)
                     convert_includegraphics(polytex)
-                    convert_tt(polytex)
                     restore_math(polytex, math_cache)
-                    restore_hashed_content(polytex, cache)
+                    restore_hashed_content(polytex)
                   end
       end
 
       # Adds support for <<(path/to/code) inclusion.
-      def convert_code_inclusion(text, cache)
+      def convert_code_inclusion(text)
         text.gsub!(/^\s*(<<\(.*?\))/) do
           key = digest($1)
-          cache[key] = "%= #{$1}"  # reduce to a previously solved case
+          $cache[key] = "%= #{$1}"  # reduce to a previously solved case
           key
         end
       end
 
       # Caches literal LaTeX environments.
-      def cache_latex_literal(markdown, cache)
+      def cache_latex_literal(markdown)
         # Add tabular and tabularx support.
         literal_types = Polytexnic::Literal.literal_types + %w[tabular tabularx]
         literal_types.each do |literal|
@@ -71,15 +129,16 @@ module Polytexnic
                   \\end\{#{Regexp.escape(literal)}\})
                   /xm
           markdown.gsub!(regex) do
-            key = digest($1)
-            cache[key] = $1
+            content = $1
+            key = digest(content)
+            $cache[key] = content
             key
           end
         end
       end
 
       # Caches raw LaTeX commands to be passed through the pipeline.
-      def cache_raw_latex(markdown, cache)
+      def cache_raw_latex(markdown)
         command_regex = /(
                           ^[ \t]*\\\w+.*\}[ \t]*$ # Command on line with arg
                           |
@@ -102,7 +161,9 @@ module Polytexnic
           content = $1
           puts content.inspect if debug?
           key = digest(content)
-          cache[key] = content
+          # Used to speed up has_label? in convert_standalone_image.
+          key += $label_salt if content.include?('\label')
+          $cache[key] = content
 
           if content =~ /\{table\}|\\caption\{/
             # Pad tables & captions with newlines for kramdown compatibility.
@@ -116,18 +177,18 @@ module Polytexnic
       # Caches the locations of images to be passed through the pipeline.
       # This works around a Kramdown bug, which fails to convert images
       # properly when their location includes a URL.
-      def cache_image_locations(text, cache)
+      def cache_image_locations(text)
         # Matches '![Image caption](/path/to/image)'
         text.gsub!(/^\s*(!\[.*?\])\((.*?)\)/) do
           key = digest($2)
-          cache[key] = $2
+          $cache[key] = $2
           "\n#{$1}(#{key})"
         end
       end
 
-      # Restores raw code from the cache
-      def restore_hashed_content(text, cache)
-        cache.each do |key, value|
+      # Restores raw code from the cache.
+      def restore_hashed_content(text)
+        $cache.each do |key, value|
           # Because of the way backslashes get interpolated, we need to add
           # some extra ones to cover all the cases of hashed LaTeX.
           text.gsub!(key, value.gsub(/\\/, '\\\\\\'))
@@ -177,20 +238,29 @@ module Polytexnic
         output.join("\n")
       end
 
-      # Converts \includegraphics to \image.
+      # Removes comments produced by kramdown.
+      # These have the special form of always being at the beginning of the
+      # line.
+      def remove_kramdown_comments(text)
+        text.gsub!(/^% (.*)$/, '')
+      end
+
+      # Converts \includegraphics to \image inside figures.
       # The reason is that raw \includegraphics is almost always too wide
       # in the PDF. Instead, we use the custom-defined \image command, which
       # is specifically designed to fix this issue.
       def convert_includegraphics(text)
-        text.gsub!('\includegraphics', '\image')
-      end
-
-      # Converts {tt ...} to \kode{...}
-      # This effectively converts `inline code`, which kramdown sets as
-      # {\tt inline code}, to PolyTeX's native \kode command, which in
-      # turns allows inline code to be separately styled.
-      def convert_tt(text)
-        text.gsub!(/\{\\tt (.*?)\}/, '\kode{\1}')
+        in_figure = false
+        newtext = text.split("\n").map do |line|
+          line.gsub!('\includegraphics', '\image') if in_figure
+          if line =~ /^\s*\\begin\{figure\}/
+            in_figure = true
+          elsif line =~ /^\s*\\end\{figure\}/
+            in_figure = false
+          end
+          line
+        end.join("\n")
+        text.replace(newtext)
       end
 
       # Caches math.
@@ -204,12 +274,12 @@ module Polytexnic
       # I personally hate this notation and convention, so we also support
       # LaTeX-style \( x \) and \[ x^2 - 2 = 0 \] notation.
       def cache_math(text, cache)
-        text.gsub!(/(?:\{\$\$\}\n(.*?)\n\{\/\$\$\}|\\\[(.*?)\\\])/) do
+        text.gsub!(/(?:\{\$\$\}\n(.*?)\n\{\/\$\$\}|\\\[(.*?)\\\])/m) do
           key = digest($1 || $2)
           cache[[:block, key]] = $1 || $2
           key
         end
-        text.gsub!(/(?:\{\$\$\}(.*?)\{\/\$\$\}|\\\((.*?)\\\))/) do
+        text.gsub!(/(?:\{\$\$\}(.*?)\{\/\$\$\}|\\\((.*?)\\\))/m) do
           key = digest($1 || $2)
           cache[[:inline, key]] = $1 || $2
           key
@@ -226,8 +296,8 @@ module Polytexnic
             open  = '\('
             close =  '\)'
           when :block
-            open  = '\[' + "\n"
-            close = "\n" + '\]'
+            open  = '\['
+            close = '\]'
           end
           text.gsub!(key, open + value + close)
         end
