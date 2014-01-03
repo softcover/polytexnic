@@ -212,6 +212,14 @@ module Polytexnic
             node['class'] = 'inline_math'
             clean_node node, ['textype', 'type']
           end
+
+          # using \ensuremath
+          doc.xpath('//texmath[@textype="inline"]').each do |node|
+            node.name = 'span'
+            node.content = "\\( #{node.content} \\)"
+            node['class'] = 'inline_math'
+            clean_node node, ['textype', 'type']
+          end
         end
 
         # Handles frontmatter (if any).
