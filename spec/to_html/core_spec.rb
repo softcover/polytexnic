@@ -258,4 +258,21 @@ describe 'Polytexnic::Pipeline#to_html' do
       it { should resemble '<p style="margin-top: 3.0pt"' }
     end
   end
+
+  describe "ignored commands" do
+    context "\\pbox" do
+      let(:polytex) { '\pbox{12cm}{The cumulative CPU time}' }
+      it { should_not include '12cm' }
+    end
+
+    context "\\includepdf" do
+      let(:polytex) { '\includepdf{images/cover.pdf}' }
+      it { should_not include 'images/cover.pdf' }
+    end
+
+    context "\\newunicodecharacter" do
+      let(:polytex) { '\newunicodechar{├}{\textSFviii}' }
+      it { should_not include '├' }
+    end
+  end
 end
