@@ -93,6 +93,12 @@ module Polytexnic
 \newcommand{\filepath}[1]{\xmlelt{filepath}{#1}}
 \newcommand{\image}[1]{\xmlelt{image}{#1}}
 \newcommand{\imagebox}[1]{\xmlelt{imagebox}{#1}}
+% Ignore pbox argument, just replacing with content.
+\newcommand{\pbox}[2]{#2}
+% Ignore some other commands.
+\newcommand{\includepdf}[1]{}
+\newcommand{\newunicodechar}[2]{fdsfdas}
+
 
 % Code listings
 \usepackage{amsthm}
