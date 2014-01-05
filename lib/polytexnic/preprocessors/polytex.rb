@@ -214,13 +214,8 @@ module Polytexnic
             code_cache[key] = [code, language]
             output << key
             output << line
-          elsif line =~ /^```\s*$/        # basic code fences
-            while (line = lines.shift) && !line.match(/^```\s*$/)
-              output << indentation + line
-            end
-            output << "\n"
-          elsif line =~ /^```(\w+)(,\s*options:.*)?$/  # highlighted fences
-            language = $1
+          elsif line =~ /^```(\w*)(,\s*options:.*)?$/  # highlighted fences
+            language = $1.empty? ? 'text' : $1
             options  = $2
             code = []
             while (line = lines.shift) && !line.match(/^```\s*$/) do
