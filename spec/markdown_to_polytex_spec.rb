@@ -365,6 +365,19 @@ def foo; "bar"; end
         end
         it { should resemble source }
       end
+
+      context "a raw longtable environment" do
+        let(:source) do <<-'EOS'
+  \begin{longtable}{|c|c|}
+  a & b \\
+  c & d \\
+  \hline
+  \caption{Foo bar.}
+  \end{longtable}
+          EOS
+        end
+        it { should resemble source }
+      end
     end
 
     describe "source code" do
