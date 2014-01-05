@@ -493,6 +493,42 @@ foo
           end
           it { should_not include "\\begin{code}\n'Foo \n"}
         end
+
+        context "nested inside verbatim" do
+          let(:source) do <<-'EOS'
+\begin{verbatim}
+```
+# Hello, world! in Ruby
+def hello
+  puts "hello, world!"
+end
+```
+\end{verbatim}
+            EOS
+          end
+          it { should include '```' }
+          it { should include '# Hello, world!' }
+          it { should_not include '\begin{code}' }
+        end
+
+        context "nested inside code" do
+          let(:source) do <<-'EOS'
+%= lang:text
+\begin{code}
+```
+# Hello, world! in Ruby
+def hello
+  puts "hello, world!"
+end
+```
+\end{code}
+            EOS
+          end
+          it { should include '%= lang:text' }
+          it { should_not include '\%= lang:text' }
+          it { should include '```' }
+          it { should include '# Hello, world!' }
+        end
       end
     end
   end
