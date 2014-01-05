@@ -443,11 +443,12 @@ lorem
           end
 
           let(:output) do <<-'EOS'
-\begin{verbatim}
+%= lang:text
+\begin{code}
 def foo
   "bar"
 end
-\end{verbatim}
+\end{code}
 lorem
             EOS
           end
