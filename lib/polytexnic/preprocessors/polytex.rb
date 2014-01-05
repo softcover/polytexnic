@@ -122,7 +122,8 @@ module Polytexnic
       # Caches literal LaTeX environments.
       def cache_latex_literal(markdown)
         # Add tabular and tabularx support.
-        literal_types = Polytexnic::Literal.literal_types + %w[tabular tabularx]
+        literal_types = Polytexnic::Literal.literal_types +
+                        %w[tabular tabularx longtable]
         literal_types.each do |literal|
           regex = /(\\begin\{#{Regexp.escape(literal)}\}
                   .*?
@@ -214,13 +215,8 @@ module Polytexnic
             code_cache[key] = [code, language]
             output << key
             output << line
-          elsif line =~ /^```\s*$/        # basic code fences
-            while (line = lines.shift) && !line.match(/^```\s*$/)
-              output << indentation + line
-            end
-            output << "\n"
-          elsif line =~ /^```(\w+)(,\s*options:.*)?$/  # highlighted fences
-            language = $1
+          elsif line =~ /^```(\w*)(,\s*options:.*)?$/  # highlighted fences
+            language = $1.empty? ? 'text' : $1
             options  = $2
             code = []
             while (line = lines.shift) && !line.match(/^```\s*$/) do
