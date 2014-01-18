@@ -167,6 +167,42 @@ describe Polytexnic::Pipeline do
         it { should_not include '<p></p>' }
       end
 
+      context "with a section" do
+        let(:polytex) do <<-'EOS'
+          %= <<(spec/to_html/literal_environments/code_spec.rb[section_z])
+          EOS
+        end
+        let(:output) do <<-'EOS'
+          <div class="code">
+            <div class="highlight">
+              <pre>
+                <span class="s2">"This is section_z; it's used by a test."</span>
+                <span class="s2">"Section Z is your friend."</span>
+              </pre>
+            </div>
+          EOS
+        end
+        it { should resemble output }
+        it { should_not include '<span class="c1">#// begin section_z</span>' }
+        it { should_not include '<span class="c1">#// end</span>' }
+
+        context "that does not exist" do
+          let(:polytex) do <<-'EOS'
+            %= <<(spec/to_html/literal_environments/code_spec.rb[section_that_does_not_exist])
+            EOS
+          end
+          let(:output) do <<-'EOS'
+            <p>
+              <span class="inline_verbatim">
+                ERROR: Could not find section header '#// begin section_that_does_not_exist' in file 'spec/to_html/literal_environments/code_spec.rb'
+              </span>
+            </p>
+            EOS
+          end
+          it { should resemble output }
+        end
+      end
+
       context "with a custom language override" do
         let(:polytex) do <<-'EOS'
           %= <<(polytexnic_commands.sty, lang: tex)
@@ -204,3 +240,18 @@ describe Polytexnic::Pipeline do
     end
   end
 end
+
+
+###################################################
+'The following lines are used to test code sections'
+
+#// begin section_a
+"This is the code inside of section_a."
+"Sections begin with a line containing only '#// begin section_name' and end with '#// end'"
+"You many divide a file into multiple sections and include them individually in your book."
+#// end
+
+#// begin section_z
+"This is section_z; it's used by a test."
+"Section Z is your friend."
+#// end
