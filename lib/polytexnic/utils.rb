@@ -171,11 +171,18 @@ module Polytexnic
     # includes a required override of the default commandchars.
     # Since the substitution is only important in the context of a PDF book,
     # it only gets made if there's a style in the 'softcover.sty' file.
+    # We also support custom overrides in 'custom_pdf.sty'.
     def add_font_info(string)
-      softcover_sty = File.join('latex_styles', 'softcover.sty')
-      if File.exist?(softcover_sty)
-        regex = '{code}{Verbatim}{(.*)}'
-        styles = File.read(softcover_sty).scan(/#{regex}/).flatten.first
+      softcover_sty  = File.join('latex_styles', 'softcover.sty')
+      custom_pdf_sty = File.join('latex_styles', 'custom_pdf.sty')
+      regex = '{code}{Verbatim}{(.*)}'
+      styles = nil
+      [softcover_sty, custom_pdf_sty].each do |filename|
+        if File.exist?(filename)
+          styles = File.read(filename).scan(/#{regex}/).flatten.first
+        end
+      end
+      unless styles.nil?
         string.gsub!("\\begin{Verbatim}[",
                      "\\begin{Verbatim}[#{styles},")
       end
