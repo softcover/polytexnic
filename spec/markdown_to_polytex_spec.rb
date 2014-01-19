@@ -355,6 +355,25 @@ def foo; "bar"; end
         it { should resemble '\chapter{Foo}' }
       end
 
+      context "an indented codelisting" do
+        let(:source) do <<-'EOS'
+    \begin{codelisting}
+    \label{code:palindrome}
+    \codecaption{Adding a \kode{palindrome?} method to strings.}
+    ```
+    class String
+      def palindrome?
+        self == self.reverse
+      end
+    end
+    ```
+    \end{codelisting}
+          EOS
+        end
+        it { should resemble '\begin{codelisting}' }
+        it { should resemble '```' }
+      end
+
       context "a tabular LaTeX environment" do
         let(:source) do <<-'EOS'
   \begin{tabularx}
