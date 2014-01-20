@@ -177,9 +177,9 @@ module Polytexnic
       custom_pdf_sty = File.join('latex_styles', 'custom_pdf.sty')
       regex = '{code}{Verbatim}{(.*)}'
       styles = nil
-      [softcover_sty, custom_pdf_sty].each do |filename|
+      [softcover_sty, custom_pdf_sty].reverse.each do |filename|
         if File.exist?(filename)
-          styles = File.read(filename).scan(/#{regex}/).flatten.first
+          styles ||= File.read(filename).scan(/#{regex}/).flatten.first
         end
       end
       unless styles.nil?
