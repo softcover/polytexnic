@@ -44,7 +44,11 @@ module Polytexnic
       if File.exist?(@highlight_cache_filename)
         content = File.read(@highlight_cache_filename)
                       .force_encoding('ASCII-8BIT')
-        @highlight_cache = MessagePack.unpack(content) unless content.empty?
+        begin
+          @highlight_cache = MessagePack.unpack(content) unless content.empty?
+        rescue MessagePack::UnpackError
+          FileUtils.rm @highlight_cache_filename
+        end
       end
       @highlight_cache ||= {}
       @math_label_cache = {}
