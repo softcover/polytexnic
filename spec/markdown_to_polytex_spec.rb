@@ -492,8 +492,6 @@ lorem
           it { should resemble output }
         end
 
-
-
         context "with a code listing from Urbit that broke" do
           let(:source) do <<-'EOS'
 ```text
@@ -505,6 +503,28 @@ foo
             EOS
           end
           it { should_not include "\\begin{code}\n'Foo \n"}
+        end
+
+        context "with nested fencing" do
+          let(:source) do <<-'EOS'
+```text
+```ruby, options: "hl_lines": [1, 2], "linenos": true
+def hello; puts 'hello'; end
+```
+```
+            EOS
+          end
+
+          let(:output) do <<-'EOS'
+%= lang:text
+\begin{code}
+```ruby, options: "hl_lines": [1, 2], "linenos": true
+def hello; puts 'hello'; end
+```
+\end{code}
+            EOS
+          end
+          it { should resemble output }
         end
       end
     end

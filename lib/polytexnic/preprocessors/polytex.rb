@@ -216,10 +216,14 @@ module Polytexnic
             output << key
             output << line
           elsif line =~ /^```(\w*)(,\s*options:.*)?$/  # highlighted fences
+            count = 1
             language = $1.empty? ? 'text' : $1
             options  = $2
             code = []
-            while (line = lines.shift) && !line.match(/^```\s*$/) do
+            while (line = lines.shift) do
+              count += 1 if line =~ /^```.+$/
+              count -= 1 if line.match(/^```\s*$/)
+              break if count.zero?
               code << line
             end
             code = code.join("\n")
