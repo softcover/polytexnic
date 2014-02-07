@@ -8,8 +8,10 @@ module Polytexnic
 
     # Returns the executable for the Tralics LaTeX-to-XML converter.
     def tralics
-      filename = if os_x?
-                   'tralics-os-x'
+      filename = if os_x_newer?
+                   'tralics-os-x-newer'
+                 elsif os_x_older?
+                   'tralics-os-x-older'
                  elsif linux?
                    'tralics-linux'
                  else
@@ -17,6 +19,16 @@ module Polytexnic
                  end
       project_root = File.join(File.dirname(__FILE__), '..', '..')
       File.join(project_root, 'precompiled_binaries', filename)
+    end
+
+    # Returns true for OS X Mountain Lion (10.8) and later.
+    def os_x_newer?
+      os_x? && !os_x_older?
+    end
+
+    # Returns true for OS X Lion (10.7) and earlier.
+    def os_x_older?
+      os_x? && RUBY_PLATFORM.include?('11')
     end
 
     # Returns true if platform is OS X.
