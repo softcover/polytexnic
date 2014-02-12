@@ -204,5 +204,18 @@ end
 
       it { should resemble output }
     end
+
+    describe "images with GIFs" do
+      let(:polytex) do <<-'EOS'
+        \includegraphics{foo.gif}
+        \image{bar.gif}
+        \imagebox{baz.gif}
+        EOS
+      end
+
+      it { should include '\includegraphics{foo.png}' }
+      it { should include '\image{bar.png}' }
+      it { should include '\imagebox{baz.png}' }
+    end
   end
 end
