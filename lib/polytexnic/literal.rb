@@ -164,8 +164,8 @@ module Polytexnic
     # or an error message if file or section does not exist.
     def include_code(filename, sectionname, custom_language, highlight_options)
       reader = (sectionname ? IncludedSectionReader : IncludedFileReader).new
-
-      code = ["%= lang:#{code_language(filename, custom_language)}#{highlight_options}"]
+      lang = "#{code_language(filename, custom_language)}#{highlight_options}"
+      code = ["%= lang:#{lang}"]
       code << '\begin{code}'
       code.concat(reader.read(filename, sectionname))
       code << '\end{code}'
@@ -173,7 +173,9 @@ module Polytexnic
       rescue FileNotFound => e
         code_error("File '#{e.message}' does not exist")
       rescue SectionNotFound => e
-        code_error("Could not find section header '#{e.message}' in file '#{filename}'")
+        msg = e.message
+        err = "Could not find section header '#{msg}' in file '#{filename}'"
+        code_error(err)
     end
 
     def code_error(details)
