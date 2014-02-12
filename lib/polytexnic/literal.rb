@@ -9,7 +9,8 @@ module Polytexnic
     # Matches the line for code inclusion.
     # %= <</path/to/code.ext
     CODE_INCLUSION_REGEX = /^\s*%=\s+<<\s*\(          # opening
-                             \s*([^\s]+)              # path to file
+                             \s*([^\s]+?)             # path to file
+                             (?:\[(.+?)\])?           # optional section name
                              (?:,\s*lang:\s*(\w+))?   # optional lang
                              (,\s*options:\s*.*)?     # optional options
                              \s*\)                    # closing paren
@@ -80,21 +81,12 @@ module Polytexnic
           # to
           # %= lang:rb
           # \begin{code}
-          # <content of file.rb>
+          # <content of file or section.rb>
           # \end{code}
           # and then prepend the code to the current `lines` array.
-          filename, custom_language, highlight_options = $1, $2, $3
-          extension_array = File.extname(filename).scan(/\.(.*)/).first
-          lang_from_extension = extension_array.nil? ? nil : extension_array[0]
-          if File.exist?(filename)
-            language = custom_language || lang_from_extension || 'text'
-            code = ["%= lang:#{language}#{highlight_options}"]
-            code << '\begin{code}'
-            code.concat(File.read(filename).split("\n"))
-            code << '\end{code}'
-            lines.unshift(*code)
-          else
-            lines.unshift("\\verb+ERROR: File '#{filename}' does not exist+")
+          filename, sectionname, custom_language, highlight_options = $1, $2, $3, $4
+          if filename
+            lines.unshift(*include_code(filename, sectionname, custom_language, highlight_options))
           end
         elsif line.begin_literal?
           in_verbatim = true
@@ -166,6 +158,34 @@ module Polytexnic
           output << line
         end
       end
+    end
+
+    # Returns the marked up file or section to be included,
+    # or an error message if file or section does not exist.
+    def include_code(filename, sectionname, custom_language, highlight_options)
+      reader = (sectionname ? IncludedSectionReader : IncludedFileReader).new
+      lang = "#{code_language(filename, custom_language)}#{highlight_options}"
+      code = ["%= lang:#{lang}"]
+      code << '\begin{code}'
+      code.concat(reader.read(filename, sectionname))
+      code << '\end{code}'
+
+      rescue FileNotFound => e
+        code_error("File '#{e.message}' does not exist")
+      rescue SectionNotFound => e
+        msg = e.message
+        err = "Could not find section header '#{msg}' in file '#{filename}'"
+        code_error(err)
+    end
+
+    def code_error(details)
+      "\\verb+ERROR: #{details}+"
+    end
+
+    def code_language(filename, custom_language)
+      extension_array = File.extname(filename).scan(/\.(.*)/).first
+      lang_from_extension = extension_array.nil? ? nil : extension_array[0]
+      language = custom_language || lang_from_extension || 'text'
     end
 
     # Returns a permanent salt for the syntax highlighting cache.
@@ -259,6 +279,57 @@ module Polytexnic
         literal_type
       end
     end
+
+
+    class FileNotFound < Exception; end;
+    class IncludedFileReader
+      def read(filename, _)
+        raise(FileNotFound, filename) unless File.exist?(filename)
+        File.read(filename).split("\n")
+      end
+    end
+
+    class SectionNotFound < Exception; end;
+    class IncludedSectionReader < IncludedFileReader
+      attr_reader :lines, :sectionname
+
+      def read(filename, sectionname)
+        @lines        = super
+        @sectionname  = sectionname
+
+        raise(SectionNotFound, section_begin_text) unless exist?
+        lines.slice(index_of_first_line, length)
+      end
+
+      private
+        def exist?
+          !!index_of_section_begin
+        end
+
+        def index_of_section_begin
+          @section_begin_i ||= lines.index(section_begin_text)
+        end
+
+        def index_of_first_line
+          @first_line_i ||= index_of_section_begin + 1
+        end
+
+        def length
+          lines.slice(index_of_first_line, lines.size).index(section_end_text)
+        end
+
+        def marker
+          '#//'
+        end
+
+        def section_begin_text
+          "#{marker} begin #{sectionname}"
+        end
+
+        def section_end_text
+          "#{marker} end"
+        end
+      end
   end
 end
 
