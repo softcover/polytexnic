@@ -909,7 +909,7 @@ module Polytexnic
             clean_node internal_paragraph, 'rend'
           end
           if node['file'] && node['extension']
-            filename = png_for_pdf(node['file'], node['extension'])
+            filename = png_for_img(node['file'], node['extension'])
             alt = File.basename(node['file'])
             img = %(<img src="#{filename}" alt="#{alt}" />)
             graphic = %(<span class="graphics">#{img}</span>)
@@ -942,25 +942,34 @@ module Polytexnic
           container.name = 'div'
           container['class'] = 'graphics ' + klass
           node.name = 'img'
-          node['src'] = png_for_pdf(node.content.gsub(underscore_digest, '_'))
+          node['src'] = png_for_img(node.content.gsub(underscore_digest, '_'))
           node['alt'] = node['src'].split('.').first
           node.content = ""
         end
 
-        # Returns the name of an image file with PNG for PDF if necessary.
-        # This is to support PDF images in the raw source, which look good in
-        # PDF document, but need to be web-friendly in the HTML. We standardize
+        # Returns the name of an image file with PNG for PDF/GIF if necessary.
+        # This is (1) to support PDF images in the raw source, which look good
+        # in PDF documents but need to be web-friendly in the HTML, and (2) to
+        # support GIFs in the input files; GIFs are not supported by xelatex
+        # at all, so we look for a corresponding PNG and use that if it exists.
         # on PNG for simplicity. This means that, to do something like
         #     \image{images/foo.pdf}
         # authors need to have both foo.pdf and foo.png in their images/
         # directory. In this case, foo.pdf will be used in the PDF output, while
         # foo.png will automatically be used in the HTML, EPUB, & MOBI versions.
-        def png_for_pdf(name, extension=nil)
+        #
+        # Similarly, to use
+        #     \image{images/foo.gif}
+        # there whould be a foo.png file in the images/ directory. When used
+        # with Softcover, these PNG files are created automatically on the fly.
+        def png_for_img(name, extension=nil)
           if extension.nil?
-            name.sub('.pdf', '.png')
+            name.sub('.pdf', '.png').sub('.gif', '.png')
           else
-            ext = extension == 'pdf' ? 'png' : extension
-            "#{name}.#{ext}"
+            if extension == 'pdf' || extension == 'gif'
+              extension = 'png'
+            end
+            "#{name}.#{extension}"
           end
         end
 

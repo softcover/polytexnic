@@ -35,6 +35,21 @@ describe 'Polytexnic::Pipeline#to_html' do
         EOS
       end
     end
+
+    context "with a GIF image" do
+      let(:polytex) do <<-'EOS'
+        \includegraphics{foo.gif}
+        EOS
+      end
+
+      it do
+        should resemble <<-'EOS'
+          <span class="graphics">
+          <img src="foo.png" alt="foo" />
+          </span>
+        EOS
+      end
+    end
   end
 
   describe "figures" do
@@ -365,6 +380,11 @@ describe 'Polytexnic::Pipeline#to_html' do
               </div>
             EOS
           end
+        end
+
+        context "including a GIF" do
+          let(:polytex) { '\image{foo.gif}' }
+          it { should include 'foo.png' }
         end
       end
     end
