@@ -54,9 +54,55 @@ describe 'Polytexnic::Pipeline#to_html' do
         </div>
         EOS
       end
-      it { should resemble output }
-    end
 
+      it { should resemble output }
+
+      context "chapter, etc., linking" do
+        before do
+          pipeline.stub(:language_labels).
+                   and_return({ "chapter" => {"word"  => "Capítulo",
+                                              "order" => "standard"},
+                                "section" => "Sección",
+                                "table"   => "Tabla",
+                                "aside"   => "Caja",
+                                "figure"   => "Figura",
+                                "fig"   => "Fig",
+                                "listing"   => "Listado",
+                                "equation"   => "Ecuación",
+                                "eq"   => "Ec",
+                                })
+        end
+        let(:polytex) do <<-'EOS'
+          \chapter{Foo}
+          \label{cha:foo}
+
+          Capítulo~\ref{cha:foo}
+          Sección~\ref{sec:bar}
+          Tabla~\ref{table:bar}
+          Caja~\ref{aside:bar}
+          Figura~\ref{fig:bar}
+          Fig.~\ref{fig:bar}
+          Listado~\ref{code:bar}
+          Ecuación~\ref{eq:bar}
+          Ec.~\ref{eq:bar}
+          EOS
+        end
+        let(:capitulo) { 'Cap<span class="unicode">í</span>tulo' }
+        let(:seccion)  { 'Secci<span class="unicode">ó</span>n' }
+        let(:ecuacion) { 'Ecuaci<span class="unicode">ó</span>n' }
+
+        it { should include %(class="hyperref">#{capitulo}) }
+        it { should include %(class="hyperref">#{seccion}) }
+        it { should include %(class="hyperref">Tabla) }
+        it { should include %(class="hyperref">Figura) }
+        it { should include %(class="hyperref">Fig.) }
+        it { should include %(class="hyperref">Caja) }
+        it { should include %(class="hyperref">Listado) }
+        it { should include %(class="hyperref">#{ecuacion}) }
+        it { should include %(class="hyperref">Ec.) }
+
+      end
+    end
   end
 
   describe '\section' do

@@ -249,8 +249,17 @@ module Polytexnic
     # For completeness, we handle the case where the author neglects to
     # use the nonbreak space ~.
     def hyperrefs(string)
-      linked_item = "(Chapter|Section|Table|Box|Figure|Fig\.|Listing" +
-                    "|Equation|Eq\.)"
+      chapter  = language_labels["chapter"]["word"]
+      section  = language_labels["section"]
+      table    = language_labels["table"]
+      box      = language_labels["aside"]
+      figure   = language_labels["figure"]
+      fig      = language_labels["fig"]
+      listing  = language_labels["listing"]
+      equation = language_labels["equation"]
+      eq       = language_labels["eq"]
+      linked_item = "(#{chapter}|#{section}|#{table}|#{box}|#{figure}" +
+                    "|#{fig}\.|#{listing}|#{equation}|#{eq}\.)"
       ref = /(?:#{linked_item}(~| ))*(\\(?:eq)*ref){(.*?)}/i
       string.gsub!(ref) do
         "\\hyperref[#{$4}]{#{$1}#{$2}#{$3}{#{$4}}}"
@@ -264,6 +273,7 @@ module Polytexnic
     # characters as literal elements and simply pass them through the
     # pipeline intact.
     def cache_unicode(string)
+      hyperrefs(string)
       non_ascii_unicode = /([^\x00-\x7F]+)/
       string.gsub(non_ascii_unicode) do
         key = digest($1)
