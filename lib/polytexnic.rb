@@ -71,8 +71,9 @@ module Polytexnic
       end
 
       preprocess(:html)
+      puts "\nafter preprocess:\n#{@xml}" if debug?
       postprocess(:html)
-      puts @html if debug?
+      puts "\nafter postprocess:\n#{@html}" if debug?
 
       if profiling?
         result = RubyProf.stop

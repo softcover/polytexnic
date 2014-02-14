@@ -3,7 +3,8 @@ require 'spec_helper'
 
 describe 'Polytexnic::Pipeline#to_html' do
 
-  subject(:processed_text) { Polytexnic::Pipeline.new(polytex).to_html }
+  let(:pipeline) { Polytexnic::Pipeline.new(polytex) }
+  subject(:processed_text) { pipeline.to_html }
 
   describe "code listings" do
     let(:polytex) do <<-'EOS'
@@ -43,6 +44,17 @@ $ subl .gemrc
         </div>
       EOS
     end
+
+    context "with a custom language label" do
+      before do
+        pipeline.stub(:language_labels).
+                 and_return({ "chapter" => { "word" => "Chapter",
+                                             "order" => "standard" },
+                              "listing" => "Código" })
+      end
+      it { should include 'Código' }
+    end
+
 
     context "with an empty caption" do
       let(:polytex) do <<-'EOS'

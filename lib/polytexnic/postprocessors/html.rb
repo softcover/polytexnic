@@ -28,16 +28,16 @@ module Polytexnic
         sout(doc)
         kode(doc)
         filepath(doc)
-        codelistings(doc)
         backslash_break(doc)
         spaces(doc)
-        asides(doc)
         center(doc)
         title(doc)
         doc = smart_single_quotes(doc)
         tex_logos(doc)
         restore_literal(doc)
         restore_inline_verbatim(doc)
+        codelistings(doc)
+        asides(doc)
         make_cross_references(doc)
         hrefs(doc)
         graphics_and_figures(doc)
@@ -825,7 +825,7 @@ module Polytexnic
 
         # Returns the name to use for chapters.
         # The default is 'Chapter', of course, but this can be overriden
-        # using 'language_labels', especially in books other than Engilsh.
+        # using 'language_labels', especially in books other than English.
         def chaptername
           language_labels["chapter"]["word"]
         end
