@@ -38,10 +38,12 @@ describe 'Polytexnic::Pipeline#to_html' do
     end
 
     context "with an alternate to 'Chapter'" do
-      before do
-        pipeline.stub(:language_labels).
-                 and_return({ "chapter" => {"word"  => "fejezet",
-                                            "order" => "reverse"} })
+      let(:language_labels) do
+        { "chapter" => {"word"  => "fejezet",
+                        "order" => "reverse"} }
+      end
+      let(:pipeline) do
+        Polytexnic::Pipeline.new(polytex, language_labels: language_labels)
       end
       let(:polytex) do <<-'EOS'
           \chapter{Foo \emph{bar}}
@@ -58,19 +60,18 @@ describe 'Polytexnic::Pipeline#to_html' do
       it { should resemble output }
 
       context "chapter, etc., linking" do
-        before do
-          pipeline.stub(:language_labels).
-                   and_return({ "chapter" => {"word"  => "Capítulo",
-                                              "order" => "standard"},
-                                "section" => "Sección",
-                                "table"   => "Tabla",
-                                "aside"   => "Caja",
-                                "figure"   => "Figura",
-                                "fig"   => "Fig",
-                                "listing"   => "Listado",
-                                "equation"   => "Ecuación",
-                                "eq"   => "Ec",
-                                })
+        let(:language_labels) do
+          { "chapter" => {"word"  => "Capítulo",
+                          "order" => "standard"},
+            "section" => "Sección",
+            "table"   => "Tabla",
+            "aside"   => "Caja",
+            "figure"   => "Figura",
+            "fig"   => "Fig",
+            "listing"   => "Listado",
+            "equation"   => "Ecuación",
+            "eq"   => "Ec",
+            }
         end
         let(:polytex) do <<-'EOS'
           \chapter{Foo}

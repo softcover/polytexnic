@@ -15,7 +15,8 @@ module Polytexnic
       when :html
         @html = xml_to_html(@xml)
       when :latex
-        raw_source = replace_hashes(hyperref(@polytex))
+        hyperrefs(@polytex)
+        raw_source = replace_hashes(@polytex)
         @latex = highlight_source_code(raw_source)
       when :polytex
         remove_hypertarget

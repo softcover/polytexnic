@@ -34,6 +34,7 @@ module Polytexnic
             convert_longtable(output)
             mark_environments(output)
             make_tabular_alignment_cache(output)
+            cache_unicode(output)
           end
         end
 
@@ -43,7 +44,7 @@ module Polytexnic
         # The result is a document that can safely be transformed using
         # global substitutions.
         def clean_document(polytex)
-          doc = cache_unicode(cache_literal(add_commands(polytex)))
+          doc = cache_literal(add_commands(polytex))
           inline_verbatim(doc)
           cache_hrefs(doc)
           remove_comments(doc)

@@ -40,7 +40,11 @@ module Polytexnic
       @literal_cache = options[:literal_cache] || {}
       @code_cache = {}
       @maketitle_elements = {}
-      @language_labels = options[:language_labels] || default_language_labels
+      @language_labels = if (labels = options[:language_labels]).nil?
+                            default_language_labels
+                          else
+                            default_language_labels.merge(labels)
+                          end
       @highlight_cache_filename = '.highlight_cache'
       if File.exist?(@highlight_cache_filename)
         content = File.read(@highlight_cache_filename)
@@ -94,14 +98,10 @@ module Polytexnic
       # Returns the default labels for 'Chapter', 'Figure', etc.
       def default_language_labels
         {"chapter"=>{"word"=>"Chapter", "order"=>"standard"},
-         "table"=>"Table",
-         "figure"=>"Figure",
-         "aside"=>"Box",
-         "listing"=>"Listing",
-         "equation"=>"Equation",
-         "eq"=>"Eq",
-         "contents"=>"Contents"
-       }
+        "section"=>"Section", "table"=>"Table", "figure"=>"Figure",
+        "fig"=>"Fig", "aside"=>"Box", "listing"=>"Listing",
+        "equation"=>"Equation", "eq"=>"Eq", "frontmatter"=>"Frontmatter",
+        "contents"=>"Contents"}
       end
 
       def markdown?

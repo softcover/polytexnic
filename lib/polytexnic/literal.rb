@@ -273,9 +273,8 @@ module Polytexnic
     # characters as literal elements and simply pass them through the
     # pipeline intact.
     def cache_unicode(string)
-      hyperrefs(string)
       non_ascii_unicode = /([^\x00-\x7F]+)/
-      string.gsub(non_ascii_unicode) do
+      string.gsub!(non_ascii_unicode) do
         key = digest($1)
         literal_cache[key] = $1
         xmlelement('unicode') { key }
