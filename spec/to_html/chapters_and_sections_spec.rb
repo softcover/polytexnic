@@ -39,8 +39,9 @@ describe 'Polytexnic::Pipeline#to_html' do
 
     context "with an alternate to 'Chapter'" do
       before do
-        pipeline.stub(:custom_commands).
-                 and_return('\renewcommand{\chaptername}{Chapitre}')
+        pipeline.stub(:language_labels).
+                 and_return({ "chapter" => {"word"  => "fejezet",
+                                            "order" => "reverse"} })
       end
       let(:polytex) do <<-'EOS'
           \chapter{Foo \emph{bar}}
@@ -49,7 +50,7 @@ describe 'Polytexnic::Pipeline#to_html' do
       end
       let(:output) do <<-'EOS'
         <div id="cha-foo" data-tralics-id="cid1" class="chapter" data-number="1">
-          <h1><a href="#cha-foo" class="heading"><span class="number">Chapitre 1 </span>Foo <em>bar</em></a></h1>
+          <h1><a href="#cha-foo" class="heading"><span class="number">1 fejezet </span>Foo <em>bar</em></a></h1>
         </div>
         EOS
       end

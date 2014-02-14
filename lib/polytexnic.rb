@@ -34,12 +34,13 @@ module Polytexnic
 
     attr_accessor :literal_cache, :code_cache, :polytex, :xml, :html,
                   :math_label_cache, :highlight_cache, :maketitle_elements,
-                  :custom_commands
+                  :custom_commands, :language_labels
 
     def initialize(source, options = {})
       @literal_cache = options[:literal_cache] || {}
       @code_cache = {}
       @maketitle_elements = {}
+      @language_labels = options[:language_labels] || default_language_labels
       @highlight_cache_filename = '.highlight_cache'
       if File.exist?(@highlight_cache_filename)
         content = File.read(@highlight_cache_filename)
@@ -88,6 +89,19 @@ module Polytexnic
     end
 
     private
+
+      # Returns the default labels for 'Chapter', 'Figure', etc.
+      def default_language_labels
+        {"chapter"=>{"word"=>"Chapter", "order"=>"standard"},
+         "table"=>"Table",
+         "figure"=>"Figure",
+         "aside"=>"Box",
+         "listing"=>"Listing",
+         "equation"=>"Equation",
+         "eq"=>"Eq",
+         "toc"=>"Table of Contents"
+       }
+      end
 
       def markdown?
         @source_format == :markdown || @source_format == :md

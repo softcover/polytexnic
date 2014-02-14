@@ -767,8 +767,16 @@ module Polytexnic
               el = doc.create_element 'span'
               number = node['data-number']
               is_section = number.match(/\./)
-              prefix = (@cha.nil? || is_section) ? '' : "#{chaptername} "
-              el.content = prefix + node['data-number'] + ' '
+              n = node['data-number']
+              if (@cha.nil? || is_section)
+                el.content = n + ' '
+              else
+                el.content = if language_labels["chapter"]["order"] == "reverse"
+                               n + ' ' + chaptername + ' '
+                             else
+                              chaptername + ' ' + n + ' '
+                            end
+              end
               el['class'] = 'number'
               chapter_name = head.children.first
               if chapter_name.nil?
@@ -807,11 +815,9 @@ module Polytexnic
 
         # Returns the name to use for chapters.
         # The default is 'Chapter', of course, but this can be overriden
-        # using '\renewcommand', especially in books other than Engilsh.
+        # using 'language_labels', especially in books other than Engilsh.
         def chaptername
-          name_regex = /\\renewcommand\{\\chaptername\}\{(.*?)\}/
-          name = custom_commands.scan(name_regex).flatten.last
-          name || 'Chapter'
+          language_labels["chapter"]["word"]
         end
 
         # Returns the formatted number appropriate for the node.
