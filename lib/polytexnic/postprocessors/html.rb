@@ -983,7 +983,7 @@ module Polytexnic
         # Adds a caption to a node.
         # This works for figures and tables (at the least).
         def add_caption(node, options={})
-          name = options[:name].to_s.capitalize
+          name = language_labels[options[:name].to_s]
           doc = node.document
           full_caption = Nokogiri::XML::Node.new('div', doc)
           full_caption['class'] = 'caption'
