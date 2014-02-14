@@ -99,7 +99,7 @@ module Polytexnic
          "listing"=>"Listing",
          "equation"=>"Equation",
          "eq"=>"Eq",
-         "toc"=>"Table of Contents"
+         "contents"=>"Contents"
        }
       end
 
