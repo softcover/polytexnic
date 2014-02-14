@@ -765,18 +765,7 @@ module Polytexnic
             # Add number span
             if (head = node.css('h1 a, h2 a, h3 a').first)
               el = doc.create_element 'span'
-              number = node['data-number']
-              is_section = number.match(/\./)
-              n = node['data-number']
-              if (@cha.nil? || is_section)
-                el.content = n + ' '
-              else
-                el.content = if language_labels["chapter"]["order"] == "reverse"
-                               n + ' ' + chaptername + ' '
-                             else
-                              chaptername + ' ' + n + ' '
-                            end
-              end
+              el.content = section_label(node)
               el['class'] = 'number'
               chapter_name = head.children.first
               if chapter_name.nil?
@@ -811,6 +800,27 @@ module Polytexnic
             node['class'] = 'hyperref'
             clean_node node, 'target'
           end
+        end
+
+        # Returns the section label for the node; e.g., "Chapter 2".
+        def section_label(node)
+          number = node['data-number']
+          if chapter?(node)
+            label = if language_labels["chapter"]["order"] == "reverse"
+                      number + ' ' + chaptername
+                    else
+                      chaptername + ' ' + number
+                    end
+          else
+            label = number
+          end
+          label + ' '
+        end
+
+        # Returns true if the node represents a chapter.
+        def chapter?(node)
+          is_section = node['data-number'].match(/\./)
+          !(@cha.nil? || is_section)
         end
 
         # Returns the name to use for chapters.
