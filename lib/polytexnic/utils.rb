@@ -146,12 +146,13 @@ module Polytexnic
       end
     end
 
-    # Highlight lines (i.e., with a yellow backgroun).
+    # Highlight lines (i.e., with a yellow background).
     # This is needed due to a Pygments bug that fails to highlight lines
     # in the LaTeX output.
     def highlight_lines(output, options)
       highlighted_lines(options).each do |i|
-        output[i] = '\colorbox{hilightyellow}{' + output[i] + '}'
+        output[i] = '\setlength{\fboxsep}{0pt}\colorbox{hilightyellow}{' +
+                    output[i] + '}'
       end
     end
 
