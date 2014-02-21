@@ -34,12 +34,17 @@ module Polytexnic
 
     attr_accessor :literal_cache, :code_cache, :polytex, :xml, :html,
                   :math_label_cache, :highlight_cache, :maketitle_elements,
-                  :custom_commands
+                  :custom_commands, :language_labels
 
     def initialize(source, options = {})
       @literal_cache = options[:literal_cache] || {}
       @code_cache = {}
       @maketitle_elements = {}
+      @language_labels = if (labels = options[:language_labels]).nil?
+                            default_language_labels
+                          else
+                            default_language_labels.merge(labels)
+                          end
       @highlight_cache_filename = '.highlight_cache'
       if File.exist?(@highlight_cache_filename)
         content = File.read(@highlight_cache_filename)
@@ -70,8 +75,9 @@ module Polytexnic
       end
 
       preprocess(:html)
+      puts "\nafter preprocess:\n#{@xml}" if debug?
       postprocess(:html)
-      puts @html if debug?
+      puts "\nafter postprocess:\n#{@html}" if debug?
 
       if profiling?
         result = RubyProf.stop
@@ -88,6 +94,15 @@ module Polytexnic
     end
 
     private
+
+      # Returns the default labels for 'Chapter', 'Figure', etc.
+      def default_language_labels
+        {"chapter"=>{"word"=>"Chapter", "order"=>"standard"},
+        "section"=>"Section", "table"=>"Table", "figure"=>"Figure",
+        "fig"=>"Fig", "aside"=>"Box", "listing"=>"Listing",
+        "equation"=>"Equation", "eq"=>"Eq", "frontmatter"=>"Frontmatter",
+        "contents"=>"Contents"}
+      end
 
       def markdown?
         @source_format == :markdown || @source_format == :md

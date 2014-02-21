@@ -3,14 +3,28 @@ module Polytexnic
     module Latex
 
       def to_processed_latex
-        @polytex = polish_tables(process_asides(clean_latex_document))
+        @polytex = convert_gifs(
+                     polish_tables(
+                     process_asides(clean_latex_document)))
       end
 
       # Returns LaTeX with hashed versions of literal environments.
       # Literal environments are hashed and passed through the pipeline
-      # so that we can process things like refs to hyperrefs using gsubs.
+      # so that we can process things like refs and hyperrefs using gsubs.
       def clean_latex_document
         cache_literal(@polytex, :latex)
+      end
+
+      # Convert GIFs to PNGs.
+      # Unfortunately, xelatex doesn't support GIFs. This converts the included
+      # filenames to use '.png' in place of '.gif'. When used with the Softcover
+      # system, the correct PNG files are automatically created on the fly.
+      def convert_gifs(text)
+        text.tap do
+          text.gsub!(/\\(includegraphics|image|imagebox)\{(.*)\.gif\}/) do
+            "\\#{$1}{#{$2}.png}"
+          end
+        end
       end
 
       def polish_tables(text)

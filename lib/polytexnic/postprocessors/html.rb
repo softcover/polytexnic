@@ -28,16 +28,16 @@ module Polytexnic
         sout(doc)
         kode(doc)
         filepath(doc)
-        codelistings(doc)
         backslash_break(doc)
         spaces(doc)
-        asides(doc)
         center(doc)
         title(doc)
         doc = smart_single_quotes(doc)
         tex_logos(doc)
         restore_literal(doc)
         restore_inline_verbatim(doc)
+        codelistings(doc)
+        asides(doc)
         make_cross_references(doc)
         hrefs(doc)
         graphics_and_figures(doc)
@@ -765,10 +765,7 @@ module Polytexnic
             # Add number span
             if (head = node.css('h1 a, h2 a, h3 a').first)
               el = doc.create_element 'span'
-              number = node['data-number']
-              is_section = number.match(/\./)
-              prefix = (@cha.nil? || is_section) ? '' : "#{chaptername} "
-              el.content = prefix + node['data-number'] + ' '
+              el.content = section_label(node)
               el['class'] = 'number'
               chapter_name = head.children.first
               if chapter_name.nil?
@@ -805,13 +802,32 @@ module Polytexnic
           end
         end
 
+        # Returns the section label for the node; e.g., "Chapter 2".
+        def section_label(node)
+          number = node['data-number']
+          if chapter?(node)
+            label = if language_labels["chapter"]["order"] == "reverse"
+                      number + ' ' + chaptername
+                    else
+                      chaptername + ' ' + number
+                    end
+          else
+            label = number
+          end
+          label + ' '
+        end
+
+        # Returns true if the node represents a chapter.
+        def chapter?(node)
+          is_section = node['data-number'].match(/\./)
+          !(@cha.nil? || is_section)
+        end
+
         # Returns the name to use for chapters.
         # The default is 'Chapter', of course, but this can be overriden
-        # using '\renewcommand', especially in books other than Engilsh.
+        # using 'language_labels', especially in books other than English.
         def chaptername
-          name_regex = /\\renewcommand\{\\chaptername\}\{(.*?)\}/
-          name = custom_commands.scan(name_regex).flatten.last
-          name || 'Chapter'
+          language_labels["chapter"]["word"]
         end
 
         # Returns the formatted number appropriate for the node.
@@ -967,7 +983,7 @@ module Polytexnic
         # Adds a caption to a node.
         # This works for figures and tables (at the least).
         def add_caption(node, options={})
-          name = options[:name].to_s.capitalize
+          name = language_labels[options[:name].to_s]
           doc = node.document
           full_caption = Nokogiri::XML::Node.new('div', doc)
           full_caption['class'] = 'caption'
@@ -1123,7 +1139,8 @@ module Polytexnic
         def table_of_contents(doc)
           toc = doc.at_css('tableofcontents')
           return if toc.nil?
-          toc.add_previous_sibling('<h1 class="contents">Contents</h1>')
+          label = language_labels["contents"]
+          toc.add_previous_sibling(%(<h1 class="contents">#{label}</h1>))
           toc.name = 'div'
           toc['id'] = 'table_of_contents'
           toc.remove_attribute 'depth'
