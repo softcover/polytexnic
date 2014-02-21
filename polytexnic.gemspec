@@ -21,9 +21,9 @@ Gem::Specification.new do |gem|
   gem.add_dependency 'nokogiri', '~> 1.6.0'
   gem.add_dependency 'pygments.rb', '~> 0.4.2'
   gem.add_dependency 'msgpack', '~> 0.4.2'
-  gem.add_dependency 'kramdown'
-  gem.add_dependency 'json'
+  gem.add_dependency 'kramdown', '~> 1.3.2'
+  gem.add_dependency 'json', '~> 1.8.1'
 
-  gem.add_development_dependency 'rspec'
-  gem.add_development_dependency 'simplecov'
+  gem.add_development_dependency 'rspec', '~> 2.14.1'
+  gem.add_development_dependency 'simplecov', '~> 0.8.2'
 end
