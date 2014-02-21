@@ -3,9 +3,10 @@ require 'spec_helper'
 
 describe 'Polytexnic::Pipeline#to_html' do
 
-  subject(:processed_text) { Polytexnic::Pipeline.new(polytex).to_html }
+  let(:pipeline) { Polytexnic::Pipeline.new(polytex) }
+  subject(:processed_text) { pipeline.to_html }
 
-  describe "code listings" do
+  describe "aside boxes" do
     let(:polytex) do <<-'EOS'
       \chapter{Foo bar}
 
@@ -37,6 +38,16 @@ describe 'Polytexnic::Pipeline#to_html' do
         <p><a href="#aside-lorem" class="hyperref">Box <span class="ref">1.1</span></a></p>
         </div>
       EOS
+    end
+
+    context "with a custom language label" do
+      before do
+        pipeline.stub(:language_labels).
+                 and_return({ "chapter" => { "word" => "Chapter",
+                                             "order" => "standard" },
+                              "aside" => "Cajón" })
+      end
+      it { should include 'Cajón 1.1' }
     end
   end
 end

@@ -95,7 +95,7 @@ module Polytexnic
     # the commands with 'xmlelt' aren't even valid LaTeX; they're actually
     # pseudo-LaTeX that has special meaning to the Tralics processor.
     def tralics_commands
-      <<-'EOS'
+      base_commands = <<-'EOS'
 % Commands specific to Tralics
 \def\hyperref[#1]#2{\xmlelt{a}{\XMLaddatt{target}{#1}#2}}
 \newcommand{\heading}[1]{\xmlelt{heading}{#1}}
@@ -110,14 +110,14 @@ module Polytexnic
 % Ignore some other commands.
 \newcommand{\includepdf}[1]{}
 \newcommand{\newunicodechar}[2]{fdsfdas}
-
-
-% Code listings
-\usepackage{amsthm}
-\theoremstyle{definition}
-\newtheorem{codelisting}{Listing}[chapter]
-\newtheorem{aside}{Box}[chapter]
       EOS
+      custom_commands = <<-EOS
+\\usepackage{amsthm}
+\\theoremstyle{definition}
+\\newtheorem{codelisting}{#{language_labels["listing"]}}[chapter]
+\\newtheorem{aside}{#{language_labels["aside"]}}[chapter]
+      EOS
+      [base_commands, custom_commands].join("\n")
     end
 
     # Highlights source code.

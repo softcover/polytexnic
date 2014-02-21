@@ -38,9 +38,12 @@ describe 'Polytexnic::Pipeline#to_html' do
     end
 
     context "with an alternate to 'Chapter'" do
-      before do
-        pipeline.stub(:custom_commands).
-                 and_return('\renewcommand{\chaptername}{Chapitre}')
+      let(:language_labels) do
+        { "chapter" => {"word"  => "fejezet",
+                        "order" => "reverse"} }
+      end
+      let(:pipeline) do
+        Polytexnic::Pipeline.new(polytex, language_labels: language_labels)
       end
       let(:polytex) do <<-'EOS'
           \chapter{Foo \emph{bar}}
@@ -49,13 +52,58 @@ describe 'Polytexnic::Pipeline#to_html' do
       end
       let(:output) do <<-'EOS'
         <div id="cha-foo" data-tralics-id="cid1" class="chapter" data-number="1">
-          <h1><a href="#cha-foo" class="heading"><span class="number">Chapitre 1 </span>Foo <em>bar</em></a></h1>
+          <h1><a href="#cha-foo" class="heading"><span class="number">1 fejezet </span>Foo <em>bar</em></a></h1>
         </div>
         EOS
       end
-      it { should resemble output }
-    end
 
+      it { should resemble output }
+
+      context "chapter, etc., linking" do
+        let(:language_labels) do
+          { "chapter" => {"word"  => "Capítulo",
+                          "order" => "standard"},
+            "section" => "Sección",
+            "table"   => "Tabla",
+            "aside"   => "Caja",
+            "figure"   => "Figura",
+            "fig"   => "Fig",
+            "listing"   => "Listado",
+            "equation"   => "Ecuación",
+            "eq"   => "Ec",
+            }
+        end
+        let(:polytex) do <<-'EOS'
+          \chapter{Foo}
+          \label{cha:foo}
+
+          Capítulo~\ref{cha:foo}
+          Sección~\ref{sec:bar}
+          Tabla~\ref{table:bar}
+          Caja~\ref{aside:bar}
+          Figura~\ref{fig:bar}
+          Fig.~\ref{fig:bar}
+          Listado~\ref{code:bar}
+          Ecuación~\ref{eq:bar}
+          Ec.~\ref{eq:bar}
+          EOS
+        end
+        let(:capitulo) { 'Cap<span class="unicode">í</span>tulo' }
+        let(:seccion)  { 'Secci<span class="unicode">ó</span>n' }
+        let(:ecuacion) { 'Ecuaci<span class="unicode">ó</span>n' }
+
+        it { should include %(class="hyperref">#{capitulo}) }
+        it { should include %(class="hyperref">#{seccion}) }
+        it { should include %(class="hyperref">Tabla) }
+        it { should include %(class="hyperref">Figura) }
+        it { should include %(class="hyperref">Fig.) }
+        it { should include %(class="hyperref">Caja) }
+        it { should include %(class="hyperref">Listado) }
+        it { should include %(class="hyperref">#{ecuacion}) }
+        it { should include %(class="hyperref">Ec.) }
+
+      end
+    end
   end
 
   describe '\section' do
