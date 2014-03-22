@@ -8,17 +8,27 @@ module Polytexnic
 
     # Returns the executable for the Tralics LaTeX-to-XML converter.
     def tralics
+      executable = `which tralics`.chomp
+      return executable unless executable.empty?
       filename = if os_x_newer?
                    'tralics-os-x-newer'
                  elsif os_x_older?
                    'tralics-os-x-older'
                  elsif linux?
-                   'tralics-linux'
-                 else
-                   raise "Platform #{RUBY_PLATFORM} not supported"
+                   "tralics-#{RUBY_PLATFORM}"
                  end
       project_root = File.join(File.dirname(__FILE__), '..', '..')
-      File.join(project_root, 'precompiled_binaries', filename)
+      executable = File.join(project_root, 'precompiled_binaries', filename)
+      output = `#{executable}`
+      unless output.include?('This is tralics')
+        url = 'https://github.com/softcover/tralics'
+        $stderr.puts "\nError: Document not built"
+        $stderr.puts "No compatible Tralics LaTeX-to-XML translator found"
+        $stderr.puts "Follow the instructions at\n  #{url}\n"
+        $stderr.puts "to compile tralics and put it on your path"
+        exit(1)
+      end
+      @tralics ||= executable
     end
 
     # Returns true for OS X Mountain Lion (10.8) and later.
