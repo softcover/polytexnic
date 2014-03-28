@@ -88,9 +88,9 @@ describe 'Polytexnic::Pipeline#to_html' do
           Ec.~\ref{eq:bar}
           EOS
         end
-        let(:capitulo) { 'Cap<span class="unicode">í</span>tulo' }
-        let(:seccion)  { 'Secci<span class="unicode">ó</span>n' }
-        let(:ecuacion) { 'Ecuaci<span class="unicode">ó</span>n' }
+        let(:capitulo) { 'Capítulo' }
+        let(:seccion)  { 'Sección' }
+        let(:ecuacion) { 'Ecuación' }
 
         it { should include %(class="hyperref">#{capitulo}) }
         it { should include %(class="hyperref">#{seccion}) }

@@ -35,6 +35,11 @@ describe 'Polytexnic::Pipeline#to_html' do
         EOS
       end
     end
+
+    context "with a Unicode filename" do
+      let(:polytex) { '\includegraphics{images/grusväg.jpg}' }
+      it { should include 'images/grusväg.jpg' }
+    end
   end
 
   describe "figures" do

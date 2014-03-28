@@ -34,10 +34,11 @@ module Polytexnic
 
     attr_accessor :literal_cache, :code_cache, :polytex, :xml, :html,
                   :math_label_cache, :highlight_cache, :maketitle_elements,
-                  :custom_commands, :language_labels
+                  :custom_commands, :language_labels, :unicode_cache
 
     def initialize(source, options = {})
       @literal_cache = options[:literal_cache] || {}
+      @unicode_cache = {}
       @code_cache = {}
       @maketitle_elements = {}
       @language_labels = if (labels = options[:language_labels]).nil?
@@ -74,6 +75,7 @@ module Polytexnic
         RubyProf.start
       end
 
+      puts "before preprocess:\n#{@polytex}" if debug?
       preprocess(:html)
       puts "\nafter preprocess:\n#{@xml}" if debug?
       postprocess(:html)
