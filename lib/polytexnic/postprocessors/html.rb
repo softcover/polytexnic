@@ -35,6 +35,7 @@ module Polytexnic
         doc = smart_single_quotes(doc)
         tex_logos(doc)
         restore_literal(doc)
+        doc = restore_unicode(doc)
         restore_inline_verbatim(doc)
         codelistings(doc)
         asides(doc)
@@ -745,6 +746,14 @@ module Polytexnic
             node.name = 'span'
             node['class'] = 'unicode'
           end
+        end
+
+        def restore_unicode(doc)
+          s = doc.to_xml
+          unicode_cache.each do |key, value|
+            s.gsub!(key, value)
+          end
+          Nokogiri::XML(s)
         end
 
         # Restores things inside \verb+...+

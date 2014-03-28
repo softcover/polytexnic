@@ -6,7 +6,6 @@ describe Polytexnic::Pipeline do
 
   describe "non-ASCII Unicode" do
     let(:polytex) { 'Алексей Разуваев' }
-    it { should include %(<span class="unicode">Алексей</span>) }
-    it { should include %(<span class="unicode">Разуваев</span>) }
+    it { should include 'Алексей Разуваев' }
   end
 end

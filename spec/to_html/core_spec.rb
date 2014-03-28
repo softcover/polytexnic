@@ -139,9 +139,9 @@ describe 'Polytexnic::Pipeline#to_html' do
       it do
         should resemble <<-'EOS'
           <div id="title_page">
-            <h1 class="title">A k<span class="unicode">ö</span>nyv c<span class="unicode">í</span>me</h1>
-            <h1 class="subtitle">Alc<span class="unicode">í</span>m - itt lesz az alc<span class="unicode">í</span>m</h1>
-            <h2 class="author"><span class="unicode">Á</span>rv<span class="unicode">í</span>zt<span class="unicode">ű</span>r<span class="unicode">ő</span> f<span class="unicode">ú</span>r<span class="unicode">ó</span>g<span class="unicode">é</span>p</h2>
+            <h1 class="title">A könyv címe</h1>
+            <h1 class="subtitle">Alcím - itt lesz az alcím</h1>
+            <h2 class="author">Árvíztűrő fúrógép</h2>
             <h2 class="date">January 1, 2013</h2>
           </div>
         EOS
