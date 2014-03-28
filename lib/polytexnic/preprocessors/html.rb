@@ -10,6 +10,7 @@ module Polytexnic
       # XML is straightforward.
       def to_xml
         polytex = process_for_tralics(@polytex)
+        puts "after processing for Tralics:\n#{polytex}" if debug?
         doc = Nokogiri::XML(tralics_xml(polytex))
         add_document_tag(doc)
         @xml = doc.to_xml

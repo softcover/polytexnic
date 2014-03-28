@@ -37,7 +37,7 @@ module Polytexnic
 
     # Returns a list of all literal types.
     def literal_types
-      %w[verbatim Vertatim code metadcode] + math_environments
+      %w[verbatim Vertatim code metacode] + math_environments
     end
 
     # Handles environments that should be passed through the pipeline intact.
@@ -276,8 +276,8 @@ module Polytexnic
       non_ascii_unicode = /([^\x00-\x7F]+)/
       string.gsub!(non_ascii_unicode) do
         key = digest($1)
-        literal_cache[key] = $1
-        xmlelement('unicode') { key }
+        unicode_cache[key] = $1
+        key
       end
     end
 
