@@ -238,6 +238,65 @@ describe Polytexnic::Pipeline do
       end
       it { should include "ERROR: File 'foobar.rb' does not exist" }
     end
+
+
+
+    context "from a git tag" do
+      let(:polytex) do <<-'EOS'
+        %= <<(lib/polytexnic/literal.rb, tag: v0.9.4)
+        EOS
+      end
+      it { should include 'metadcode'}
+
+      context "with tag and lang" do
+      let(:polytex) do <<-'EOS'
+        %= <<(lib/polytexnic/literal.rb, tag: v0.9.4, lang: tex)
+        EOS
+      end
+      it { should include 'metadcode'}
+      end
+
+      context "with tag, lang and options" do
+      let(:polytex) do <<-'EOS'
+        %= <<(lib/polytexnic/literal.rb, tag: v0.9.4, lang: tex, options: "hl_lines": [5])
+        EOS
+      end
+      it { should include 'metadcode'}
+      end
+
+      context "the tag does not exist" do
+        let(:polytex) do <<-'EOS'
+          %= <<(lib/polytexnic/literal.rb, tag: non_existent_tag)
+          EOS
+        end
+        let(:output) do <<-'EOS'
+          <p>
+             <span class="inline_verbatim">
+               ERROR: Tag 'non_existent_tag' does not exist.
+             </span>
+           </p>
+           EOS
+        end
+        it { should resemble output }
+      end
+
+      context "the file does not exist" do
+        let(:polytex) do <<-'EOS'
+          %= <<(non/existent/file, tag: v0.9.4)
+          EOS
+        end
+        let(:output) do <<-'EOS'
+          <p>
+             <span class="inline_verbatim">
+               ERROR: error: pathspec 'non/existent/file' did not match any file(s) known to git in tag v0.9.4.
+             </span>
+           </p>
+           EOS
+        end
+        it { should resemble output }
+      end
+
+    end
   end
 end
 
