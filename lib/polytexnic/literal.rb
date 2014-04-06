@@ -334,9 +334,14 @@ module Polytexnic
       #
       #  Example: <<(lib/polytexnic/literal.rb, tag: v0.9.4)
       class GitTaggedFileReader
+
+        def self.git
+          Git.new
+        end
+
         attr_reader :filename, :sectionname, :tagname, :opts, :git
 
-        def initialize(filename, sectionname, tagname, opts={}, git=Git.new)
+        def initialize(filename, sectionname, tagname, opts={}, git=self.class.git)
           @filename    = filename
           @sectionname = sectionname
           @tagname     = tagname
@@ -363,7 +368,7 @@ module Polytexnic
 
         def checkout_file!(tmpdir)
           unless git.checkout_succeeded?(output = git.checkout(tmpdir, filename, tagname))
-            raise(CodeInclusionException, improve_error_message(output))
+            raise(CodeInclusionException, improve_error_message(output, tmpdir))
           end
         end
 
@@ -372,8 +377,8 @@ module Polytexnic
           CodeInclusion::Code.new(tmpfilename, sectionname, opts).raw_code
         end
 
-        def improve_error_message(msg)
-            msg.gsub(/tmpdir/, '').chomp(".\n") + " in tag #{tagname}."
+        def improve_error_message(msg, tmpdir)
+            msg.gsub(/#{tmpdir}/, '').chomp(".\n") + " in tag #{tagname}."
         end
 
 

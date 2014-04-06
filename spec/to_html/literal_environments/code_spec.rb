@@ -242,31 +242,91 @@ describe Polytexnic::Pipeline do
 
 
     context "from a git tag" do
-      let(:polytex) do <<-'EOS'
-        %= <<(lib/polytexnic/literal.rb, tag: v0.9.4)
-        EOS
-      end
-      it { should include 'metadcode'}
-
-      context "with tag and lang" do
-      let(:polytex) do <<-'EOS'
-        %= <<(lib/polytexnic/literal.rb, tag: v0.9.4, lang: tex)
-        EOS
-      end
-      it { should include 'metadcode'}
+      shared_examples "an inclusion" do
+        it "resembles the given output" do
+          allow(Polytexnic::Literal::CodeInclusion::GitTaggedFileReader).to receive(:git).and_return(FakeGit.new)
+          expect(processed_text).to resemble(output)
+        end
       end
 
-      context "with tag, lang and options" do
-      let(:polytex) do <<-'EOS'
-        %= <<(lib/polytexnic/literal.rb, tag: v0.9.4, lang: tex, options: "hl_lines": [5])
-        EOS
-      end
-      it { should include 'metadcode'}
+      context "the tag and file exist" do
+        before(:all) do
+          class FakeGit < Polytexnic::Literal::CodeInclusion::GitTaggedFileReader::Git
+            # Write fake data to location on disk where git _would_ have placed the file
+            def checkout(tmpdir, filename, tagname)
+              f = File.join(tmpdir, filename)
+              File.open(f, 'w') { |file| file.write("Fake data") }
+            end
+            def tag_exists?(tagname)
+              true
+            end
+            def checkout_succeeded?(arg)
+              true
+            end
+          end
+        end
+
+        context "with tag only" do
+          let(:polytex) do <<-'EOS'
+            %= <<(tagged_file.rb, tag: fake_tag.1.0)
+            EOS
+          end
+          let(:output) do <<-'EOS'
+            <div class="code">
+              <div class="highlight">
+                <pre>
+                  <span class="no">Fake</span> <span class="n">data</span>
+                </pre>
+            </div>
+            EOS
+          end
+          it_behaves_like "an inclusion"
+        end
+
+        context "with other params" do
+          let(:output) do <<-'EOS'
+            <div class="code">
+              <div class="highlight">
+                <pre>Fake data</pre>
+              </div>
+            </div>
+            EOS
+          end
+
+          context "with tag and lang" do
+            let(:polytex) do <<-'EOS'
+              %= <<(tagged_file.rb, tag: slashes/and-dashes-are/ok/too, lang: tex)
+              EOS
+            end
+            it_behaves_like "an inclusion"
+          end
+
+          context "with tag, lang and options" do
+            let(:polytex) do <<-'EOS'
+              %= <<(tagged_file.rb, tag: v0.9.4, lang: tex, options: "hl_lines": [5])
+              EOS
+            end
+            it_behaves_like "an inclusion"
+          end
+        end
       end
 
       context "the tag does not exist" do
+        before(:all) do
+          class FakeGit < Polytexnic::Literal::CodeInclusion::GitTaggedFileReader::Git
+            def checkout(tmpdir, filename, tagname)
+            end
+            def tag_exists?(tagname)
+              false
+            end
+            def checkout_succeeded?(arg)
+              false
+            end
+          end
+        end
+
         let(:polytex) do <<-'EOS'
-          %= <<(lib/polytexnic/literal.rb, tag: non_existent_tag)
+          %= <<(tagged_file.rb, tag: non_existent_tag)
           EOS
         end
         let(:output) do <<-'EOS'
@@ -277,23 +337,37 @@ describe Polytexnic::Pipeline do
            </p>
            EOS
         end
-        it { should resemble output }
+        it_behaves_like "an inclusion"
       end
 
       context "the file does not exist" do
+        before(:all) do
+          class FakeGit < Polytexnic::Literal::CodeInclusion::GitTaggedFileReader::Git
+            def checkout(tmpdir, filename, tagname)
+              "pathspec #{tmpdir}/non_existent_file did not match any file(s) known to git.\n"
+            end
+            def tag_exists?(tagname)
+              true
+            end
+            def checkout_succeeded?(arg)
+              false
+            end
+          end
+        end
+
         let(:polytex) do <<-'EOS'
-          %= <<(non/existent/file, tag: v0.9.4)
+          %= <<(non_existent_file, tag: v0.9.4)
           EOS
         end
         let(:output) do <<-'EOS'
           <p>
              <span class="inline_verbatim">
-               ERROR: error: pathspec 'non/existent/file' did not match any file(s) known to git in tag v0.9.4.
+               ERROR: pathspec /non_existent_file did not match any file(s) known to git in tag v0.9.4.
              </span>
            </p>
            EOS
         end
-        it { should resemble output }
+        it_behaves_like "an inclusion"
       end
 
     end
