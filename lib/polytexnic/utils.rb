@@ -206,8 +206,8 @@ module Polytexnic
         end
       end
       unless styles.nil?
-        string.gsub!("\\begin{Verbatim}[",
-                     "\\begin{Verbatim}[#{styles},")
+        string.to_s.gsub!("\\begin{Verbatim}[",
+                          "\\begin{Verbatim}[#{styles},")
       end
       string
     end
@@ -226,7 +226,7 @@ module Polytexnic
     # How many? I literally had to just keep adding backslashes until
     # the output was correct when running `softcover build:pdf`.
     def horrible_backslash_kludge(string)
-      string.gsub!(/commandchars=\\\\/, 'commandchars=\\\\\\\\')
+      string.to_s.gsub!(/commandchars=\\\\/, 'commandchars=\\\\\\\\')
     end
 
     # Returns true if we are debugging, false otherwise.
