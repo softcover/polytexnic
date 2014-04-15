@@ -333,4 +333,25 @@ describe 'Polytexnic::Pipeline#to_html' do
       EOS
     end
   end
+
+  describe "backmatter" do
+    let(:polytex) do <<-'EOS'
+      \mainmatter
+      \chapter{Bar}
+      \label{cha:bar}
+
+      Chapter~\ref{cha:bar}
+      \backmatter
+      \chapter{Afterword}
+
+      Lorem ipsum
+
+      \chapter{Bibliography}
+
+      Cicero
+      EOS
+    end
+
+    it { should include 'Lorem' }
+  end
 end
