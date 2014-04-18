@@ -244,14 +244,15 @@ describe Polytexnic::Pipeline do
     context "from a git tag" do
       shared_examples "an inclusion" do
         it "resembles the given output" do
-          allow(Polytexnic::Literal::CodeInclusion::GitTaggedFileReader).to receive(:git).and_return(FakeGit.new)
+          allow(CodeInclusion::GitTaggedFileReader).to receive(:git).
+            and_return(FakeGit.new)
           expect(processed_text).to resemble(output)
         end
       end
 
       context "the tag and file exist" do
         before(:all) do
-          class FakeGit < Polytexnic::Literal::CodeInclusion::GitTaggedFileReader::Git
+          class FakeGit < CodeInclusion::GitTaggedFileReader::Git
             # Write fake data to location on disk where git _would_ have placed the file
             def checkout(tmpdir, filename, tagname)
               f = File.join(tmpdir, filename)
@@ -260,7 +261,7 @@ describe Polytexnic::Pipeline do
             def tag_exists?(tagname)
               true
             end
-            def checkout_succeeded?(arg)
+            def checkout_succeeded?
               true
             end
           end
@@ -313,13 +314,13 @@ describe Polytexnic::Pipeline do
 
       context "the tag does not exist" do
         before(:all) do
-          class FakeGit < Polytexnic::Literal::CodeInclusion::GitTaggedFileReader::Git
+          class FakeGit < CodeInclusion::GitTaggedFileReader::Git
             def checkout(tmpdir, filename, tagname)
             end
             def tag_exists?(tagname)
               false
             end
-            def checkout_succeeded?(arg)
+            def checkout_succeeded?
               false
             end
           end
@@ -342,14 +343,14 @@ describe Polytexnic::Pipeline do
 
       context "the file does not exist" do
         before(:all) do
-          class FakeGit < Polytexnic::Literal::CodeInclusion::GitTaggedFileReader::Git
+          class FakeGit < CodeInclusion::GitTaggedFileReader::Git
             def checkout(tmpdir, filename, tagname)
               "pathspec #{tmpdir}/non_existent_file did not match any file(s) known to git.\n"
             end
             def tag_exists?(tagname)
               true
             end
-            def checkout_succeeded?(arg)
+            def checkout_succeeded?
               false
             end
           end

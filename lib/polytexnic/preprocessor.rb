@@ -1,5 +1,6 @@
 # encoding=utf-8
 require 'polytexnic/literal'
+require 'polytexnic/code_inclusion'
 require 'polytexnic/preprocessors/html'
 require 'polytexnic/preprocessors/latex'
 require 'polytexnic/preprocessors/polytex'
