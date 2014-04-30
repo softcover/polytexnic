@@ -293,6 +293,31 @@ describe 'Polytexnic::Pipeline#to_html' do
           EOS
         end
       end
+
+      context "with a table that wasn't working" do
+        let(:polytex) do <<-'EOS'
+\begin{table}
+\begin{center}
+\footnotesize
+\begin{tabular}{lllll}
+\textbf{HTTP request} & \textbf{URL} & \textbf{Action} & \textbf{Named route} & \textbf{Purpose} \\ \hline
+
+\texttt{GET} & /users & \kode{index} & \kode{users\_path} & page to list all users \\
+\texttt{GET} & /users/1 & \kode{show} & \kode{user\_path(user)} & page to show user\\
+\texttt{GET} & /users/new & \kode{new} & \kode{new\_user\_path} & page to make a new user (signup) \\
+\texttt{POST} & /users & \kode{create} & \kode{users\_path} & create a new user \\
+\texttt{GET} & /users/1/edit & \kode{edit} & \kode{edit\_user\_path(user)} & page to edit user with id \kode{1} \\
+\texttt{PATCH} & /users/1 & \kode{update} & \kode{user\_path(user)} & update user  \\
+\texttt{DELETE} & /users/1 & \kode{destroy} & \kode{user\_path(user)} & delete user
+\end{tabular}
+\end{center}
+\caption{RESTful routes provided by the Users resource in Listing~\ref{code:users_resource}.\label{table:RESTful_users}}
+\end{table}
+          EOS
+        end
+
+        it { should resemble '<div id="table-RESTful_users"' }
+      end
     end
   end
 end
