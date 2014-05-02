@@ -209,6 +209,12 @@ module Polytexnic
               '\centering'
             elsif @in_float && line =~ /^\s*\\end\{center\}/
               ''
+            elsif @in_float && line =~/^\s*\\footnotesize/
+              # Removes \footnotesize in floats.
+              # This sizing is useful for tables
+              # in some LaTeX PDF contexts, but not in HTML,
+              # and it messes up the conversion.
+              ''
             elsif @in_float && line =~ /^\s*\\end\{#{@float_type}\}/
               @in_float = false
               line

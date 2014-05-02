@@ -297,6 +297,7 @@ describe 'Polytexnic::Pipeline#to_html' do
       context "with a table containing a centering environment" do
         let(:polytex) do <<-'EOS'
 \begin{table}
+\footnotesize
 \begin{center}
 \begin{tabular}{lll}
 \textbf{HTTP request} & \textbf{URL} & \textbf{Action}  \\ \hline
