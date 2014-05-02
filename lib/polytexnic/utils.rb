@@ -232,7 +232,7 @@ module Polytexnic
     # Returns true if we are debugging, false otherwise.
     # Manually change to `true` on an as-needed basis.
     def debug?
-      true
+      false
     end
 
     # Returns true if we are profiling the code, false otherwise.
