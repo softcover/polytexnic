@@ -31,7 +31,7 @@ module Polytexnic
             label_names(output)
             image_names(output)
             restore_eq_labels(output)
-            convert_figure_centering(output)
+            convert_float_centering(output)
             convert_longtable(output)
             mark_environments(output)
             make_tabular_alignment_cache(output)
@@ -194,22 +194,29 @@ module Polytexnic
           end
         end
 
-        # Handles centering in figures.
+        # Handles centering in floats (figures and tables).
         # The way we handle generic \begin{center}...\end{center} doesn't
-        # work in figures for some reason. Luckily, the preferred method
+        # work in floats for some reason. Luckily, the preferred method
         # is to use \centering anyway, so this kludge is actually better LaTeX.
-        def convert_figure_centering(output)
-          @in_figure = false
+        def convert_float_centering(output)
+          @in_float = false
           centered = output.split("\n").map do |line|
-            if line =~ /^\s*\\begin\{figure\}/
-              @in_figure = true
+            if line =~ /^\s*\\begin\{(figure|table)\}/
+              @in_float = true
+              @float_type = $1
               line
-            elsif @in_figure && line =~ /^\s*\\begin\{center\}/
+            elsif @in_float && line =~ /^\s*\\begin\{center\}/
               '\centering'
-            elsif @in_figure && line =~ /^\s*\\end\{center\}/
+            elsif @in_float && line =~ /^\s*\\end\{center\}/
               ''
-            elsif @in_figure && line =~ /^\s*\\end\{figure\}/
-              @in_figure = false
+            elsif @in_float && line =~/^\s*\\footnotesize/
+              # Removes \footnotesize in floats.
+              # This sizing is useful for tables
+              # in some LaTeX PDF contexts, but not in HTML,
+              # and it messes up the conversion.
+              ''
+            elsif @in_float && line =~ /^\s*\\end\{#{@float_type}\}/
+              @in_float = false
               line
             else
               line

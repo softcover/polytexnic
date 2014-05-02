@@ -293,6 +293,24 @@ describe 'Polytexnic::Pipeline#to_html' do
           EOS
         end
       end
+
+      context "with a table containing a centering environment" do
+        let(:polytex) do <<-'EOS'
+\begin{table}
+\footnotesize
+\begin{center}
+\begin{tabular}{lll}
+\textbf{HTTP request} & \textbf{URL} & \textbf{Action}  \\ \hline
+\texttt{DELETE} & /users/1 & \kode{destroy}
+\end{tabular}
+\end{center}
+\caption{RESTful routes provided by the Users resource.\label{table:RESTful_users}}
+\end{table}
+          EOS
+        end
+
+        it { should resemble 'id="table-RESTful_users"' }
+      end
     end
   end
 end
