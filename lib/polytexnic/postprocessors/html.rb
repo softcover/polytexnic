@@ -342,6 +342,11 @@ module Polytexnic
               content = footnote_symbols? ? fnsymbol(i) : n.to_s
               link.content = content
               node.inner_html = link
+              # Support footnotes in chapter & section headings.
+              if node.parent['class'] == 'heading'
+                # Move footnote outside section anchor tag.
+                node.parent = node.parent.parent
+              end
               # Add an inter-sentence space if appropriate.
               previous_character = node.previous_sibling.content[-1]
               end_of_sentence = %w[. ! ?].include?(previous_character)

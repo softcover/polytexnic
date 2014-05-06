@@ -103,6 +103,11 @@ describe 'Polytexnic::Pipeline#to_html' do
     it { should resemble output }
   end
 
+  describe "in a chapter title" do
+    let(:polytex) { '\chapter{A chapter\protect\footnote{A footnote}}' }
+    it { should include '</a><sup id="cha-1_footnote-ref-1" class="footnote"><a href="#cha-1_footnote-1">1</a></sup>' }
+  end
+
   describe "symbols in place of numbers" do
     let(:polytex) do <<-'EOS'
         \documentclass{book}
