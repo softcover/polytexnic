@@ -379,7 +379,7 @@ module Polytexnic
           if number && !number.empty?
             number.split('.').first.to_i
           else
-            chapter_number(node.parent)
+            chapter_number(node.parent) rescue nil
           end
         end
 
