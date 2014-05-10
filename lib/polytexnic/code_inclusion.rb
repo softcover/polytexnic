@@ -102,10 +102,10 @@ module CodeInclusion
     def read
       ensure_tag_exists!
 
-      Dir.mktmpdir {|tmpdir|
+      Dir.mktmpdir do |tmpdir|
         checkout_file!(tmpdir)
         read_file(tmpdir)
-      }
+      end
     end
 
     private
@@ -165,7 +165,7 @@ module CodeInclusion
 
     def read
       ensure_file_exists!
-      File.read(filename).split("\n")
+      File.readlines(filename)
     end
 
     def ensure_file_exists!
@@ -207,7 +207,7 @@ module CodeInclusion
 
     def index_of_section_begin
       @section_begin_i ||=
-        lines.index {|line| clean(line) == section_begin_text }
+        lines.index { |line| clean(line) == section_begin_text }
     end
 
     def index_of_first_line
@@ -215,11 +215,12 @@ module CodeInclusion
     end
 
     def length
-      lines.slice(index_of_first_line, lines.size).index { |line|
+      lines.slice(index_of_first_line, lines.size).index do |line|
         clean(line) == (section_end_text)
-      }
+      end
     end
 
+    # Returns the marker for marking begin/end code sections.
     def marker
       '#//'
     end
@@ -232,6 +233,7 @@ module CodeInclusion
       "#{marker} end"
     end
 
+    # Returns a string cleansed of superfluous whitespace.
     def clean(str)
       str.strip.squeeze(" ")
     end
