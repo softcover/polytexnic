@@ -46,5 +46,10 @@ describe 'Polytexnic::Pipeline#to_html' do
       let(:polytex) { '\kode{function\_name}' }
       it { should resemble '<code>function_name</code>' }
     end
+
+    describe "color command" do
+      let(:polytex) { '\coloredtext{red}{text}' }
+      it { should resemble '<span style="color: red">text</span>' }
+    end
   end
 end

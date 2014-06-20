@@ -27,6 +27,7 @@ module Polytexnic
         headings(doc)
         sout(doc)
         kode(doc)
+        coloredtext(doc)
         filepath(doc)
         backslash_break(doc)
         spaces(doc)
@@ -598,6 +599,14 @@ module Polytexnic
         def kode(doc)
           doc.xpath('//kode').each do |node|
             node.name  = 'code'
+          end
+        end
+
+        def coloredtext(doc)
+          doc.xpath('//coloredtext').each do |node|
+            node.name  = 'span'
+            node['style'] = "color: #{node['color']}"
+            clean_node node, 'color'
           end
         end
 
