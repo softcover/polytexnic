@@ -540,7 +540,7 @@ def hello; puts 'hello'; end
       end
       let(:source) { "# Foo\n\n  \\input{foo}  " }
 
-      it { puts output; should include output }
+      it { should include output }
     end
   end
 end
