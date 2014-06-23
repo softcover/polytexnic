@@ -602,10 +602,24 @@ module Polytexnic
           end
         end
 
+        # Converts colored text to HTML.
         def coloredtext(doc)
+          # Handle \coloredtext{red}{text}
           doc.xpath('//coloredtext').each do |node|
             node.name  = 'span'
             node['style'] = "color: #{node['color']}"
+            clean_node node, 'color'
+          end
+
+          # Handle \coloredtexthtml{ff0000}{text}
+          doc.xpath('//coloredtexthtml').each do |node|
+            node.name  = 'span'
+            color = node['color']
+            # Catch common case of using lower-case hex.
+            if color =~ /[a-f]/
+              raise "RGB hex color must be upper-case (for LaTeX's sake)"
+            end
+            node['style'] = "color: ##{color}"
             clean_node node, 'color'
           end
         end
