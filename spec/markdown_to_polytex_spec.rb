@@ -528,5 +528,19 @@ def hello; puts 'hello'; end
         end
       end
     end
+
+    describe '\input command' do
+      let(:external_file) { 'foo.md' }
+      before { File.write(external_file, input) }
+      after { File.unlink(external_file) }
+
+      let(:input)  { 'lorem *ipsum* dolor sit amet' }
+      let(:output) do
+        Polytexnic::Pipeline.new(input, source: :markdown).polytex
+      end
+      let(:source) { "# Foo\n\n  \\input{foo}  " }
+
+      it { should include output }
+    end
   end
 end
