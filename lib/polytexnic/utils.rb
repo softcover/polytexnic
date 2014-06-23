@@ -113,6 +113,7 @@ module Polytexnic
 \newcommand{\sout}[1]{\xmlelt{sout}{#1}}
 \newcommand{\kode}[1]{\xmlelt{kode}{#1}}
 \newcommand{\coloredtext}[2]{\xmlelt{coloredtext}{\AddAttToCurrent{color}{#1}#2}}
+\newcommand{\coloredtexthtml}[2]{\xmlelt{coloredtexthtml}{\AddAttToCurrent{color}{#1}#2}}
 \newcommand{\filepath}[1]{\xmlelt{filepath}{#1}}
 \newcommand{\image}[1]{\xmlelt{image}{#1}}
 \newcommand{\imagebox}[1]{\xmlelt{imagebox}{#1}}
