@@ -217,5 +217,49 @@ end
       it { should include '\image{bar.png}' }
       it { should include '\imagebox{baz.png}' }
     end
+
+   describe '\input command' do
+      let(:external_file) { 'foo.tex' }
+      let(:nested_external_file) { 'bar.tex' }
+      let(:input) do <<-'EOS'
+  Lorem ipsum
+  %= lang:ruby
+  \begin{code}
+  def foo; 'foo'; end
+  \end{code}
+  Lorem \emph{ipsum} dolor sit amet
+
+  \input{bar}
+        EOS
+      end
+      let(:nested_input) do <<-'EOS'
+  Lorem ipsum
+  %= lang:python
+  \begin{code}
+  def bar(): return "bar"
+  \end{code}
+        EOS
+      end
+      before do
+        File.write(external_file, input)
+        File.write(nested_external_file, nested_input)
+      end
+      after do
+        File.unlink(external_file)
+        File.unlink(nested_external_file)
+      end
+
+      let(:polytex) { "\\chapter{Foo}\n\n  \\input{foo}  " }
+      let(:foo_latex) do
+        '\PY{k}{def} \PY{n+nf}{foo}\PY{p}{;}'
+      end
+      let(:bar_latex) do
+        '\PY{k}{def} \PY{n+nf}{bar}\PY{p}{(}\PY{p}{)}\PY{p}{:}'
+      end
+
+      it { should include foo_latex }
+      it { should include bar_latex }
+      it { should_not include 'xmlelement' }
+    end
   end
 end
