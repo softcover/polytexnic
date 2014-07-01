@@ -86,10 +86,12 @@ module Polytexnic
       def to_polytex
         math_cache = {}
         cleaned_markdown = cache_code_environments(@source)
+        expand_input!(cleaned_markdown,
+                      Proc.new { |source| cache_code_environments(source) })
+
         puts cleaned_markdown if debug?
         cleaned_markdown.tap do |markdown|
           convert_code_inclusion(markdown)
-          expand_input(markdown)
           cache_latex_literal(markdown)
           cache_raw_latex(markdown)
           cache_image_locations(markdown)
@@ -185,14 +187,6 @@ module Polytexnic
           key = digest($2)
           $cache[key] = $2
           "\n#{$1}(#{key})"
-        end
-      end
-
-      # Expands '\input' command by processing & inserting the target source.
-      def expand_input(text)
-        text.gsub!(/^[ \t]*\\input\{(.*?)\}[ \t]*$/) do
-          source = File.read("#{$1}.md")
-          Polytexnic::Pipeline.new(source, source: :markdown).polytex
         end
       end
 
