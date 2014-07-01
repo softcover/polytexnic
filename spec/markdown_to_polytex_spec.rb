@@ -531,10 +531,33 @@ def hello; puts 'hello'; end
 
     describe '\input command' do
       let(:external_file) { 'foo.md' }
-      before { File.write(external_file, input) }
-      after { File.unlink(external_file) }
+      let(:nested_external_file) { 'bar.md' }
+      let(:input) do <<-'EOS'
+Lorem ipsum
+```ruby
+def foo; 'foo'; end
+```
+Lorem *ipsum* dolor sit amet
 
-      let(:input)  { 'lorem *ipsum* dolor sit amet' }
+\input{bar}
+        EOS
+      end
+      let(:nested_input) do <<-'EOS'
+Lorem ipsum
+```python
+def bar(): return "bar"
+```
+        EOS
+      end
+      before do
+        File.write(external_file, input)
+        File.write(nested_external_file, nested_input)
+      end
+      after do
+        File.unlink(external_file)
+        File.unlink(nested_external_file)
+      end
+
       let(:output) do
         Polytexnic::Pipeline.new(input, source: :markdown).polytex
       end

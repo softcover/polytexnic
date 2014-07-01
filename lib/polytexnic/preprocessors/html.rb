@@ -48,6 +48,7 @@ module Polytexnic
           doc = cache_literal(add_commands(polytex))
           inline_verbatim(doc)
           cache_hrefs(doc)
+          expand_input!(doc, Proc.new { |source| cache_literal(source) }, 'tex')
           remove_comments(doc)
           double_backslashes(cache_display_inline_math(doc))
         end
