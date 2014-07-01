@@ -31,6 +31,18 @@ module Polytexnic
       @tralics ||= executable
     end
 
+
+    # Expands '\input' command by processing & inserting the target source.
+    def expand_input!(text, code_function, ext = 'md')
+      text.gsub!(/^[ \t]*\\input\{(.*?)\}[ \t]*$/) do
+        included_text = File.read("#{$1}.#{ext}")
+        code_function.call(included_text).tap do |clean_text|
+          # Recursively substitute '\input' in included text.
+          expand_input!(clean_text, code_function, ext)
+        end
+      end
+    end
+
     # Returns true for OS X Mountain Lion (10.8) and later.
     def os_x_newer?
       os_x? && !os_x_older?

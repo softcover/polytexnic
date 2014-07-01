@@ -545,7 +545,7 @@ Lorem *ipsum* dolor sit amet
       let(:nested_input) do <<-'EOS'
 Lorem ipsum
 ```python
-def foo: return "bar"
+def bar(): return "bar"
 ```
         EOS
       end
