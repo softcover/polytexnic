@@ -1,6 +1,92 @@
 # encoding=utf-8
 require 'spec_helper'
 
+describe "CodeInclusion::Args" do
+
+  context "file only" do
+    let(:line) {'%= <<(file.rb)'}
+    subject { CodeInclusion::Args.new(line).retrieval}
+
+    it {should eq({filename: "file.rb"})}
+  end
+
+  context "file and section" do
+    let(:line) {'%= <<(file.rb[section1])'}
+    subject { CodeInclusion::Args.new(line).retrieval}
+
+    it {should eq({filename: "file.rb", section: 'section1'})}
+  end
+
+  context "file and line numbers" do
+    let(:line) {'%= <<(file.rb[6,14-37,80])'}
+    subject { CodeInclusion::Args.new(line).retrieval}
+
+    it {should eq({filename: "file.rb",
+                   line_numbers:  "6,14-37,80"})}
+  end
+
+  context "file and unquoted git repo" do
+    let(:line) {'%= <<(file.rb, git: {repo: repo_path/.git})'}
+    subject { CodeInclusion::Args.new(line).retrieval}
+
+    it {should eq({ filename: "file.rb",
+                    git:      { tag: nil, repo: 'repo_path/.git' }})}
+  end
+
+  context "file and double quoted git repo" do
+    let(:line) {'%= <<(file.rb, git: {repo: "repo_path/.git"})'}
+    subject { CodeInclusion::Args.new(line).retrieval}
+
+    it {should eq({ filename: "file.rb",
+                    git:      { tag: nil, repo: 'repo_path/.git' }})}
+  end
+
+  context "file and single quoted git repo" do
+    let(:line) {"%= <<(file.rb, git: {repo: 'repo_path/.git'})"}
+    subject { CodeInclusion::Args.new(line).retrieval}
+
+    it {should eq({ filename: "file.rb",
+                    git:      { tag: nil, repo: 'repo_path/.git' }})}
+  end
+
+  context "file and git tag/repo" do
+    let(:line) {'%= <<(file.rb, git: {tag: 1.0, repo: "repo_path/.git"})'}
+    subject { CodeInclusion::Args.new(line).retrieval}
+
+    it {should eq({ filename: "file.rb",
+                    git:      { tag:  '1.0', repo: 'repo_path/.git' }})}
+  end
+
+  context "file and git repo/tag" do
+    let(:line) {'%= <<(file.rb, git: {repo: "repo_path/.git", tag: 1.0})'}
+    subject { CodeInclusion::Args.new(line).retrieval}
+
+    it {should eq({ filename: "file.rb",
+                    git:      { tag:  '1.0', repo: 'repo_path/.git' }})}
+  end
+
+  context "nearly everything" do
+    let(:line) {'%= <<(file.rb[6-14,37], git: {repo: "repo_path/.git", tag: 1.0}, lang: tex, options: "hl_lines": [5]))'}
+
+    describe "retrival args" do
+      subject { CodeInclusion::Args.new(line).retrieval}
+
+      it {should eq({ filename:     "file.rb",
+                      line_numbers: "6-14,37",
+                      git:          { tag:  '1.0', repo: 'repo_path/.git' }})}
+    end
+
+    describe "render args" do
+      subject { CodeInclusion::Args.new(line).render}
+
+      it {should eq({ custom_language:  "tex",
+                      highlight:        ', options: "hl_lines": [5])'})}
+
+    end
+  end
+end
+
+
 describe "full listing" do
 
   describe "file" do
@@ -26,10 +112,13 @@ describe "full listing" do
     context "file exists" do
       before(:all) do
         class FakeGitCmd < CodeInclusion::FullListing::GitTag::GitCmd
-          def show(_, _)
+          def show
             "Real data\nsecond line"
           end
-          def tag_exists?(tagname)
+          def repository_exists?
+            true
+          end
+          def tag_exists?
             true
           end
           def succeeded?
@@ -48,7 +137,10 @@ describe "full listing" do
     context "tag does not exist" do
       before(:all) do
         class FakeGitCmd < CodeInclusion::FullListing::GitTag::GitCmd
-          def tag_exists?(tagname)
+          def repository_exists?
+            true
+          end
+          def tag_exists?
             false
           end
         end
@@ -64,13 +156,34 @@ describe "full listing" do
             ) }
     end
 
+    context "repo does not exist" do
+      before(:all) do
+        class FakeGitCmd < CodeInclusion::FullListing::GitTag::GitCmd
+          def repository_exists?
+            false
+          end
+        end
+      end
+
+      let(:args) { { filename: "irreleventfile", git: {repo: "baddir/.git"} } }
+      subject { lambda {
+        CodeInclusion::FullListing::GitTag.new(args, FakeGitCmd.new).lines } }
+
+      it { should raise_exception(
+            CodeInclusion::RetrievalException,
+            "Repository 'baddir/.git' does not exist.") }
+    end
+
     context "file does not exist" do
       before(:all) do
         class FakeGitCmd < CodeInclusion::FullListing::GitTag::GitCmd
-          def show(filename, tag)
+          def show
             "fatal: Path 'badfile' does not exist in 'goodtag'"
           end
-          def tag_exists?(tagname)
+          def repository_exists?
+            true
+          end
+          def tag_exists?
             true
           end
           def succeeded?
@@ -79,7 +192,8 @@ describe "full listing" do
         end
       end
 
-      let(:args) { { filename: "badfile", git: {tag: "goodtag"} } }
+      let(:args) { { filename: "badfile",
+                     git:      {tag: "goodtag"} } }
       subject { lambda {
         CodeInclusion::FullListing::GitTag.new(args, FakeGitCmd.new).lines } }
 
