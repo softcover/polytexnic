@@ -313,7 +313,7 @@ describe 'Polytexnic::Pipeline#to_html' do
       end
     end
 
-    context "with two chapters" do
+    context "numbering with two chapters" do
 
       let(:polytex) do <<-'EOS'
         \chapter{A chapter}
