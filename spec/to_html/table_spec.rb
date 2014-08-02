@@ -312,5 +312,44 @@ describe 'Polytexnic::Pipeline#to_html' do
         it { should resemble 'id="table-RESTful_users"' }
       end
     end
+
+    context "with two chapters" do
+
+      let(:polytex) do <<-'EOS'
+        \chapter{A chapter}
+
+        lorem
+
+        \begin{table}
+        \begin{tabular}{cc}
+        HTTP request & URL \\
+        GET & /users \\
+        GET & /users/1
+        \end{tabular}
+        \label{table:foo}
+        \end{table}
+
+        \chapter{Another}
+
+        ipsum
+
+        Table~\ref{table:foo}
+
+
+        \begin{table}
+        \begin{tabular}{cc}
+        HTTP request & URL \\
+        GET & /users \\
+        GET & /users/1
+        \end{tabular}
+        \label{table:bar}
+        \end{table}
+        EOS
+      end
+
+      it { should include 'Table 1.1' }
+      it { should include 'Table 2.1' }
+
+    end
   end
 end
