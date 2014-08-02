@@ -877,6 +877,7 @@ module Polytexnic
             # counters.
             @equation = 0
             @figure = 0
+            @table = 0
             @cha = node['id-text']
           elsif node['class'] == 'section'
             @sec = node['id-text']
@@ -899,7 +900,11 @@ module Polytexnic
           elsif node['class'] == 'aside'
             node['id-text']
           elsif node.name == 'table' && node['id-text']
-            @table = node['id-text']
+            if @cha.nil?
+              @table = node['id-text']
+            else
+              @table += 1
+            end
             label_number(@cha, @table)
           elsif node.name == 'figure'
             if @cha.nil?
