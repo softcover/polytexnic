@@ -90,13 +90,14 @@ module Polytexnic
       string.gsub(/\\(\s+|$)/) { '\\\\' + $1.to_s }
     end
 
-    # Caches URLs for \href commands.
-    def cache_hrefs(doc, latex=false)
+    # Caches URLs for \href and \url commands.
+    def cache_urls(doc, latex=false)
       doc.tap do |text|
-        text.gsub!(/\\href{(.*?)}/) do
-          key = digest($1)
-          literal_cache[key] = $1
-          "\\href{#{key}}"
+        text.gsub!(/\\(href|url){(.*?)}/) do
+          command, url = $1, $2
+          key = digest(url)
+          literal_cache[key] = url
+          command == 'url' ? "\\href{#{key}}{#{url}}" : "\\href{#{key}}"
         end
       end
     end

@@ -47,7 +47,7 @@ module Polytexnic
         def clean_document(polytex)
           doc = cache_literal(add_commands(polytex))
           inline_verbatim(doc)
-          cache_hrefs(doc)
+          cache_urls(doc)
           expand_input!(doc, Proc.new { |source| cache_literal(source) }, 'tex')
           remove_comments(doc)
           double_backslashes(cache_display_inline_math(doc))
