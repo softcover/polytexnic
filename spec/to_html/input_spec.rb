@@ -10,7 +10,7 @@ describe 'Polytexnic::Pipeline#to_html' do
     let(:external_file) { 'foo.tex' }
     let(:nested_external_file) { 'bar.tex' }
     let(:input) do <<-'EOS'
-Lorem ipsum
+Lorem ipsum \href{http://example.com/}{example}
 %= lang:ruby
 \begin{code}
 def foo; 'foo'; end
@@ -44,8 +44,10 @@ def bar(): return "bar"
     let(:bar_html) do
       '<div class="code"><div class="highlight"><pre><span class="k">def</span> <span class="nf">bar</span><span class="p">():'
     end
+    let(:href_html) { '<a href="http://example.com/">example</a>' }
 
     it { should include foo_html }
     it { should include bar_html }
+    it { should include href_html }
   end
 end
