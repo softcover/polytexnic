@@ -468,6 +468,30 @@ lorem
           it { should resemble output }
         end
 
+        context "with a compound language" do
+          let(:source) do <<-EOS
+# Softcover-flavored Markdown
+
+HTML and PHP:
+
+```html+php
+Name: <input type="text" name="name" value="<?php echo $name;?>">
+```
+
+As a final enhancement
+            EOS
+          end
+
+          let(:output) do <<-'EOS'
+%= lang:html+php
+\begin{code}
+Name: <input type="text" name="name" value="<?php echo $name;?>">
+\end{code}
+            EOS
+          end
+          it { should resemble output }
+        end
+
         context "with highlighting and options" do
           let(:source) do <<-EOS
 ```ruby, options: "hl_lines": [1, 2], "linenos": true
