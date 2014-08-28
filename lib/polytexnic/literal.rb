@@ -4,7 +4,7 @@ module Polytexnic
 
     # Matches the line for syntax highlighting.
     # %= lang: <language>[, options: ...]
-    LANG_REGEX = /^\s*%=\s+lang:\s*(\w+)(?:,\s*options:(.*))?/
+    LANG_REGEX = /^\s*%=\s+lang:\s*([\w+]+)(?:,\s*options:(.*))?/
 
 
     # Makes the caches for literal environments.
