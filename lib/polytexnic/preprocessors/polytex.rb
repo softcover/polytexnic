@@ -218,7 +218,7 @@ module Polytexnic
             code_cache[key] = [code, language]
             output << key
             output << line
-          elsif line =~ /^```(\w*)(,\s*options:.*)?$/  # highlighted fences
+          elsif line =~ /^```([\w+]*)(,\s*options:.*)?$/  # highlighted fences
             count = 1
             language = $1.empty? ? 'text' : $1
             options  = $2
