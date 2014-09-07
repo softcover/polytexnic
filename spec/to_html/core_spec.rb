@@ -205,24 +205,26 @@ describe 'Polytexnic::Pipeline#to_html' do
 
     context "standard URL" do
       let(:polytex) { '\href{http://example.com/}{Example Site}' }
-      let(:output) { '<a href="http://example.com/">Example Site</a>' }
-      it { should resemble output }
+      it { should include '<a href="http://example.com/"' }
+      it { should include '>Example Site</a>' }
     end
 
     context "URL containing TeX" do
       let(:polytex) { '\href{http://example.com/}{\emph{\TeX}}' }
-      let(:output) { '<a href="http://example.com/" class="tex">' }
-      it { should resemble output }
+      it { should include '<a href="http://example.com/"' }
+      it { should include 'class="tex"' }
     end
 
     context "URL containing escaped text" do
       let(:polytex) { '\href{http://example.com/escaped\_text}{Example Site}' }
-      it { should include '<a href="http://example.com/escaped_text">Example Site</a>' }
+      it { should include '<a href="http://example.com/escaped_text"' }
+      it { should include '>Example Site</a>' }
     end
 
     context "self-linking URL" do
       let(:polytex) { '\url{http://example.com/}' }
-      it { should include '<a href="http://example.com/">http://example.com/</a>' }
+      it { should include '<a href="http://example.com/"' }
+      it { should include '>http://example.com/</a>' }
     end
   end
 
