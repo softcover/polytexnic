@@ -209,13 +209,13 @@ describe 'Polytexnic::Pipeline#to_html' do
       it { should include '>Example Site</a>' }
     end
 
-    context "URL containing TeX" do
+    context "containing TeX" do
       let(:polytex) { '\href{http://example.com/}{\emph{\TeX}}' }
       it { should include '<a href="http://example.com/"' }
       it { should include 'class="tex"' }
     end
 
-    context "URL containing escaped text" do
+    context "containing escaped text" do
       let(:polytex) { '\href{http://example.com/escaped\_text}{Example Site}' }
       it { should include '<a href="http://example.com/escaped_text"' }
       it { should include '>Example Site</a>' }
@@ -225,6 +225,11 @@ describe 'Polytexnic::Pipeline#to_html' do
       let(:polytex) { '\url{http://example.com/}' }
       it { should include '<a href="http://example.com/"' }
       it { should include '>http://example.com/</a>' }
+    end
+
+    context "with a # sign" do
+      let(:polytex) { '\href{http://example.com/\#email}{email link}' }
+      it { should include 'http://example.com/#email' }
     end
   end
 
