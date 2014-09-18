@@ -4,25 +4,59 @@ module CodeInclusion
   class SubsetException        < CodeInclusionException; end;
 
 
-  # Converts the input line into:
-  #   Retrieval Args:
-  #    filename:     filename           # required
-  #    git:          { tag: tagname }   # optional
-  #    section:      sectionname,       # 'section:' and 'line_numbers:'
-  #    line_numbers: 1,4-6,8,14         # are optional and mutually exclusive
+  # Converts the CodeInclusion line to a set of arguments, i.e.:
+  # '%= <<(file.rb[6-14,37], git: {repo: repo_path/.git, tag: 1.0}, lang: tex, options: "hl_lines": [5]))'
+  # becomes:
+  #   Args#retrieval
+  #    { filename:     "file.rb",
+  #      line_numbers: "6-14,37",
+  #      git:          { tag:  '1.0', repo: 'repo_path/.git' }
+  #    }
+  #   Args#render
+  #    { custom_language:  "tex",
+  #      highlight:        ', options: "hl_lines": [5])'}
   #
-  #  Render Args:
-  #    custom_language: 'ruby'
-  #    hightlight:      '"hl_lines": [1, 2], "linenos": true'
+  # and
+  # '%= <<(file.rb[section_x], git: {tag: 1.0}'
+  # becomes:
+  #   Args#retrieval
+  #    { filename:     "file.rb",
+  #      section:      "section_x",
+  #      git:          { tag:  '1.0'}
+  #    }
+  #   Args#render
+  #    { }
+  #
+  #
+  # Notes for retrieval args
+  #    filename is required
+  #
+  #    line_numbers/section names are specified in [] following the filename,
+  #      foo.rb[1,4-6,8,14] or foo.rb[section_x]
+  #      Thus, line_numbers and section names are mutually exclusive.
+  #
+  #    keyword git: is optional and within it
+  #
+  #      keyword tag: is optional
+  #        If present tag refers to an existing tag in the repo.
+  #        Tags may optionally quoted.
+  #
+  #      keyword repo: is optional
+  #        If present it contains the full path to a git repo,
+  #          full/path/to/repo/.git
+  #        If absent, git commands default to the current repository.
+  #        Repos may be optionally quoted.
+  #
+  # TODO we're dying for a real parser here.
   class Args
     CODE_REGEX =
-     /^\s*%=\s+<<\s*\(                      # opening
-       \s*([^\s]+?)                         # path to file
-       (?:\[(.+?)\])?                       # optional section or line numbers
-       (?:,\s*git:\s*([ \w\.\/\-\{\}:]+?))? # optional git tag
-       (?:,\s*lang:\s*(\w+))?               # optional lang
-       (,\s*options:\s*.*)?                 # optional options
-       \s*\)                                # closing paren
+     /^\s*%=\s+<<\s*\(                          # opening
+       \s*([^\s]+?)                             # path to file
+       (?:\[(.+?)\])?                           # optional section, line numbers
+       (?:,\s*git:\s*([ ,"'\w\.\/\-\{\}:]+?))?  # optional git tag, repo
+       (?:,\s*lang:\s*(\w+))?                   # optional lang
+       (,\s*options:\s*.*)?                     # optional options
+       \s*\)                                    # closing paren
        /x
 
     attr_reader :input, :retrieval, :render, :match
@@ -36,6 +70,10 @@ module CodeInclusion
       extract
     end
 
+    def parse
+      CODE_REGEX.match(input)
+    end
+
     def extract
       return unless code_inclusion_line?
 
@@ -43,7 +81,7 @@ module CodeInclusion
 
       if specifies_line_numbers?
         retrieval[:line_numbers] = match[2]
-      else
+      elsif specifies_section?
         retrieval[:section]      = match[2]
       end
 
@@ -53,26 +91,53 @@ module CodeInclusion
       render[:highlight]         = match[5]
     end
 
-    def specifies_line_numbers?
-      whitespace_digits_dashes_and_commas.match(match[2])
-    end
-
-    def parse
-      CODE_REGEX.match(input)
-    end
-
     def code_inclusion_line?
       !match.nil?
     end
 
-    def whitespace_digits_dashes_and_commas
-      /\s*\d[-,\d\s]*$/
+    def specifies_section?
+      match[2] && !specifies_line_numbers?
+    end
+
+    def specifies_line_numbers?
+      whitespace_digits_dashes_and_commas.match(match[2])
     end
 
     def extract_git(git_args)
-      # only expect tag:, but could easily extract branch: or repo:
-      tag = /\s?{\s?tag:\s(.*)\s?}/.match(git_args)[1]
-      {tag: tag}
+      { tag:  extract_git_option('tag',  git_args),
+        repo: extract_git_option('repo', git_args)}
+    end
+
+    def extract_git_option(keyword, args)
+      if (match = git_option_regex(keyword).match(args))
+        match[1]
+      end
+    end
+
+    def git_option_regex(keyword)
+      /#{start}#{keyword}:#{space}#{quote}(.*?)#{quote}#{finish}/
+    end
+
+    def start
+      "\.*?"
+    end
+
+    def space
+      "\s?"
+    end
+
+    # single or double quotes are optional but permitted
+    def quote
+      %q[(?:"|')?]
+    end
+
+    # comma or } (with optional leading space) ends things
+    def finish
+      "\s?(,|})"
+    end
+
+    def whitespace_digits_dashes_and_commas
+      /^\s*\d[-,\d\s]*$/
     end
   end
 
@@ -138,17 +203,17 @@ module CodeInclusion
     end
   end
 
-# Listing.for takes a set of retrieval args and returns an array of
-#   source code lines to be included in the book.
-#
-# Listing is responsible for retrieving the file you're including
-# (the 'FullListing') and for extracting individual lines from that file
-# (the 'Subset').
+  # Listing.for takes a set of retrieval args and returns an array of
+  #   source code lines to be included in the book.
+  #
+  # Listing is responsible for retrieving the file you're including
+  # (the 'FullListing') and for extracting individual lines from that file
+  # (the 'Subset').
 
-# It contains factory methods to choose the correct FullListing and Subset
-# classes and the code to wire them together.  If you add new FullListing or
-# Subset objects, you'll need to wire them together here.
-class Listing
+  # It contains factory methods to choose the correct FullListing and Subset
+  # classes and the code to wire them together.  If you add new FullListing or
+  # Subset objects, you'll need to wire them together here.
+  class Listing
 
     # Returns the lines of code to be included or
     #   an exception containing the error message.
@@ -230,17 +295,23 @@ class Listing
         GitCmd.new
       end
 
-      attr_reader :filename, :tag, :git_cmd
+      attr_reader :filename, :tag, :repository, :git_cmd
 
       def initialize(args, git_cmd=self.class.git_cmd)
-        @filename = args[:filename]
-        @tag      = args[:git][:tag]
+        @filename   = args[:filename]
+        @tag        = args[:git][:tag]
+        @repository = args[:git][:repo]
+
         @git_cmd  = git_cmd
+
+        git_cmd.repository = repository
+        git_cmd.tagname    = tag
+        git_cmd.filename   = filename
       end
 
       def lines
         ensure_exists!
-        result = git_cmd.show(filename, tag)
+        result = git_cmd.show
 
         if git_cmd.succeeded?
           result.split("\n")
@@ -252,14 +323,19 @@ class Listing
       private
 
       def ensure_exists!
-        unless git_cmd.tag_exists?(tag)
+        unless git_cmd.repository_exists?
+          raise(RetrievalException, "Repository '#{repository}' does not exist.")
+        end
+        unless git_cmd.tag_exists?
           raise(RetrievalException, "Tag '#{tag}' does not exist.")
         end
       end
 
       class GitCmd
-        def show(filename, tagname)
-          `git show #{tagname}:#{filename}`
+        attr_accessor :repository, :tagname, :filename
+
+        def show
+          `git #{git_dir} show #{tagname}:#{filename}`
         end
 
         def succeeded?
@@ -267,10 +343,22 @@ class Listing
         end
 
         def tags
-          `git tag`
+          `git #{git_dir} tag`
         end
 
-        def tag_exists?(tagname)
+        def log
+          `git #{git_dir} log -1`
+        end
+
+        def git_dir
+          %Q[--git-dir="#{repository}"] if repository
+        end
+
+        def repository_exists?
+          !log.include?("Not a git repository")
+        end
+
+        def tag_exists?
           tags.split("\n").include?(tagname)
         end
       end

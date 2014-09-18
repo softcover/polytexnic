@@ -250,13 +250,16 @@ describe Polytexnic::Pipeline do
         end
       end
 
-      context "the tag and file exist" do
+      context "the repo, tag and file exist" do
         before(:all) do
           class FakeGitCmd < CodeInclusion::FullListing::GitTag::GitCmd
-            def show(_, _)
+            def show
               "Fake data\nsecond line"
             end
-            def tag_exists?(tagname)
+            def repository_exists?
+              true
+            end
+            def tag_exists?
               true
             end
             def succeeded?
@@ -265,9 +268,45 @@ describe Polytexnic::Pipeline do
           end
         end
 
+        context "with repo only" do
+          let(:polytex) do <<-'EOS'
+            %= <<(file.rb, git: {repo: "repo_path/.git"})
+            EOS
+          end
+          let(:output) do <<-'EOS'
+            <div class="code">
+              <div class="highlight">
+                <pre>
+                  <span class="no">Fake</span> <span class="n">data</span>
+                  <span class="n">second</span> <span class="n">line</span>
+                </pre>
+            </div>
+            EOS
+          end
+          it_behaves_like "an inclusion"
+        end
+
         context "with tag only" do
           let(:polytex) do <<-'EOS'
             %= <<(tagged_file.rb, git: {tag: fake_tag.1.0})
+            EOS
+          end
+          let(:output) do <<-'EOS'
+            <div class="code">
+              <div class="highlight">
+                <pre>
+                  <span class="no">Fake</span> <span class="n">data</span>
+                  <span class="n">second</span> <span class="n">line</span>
+                </pre>
+            </div>
+            EOS
+          end
+          it_behaves_like "an inclusion"
+        end
+
+        context "with repo and tag" do
+          let(:polytex) do <<-'EOS'
+            %= <<(tagged_file.rb, git: {tag: fake_tag.1.0, repo:"repo_path/.git"})
             EOS
           end
           let(:output) do <<-'EOS'
@@ -296,6 +335,14 @@ describe Polytexnic::Pipeline do
             EOS
           end
 
+          context "with repo and lang" do
+            let(:polytex) do <<-'EOS'
+              %= <<(file.rb, git: {repo:"repo_path/.git"}, lang: tex)
+              EOS
+            end
+            it_behaves_like "an inclusion"
+          end
+
           context "with tag and lang" do
             let(:polytex) do <<-'EOS'
               %= <<(tagged_file.rb, git: {tag: slashes/and-dashes-are/ok/too}, lang: tex)
@@ -304,9 +351,9 @@ describe Polytexnic::Pipeline do
             it_behaves_like "an inclusion"
           end
 
-          context "with tag, lang and options" do
+          context "with repo, tag, lang and options" do
             let(:polytex) do <<-'EOS'
-              %= <<(tagged_file.rb, git: {tag: v0.9.4}, lang: tex, options: "hl_lines": [5])
+              %= <<(tagged_file.rb, git: {tag: v0.9.4, repo:"repo_path/.git"}, lang: tex, options: "hl_lines": [5])
               EOS
             end
             it_behaves_like "an inclusion"
@@ -314,13 +361,49 @@ describe Polytexnic::Pipeline do
         end
       end
 
+      context "the repo does not exist" do
+        before(:all) do
+          class FakeGitCmd < CodeInclusion::FullListing::GitTag::GitCmd
+            def show
+              ''
+            end
+            def repository_exists?
+              false
+            end
+            def tag_exists?
+              false
+            end
+            def succeeded?
+              false
+            end
+          end
+        end
+
+        let(:polytex) do <<-'EOS'
+          %= <<(file.rb, git: {repo: "non_existent_repo"})
+          EOS
+        end
+        let(:output) do <<-'EOS'
+          <p>
+             <span class="inline_verbatim">
+               ERROR: Repository 'non_existent_repo' does not exist.
+             </span>
+           </p>
+           EOS
+        end
+        it_behaves_like "an inclusion"
+      end
+
       context "the tag does not exist" do
         before(:all) do
           class FakeGitCmd < CodeInclusion::FullListing::GitTag::GitCmd
-            def show(_, _)
+            def show
               ''
             end
-            def tag_exists?(tagname)
+            def repository_exists?
+              true
+            end
+            def tag_exists?
               false
             end
             def succeeded?
@@ -347,10 +430,13 @@ describe Polytexnic::Pipeline do
       context "the file does not exist" do
         before(:all) do
           class FakeGitCmd < CodeInclusion::FullListing::GitTag::GitCmd
-            def show(filename, _)
+            def show
               "fatal: Path 'path/to/non_existent_file.rb' does not exist in 'v0.9.9'"
             end
-            def tag_exists?(tagname)
+            def repository_exists?
+              true
+            end
+            def tag_exists?
               true
             end
             def succeeded?

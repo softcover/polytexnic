@@ -925,7 +925,8 @@ module Polytexnic
         def hrefs(doc)
           doc.xpath('//xref').each do |node|
             node.name = 'a'
-            node['href'] = unescape_underscores(literal_cache[node['url']])
+            node['href'] = unescape_special_chars(literal_cache[node['url']])
+            node['target'] = '_blank'   # open in new window/tab
             # Put a class on hrefs containing TeX to allow a style override.
             node.traverse do |descendant|
               if descendant['class'] == 'texhtml'
@@ -937,9 +938,9 @@ module Polytexnic
           end
         end
 
-        # Unescapes underscores, which are escaped by kramdown.
-        def unescape_underscores(url)
-          url.gsub(/\\_/, '_')
+        # Unescapes some special characters that are escaped by kramdown.
+        def unescape_special_chars(url)
+          url.gsub(/\\_/, '_').gsub(/\\#/, '#')
         end
 
         # Handles both \includegraphics and figure environments.
