@@ -88,6 +88,11 @@ describe 'Polytexnic::Pipeline#to_html' do
           it { should resemble "“Yes, indeed!”#{intsp} A new sentence." }
         end
 
+        context "with sentence ending with curly braces" do
+          let(:polytex) { "\\emph{\\textbf{Foo.}} Bar." }
+          it { should resemble "#{intsp} Bar" }
+        end
+
         context "forced inter-sentence override" do
           let(:polytex) { 'Superman II\@. Lorem ipsum.' }
           it { should resemble "Superman II.#{intsp} Lorem ipsum." }
