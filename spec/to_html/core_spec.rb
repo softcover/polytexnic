@@ -221,6 +221,12 @@ describe 'Polytexnic::Pipeline#to_html' do
       it { should include '>Example Site</a>' }
     end
 
+    context "containing an escaped percent" do
+      let(:polytex) { '\href{http://example.com/escaped\%20text}{Example Site}' }
+      it { should include '<a href="http://example.com/escaped%20text"' }
+      it { should include '>Example Site</a>' }
+    end
+
     context "self-linking URL" do
       let(:polytex) { '\url{http://example.com/}' }
       it { should include '<a href="http://example.com/"' }

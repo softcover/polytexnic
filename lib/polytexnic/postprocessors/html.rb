@@ -940,7 +940,7 @@ module Polytexnic
 
         # Unescapes some special characters that are escaped by kramdown.
         def unescape_special_chars(url)
-          url.gsub(/\\_/, '_').gsub(/\\#/, '#')
+          url.gsub(/\\_/, '_').gsub(/\\#/, '#').gsub(/\\%/, '%')
         end
 
         # Handles both \includegraphics and figure environments.
