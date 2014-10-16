@@ -134,7 +134,7 @@ module Polytexnic
 \newcommand{\pbox}[2]{#2}
 % Ignore some other commands.
 \newcommand{\includepdf}[1]{}
-\newcommand{\newunicodechar}[2]{fdsfdas}
+\newcommand{\newunicodechar}[2]{}
       EOS
       custom_commands = <<-EOS
 \\usepackage{amsthm}

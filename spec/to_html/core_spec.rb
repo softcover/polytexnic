@@ -292,5 +292,15 @@ describe 'Polytexnic::Pipeline#to_html' do
       let(:polytex) { '\newunicodechar{├}{\textSFviii}' }
       it { should_not include '├' }
     end
+
+    context "\\newpage" do
+      let(:polytex) { '\newpage' }
+      it { should_not include 'newpage' }
+    end
+
+    context "\\allowbreak" do
+      let(:polytex) { '\allowbreak' }
+      it { should_not include 'allowbreak' }
+    end
   end
 end

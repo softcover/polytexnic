@@ -450,8 +450,13 @@ module Polytexnic
         end
 
         # Removes remaining errors.
+        # Also included is the 'newpage' & 'allowbreak' tags, which
+        # theoretically should have been added to the list of ignored commands
+        # in utils.rb#tralics_commands, but for some reason that doesn't work.
         def remove_errors(doc)
-          doc.xpath('//error').map(&:remove)
+          %w[newpage allowbreak error].each do |tag|
+            doc.xpath("//#{tag}").map(&:remove)
+          end
         end
 
         # Set the Tralics ids.
