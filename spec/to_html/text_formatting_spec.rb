@@ -46,5 +46,25 @@ describe 'Polytexnic::Pipeline#to_html' do
       let(:polytex) { '\kode{function\_name}' }
       it { should resemble '<code>function_name</code>' }
     end
+
+    context "coloredtext" do
+      describe "coloredtext command" do
+        let(:polytex) { '\coloredtext{red}{text}' }
+        it { should resemble '<span style="color: red">text</span>' }
+      end
+
+      context "coloredtexthtml command" do
+        describe "with a lower-case hex color" do
+          let(:polytex) { '\coloredtexthtml{ff0000}{text}' }
+          it "should raise an error" do
+            expect { processed_text }.to raise_error
+          end
+        end
+        describe "with an upper-case hex color" do
+          let(:polytex) { '\coloredtexthtml{FF0000}{text}' }
+          it { should resemble '<span style="color: #FF0000">text</span>' }
+        end
+      end
+    end
   end
 end

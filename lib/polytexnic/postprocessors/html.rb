@@ -27,6 +27,7 @@ module Polytexnic
         headings(doc)
         sout(doc)
         kode(doc)
+        coloredtext(doc)
         filepath(doc)
         backslash_break(doc)
         spaces(doc)
@@ -449,8 +450,13 @@ module Polytexnic
         end
 
         # Removes remaining errors.
+        # Also included is the 'newpage' & 'allowbreak' tags, which
+        # theoretically should have been added to the list of ignored commands
+        # in utils.rb#tralics_commands, but for some reason that doesn't work.
         def remove_errors(doc)
-          doc.xpath('//error').map(&:remove)
+          %w[newpage allowbreak error].each do |tag|
+            doc.xpath("//#{tag}").map(&:remove)
+          end
         end
 
         # Set the Tralics ids.
@@ -598,6 +604,28 @@ module Polytexnic
         def kode(doc)
           doc.xpath('//kode').each do |node|
             node.name  = 'code'
+          end
+        end
+
+        # Converts colored text to HTML.
+        def coloredtext(doc)
+          # Handle \coloredtext{red}{text}
+          doc.xpath('//coloredtext').each do |node|
+            node.name  = 'span'
+            node['style'] = "color: #{node['color']}"
+            clean_node node, 'color'
+          end
+
+          # Handle \coloredtexthtml{ff0000}{text}
+          doc.xpath('//coloredtexthtml').each do |node|
+            node.name  = 'span'
+            color = node['color']
+            # Catch common case of using lower-case hex.
+            if color =~ /[a-f]/
+              raise "RGB hex color must be upper-case (for LaTeX's sake)"
+            end
+            node['style'] = "color: ##{color}"
+            clean_node node, 'color'
           end
         end
 
@@ -854,6 +882,7 @@ module Polytexnic
             # counters.
             @equation = 0
             @figure = 0
+            @table = 0
             @cha = node['id-text']
           elsif node['class'] == 'section'
             @sec = node['id-text']
@@ -876,7 +905,11 @@ module Polytexnic
           elsif node['class'] == 'aside'
             node['id-text']
           elsif node.name == 'table' && node['id-text']
-            @table = node['id-text']
+            if @cha.nil?
+              @table = node['id-text']
+            else
+              @table += 1
+            end
             label_number(@cha, @table)
           elsif node.name == 'figure'
             if @cha.nil?
@@ -897,7 +930,8 @@ module Polytexnic
         def hrefs(doc)
           doc.xpath('//xref').each do |node|
             node.name = 'a'
-            node['href'] = unescape_underscores(literal_cache[node['url']])
+            node['href'] = unescape_special_chars(literal_cache[node['url']])
+            node['target'] = '_blank'   # open in new window/tab
             # Put a class on hrefs containing TeX to allow a style override.
             node.traverse do |descendant|
               if descendant['class'] == 'texhtml'
@@ -909,9 +943,9 @@ module Polytexnic
           end
         end
 
-        # Unescapes underscores, which are escaped by kramdown.
-        def unescape_underscores(url)
-          url.gsub(/\\_/, '_')
+        # Unescapes some special characters that are escaped by kramdown.
+        def unescape_special_chars(url)
+          url.gsub(/\\_/, '_').gsub(/\\#/, '#').gsub(/\\%/, '%')
         end
 
         # Handles both \includegraphics and figure environments.

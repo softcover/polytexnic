@@ -86,6 +86,9 @@ module Polytexnic
       def to_polytex
         math_cache = {}
         cleaned_markdown = cache_code_environments(@source)
+        expand_input!(cleaned_markdown,
+                      Proc.new { |source| cache_code_environments(source) })
+
         puts cleaned_markdown if debug?
         cleaned_markdown.tap do |markdown|
           convert_code_inclusion(markdown)
@@ -215,7 +218,7 @@ module Polytexnic
             code_cache[key] = [code, language]
             output << key
             output << line
-          elsif line =~ /^```(\w*)(,\s*options:.*)?$/  # highlighted fences
+          elsif line =~ /^```([\w+]*)(,\s*options:.*)?$/  # highlighted fences
             count = 1
             language = $1.empty? ? 'text' : $1
             options  = $2

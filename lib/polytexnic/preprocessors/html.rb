@@ -46,8 +46,9 @@ module Polytexnic
         # global substitutions.
         def clean_document(polytex)
           doc = cache_literal(add_commands(polytex))
+          expand_input!(doc, Proc.new { |source| cache_literal(source) }, 'tex')
           inline_verbatim(doc)
-          cache_hrefs(doc)
+          cache_urls(doc)
           remove_comments(doc)
           double_backslashes(cache_display_inline_math(doc))
         end
@@ -77,6 +78,10 @@ module Polytexnic
           # Case of "foo.\nA"
           doc.gsub!(/(#{not_a_capital})(#{end_of_sentence})\n([^\n])/) do
             $1 + $2 + xmlelement('intersentencespace') + ' ' + $3
+          end
+          # Case of "foo.}} A"
+          doc.gsub!(/(#{not_a_capital})(#{end_of_sentence})(\})+[ ]+([^\s])/) do
+            $1 + $2 + $3 + xmlelement('intersentencespace') + ' ' + $4
           end
           # Handle the manual override to force an inter-sentence space, '\@',
           # as in 'Superman II\@. A new sentence'.

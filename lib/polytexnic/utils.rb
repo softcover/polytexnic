@@ -31,6 +31,18 @@ module Polytexnic
       @tralics ||= executable
     end
 
+
+    # Expands '\input' command by processing & inserting the target source.
+    def expand_input!(text, code_function, ext = 'md')
+      text.gsub!(/^[ \t]*\\input\{(.*?)\}[ \t]*$/) do
+        included_text = File.read("#{$1}.#{ext}")
+        code_function.call(included_text).tap do |clean_text|
+          # Recursively substitute '\input' in included text.
+          expand_input!(clean_text, code_function, ext)
+        end
+      end
+    end
+
     # Returns true for OS X Mountain Lion (10.8) and later.
     def os_x_newer?
       os_x? && !os_x_older?
@@ -78,13 +90,14 @@ module Polytexnic
       string.gsub(/\\(\s+|$)/) { '\\\\' + $1.to_s }
     end
 
-    # Caches URLs for \href commands.
-    def cache_hrefs(doc, latex=false)
+    # Caches URLs for \href and \url commands.
+    def cache_urls(doc, latex=false)
       doc.tap do |text|
-        text.gsub!(/\\href{(.*?)}/) do
-          key = digest($1)
-          literal_cache[key] = $1
-          "\\href{#{key}}"
+        text.gsub!(/\\(href|url){(.*?)}/) do
+          command, url = $1, $2
+          key = digest(url)
+          literal_cache[key] = url
+          command == 'url' ? "\\href{#{key}}{#{url}}" : "\\href{#{key}}"
         end
       end
     end
@@ -112,6 +125,8 @@ module Polytexnic
 \newcommand{\codecaption}[1]{\xmlelt{heading}{#1}}
 \newcommand{\sout}[1]{\xmlelt{sout}{#1}}
 \newcommand{\kode}[1]{\xmlelt{kode}{#1}}
+\newcommand{\coloredtext}[2]{\xmlelt{coloredtext}{\AddAttToCurrent{color}{#1}#2}}
+\newcommand{\coloredtexthtml}[2]{\xmlelt{coloredtexthtml}{\AddAttToCurrent{color}{#1}#2}}
 \newcommand{\filepath}[1]{\xmlelt{filepath}{#1}}
 \newcommand{\image}[1]{\xmlelt{image}{#1}}
 \newcommand{\imagebox}[1]{\xmlelt{imagebox}{#1}}
@@ -119,7 +134,7 @@ module Polytexnic
 \newcommand{\pbox}[2]{#2}
 % Ignore some other commands.
 \newcommand{\includepdf}[1]{}
-\newcommand{\newunicodechar}[2]{fdsfdas}
+\newcommand{\newunicodechar}[2]{}
       EOS
       custom_commands = <<-EOS
 \\usepackage{amsthm}

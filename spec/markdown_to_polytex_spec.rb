@@ -468,6 +468,30 @@ lorem
           it { should resemble output }
         end
 
+        context "with a compound language" do
+          let(:source) do <<-EOS
+# Softcover-flavored Markdown
+
+HTML and PHP:
+
+```html+php
+Name: <input type="text" name="name" value="<?php echo $name;?>">
+```
+
+As a final enhancement
+            EOS
+          end
+
+          let(:output) do <<-'EOS'
+%= lang:html+php
+\begin{code}
+Name: <input type="text" name="name" value="<?php echo $name;?>">
+\end{code}
+            EOS
+          end
+          it { should resemble output }
+        end
+
         context "with highlighting and options" do
           let(:source) do <<-EOS
 ```ruby, options: "hl_lines": [1, 2], "linenos": true
@@ -527,6 +551,43 @@ def hello; puts 'hello'; end
           it { should resemble output }
         end
       end
+    end
+
+    describe '\input command' do
+      let(:external_file) { 'foo.md' }
+      let(:nested_external_file) { 'bar.md' }
+      let(:input) do <<-'EOS'
+Lorem ipsum
+```ruby
+def foo; 'foo'; end
+```
+Lorem *ipsum* dolor sit amet
+
+\input{bar}
+        EOS
+      end
+      let(:nested_input) do <<-'EOS'
+Lorem ipsum
+```python
+def bar(): return "bar"
+```
+        EOS
+      end
+      before do
+        File.write(external_file, input)
+        File.write(nested_external_file, nested_input)
+      end
+      after do
+        File.unlink(external_file)
+        File.unlink(nested_external_file)
+      end
+
+      let(:output) do
+        Polytexnic::Pipeline.new(input, source: :markdown).polytex
+      end
+      let(:source) { "# Foo\n\n  \\input{foo}  " }
+
+      it { should include output }
     end
   end
 end

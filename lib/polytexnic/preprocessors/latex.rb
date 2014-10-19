@@ -12,7 +12,11 @@ module Polytexnic
       # Literal environments are hashed and passed through the pipeline
       # so that we can process things like refs and hyperrefs using gsubs.
       def clean_latex_document
-        cache_literal(@polytex, :latex)
+        cache_literal(@polytex, :latex).tap do |doc|
+          expand_input!(doc,
+                        Proc.new { |source| cache_literal(source, :latex) },
+                        'tex')
+        end
       end
 
       # Convert GIFs to PNGs.

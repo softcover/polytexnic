@@ -201,23 +201,41 @@ describe 'Polytexnic::Pipeline#to_html' do
     it { should resemble output }
   end
 
-  describe "href" do
+  describe "URLs" do
 
     context "standard URL" do
       let(:polytex) { '\href{http://example.com/}{Example Site}' }
-      let(:output) { '<a href="http://example.com/">Example Site</a>' }
-      it { should resemble output }
+      it { should include '<a href="http://example.com/"' }
+      it { should include '>Example Site</a>' }
     end
 
-    context "URL containing TeX" do
+    context "containing TeX" do
       let(:polytex) { '\href{http://example.com/}{\emph{\TeX}}' }
-      let(:output) { '<a href="http://example.com/" class="tex">' }
-      it { should resemble output }
+      it { should include '<a href="http://example.com/"' }
+      it { should include 'class="tex"' }
     end
 
-    context "URL containing escaped text" do
+    context "containing escaped text" do
       let(:polytex) { '\href{http://example.com/escaped\_text}{Example Site}' }
-      it { should include '<a href="http://example.com/escaped_text">Example Site</a>' }
+      it { should include '<a href="http://example.com/escaped_text"' }
+      it { should include '>Example Site</a>' }
+    end
+
+    context "containing an escaped percent" do
+      let(:polytex) { '\href{http://example.com/escaped\%20text}{Example Site}' }
+      it { should include '<a href="http://example.com/escaped%20text"' }
+      it { should include '>Example Site</a>' }
+    end
+
+    context "self-linking URL" do
+      let(:polytex) { '\url{http://example.com/}' }
+      it { should include '<a href="http://example.com/"' }
+      it { should include '>http://example.com/</a>' }
+    end
+
+    context "with a # sign" do
+      let(:polytex) { '\href{http://example.com/\#email}{email link}' }
+      it { should include 'http://example.com/#email' }
     end
   end
 
@@ -273,6 +291,16 @@ describe 'Polytexnic::Pipeline#to_html' do
     context "\\newunicodecharacter" do
       let(:polytex) { '\newunicodechar{├}{\textSFviii}' }
       it { should_not include '├' }
+    end
+
+    context "\\newpage" do
+      let(:polytex) { '\newpage' }
+      it { should_not include 'newpage' }
+    end
+
+    context "\\allowbreak" do
+      let(:polytex) { '\allowbreak' }
+      it { should_not include 'allowbreak' }
     end
   end
 end
