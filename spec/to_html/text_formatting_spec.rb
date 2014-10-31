@@ -32,6 +32,11 @@ describe 'Polytexnic::Pipeline#to_html' do
       it { should resemble '<span class="sc">small caps</span>' }
     end
 
+    describe "small text" do
+      let(:polytex) { '{\small small text}' }
+      it { should resemble '<small>small text</small>' }
+    end
+
     describe "typewriter text" do
       let(:polytex) { '\texttt{typewriter text}' }
       it { should resemble '<span class="tt">typewriter text</span>' }

@@ -9,6 +9,7 @@ module Polytexnic
         emphasis(doc)
         boldface(doc)
         small_caps(doc)
+        small(doc)
         typewriter(doc)
         skips(doc)
         verbatim(doc)
@@ -76,6 +77,14 @@ module Polytexnic
           doc.xpath('//hi[@rend="sc"]').each do |node|
             node.name = 'span'
             node['class'] = 'sc'
+            node.remove_attribute('rend')
+          end
+        end
+
+        # Handles \small.
+        def small(doc)
+          doc.xpath('//hi[@rend="small"]').each do |node|
+            node.name = 'small'
             node.remove_attribute('rend')
           end
         end
