@@ -553,7 +553,7 @@ module Polytexnic
             if node['rend'] == 'nonumber'
               # Add an id for linking based on the text of the section.
               text = node.children.first.text
-              node['id'] = text.downcase.gsub(' ', '_')
+              node['id'] = text.downcase.gsub(' ', '_').gsub(/[^\w]/, '')
               node['class'] += '-star'
             end
             clean_node node, %w{type rend}
