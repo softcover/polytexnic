@@ -75,7 +75,7 @@ describe Polytexnic::Pipeline do
         Polytexnic::Pipeline.new(polytex).to_html
       end
       it "should not crash" do
-        expect(File.exist?('.highlight_cache')).to be_true
+        expect(File.exist?('.highlight_cache')).to be_truthy
         expect { Polytexnic::Pipeline.new(polytex).to_html }.not_to raise_error
       end
     end
@@ -137,6 +137,22 @@ describe Polytexnic::Pipeline do
           </div>
         </div>
       EOS
+    end
+  end
+
+  context "with highlight line out of range" do
+    let(:polytex) do <<-'EOS'
+      %= lang:ruby, options: "hl_lines": [17], "linenos": true
+      \begin{code}
+      def foo
+        "bar"
+      end
+      \end{code}
+      EOS
+    end
+
+    it "should emit a warning" do
+
     end
   end
 

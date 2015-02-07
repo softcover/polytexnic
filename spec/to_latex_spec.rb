@@ -29,7 +29,7 @@ Make a code listing as in Listing~\ref{code:hello}.
 \begin{codelisting}
 \label{code:hello}
 \codecaption{A hello program in Ruby.}
-%= lang:ruby
+%= lang:ruby, options: "hl_lines": [17]
 \begin{code}
 def hello
   "hello, world!"

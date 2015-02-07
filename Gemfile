@@ -22,7 +22,6 @@ group :test do
 end
 
 group :development do
-  gem 'rspec', '~> 2.13'
   gem 'guard-rspec'
   gem 'rake'
 end
