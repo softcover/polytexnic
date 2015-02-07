@@ -186,7 +186,7 @@ describe 'Polytexnic::Pipeline#to_html' do
 
   describe '\section*, etc.' do
     let(:polytex) do <<-'EOS'
-        \section*{Foo}
+        \section*{Foo: baz}
 
         \subsection*{Bar}
 
@@ -196,8 +196,8 @@ describe 'Polytexnic::Pipeline#to_html' do
       EOS
     end
     let(:output) do <<-'EOS'
-      <div class="section-star" id="foo">
-        <h2><a href="#foo" class="heading">Foo</a></h2>
+      <div class="section-star" id="foo_baz">
+        <h2><a href="#foo_baz" class="heading">Foo: baz</a></h2>
         <div class="subsection-star">
           <h3><a class="heading">Bar</a></h3>
           <p>Lorem ipsum</p>
