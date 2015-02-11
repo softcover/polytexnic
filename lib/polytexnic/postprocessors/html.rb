@@ -416,7 +416,7 @@ module Polytexnic
         # Handles \begin{quote} ... \end{quote}.
         def quote(doc)
           doc.xpath('//p[@rend="quoted"]').each do |node|
-            clean_node node, 'rend'
+            clean_node node, %w{rend noindent}
             node.name = 'blockquote'
             node['class'] = 'quote'
           end
