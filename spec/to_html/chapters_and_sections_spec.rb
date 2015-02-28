@@ -108,11 +108,13 @@ describe 'Polytexnic::Pipeline#to_html' do
 
   describe '\section' do
     let(:polytex) do <<-'EOS'
+        Lorem ipsum
         \section{Foo}
         \label{sec:foo}
       EOS
     end
     let(:output) do <<-'EOS'
+      <p>Lorem ipsum</p>
       <div id="sec-foo" data-tralics-id="cid1" class="section" data-number="1">
         <h2><a href="#sec-foo" class="heading"><span class="number">1 </span>Foo</a></h2>
       </div>

@@ -385,6 +385,7 @@ module Polytexnic
         # so recursively search the parents to find it.
         # Then return the first number in the value, e.g., "1" in "1.2".
         def chapter_number(node)
+          return 0 if article?
           number = node['data-number']
           if number && !number.empty?
             number.split('.').first.to_i
