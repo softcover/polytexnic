@@ -941,7 +941,7 @@ module Polytexnic
 
         # Returns true if pipeline was called on an article document.
         def article?
-          !article.nil?
+          !!article
         end
 
         # Returns a label number for use in headings.
