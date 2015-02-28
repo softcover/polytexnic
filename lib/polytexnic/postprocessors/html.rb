@@ -933,12 +933,15 @@ module Polytexnic
           end
         end
 
+        # Extract the sequential number from the node id.
+        # I.e., number_from_id('2.3') -> '3'
         def number_from_id(id)
           id.split('.')[1]
         end
 
+        # Returns true if pipeline was called on an article document.
         def article?
-          true
+          !article.nil?
         end
 
         # Returns a label number for use in headings.
