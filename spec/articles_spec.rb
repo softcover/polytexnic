@@ -33,7 +33,7 @@ $ subl .gemrc
       \end{code}
       \end{codelisting}
 
-      Listing~\ref{code:create_gemrc}
+      Listing~\ref{code:create_gemrc}\footnote{asdfasdf}
 
       Section~\ref{sec:foo}
 
@@ -44,10 +44,12 @@ $ subl .gemrc
   let(:figure)    { '<span class="header">Figure 1</span>' }
   let(:table)     { '<span class="header">Table 1</span>' }
   let(:listing)   { '<span class="number">Listing 1:</span>' }
+  let(:footnote)  { '<sup id="cha-0_footnote-ref-1" class="footnote"><a href="#cha-0_footnote-1">1</a></sup>' }
 
   let(:sref) { 'Section <span class="ref">1</span>' }
   let(:fref) { 'Figure <span class="ref">1</span>' }
   let(:lref) { 'Listing <span class="ref">1</span>' }
+  let(:fntext) { 'asdfasdf' }
 
   describe "section" do
     describe "numbering" do
@@ -76,4 +78,13 @@ $ subl .gemrc
     end
   end
 
+  describe "footnote" do
+    it { should include '<ol class="footnotes">' }
+    describe "numbering" do
+      it { should include footnote }
+    end
+    describe "footnote text" do
+      it { should include fntext }
+    end
+  end
 end
