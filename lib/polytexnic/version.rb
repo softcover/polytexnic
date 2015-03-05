@@ -1,3 +1,3 @@
 module Polytexnic
-  VERSION = "1.0.2"
+  VERSION = "1.1.beta1"
 end
