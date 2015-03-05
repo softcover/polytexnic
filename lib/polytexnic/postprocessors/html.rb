@@ -357,7 +357,7 @@ module Polytexnic
                 # Move footnote outside section anchor tag.
                 node.parent = node.parent.parent
               end
-              # Add an inter-sentence space if appropriate.
+              # Add an intersentence space if appropriate.
               previous_character = node.previous_sibling.content[-1]
               end_of_sentence = %w[. ! ?].include?(previous_character)
               after = node.next_sibling
@@ -367,6 +367,11 @@ module Polytexnic
                 space['class'] = 'intersentencespace'
                 node['class'] += ' intersentence'
                 node.add_next_sibling(space)
+              end
+              # Remove spurious intersentence space from mid-sentence notes.
+              unless end_of_sentence
+                intersentence_space = node.next_sibling
+                intersentence_space.remove unless intersentence_space.nil?
               end
             end
           end
