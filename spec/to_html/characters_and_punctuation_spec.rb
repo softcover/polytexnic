@@ -88,9 +88,14 @@ describe 'Polytexnic::Pipeline#to_html' do
           it { should resemble "“Yes, indeed!”#{intsp} A new sentence." }
         end
 
-        context "with sentence ending with curly braces" do
+        context "with a sentence ending with curly braces" do
           let(:polytex) { "\\emph{\\textbf{Foo.}} Bar." }
           it { should resemble "#{intsp} Bar" }
+        end
+
+        context "with a mid-sentence footnote ending with a period" do
+          let(:polytex) { 'Lorem\footnote{Cicero.} ipsum.' }
+          it { should_not include 'intersentencespace' }
         end
 
         context "forced inter-sentence override" do
