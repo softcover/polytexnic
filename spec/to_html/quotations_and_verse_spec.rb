@@ -58,6 +58,18 @@ describe 'Polytexnic::Pipeline#to_html' do
           EOS
         end
       end
+
+      context "with a leading noindent" do
+        let(:polytex) do <<-'EOS'
+  \section{Up and running} 
+
+\begin{quotation}
+\noindent I think of Chapter 1 as the ``weeding out phase'' in law school
+\end{quotation}
+          EOS
+        end
+        it { should_not include('noindent') }
+      end
     end
 
     describe '\verse' do

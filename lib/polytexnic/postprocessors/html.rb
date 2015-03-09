@@ -357,7 +357,7 @@ module Polytexnic
                 # Move footnote outside section anchor tag.
                 node.parent = node.parent.parent
               end
-              # Add an inter-sentence space if appropriate.
+              # Add an intersentence space if appropriate.
               previous_character = node.previous_sibling.content[-1]
               end_of_sentence = %w[. ! ?].include?(previous_character)
               after = node.next_sibling
@@ -367,6 +367,11 @@ module Polytexnic
                 space['class'] = 'intersentencespace'
                 node['class'] += ' intersentence'
                 node.add_next_sibling(space)
+              end
+              # Remove spurious intersentence space from mid-sentence notes.
+              unless end_of_sentence
+                intersentence_space = node.next_sibling
+                intersentence_space.remove unless intersentence_space.nil?
               end
             end
           end
@@ -405,18 +410,18 @@ module Polytexnic
 
         # Returns HTML for a nicely styled TeX logo.
         def tex
-          %(<span class="texhtml" style="font-family: 'CMU Serif', cmr10, LMRoman10-Regular, 'Times New Roman', 'Nimbus Roman No9 L', Times, serif;">T<span style="text-transform: uppercase; vertical-align: -0.5ex; margin-left: -0.1667em; margin-right: -0.125em;">E</span>X</span>)
+          %(<span class="texhtml">T<span class="texhtmlE">E</span>X</span>)
         end
 
         # Returns HTML for a nicely styled LaTeX logo.
         def latex
-          %(<span class="texhtml" style="font-family: 'CMU Serif', cmr10, LMRoman10-Regular, 'Times New Roman', 'Nimbus Roman No9 L', Times, serif;">L<span style="text-transform: uppercase; font-size: 70%; margin-left: -0.36em; vertical-align: 0.3em; line-height: 0; margin-right: -0.15em;">A</span>T<span style="text-transform: uppercase; margin-left: -0.1667em; vertical-align: -0.5ex; line-height: 0; margin-right: -0.125em;">E</span>X</span>)
+          %(<span class="texhtml">L<span class="texhtmlA">A</span>T<span class="texhtmlE">E</span>X</span>)
         end
 
         # Handles \begin{quote} ... \end{quote}.
         def quote(doc)
           doc.xpath('//p[@rend="quoted"]').each do |node|
-            clean_node node, 'rend'
+            clean_node node, %w{rend noindent}
             node.name = 'blockquote'
             node['class'] = 'quote'
           end

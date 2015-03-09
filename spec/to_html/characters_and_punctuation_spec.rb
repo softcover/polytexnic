@@ -88,9 +88,14 @@ describe 'Polytexnic::Pipeline#to_html' do
           it { should resemble "“Yes, indeed!”#{intsp} A new sentence." }
         end
 
-        context "with sentence ending with curly braces" do
+        context "with a sentence ending with curly braces" do
           let(:polytex) { "\\emph{\\textbf{Foo.}} Bar." }
           it { should resemble "#{intsp} Bar" }
+        end
+
+        context "with a mid-sentence footnote ending with a period" do
+          let(:polytex) { 'Lorem\footnote{Cicero.} ipsum.' }
+          it { should_not include 'intersentencespace' }
         end
 
         context "forced inter-sentence override" do
@@ -111,7 +116,7 @@ describe 'Polytexnic::Pipeline#to_html' do
     describe "TeX logo" do
       let(:polytex) { '\TeX' }
       let(:output) do
-        %(<span class="texhtml" style="font-family: 'CMU Serif', cmr10, LMRoman10-Regular, 'Times New Roman', 'Nimbus Roman No9 L', Times, serif;">T<span style="text-transform: uppercase; vertical-align: -0.5ex; margin-left: -0.1667em; margin-right: -0.125em;">E</span>X</span>)
+        %(<span class="texhtml">T<span class="texhtmlE">E</span>X</span>)
       end
       it { should include(output) }
     end
@@ -119,7 +124,7 @@ describe 'Polytexnic::Pipeline#to_html' do
     describe "LaTeX logo" do
       let(:polytex) { '\LaTeX' }
       let(:output) do
-        %(<span class="texhtml" style="font-family: 'CMU Serif', cmr10, LMRoman10-Regular, 'Times New Roman', 'Nimbus Roman No9 L', Times, serif;">L<span style="text-transform: uppercase; font-size: 70%; margin-left: -0.36em; vertical-align: 0.3em; line-height: 0; margin-right: -0.15em;">A</span>T<span style="text-transform: uppercase; margin-left: -0.1667em; vertical-align: -0.5ex; line-height: 0; margin-right: -0.125em;">E</span>X</span>)
+        %(<span class="texhtml">L<span class="texhtmlA">A</span>T<span class="texhtmlE">E</span>X</span>)
       end
       it { should include(output) }
     end
@@ -127,7 +132,7 @@ describe 'Polytexnic::Pipeline#to_html' do
     describe "PolyTeX logo" do
       let(:polytex) { '\PolyTeX' }
       let(:output) do
-        %(Poly<span class="texhtml" style="font-family: 'CMU Serif', cmr10, LMRoman10-Regular, 'Times New Roman', 'Nimbus Roman No9 L', Times, serif;">T<span style="text-transform: uppercase; vertical-align: -0.5ex; margin-left: -0.1667em; margin-right: -0.125em;">E</span>X</span>)
+        %(Poly<span class="texhtml">T<span class="texhtmlE">E</span>X</span>)
       end
       it { should include(output) }
     end
@@ -135,7 +140,7 @@ describe 'Polytexnic::Pipeline#to_html' do
     describe "PolyTeXnic logo" do
       let(:polytex) { '\PolyTeXnic' }
       let(:output) do
-        %(Poly<span class="texhtml" style="font-family: 'CMU Serif', cmr10, LMRoman10-Regular, 'Times New Roman', 'Nimbus Roman No9 L', Times, serif;">T<span style="text-transform: uppercase; vertical-align: -0.5ex; margin-left: -0.1667em; margin-right: -0.125em;">E</span>X</span>nic)
+        %(Poly<span class="texhtml">T<span class="texhtmlE">E</span>X</span>nic)
       end
       it { should include(output) }
     end

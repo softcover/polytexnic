@@ -32,8 +32,6 @@ module Kramdown
         end
       end
 
-      alias_method :original_convert_standalone_image, :convert_standalone_image
-
       # Uses figures for images only when label is present.
       # This allows users to put raw (centered) images in their documents.
       # The default behavior of kramdown is to wrap such images in a figure
@@ -46,7 +44,10 @@ module Kramdown
       def convert_standalone_image(el, opts, img)
         alt_text = el.children.first.attr['alt']
         if has_label?(alt_text)
-          original_convert_standalone_image(el, opts, img)
+          attrs = attribute_list(el)
+          # Override the kramdown default by adding "here" placement.
+          # Authors who want a different behavior can always use raw LaTeX.
+          "\\begin{figure}[h]#{attrs}\n\\begin{center}\n#{img}\n\\end{center}\n\\caption{#{escape(el.children.first.attr['alt'])}}\n#{latex_link_target(el, true)}\n\\end{figure}#{attrs}\n"
         else
           img.gsub('\includegraphics', '\image') + "\n"
         end

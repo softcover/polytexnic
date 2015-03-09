@@ -79,11 +79,11 @@ module Polytexnic
           doc.gsub!(/(#{not_a_capital})(#{end_of_sentence})\n([^\n])/) do
             $1 + $2 + xmlelement('intersentencespace') + ' ' + $3
           end
-          # Case of "foo.}} A"
+          # Case of "foo.} A" or "foo.}} A"
           doc.gsub!(/(#{not_a_capital})(#{end_of_sentence})(\})+[ ]+([^\s])/) do
             $1 + $2 + $3 + xmlelement('intersentencespace') + ' ' + $4
           end
-          # Handle the manual override to force an inter-sentence space, '\@',
+          # Handle the manual override to force an intersentence space, '\@',
           # as in 'Superman II\@. A new sentence'.
           doc.gsub!(/\\@\. /, '.' + xmlelement('intersentencespace') + ' ')
         end

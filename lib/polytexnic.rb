@@ -1,4 +1,8 @@
 # encoding=utf-8
+
+# Repeat this from the Gemfile for the sake of RubyTest.
+Encoding.default_external = Encoding::UTF_8
+
 require "polytexnic/utils"
 require "polytexnic/version"
 require "polytexnic/postprocessor"
