@@ -494,12 +494,11 @@ module Polytexnic
               label = node.at_css('data-label')
               node['id'] = pipeline_label(label)
               unexpected.remove
-              clean_node node, %w{data-label}
             elsif label = node.at_css('data-label')
               node['id'] = pipeline_label(label)
               label.remove
-              clean_node node, %w{data-label}
             end
+            clean_node node, %w{data-label place}
           end
           doc.xpath('//table').each do |node|
             if unexpected = node.at_css('unexpected')
