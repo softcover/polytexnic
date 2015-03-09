@@ -84,7 +84,7 @@ describe 'Polytexnic::Pipeline#to_html' do
 
     context "with a label and a cross-reference" do
       let(:polytex) do <<-'EOS'
-        \begin{figure}
+        \begin{figure}[h]
         lorem
         \label{fig:foo}
         \end{figure}
