@@ -369,12 +369,17 @@ module Polytexnic
                 node.add_next_sibling(space)
               end
               # Remove spurious intersentence space from mid-sentence notes.
-              unless end_of_sentence
-                intersentence_space = node.next_sibling
-                intersentence_space.remove unless intersentence_space.nil?
+              next_sibling = node.next_sibling
+              if !end_of_sentence && intersentence_space?(next_sibling)
+                next_sibling.remove
               end
             end
           end
+        end
+
+        # Returns true if a node is an intersentence space
+        def intersentence_space?(node)
+          node && node.values == ['intersentencespace']
         end
 
         # Returns the nth footnote symbol for use in non-numerical footnotes.

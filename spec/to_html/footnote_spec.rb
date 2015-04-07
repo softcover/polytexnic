@@ -166,4 +166,13 @@ describe 'Polytexnic::Pipeline#to_html' do
     end
     it { should resemble output }
   end
+
+  describe "emphasis inside footnote" do
+    let(:polytex) do <<-'EOS'
+        \chapter{Lorem}
+        Lorem ipsum\footnote{Dolor \emph{sit}} amet. Consectetur.
+      EOS
+    end
+    it { should include 'amet' }
+  end
 end
