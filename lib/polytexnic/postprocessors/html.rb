@@ -369,12 +369,17 @@ module Polytexnic
                 node.add_next_sibling(space)
               end
               # Remove spurious intersentence space from mid-sentence notes.
-              unless end_of_sentence
-                intersentence_space = node.next_sibling
-                intersentence_space.remove unless intersentence_space.nil?
+              next_sibling = node.next_sibling
+              if !end_of_sentence && intersentence_space?(next_sibling)
+                next_sibling.remove
               end
             end
           end
+        end
+
+        # Returns true if a node is an intersentence space
+        def intersentence_space?(node)
+          node && node.values == ['intersentencespace']
         end
 
         # Returns the nth footnote symbol for use in non-numerical footnotes.
@@ -390,6 +395,7 @@ module Polytexnic
         # so recursively search the parents to find it.
         # Then return the first number in the value, e.g., "1" in "1.2".
         def chapter_number(node)
+          return 0 if article?
           number = node['data-number']
           if number && !number.empty?
             number.split('.').first.to_i
@@ -666,6 +672,7 @@ module Polytexnic
           heading['class'] = 'heading'
 
           number = heading.at_css('strong')
+          number.content = number.content.sub!('0.', '') if article?
           number.name = 'span'
           number['class'] = 'number'
           if css_class == 'codelisting'
@@ -896,7 +903,7 @@ module Polytexnic
             @equation = 0
             @figure = 0
             @table = 0
-            @cha = node['id-text']
+            @cha = article? ? nil : node['id-text']
           elsif node['class'] == 'section'
             @sec = node['id-text']
             label_number(@cha, @sec)
@@ -914,7 +921,8 @@ module Polytexnic
             end
             label_number(@cha, @equation)
           elsif node['class'] == 'codelisting'
-            node['id-text']
+            @listing = number_from_id(node['id-text'])
+            label_number(@cha, @listing)
           elsif node['class'] == 'aside'
             node['id-text']
           elsif node.name == 'table' && node['id-text']
@@ -932,6 +940,17 @@ module Polytexnic
             end
             label_number(@cha, @figure)
           end
+        end
+
+        # Extract the sequential number from the node id.
+        # I.e., number_from_id('2.3') -> '3'
+        def number_from_id(id)
+          id.split('.')[1]
+        end
+
+        # Returns true if pipeline was called on an article document.
+        def article?
+          !!article
         end
 
         # Returns a label number for use in headings.

@@ -38,13 +38,15 @@ module Polytexnic
 
     attr_accessor :literal_cache, :code_cache, :polytex, :xml, :html,
                   :math_label_cache, :highlight_cache, :maketitle_elements,
-                  :custom_commands, :language_labels, :unicode_cache
+                  :custom_commands, :language_labels, :unicode_cache,
+                  :article
 
     def initialize(source, options = {})
       @literal_cache = options[:literal_cache] || {}
       @unicode_cache = {}
       @code_cache = {}
       @maketitle_elements = {}
+      @article = options[:article]
       @language_labels = if (labels = options[:language_labels]).nil?
                             default_language_labels
                           else

@@ -94,7 +94,8 @@ describe 'Polytexnic::Pipeline#to_html' do
         end
 
         context "with a mid-sentence footnote ending with a period" do
-          let(:polytex) { 'Lorem\footnote{Cicero.} ipsum.' }
+          let(:polytex) { 'Lorem\footnote{From \emph{Cicero}.} ipsum.' }
+          it { should     include 'ipsum' }
           it { should_not include 'intersentencespace' }
         end
 
