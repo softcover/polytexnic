@@ -7,6 +7,7 @@ module Polytexnic
       def xml_to_html(xml)
         restore_underscores(xml)
         doc = Nokogiri::XML(xml)
+        comments(doc)
         emphasis(doc)
         boldface(doc)
         small_caps(doc)
@@ -63,6 +64,13 @@ module Polytexnic
         # This is where we restore them.
         def restore_underscores(xml)
           xml.gsub!(underscore_digest, '_')
+        end
+
+        # Replaces comment content with proper HTML comments.
+        def comments(doc)
+          doc.xpath('//comment').each do |node|
+            node.replace("<!-- #{node.inner_html} -->")
+          end
         end
 
         # Handles output of \emph{} and \textit{}.

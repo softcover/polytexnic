@@ -124,7 +124,7 @@ module Polytexnic
         def remove_comments(output)
           output.gsub!(/[^\\]%[^=].*$/, '')
           output.gsub!(/[^\\]%=(.*)$/) do
-            $1.gsub('_', underscore_digest)
+            xmlelement('comment') { $1.gsub('_', underscore_digest) }
           end
         end
 

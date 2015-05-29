@@ -71,7 +71,7 @@ describe 'Polytexnic::Pipeline#to_html' do
 
     context "with a percent-equals" do
       let(:polytex) { '%= literal_text' }
-      it { should include 'literal_text' }
+      it { should include '<!-- literal_text -->' }
     end
   end
 
