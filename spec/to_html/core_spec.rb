@@ -18,11 +18,6 @@ describe 'Polytexnic::Pipeline#to_html' do
       it { should eq '' }
     end
 
-    context "with a manual break" do
-      let(:polytex) { 'foo \\\\ bar' }
-      it { should include '<span class="break">' }
-    end
-
     context "with a code listing" do
       let(:polytex) do <<-'EOS'
         % \begin{codelisting}
@@ -73,6 +68,11 @@ describe 'Polytexnic::Pipeline#to_html' do
       end
       it { should eq '' }
     end
+
+    context "with a percent-equals" do
+      let(:polytex) { '%= literal_text' }
+      it { should include '<!-- literal_text -->' }
+    end
   end
 
   describe "a complete document" do
@@ -87,6 +87,12 @@ describe 'Polytexnic::Pipeline#to_html' do
 
     it { should resemble "<p>lorem ipsum</p>" }
   end
+
+  describe "a manual break" do
+    let(:polytex) { 'foo \\\\ bar' }
+    it { should include '<span class="break">' }
+  end
+
 
   describe "paragraphs" do
     let(:polytex) { 'lorem ipsum' }
