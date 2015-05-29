@@ -120,8 +120,12 @@ module Polytexnic
         end
 
         # Removes commented-out lines.
+        # Contents of the special sequence `%=` are converted to HTML comments.
         def remove_comments(output)
-          output.gsub!(/[^\\]%.*$/, '')
+          output.gsub!(/[^\\]%[^=].*$/, '')
+          output.gsub!(/[^\\]%=(.*)$/) do
+            xmlelement('comment') { $1.gsub('_', underscore_digest) }
+          end
         end
 
         # Converts LaTeX double backslashes to HTML breaks.
