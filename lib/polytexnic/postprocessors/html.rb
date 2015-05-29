@@ -5,6 +5,7 @@ module Polytexnic
 
       # Converts Tralics XML output to HTML.
       def xml_to_html(xml)
+        restore_underscores(xml)
         doc = Nokogiri::XML(xml)
         emphasis(doc)
         boldface(doc)
@@ -55,6 +56,14 @@ module Polytexnic
       end
 
       private
+
+        # Restores underscores.
+        # Tralics does weird stuff with underscores, in some contexts,
+        # so they are subbed out and passed through the pipeline intact.
+        # This is where we restore them.
+        def restore_underscores(xml)
+          xml.gsub!(underscore_digest, '_')
+        end
 
         # Handles output of \emph{} and \textit{}.
         def emphasis(doc)
@@ -538,12 +547,9 @@ module Polytexnic
           end
         end
 
-        # Restores the label.
-        # Tralics does weird stuff with underscores, so they are subbed out
-        # so that they can be passed through the pipeline intact. This is where
-        # we restore them.
+        # Pulls the label out of the node.
         def pipeline_label(node)
-          node.inner_html.gsub(underscore_digest, '_')
+          node.inner_html
         end
 
         # Processes the <head> tag given a section node.
