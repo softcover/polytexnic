@@ -167,12 +167,12 @@ describe 'Polytexnic::Pipeline#to_html' do
     it { should resemble output }
   end
 
-  describe "emphasis inside footnote" do
+  describe "emphasis inside footnote with a period" do
     let(:polytex) do <<-'EOS'
         \chapter{Lorem}
-        Lorem ipsum\footnote{Dolor \emph{sit}} amet. Consectetur.
+        Lorem ipsum\footnote{Dolor \emph{sit.}} amet. Consectetur.
       EOS
     end
-    it { should include 'amet' }
+    it { should_not include '</span> amet' }
   end
 end
