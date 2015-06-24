@@ -872,9 +872,15 @@ module Polytexnic
           end
 
           doc.xpath('//*[@target]').each do |node|
-            node['href'] = "##{node['target'].gsub(':', '-')}"
-            node['class'] = 'hyperref'
-            clean_node node, 'target'
+            if node['target'] == '_blank'
+              # This branch gets hit when running a title element
+              # through the pipeline a second time.
+              node['href'] = unescape_special_chars(literal_cache[node['href']])
+            else
+              node['href'] = "##{node['target'].gsub(':', '-')}"
+              node['class'] = 'hyperref'
+              clean_node node, 'target'
+            end
           end
         end
 
