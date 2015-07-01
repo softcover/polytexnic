@@ -5,7 +5,9 @@ module Polytexnic
 
       # Converts Tralics XML output to HTML.
       def xml_to_html(xml)
+        restore_underscores(xml)
         doc = Nokogiri::XML(xml)
+        comments(doc)
         emphasis(doc)
         boldface(doc)
         small_caps(doc)
@@ -55,6 +57,21 @@ module Polytexnic
       end
 
       private
+
+        # Restores underscores.
+        # Tralics does weird stuff with underscores, in some contexts,
+        # so they are subbed out and passed through the pipeline intact.
+        # This is where we restore them.
+        def restore_underscores(xml)
+          xml.gsub!(underscore_digest, '_')
+        end
+
+        # Replaces comment content with proper HTML comments.
+        def comments(doc)
+          doc.xpath('//comment').each do |node|
+            node.replace("<!-- #{node.inner_html} -->")
+          end
+        end
 
         # Handles output of \emph{} and \textit{}.
         def emphasis(doc)
@@ -557,12 +574,9 @@ module Polytexnic
           end
         end
 
-        # Restores the label.
-        # Tralics does weird stuff with underscores, so they are subbed out
-        # so that they can be passed through the pipeline intact. This is where
-        # we restore them.
+        # Pulls the label out of the node.
         def pipeline_label(node)
-          node.inner_html.gsub(underscore_digest, '_')
+          node.inner_html
         end
 
         # Processes the <head> tag given a section node.
@@ -877,9 +891,15 @@ module Polytexnic
           end
 
           doc.xpath('//*[@target]').each do |node|
-            node['href'] = "##{node['target'].gsub(':', '-')}"
-            node['class'] = 'hyperref'
-            clean_node node, 'target'
+            if node['target'] == '_blank'
+              # This branch gets hit when running a title element
+              # through the pipeline a second time.
+              node['href'] = unescape_special_chars(literal_cache[node['href']])
+            else
+              node['href'] = "##{node['target'].gsub(':', '-')}"
+              node['class'] = 'hyperref'
+              clean_node node, 'target'
+            end
           end
         end
 

@@ -80,7 +80,7 @@ module Polytexnic
             $1 + $2 + xmlelement('intersentencespace') + ' ' + $3
           end
           # Case of "foo.} A" or "foo.}} A"
-          doc.gsub!(/(#{not_a_capital})(#{end_of_sentence})(\})+[ ]+([^\s])/) do
+          doc.gsub!(/(#{not_a_capital})(#{end_of_sentence})(\}+)[ ]+([^\s])/) do
             $1 + $2 + $3 + xmlelement('intersentencespace') + ' ' + $4
           end
           # Handle the manual override to force an intersentence space, '\@',
@@ -120,8 +120,12 @@ module Polytexnic
         end
 
         # Removes commented-out lines.
+        # Contents of the special sequence `%=` are converted to HTML comments.
         def remove_comments(output)
-          output.gsub!(/[^\\]%.*$/, '')
+          output.gsub!(/[^\\]%[^=].*$/, '')
+          output.gsub!(/[^\\]%=(.*)$/) do
+            xmlelement('comment') { $1.gsub('_', underscore_digest) }
+          end
         end
 
         # Converts LaTeX double backslashes to HTML breaks.

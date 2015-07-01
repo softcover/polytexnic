@@ -18,11 +18,6 @@ describe 'Polytexnic::Pipeline#to_html' do
       it { should eq '' }
     end
 
-    context "with a manual break" do
-      let(:polytex) { 'foo \\\\ bar' }
-      it { should include '<span class="break">' }
-    end
-
     context "with a code listing" do
       let(:polytex) do <<-'EOS'
         % \begin{codelisting}
@@ -73,6 +68,11 @@ describe 'Polytexnic::Pipeline#to_html' do
       end
       it { should eq '' }
     end
+
+    context "with a percent-equals" do
+      let(:polytex) { '%= literal_text' }
+      it { should include '<!-- literal_text -->' }
+    end
   end
 
   describe "a complete document" do
@@ -88,6 +88,12 @@ describe 'Polytexnic::Pipeline#to_html' do
     it { should resemble "<p>lorem ipsum</p>" }
   end
 
+  describe "a manual break" do
+    let(:polytex) { 'foo \\\\ bar' }
+    it { should include '<span class="break">' }
+  end
+
+
   describe "paragraphs" do
     let(:polytex) { 'lorem ipsum' }
     it { should resemble "<p>lorem ipsum</p>" }
@@ -99,7 +105,7 @@ describe 'Polytexnic::Pipeline#to_html' do
     context "with all elements filled out explicitly" do
       let(:polytex) do <<-'EOS'
           \title{Foo \\ \emph{Bar}}
-          \subtitle{Baz}
+          \subtitle{\href{http://example.com/}{Baz}}
           \author{Michael Hartl}
           \date{January 1, 2013}
           \begin{document}
@@ -112,7 +118,7 @@ describe 'Polytexnic::Pipeline#to_html' do
         should resemble <<-'EOS'
           <div id="title_page">
           <h1 class="title">Foo <span class="break"></span> <em>Bar</em></h1>
-          <h1 class="subtitle">Baz</h1>
+          <h1 class="subtitle"><a href="http://example.com/" target="_blank">Baz</a></h1>
           <h2 class="author">Michael Hartl</h2>
           <h2 class="date">January 1, 2013</h2>
           </div>
