@@ -178,13 +178,23 @@ describe 'Polytexnic::Pipeline#to_html' do
 
   describe "footnote inside a section*" do
     let(:polytex) do <<-'EOS'
+        \chapter{The first}
+
+        Test
+
+        \chapter{The second}
+
+        Also test
+
         \chapter{Lorem}
+
         Foo bar
+
         \section*{Baz}
 
         Lorem ipsum.\footnote{Dolor sit amet.}
       EOS
     end
-    it { should include 'cha-1_footnote' }
+    it { should include 'cha-3_footnote' }
   end
 end
