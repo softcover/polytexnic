@@ -414,21 +414,22 @@ module Polytexnic
         # Update: Hacked a solution to handle the uncommon case of a footnote
         # inside a section* environment.
         def chapter_number(node)
-          if section_star?(node)
-            return chapter_number(section_star_chapter(node))
-          end
           return 0 if article?
           number = node['data-number']
           if number && !number.empty?
             number.split('.').first.to_i
+          elsif section_star?(node)
+            chapter_number(section_star_chapter(node))
           else
             chapter_number(node.parent) rescue nil
           end
         end
 
-        # Returns true if node comes from a '\section*'.
+        # Returns true if node is inside section*.
         def section_star?(node)
           begin
+            # puts (val = node.parent.parent.attributes['class'].value) + '*******'
+            # puts node.parent.parent.parent.parent.children[1] if val == 'section-star'
             node.parent.parent.attributes['class'].value == 'section-star'
           rescue
             false
@@ -437,7 +438,12 @@ module Polytexnic
 
         # Returns the chapter node for a section*.
         def section_star_chapter(node)
-          node.parent.parent.parent.children[1]
+          section_star = node.parent.parent
+          potential_chapter = section_star
+          # Keep accessing previous siblings until we hit a chapter.
+          while (potential_chapter = potential_chapter.previous_sibling) do
+            return potential_chapter if chapter?(potential_chapter)
+          end
         end
 
         # Handles logos for TeX and LaTeX.
@@ -920,8 +926,9 @@ module Polytexnic
 
         # Returns true if the node represents a chapter.
         def chapter?(node)
-          is_section = node['data-number'].match(/\./)
-          !(@cha.nil? || is_section)
+          attributes = node.attributes
+          attributes && attributes['class'] &&
+                        attributes['class'].value =~ /chapter/
         end
 
         # Returns the name to use for chapters.
