@@ -175,4 +175,16 @@ describe 'Polytexnic::Pipeline#to_html' do
     end
     it { should_not include '</span> amet' }
   end
+
+  describe "footnote inside a section*" do
+    let(:polytex) do <<-'EOS'
+        \chapter{Lorem}
+        Foo bar
+        \section*{Baz}
+
+        Lorem ipsum.\footnote{Dolor sit amet.}
+      EOS
+    end
+    it { should include 'cha-1_footnote' }
+  end
 end
