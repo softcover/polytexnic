@@ -394,7 +394,12 @@ module Polytexnic
         # Every node is inside some div that has a 'data-number' attribute,
         # so recursively search the parents to find it.
         # Then return the first number in the value, e.g., "1" in "1.2".
+        # Update: Hacked a solution to handle the uncommon case of a footnote
+        # inside a section* environment.
         def chapter_number(node)
+          if section_star?(node)
+            return chapter_number(section_star_chapter(node))
+          end
           return 0 if article?
           number = node['data-number']
           if number && !number.empty?
@@ -402,6 +407,20 @@ module Polytexnic
           else
             chapter_number(node.parent) rescue nil
           end
+        end
+
+        # Returns true if node comes from a '\section*'.
+        def section_star?(node)
+          begin
+            node.parent.parent.attributes['class'].value == 'section-star'
+          rescue
+            false
+          end
+        end
+
+        # Returns the chapter node for a section*.
+        def section_star_chapter(node)
+          node.parent.parent.parent.children[1]
         end
 
         # Handles logos for TeX and LaTeX.
