@@ -969,8 +969,8 @@ module Polytexnic
             @listing = number_from_id(node['id-text'])
             label_number(@cha, @listing)
           elsif node['class'] == 'aside'
-            @aside = ref_number(node, @cha, @aside)
-            node['id-text']
+            @aside = @cha.nil? ? number_from_id(node['id-text']) : @aside + 1
+            label_number(@cha, @aside)
           elsif node.name == 'table' && node['id-text']
             @table = ref_number(node, @cha, @table)
             label_number(@cha, @table)
