@@ -50,4 +50,30 @@ describe 'Polytexnic::Pipeline#to_html' do
       it { should include 'Cajón 1.1' }
     end
   end
+
+  describe "aside cross-references" do
+    let(:aside) do <<-'EOS'
+        \begin{aside}
+        \heading{Lorem ipsum.}
+        \label{aside:lorem}
+
+        lorem ipsum
+
+        dolor sit amet
+
+        \end{aside}
+
+        Box~\ref{aside:lorem}
+      EOS
+    end
+    context "in a chapter" do
+      let(:polytex) { '\chapter{Foo bar}' + "\n" + aside}
+      it { should include ">1.1<" }
+    end
+
+    context "in an article" do
+      let(:polytex) { '\section{A section}' + "\n" + aside }
+      it { should include ">1<" }
+    end
+  end
 end

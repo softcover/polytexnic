@@ -195,9 +195,11 @@ module Polytexnic
             # convention is not to indent paragraphs anyway, but we want to
             # support that case for completeness (mainly because Tralics does).
               next_paragraph = node.next_sibling
+              # Check to make sure it's a paragraph.
+              raise unless next_paragraph.name == 'p'
               next_paragraph['noindent'] = 'true'
             rescue
-              # We rescue nil in case the math isn't followed by any text.
+              # We rescue nil in case the math isn't followed by a paragraph.
               nil
             end
           end
@@ -949,6 +951,7 @@ module Polytexnic
             @equation = 0
             @figure = 0
             @table = 0
+            @aside = 0
             @cha = article? ? nil : node['id-text']
           elsif node['class'] == 'section'
             @sec = node['id-text']
@@ -960,32 +963,26 @@ module Polytexnic
             @ssubsec = node['id-text']
             label_number(@cha, @sec, @subsec, @ssubsec)
           elsif node['textype'] == 'equation'
-            if @cha.nil?
-              @equation = node['id-text']
-            else
-              @equation += 1
-            end
+            @equation = ref_number(node, @cha, @equation)
             label_number(@cha, @equation)
           elsif node['class'] == 'codelisting'
             @listing = number_from_id(node['id-text'])
             label_number(@cha, @listing)
           elsif node['class'] == 'aside'
+            @aside = ref_number(node, @cha, @aside)
             node['id-text']
           elsif node.name == 'table' && node['id-text']
-            if @cha.nil?
-              @table = node['id-text']
-            else
-              @table += 1
-            end
+            @table = ref_number(node, @cha, @table)
             label_number(@cha, @table)
           elsif node.name == 'figure'
-            if @cha.nil?
-              @figure = node['id-text']
-            else
-              @figure += 1
-            end
+            @figure = ref_number(node, @cha, @figure)
             label_number(@cha, @figure)
           end
+        end
+
+        # Returns the reference number (i.e., the 'x' in '2.x').
+        def ref_number(node, chapter, object)
+          chapter.nil? ? node['id-text'] : object + 1
         end
 
         # Extract the sequential number from the node id.
