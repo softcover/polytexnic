@@ -158,6 +158,37 @@ describe Polytexnic::Pipeline do
       it { should resemble '<p class="noindent">ipsum' }
     end
 
+    context "followed by a code listing" do
+      let(:polytex) do <<-'EOS'
+author be technical. (If you know how to use a command line and have a favorite text editor, you are technical enough to use Softcover.)
+
+\begin{equation}
+\label{eq:maxwell}
+\left.\begin{aligned}
+\nabla\cdot\mathbf{E} & = \rho \\
+\nabla\cdot\mathbf{B} & = 0 \\
+\nabla\times\mathbf{E} & = -\dot{\mathbf{B}} \\
+\nabla\times\mathbf{B} & = \mathbf{J} + \dot{\mathbf{E}}
+\end{aligned}
+\right\}
+\quad\text{Maxwell equations}
+\end{equation}
+
+\begin{codelisting}
+\label{code:eval}
+\codecaption{The caption.}
+%= lang:scheme
+\begin{code}
+;; Implements Lisp in Lisp.
+;; Alan Kay called this feat "Maxwell's equations of software", because just as
+\end{code}
+\end{codelisting}
+
+        EOS
+      end
+      it { should_not resemble 'noindent="true"' }
+    end
+
     describe "align" do
       let(:equation) do <<-'EOS'
         \begin{align}
