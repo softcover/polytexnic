@@ -26,8 +26,8 @@ describe 'Polytexnic::Pipeline#to_html' do
         it do
           should resemble <<-'EOS'
             <blockquote class="quotation">
-              <p>lorem ipsum</p>
-              <p>dolor sit amet</p>
+              <p class="quote">lorem ipsum</p>
+              <p class="quote">dolor sit amet</p>
             </blockquote>
           EOS
         end
@@ -49,11 +49,11 @@ describe 'Polytexnic::Pipeline#to_html' do
         it do
           should resemble <<-'EOS'
             <blockquote class="quotation">
-              <p>lorem ipsum</p>
+              <p class="quote">lorem ipsum</p>
               <blockquote class="quotation">
-              <p>foo bar</p>
+              <p class="quote">foo bar</p>
               </blockquote>
-              <p>dolor sit amet</p>
+              <p class="quote">dolor sit amet</p>
             </blockquote>
           EOS
         end
@@ -61,7 +61,7 @@ describe 'Polytexnic::Pipeline#to_html' do
 
       context "with a leading noindent" do
         let(:polytex) do <<-'EOS'
-  \section{Up and running} 
+  \section{Up and running}
 
 \begin{quotation}
 \noindent I think of Chapter 1 as the ``weeding out phase'' in law school
@@ -88,7 +88,7 @@ describe 'Polytexnic::Pipeline#to_html' do
       it do
         should resemble <<-'EOS'
           <blockquote class="verse">
-            <p>lorem ipsum<span class="break"></span>
+            <p class="quote">lorem ipsum<span class="break"></span>
             dolor sit amet</p>
           </blockquote>
         EOS
