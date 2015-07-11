@@ -475,6 +475,12 @@ module Polytexnic
             node.name = 'blockquote'
             node['class'] = 'quote'
           end
+
+          # Put a class on each paragraph.
+          # This is needed to style them for Kindle for iPad.
+          doc.css('blockquote p').each do |node|
+            node['class'] = 'quote'
+          end
         end
 
         # Handles \begin{verse} ... \end{verse}.
