@@ -1242,6 +1242,14 @@ module Polytexnic
           string.gsub!(/<p>\s*<\/p>/, '')
         end
 
+        # Retores quotes or verse inside figure.
+        # This is a terrible hack.
+        def restore_figure_quotes(string)
+          figure_quote_cache.each do |key, html|
+            string.gsub!(/<p>\s*#{key}\s*<\/p>/m, html)
+          end
+        end
+
         # Converts a document to HTML.
         # Because there's no way to know which elements are block-level
         # (and hence can't be nested inside a paragraph tag), we first extract
@@ -1259,6 +1267,7 @@ module Polytexnic
           body = doc.at_css('document').children.to_xhtml
           Nokogiri::HTML.fragment(body).to_xhtml.tap do |html|
             trim_empty_paragraphs(html)
+            restore_figure_quotes(html)
           end
         end
 

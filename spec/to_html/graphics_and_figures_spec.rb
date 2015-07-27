@@ -82,10 +82,12 @@ describe 'Polytexnic::Pipeline#to_html' do
       end
     end
 
-    context "with a label and a cross-reference" do
+    context "with a label and a cross-reference and a quote" do
       let(:polytex) do <<-'EOS'
-        \begin{figure}[h]
+        \begin{figure}
+        \begin{quote}
         lorem
+        \end{quote}
         \label{fig:foo}
         \end{figure}
 
@@ -96,7 +98,9 @@ describe 'Polytexnic::Pipeline#to_html' do
       it do
         should resemble <<-'EOS'
           <div id="fig-foo" data-tralics-id="uid1" data-number="1" class="figure">
-          <p>lorem</p>
+          <blockquote class="quotation">
+            <p class="quote">lorem</p>
+          </blockquote>
           <div class="caption">
             <span class="header">Figure 1</span>
           </div>
