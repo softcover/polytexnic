@@ -209,29 +209,48 @@ module Polytexnic
         # is to use \centering anyway, so this kludge is actually better LaTeX.
         def convert_float_centering(output)
           @in_float = false
-          centered = output.split("\n").map do |line|
+          centered = []
+          quote_or_verse = []
+          output.split("\n").each do |line|
             if line =~ /^\s*\\begin\{(figure|table)\}/
               @in_float = true
               @float_type = $1
-              line
+              centered << line
             elsif @in_float && line =~ /^\s*\\begin\{center\}/
-              '\centering'
+              centered << '\centering'
             elsif @in_float && line =~ /^\s*\\end\{center\}/
-              ''
+              centered << ''
             elsif @in_float && line =~/^\s*\\footnotesize/
               # Removes \footnotesize in floats.
               # This sizing is useful for tables
               # in some LaTeX PDF contexts, but not in HTML,
               # and it messes up the conversion.
-              ''
+              centered << ''
             elsif @in_float && line =~ /^\s*\\end\{#{@float_type}\}/
               @in_float = false
-              line
+              centered << line
+            elsif @in_float && line =~ /^\s*\\begin\{(?:verse|quote)\}/
+              quote_or_verse << line
+              @in_quote = true
+              centered << ''
+            elsif @in_float && line =~ /^\s*\\end\{(?:verse|quote)\}/
+              quote_or_verse << line
+              quote = quote_or_verse.join("\n")
+              key = digest(latex)
+              html = Polytexnic::Pipeline.new(quote,
+                                              literal_cache: literal_cache).to_html
+              figure_quote_cache[key] = html
+              @in_quote = false
+              quote_or_verse = []
+              centered << key
+            elsif @in_quote
+              quote_or_verse << line
+              centered << ''
             else
-              line
+              centered << line
             end
-          end.join("\n")
-          output.replace(centered)
+          end
+          output.replace(centered.join("\n"))
         end
 
         # Converts the alt table environments to simple tabular.
