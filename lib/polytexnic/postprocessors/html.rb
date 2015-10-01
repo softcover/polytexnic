@@ -1303,6 +1303,7 @@ module Polytexnic
               current_depth = 1
               insert_li(html, node)
             when 'section'
+              html << '<ul>' if article?
               open_list(html) if current_depth == 1
               while current_depth > 2
                 close_list(html)
