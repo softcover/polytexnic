@@ -35,7 +35,8 @@ module Polytexnic
     # Expands '\input' command by processing & inserting the target source.
     def expand_input!(text, code_function, ext = 'md')
       text.gsub!(/^[ \t]*\\input\{(.*?)\}[ \t]*$/) do
-        included_text = File.read("#{$1}.#{ext}")
+        # Prepend a newline for safety.
+        included_text = "\n" + File.read("#{$1}.#{ext}")
         code_function.call(included_text).tap do |clean_text|
           # Recursively substitute '\input' in included text.
           expand_input!(clean_text, code_function, ext)

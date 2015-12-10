@@ -89,7 +89,6 @@ module Polytexnic
         cleaned_markdown = cache_code_environments(@source)
         expand_input!(cleaned_markdown,
                       Proc.new { |source| cache_code_environments(source) })
-
         puts cleaned_markdown if debug?
         cleaned_markdown.tap do |markdown|
           convert_code_inclusion(markdown)
