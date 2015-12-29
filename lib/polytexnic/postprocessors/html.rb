@@ -554,7 +554,7 @@ module Polytexnic
               node['id'] = pipeline_label(label)
               label.remove
             end
-            clean_node node, %w{data-label place}
+            clean_node node, %w{data-label place width}
           end
           doc.xpath('//table').each do |node|
             if unexpected = node.at_css('unexpected')
@@ -1303,7 +1303,7 @@ module Polytexnic
               current_depth = 1
               insert_li(html, node)
             when 'section'
-              html << '<ul>' if article?
+              html << '<ul>' if article? && current_depth == 0
               open_list(html) if current_depth == 1
               while current_depth > 2
                 close_list(html)
