@@ -136,6 +136,7 @@ module Polytexnic
 % Ignore some other commands.
 \newcommand{\includepdf}[1]{}
 \newcommand{\newunicodechar}[2]{}
+\newcommand{\extrafloats}[1]{}
       EOS
       custom_commands = <<-EOS
 \\usepackage{amsthm}
