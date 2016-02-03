@@ -241,7 +241,7 @@ module Polytexnic
     # because in Ruby '\\foo' is the same as '\\\\foo', '\}' is '}', etc.
     # I thought I escaped (heh) this problem with the `escape_backslashes`
     # method, but here the problem is extremely specific. In particular,
-    # \\\{\} is really \\ and \{ and \}, but Ruby doensn't know WTF to do
+    # \\\{\} is really \\ and \{ and \}, but Ruby doesn't know WTF to do
     # with it, and thinks that it's "\\{}", which is the same as '\{}'.
     # The solution is to replace '\\\\' with some number of backslashes.
     # How many? I literally had to just keep adding backslashes until
