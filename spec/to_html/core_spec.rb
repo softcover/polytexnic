@@ -70,8 +70,16 @@ describe 'Polytexnic::Pipeline#to_html' do
     end
 
     context "with a percent-equals" do
-      let(:polytex) { '%= literal_text' }
-      it { should include '<!-- literal_text -->' }
+
+      context "with an opening tag" do
+        let(:polytex) { '%= <span id="foo" class="bar">' }
+        it { should eq '<span id="foo" class="bar">' }
+      end
+
+      context "with a closing tag" do
+        let(:polytex) { '%= </span>' }
+        it { should eq '</span>' }
+      end
     end
   end
 

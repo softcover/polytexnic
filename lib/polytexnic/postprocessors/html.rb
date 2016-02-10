@@ -1238,17 +1238,30 @@ module Polytexnic
         # Trims empty paragraphs.
         # Sometimes a <p></p> creeps in due to idiosyncrasies of the
         # Tralics conversion.
-        def trim_empty_paragraphs(string)
-          string.gsub!(/<p>\s*<\/p>/, '')
+        def trim_empty_paragraphs!(string)
+          string.gsub!(/<p>\s*<\/p>/m, '')
         end
 
-        # Retores quotes or verse inside figure.
+        # Restores quotes or verse inside figure.
         # This is a terrible hack.
-        def restore_figure_quotes(string)
+        def restore_figure_quotes!(string)
           figure_quote_cache.each do |key, html|
             string.gsub!(/<p>\s*#{key}\s*<\/p>/m, html)
           end
         end
+
+        # Retores literal HTML included via %=.
+        # E.g., writing
+        #    %= </span>
+        # inserts a literal closing span tag into the HTML output.
+        def restore_literal_html!(string)
+          literal_html_cache.each do |key, html|
+            string.gsub!(/<p>\s*<literalhtml>#{key}<\/literalhtml>\s*<\/p>/m,
+                         html)
+            string.gsub!(/<literalhtml>#{key}<\/literalhtml>/, html)
+          end
+        end
+
 
         # Converts a document to HTML.
         # Because there's no way to know which elements are block-level
@@ -1266,8 +1279,9 @@ module Polytexnic
           end
           body = doc.at_css('document').children.to_xhtml
           Nokogiri::HTML.fragment(body).to_xhtml.tap do |html|
-            trim_empty_paragraphs(html)
-            restore_figure_quotes(html)
+            trim_empty_paragraphs!(html)
+            restore_figure_quotes!(html)
+            restore_literal_html!(html)
           end
         end
 
