@@ -12,11 +12,11 @@ module Polytexnic
         boldface(doc)
         small_caps(doc)
         small(doc)
-        typewriter(doc)
         skips(doc)
         verbatim(doc)
         code(doc)
         metacode(doc)
+        typewriter(doc)
         quote(doc)
         verse(doc)
         itemize(doc)
@@ -117,7 +117,7 @@ module Polytexnic
         # Handles output of \texttt{}.
         def typewriter(doc)
           doc.xpath('//hi[@rend="tt"]').each do |node|
-            node.name = 'span'
+            node.name = 'code'
             node['class'] = 'tt'
             node.remove_attribute('rend')
           end

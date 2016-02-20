@@ -39,7 +39,7 @@ describe 'Polytexnic::Pipeline#to_html' do
 
     describe "typewriter text" do
       let(:polytex) { '\texttt{typewriter text}' }
-      it { should resemble '<span class="tt">typewriter text</span>' }
+      it { should resemble '<code class="tt">typewriter text</code>' }
     end
 
     describe "strikeout text" do
