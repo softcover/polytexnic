@@ -9,6 +9,7 @@ describe 'Polytexnic::Pipeline#to_html' do
     let(:polytex) { "% A LaTeX comment" }
     it { should eq '' }
 
+    # FAILS
     context "with a section and label" do
       let(:polytex) do <<-'EOS'
         % \section{Foo}
@@ -17,6 +18,19 @@ describe 'Polytexnic::Pipeline#to_html' do
       end
       it { should eq '' }
     end
+
+    # FAILS
+    context "with a section and label with newline " do
+      let(:polytex) { "% \\section{Foo}\n% \\label{sec:foo}\n" }
+      it { should eq '' }
+    end
+
+    # OK
+    context "with a section and label with newline " do
+      let(:polytex) { "% \\section{Foo}\n% aa a bb\n" }
+      it { should eq '' }
+    end
+
 
     context "with a code listing" do
       let(:polytex) do <<-'EOS'
@@ -71,11 +85,13 @@ describe 'Polytexnic::Pipeline#to_html' do
 
     context "with a percent-equals" do
 
+      # FAILS
       context "with an opening tag" do
         let(:polytex) { '%= <span id="foo" class="bar">' }
         it { should eq '<span id="foo" class="bar">' }
       end
 
+      # FAILS
       context "with a closing tag" do
         let(:polytex) { '%= </span>' }
         it { should eq '</span>' }
