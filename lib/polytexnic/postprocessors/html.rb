@@ -1053,6 +1053,13 @@ module Polytexnic
           if internal_paragraph = node.at_css('p')
             clean_node internal_paragraph, 'rend'
           end
+
+          # If no extension is specified in the source code
+          # this assumes .png for HTML / EPUB / MOBI
+          if node['extension'].nil?
+            node['extension'] = 'png'
+          end
+
           if node['file'] && node['extension']
             filename = png_for_pdf(node['file'], node['extension'])
             alt = File.basename(node['file'])
