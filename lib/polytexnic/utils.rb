@@ -179,7 +179,8 @@ module Polytexnic
     def highlight_lines(output, options)
       highlighted_lines(options).each do |i|
         if i > output.length - 1
-          $stderr.puts "Warning: Highlighted line out of range" unless test?
+          $stderr.puts "Warning: Highlighted line #{i} out of range" unless test?
+          $stderr.puts output.inspect unless test?
         else
           output[i] = '\setlength{\fboxsep}{0pt}\colorbox{hilightyellow}{' +
                       output[i] + '}'
