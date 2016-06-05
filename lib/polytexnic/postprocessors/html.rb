@@ -1012,7 +1012,8 @@ module Polytexnic
           doc.xpath('//xref').each do |node|
             node.name = 'a'
             node['href'] = unescape_special_chars(literal_cache[node['url']])
-            node['target'] = '_blank'   # open in new window/tab
+            node['target'] = '_blank'   # Open in new window/tab
+            node['rel'] = 'noopener'    # Make target="_blank" secure
             # Put a class on hrefs containing TeX to allow a style override.
             node.traverse do |descendant|
               if descendant['class'] == 'texhtml'
