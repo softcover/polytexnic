@@ -47,7 +47,7 @@ module Kramdown
           attrs = attribute_list(el)
           # Override the kramdown default by adding "here" placement.
           # Authors who want a different behavior can always use raw LaTeX.
-          "\\begin{figure}[h]#{attrs}\n\\begin{center}\n#{img}\n\\end{center}\n\\caption{#{escape(el.children.first.attr['alt'])}}\n#{latex_link_target(el, true)}\n\\end{figure}#{attrs}\n"
+          "\\begin{figure}[H]#{attrs}\n\\begin{center}\n#{img}\n\\end{center}\n\\caption{#{escape(el.children.first.attr['alt'])}}\n#{latex_link_target(el, true)}\n\\end{figure}#{attrs}\n"
         else
           img.gsub('\includegraphics', '\image') + "\n"
         end

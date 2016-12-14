@@ -170,7 +170,7 @@ That is it.  You can keep writing your text after the footnote content.
 ![\label{fig:softcover_server}](images/figures/softcover_server.png)
           EOS
         end
-        it { should include '\begin{figure}[h]' }
+        it { should include '\begin{figure}[H]' }
         it { should include '\caption'  }
       end
 
