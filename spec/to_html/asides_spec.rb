@@ -32,7 +32,7 @@ describe 'Polytexnic::Pipeline#to_html' do
             <span class="number">Box 1.1.</span>
             <span class="description">Lorem ipsum.</span>
           </div>
-          <p>lorem ipsum</p>
+          <p class="noindent">lorem ipsum</p>
           <p>dolor sit amet</p>
         </div>
         <p><a href="#aside-lorem" class="hyperref">Box <span class="ref">1.1</span></a></p>

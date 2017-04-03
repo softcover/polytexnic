@@ -209,9 +209,9 @@ describe Polytexnic::Pipeline do
           end
           let(:output) do <<-'EOS'
             <p>
-              <span class="inline_verbatim">
+              <code class="inline_verbatim">
                 ERROR: Could not find section header '#// begin section_that_does_not_exist' in file 'spec/to_html/literal_environments/code_spec.rb'
-              </span>
+              </code>
             </p>
             EOS
           end
@@ -401,9 +401,9 @@ describe Polytexnic::Pipeline do
         end
         let(:output) do <<-'EOS'
           <p>
-             <span class="inline_verbatim">
+             <code class="inline_verbatim">
                ERROR: Repository 'non_existent_repo' does not exist.
-             </span>
+             </code>
            </p>
            EOS
         end
@@ -434,9 +434,9 @@ describe Polytexnic::Pipeline do
         end
         let(:output) do <<-'EOS'
           <p>
-             <span class="inline_verbatim">
+             <code class="inline_verbatim">
                ERROR: Tag 'non_existent_tag' does not exist.
-             </span>
+             </code>
            </p>
            EOS
         end
@@ -467,9 +467,9 @@ describe Polytexnic::Pipeline do
         end
         let(:output) do <<-'EOS'
           <p>
-             <span class="inline_verbatim">
+             <code class="inline_verbatim">
                ERROR: fatal: Path 'path/to/non_existent_file.rb' does not exist in 'v0.9.9'
-             </span>
+             </code>
            </p>
            EOS
         end

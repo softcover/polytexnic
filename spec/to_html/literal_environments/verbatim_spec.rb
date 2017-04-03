@@ -7,8 +7,8 @@ describe Polytexnic::Pipeline do
   describe "\\verb environments" do
     let(:polytex) { '\verb+\begin{center}+ \verb-$foo-' }
     let(:output) do
-      '<span class="inline_verbatim">\begin{center}</span>' +
-      '<span class="inline_verbatim">$foo</span>'
+      '<code class="inline_verbatim">\begin{center}</code>' +
+      '<code class="inline_verbatim">$foo</code>'
     end
     it { should resemble output }
   end
