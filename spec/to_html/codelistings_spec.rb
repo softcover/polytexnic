@@ -31,7 +31,7 @@ $ subl .gemrc
             <span class="number">Listing 1.1:</span>
             <span class="description">Creating a <code class="tt">gem</code> configuration file.<span class="intersentencespace"></span>
               <span class="break"></span>
-              <span class="filepath">path/to/file</span>
+              <code class="filepath">path/to/file</code>
             </span>
           </div>
           <div class="code">
@@ -40,7 +40,7 @@ $ subl .gemrc
             </div>
           </div>
         </div>
-        <p><a href="#code-create_gemrc" class="hyperref">Listing <span class="ref">1.1</span></a></p>
+        <p class="noindent"><a href="#code-create_gemrc" class="hyperref">Listing <span class="ref">1.1</span></a></p>
         </div>
       EOS
     end

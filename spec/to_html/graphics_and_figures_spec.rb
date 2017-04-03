@@ -250,7 +250,7 @@ describe 'Polytexnic::Pipeline#to_html' do
               <span class="description">This is another caption.</span>
             </div>
           </div>
-          <p>
+          <p class="noindent">
             <a href="#fig-baz" class="hyperref">Figure <span class="ref">2.1</span></a>
           </p>
           </div>
@@ -268,7 +268,7 @@ describe 'Polytexnic::Pipeline#to_html' do
               <span class="description">Yet another.</span>
             </div>
           </div>
-          <p>
+          <p class="noindent">
             <a href="#fig-foo" class="hyperref">Figure <span class="ref">1.1</span></a>
             and
             <a href="#fig-bar" class="hyperref">Figure <span class="ref">1.2</span></a>

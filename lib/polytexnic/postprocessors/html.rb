@@ -53,6 +53,7 @@ module Polytexnic
         mainmatter(doc)
         footnotes(doc)
         table_of_contents(doc)
+        add_noindent(doc)
         convert_to_html(doc)
       end
 
@@ -698,7 +699,7 @@ module Polytexnic
         # Converts filesystem path (\filepath) to the proper tag.
         def filepath(doc)
           doc.xpath('//filepath').each do |node|
-            node.name  = 'span'
+            node.name  = 'code'
             node['class'] = 'filepath'
           end
         end
@@ -860,7 +861,7 @@ module Polytexnic
         def restore_inline_verbatim(doc)
           doc.xpath('//inlineverbatim').each do |node|
             node.content = literal_cache[node.content]
-            node.name = 'span'
+            node.name = 'code'
             node['class'] = 'inline_verbatim'
           end
         end
@@ -1354,6 +1355,28 @@ module Polytexnic
           link = node.at_css('a.heading')
           link['class'] += ' hyperref'
           html << open << link.to_xhtml << '</li>'
+        end
+
+        # Adds a noindent class where appropriate.
+        # The purpose is to give the designer the option to indent all paragraphs but the first
+        # one after the beginning of a chapter or section. The method is to add a "noindent" class
+        # in the first paragraph after each division (chapter, section, etc.).
+        def add_noindent(doc)
+          divisions = %w[chapter section subsection subsubsection]
+          divisions += divisions.map { |division| "#{division}-star"}
+          divisions.each do |type|
+            doc.css("div.#{type}").each do |node|
+              if (first_paragraph = node.at_css('p'))
+                if first_paragraph['class'] == 'noindent'
+                  next
+                elsif first_paragraph['class'].nil?
+                  first_paragraph['class'] = 'noindent'
+                else
+                  first_paragraph['class'] += ' noindent'
+                end
+              end
+            end
+          end
         end
 
         # Cleans a node by removing all the given attributes.
