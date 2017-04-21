@@ -21,6 +21,7 @@ module Polytexnic
         verse(doc)
         itemize(doc)
         enumerate(doc)
+        definition_list(doc)
         item(doc)
         remove_errors(doc)
         set_ids(doc)
@@ -506,6 +507,14 @@ module Polytexnic
           doc.xpath('//list[@type="ordered"]').each do |node|
             clean_node node, 'type'
             node.name = 'ol'
+          end
+        end
+
+        # Converts description/definition lists to dl.
+        def definition_list(doc)
+          doc.xpath('//list[@type="description"]').each do |node|
+            clean_node node, 'type'
+            node.name = 'dl'
           end
         end
 

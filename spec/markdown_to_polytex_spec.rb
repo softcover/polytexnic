@@ -590,5 +590,25 @@ def bar(): return "bar"
 
       it { should include output }
     end
+
+    describe '\idput command' do
+      let(:source) do <<-EOS
+kramdown
+: A Markdown-superset converter
+
+Maruku
+:     Another Markdown-superset converter
+        EOS
+      end
+      let(:output) do <<-'EOS'
+       \begin{description}
+       \item[kramdown] A Markdown-superset converter
+       \item[Maruku] Another Markdown-superset converter
+       \end{description}
+        EOS
+      end
+
+      it { should resemble output }
+    end
   end
 end

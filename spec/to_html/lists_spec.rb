@@ -138,4 +138,21 @@ describe 'Polytexnic::Pipeline#to_html' do
       EOS
     end
   end
+
+  describe "definition list" do
+    let(:polytex) do <<-'EOS'
+      let(:output) do <<-'EOS'
+       \begin{description}
+       \item[kramdown] A Markdown-superset converter
+       \item[Maruku] Another Markdown-superset converter
+       \end{description}
+      EOS
+    end
+    it do
+      should resemble <<-'EOS'
+      yo
+
+      EOS
+    end
+  end
 end
