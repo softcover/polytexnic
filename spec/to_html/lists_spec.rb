@@ -150,8 +150,12 @@ describe 'Polytexnic::Pipeline#to_html' do
     end
     it do
       should resemble <<-'EOS'
-      yo
-
+      <dl>
+        <dt>kramdown</dt>
+        <dd>A Markdown-superset converter</dd>
+        <dt>Maruku</dt>
+        <dd>Another Markdown-superset converter</dd>
+      </dl>
       EOS
     end
   end
