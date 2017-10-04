@@ -47,6 +47,11 @@ describe 'Polytexnic::Pipeline#to_html' do
       it { should resemble '<del>foo</del> bar' }
     end
 
+    describe "horizontal rule" do
+      let(:polytex) { '\hrule' }
+      it { should resemble '<hr />' }
+    end
+
     describe "custom kode command" do
       let(:polytex) { '\kode{function\_name}' }
       it { should resemble '<code>function_name</code>' }
