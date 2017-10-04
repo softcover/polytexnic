@@ -14,6 +14,7 @@ module Polytexnic
         small(doc)
         skips(doc)
         verbatim(doc)
+        rule(doc)
         code(doc)
         metacode(doc)
         typewriter(doc)
@@ -143,6 +144,18 @@ module Polytexnic
           doc.xpath('//Verbatim').each do |node|
             node.name = 'pre'
             node['class'] = 'verbatim'
+          end
+        end
+
+        # Handles code environments.
+        # \begin{code}
+        # <code>
+        # \end{code}
+        def rule(doc)
+          doc.xpath('//rule').each do |node|
+            node.name = 'hr'
+            node.remove_attribute('depth')
+            node.remove_attribute('height')
           end
         end
 
