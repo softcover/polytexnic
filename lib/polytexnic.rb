@@ -54,7 +54,9 @@ module Polytexnic
                           else
                             default_language_labels.merge(labels)
                           end
-      @highlight_cache_filename = '.highlight_cache'
+      tempdir = 'tmp'                          
+      FileUtils.mkdir(tempdir) unless File.directory?(tempdir)
+      @highlight_cache_filename = File.join(tempdir, '.highlight_cache')
       if File.exist?(@highlight_cache_filename)
         content = File.read(@highlight_cache_filename)
                       .force_encoding('ASCII-8BIT')

@@ -31,6 +31,7 @@ module Polytexnic
         headings(doc)
         sout(doc)
         kode(doc)
+        # return '2'
         coloredtext(doc)
         filepath(doc)
         backslash_break(doc)
@@ -45,17 +46,20 @@ module Polytexnic
         codelistings(doc)
         asides(doc)
         make_cross_references(doc)
+        # return '3'
         hrefs(doc)
         graphics_and_figures(doc)
         images_and_imageboxes(doc)
         tables(doc)
         math(doc)
         frontmatter(doc)
+        # return '4'
         mainmatter(doc)
         footnotes(doc)
         table_of_contents(doc)
         add_noindent(doc)
         convert_to_html(doc)
+        # return '5'
       end
 
       private
