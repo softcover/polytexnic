@@ -3,7 +3,7 @@ require 'spec_helper'
 
 describe Polytexnic::Pipeline do
   before(:all) do
-    FileUtils.rm('.highlight_cache') if File.exist?('.highlight_cache')
+    FileUtils.rm('tmp/.highlight_cache') if File.exist?('tmp/.highlight_cache')
   end
   subject(:processed_text) { Polytexnic::Pipeline.new(polytex).to_html }
 
@@ -75,7 +75,7 @@ describe Polytexnic::Pipeline do
         Polytexnic::Pipeline.new(polytex).to_html
       end
       it "should not crash" do
-        expect(File.exist?('.highlight_cache')).to be_truthy
+        expect(File.exist?('tmp/.highlight_cache')).to be_truthy
         expect { Polytexnic::Pipeline.new(polytex).to_html }.not_to raise_error
       end
     end
