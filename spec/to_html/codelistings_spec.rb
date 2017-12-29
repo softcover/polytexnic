@@ -8,18 +8,18 @@ describe 'Polytexnic::Pipeline#to_html' do
 
   describe "code listings" do
     let(:polytex) do <<-'EOS'
-      \chapter{Foo bar}
+\chapter{Foo bar}
 
-      \begin{codelisting}
-      \codecaption{Creating a \texttt{gem} configuration file. \\ \filepath{path/to/file}}
-      \label{code:create_gemrc}
-      %= lang:console
-      \begin{code}
+\begin{codelisting}
+\codecaption{Creating a \texttt{gem} configuration file. \\ \filepath{path/to/file}}
+\label{code:create_gemrc}
+%= lang:console
+\begin{code}
 $ subl .gemrc
-      \end{code}
-      \end{codelisting}
+\end{code}
+\end{codelisting}
 
-      Listing~\ref{code:create_gemrc}
+Listing~\ref{code:create_gemrc}
       EOS
     end
 
@@ -36,7 +36,7 @@ $ subl .gemrc
           </div>
           <div class="code">
             <div class="highlight">
-              <pre><span class="gp">$</span> subl .gemrc</pre>
+              <pre><span></span><span class="gp">$</span> subl .gemrc</pre>
             </div>
           </div>
         </div>

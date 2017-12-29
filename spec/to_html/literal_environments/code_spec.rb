@@ -40,6 +40,7 @@ describe Polytexnic::Pipeline do
           <div class="code">
             <div class="highlight">
               <pre>
+                <span></span>
                 <span class="k">def</span> <span class="nf">foo</span>
                 <span class="s2">"bar"</span>
                 <span class="k">end</span>
@@ -97,6 +98,7 @@ describe Polytexnic::Pipeline do
         <div class="code">
           <div class="highlight">
             <pre>
+              <span></span>            
               <span class="k">def</span> <span class="nf">foo</span>
               <span class="s2">"bar"</span>
               <span class="k">end</span>
@@ -123,6 +125,7 @@ describe Polytexnic::Pipeline do
         <div class="code">
           <div class="highlight">
             <pre>
+              <span></span>
               <span class="lineno">1</span>
               <span class="hll">
                 <span class="k">def</span> <span class="nf">foo</span>
@@ -165,7 +168,7 @@ describe Polytexnic::Pipeline do
           %= <<(Rakefile)
           EOS
         end
-        it { should include '<pre>require' }
+        it { should include '<pre><span></span>require' }
       end
 
       context "with an extension" do
@@ -176,7 +179,7 @@ describe Polytexnic::Pipeline do
         let(:output) do <<-'EOS'
           <div class="code">
             <div class="highlight">
-              <pre><span class="c1"># encoding=utf-8</span>
+              <pre><span></span><span class="c1"># encoding=utf-8</span>
           EOS
         end
         it { should resemble output }
@@ -192,6 +195,7 @@ describe Polytexnic::Pipeline do
           <div class="code">
             <div class="highlight">
               <pre>
+                <span></span>
                 <span class="s2">"This is section_z; it's used by a test."</span>
                 <span class="s2">"Section Z is your friend."</span>
               </pre>
@@ -293,6 +297,7 @@ describe Polytexnic::Pipeline do
             <div class="code">
               <div class="highlight">
                 <pre>
+                  <span></span>
                   <span class="no">Fake</span> <span class="n">data</span>
                   <span class="n">second</span> <span class="n">line</span>
                 </pre>
@@ -311,6 +316,7 @@ describe Polytexnic::Pipeline do
             <div class="code">
               <div class="highlight">
                 <pre>
+                  <span></span>
                   <span class="no">Fake</span> <span class="n">data</span>
                   <span class="n">second</span> <span class="n">line</span>
                 </pre>
@@ -329,6 +335,7 @@ describe Polytexnic::Pipeline do
             <div class="code">
               <div class="highlight">
                 <pre>
+                  <span></span>
                   <span class="no">Fake</span> <span class="n">data</span>
                   <span class="n">second</span> <span class="n">line</span>
                 </pre>
@@ -343,6 +350,7 @@ describe Polytexnic::Pipeline do
             <div class="code">
               <div class="highlight">
                 <pre>
+                  <span></span>
                   Fake data
                   second line
                 </pre>
