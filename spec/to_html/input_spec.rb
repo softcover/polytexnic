@@ -39,10 +39,10 @@ def bar(): return "bar"
 
     let(:polytex) { "\\chapter{Foo}\n\n  \\input{foo}  " }
     let(:foo_html) do
-      '<div class="code"><div class="highlight"><pre><span class="k">def</span> <span class="nf">foo</span>'
+      '<div class="code"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">foo</span>'
     end
     let(:bar_html) do
-      '<div class="code"><div class="highlight"><pre><span class="k">def</span> <span class="nf">bar</span><span class="p">():'
+      '<div class="code"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">bar</span><span class="p">():'
     end
 
     it { should include foo_html }

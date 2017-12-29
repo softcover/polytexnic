@@ -19,11 +19,11 @@ Gem::Specification.new do |gem|
   gem.require_paths = ["lib"]
 
   gem.add_dependency 'nokogiri', '~> 1.8.1'
-  gem.add_dependency 'pygments.rb', '~> 0.6.0'
+  gem.add_dependency 'pygments.rb', '~> 1.2.1'
   gem.add_dependency 'msgpack', '~> 1.2.0'
   gem.add_dependency 'kramdown', '~> 1.14.0'
   gem.add_dependency 'json', '~> 1.8.1'
 
   gem.add_development_dependency 'rspec', '~> 2.14'
-  gem.add_development_dependency 'simplecov', '~> 0.8.2'
+  gem.add_development_dependency 'simplecov', '~> 0.15.1'
 end
