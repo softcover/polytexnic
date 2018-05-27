@@ -79,7 +79,7 @@ $ subl .gemrc
   end
 
   describe "footnote" do
-    it { should include '<ol class="footnotes">' }
+    it { should include '<div class="footnotes">' }
     describe "numbering" do
       it { should include footnote }
     end
