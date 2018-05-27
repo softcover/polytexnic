@@ -323,14 +323,16 @@ describe 'Polytexnic::Pipeline#to_html' do
     it do
       should resemble <<-'EOS'
 <div id="frontmatter" data-number="0">
-<div class="chapter-star" id="foo"><h1><a href="#foo" class="heading">Foo</a></h1>
-<p class="noindent">Lorem ipsum.<sup id="cha-0_footnote-ref-1" class="footnote"><a href="#cha-0_footnote-1">1</a></sup></p>
-</div></div>
-<div id="cha-0_footnotes">
-         <ol class="footnotes"><li id="cha-0_footnote-1">Foo bar. <a class="arrow" href="#cha-0_footnote-ref-1">↑</a></li>
-         </ol></div>
-<div id="cha-bar" data-tralics-id="cid1" class="chapter" data-number="1"><h1><a href="#cha-bar" class="heading"><span class="number">Chapter 1 </span>Bar</a></h1>
-<p class="noindent"><a href="#cha-bar" class="hyperref">Chapter <span class="ref">1</span></a>
+       <div class="chapter-star" id="foo"><h1><a href="#foo" class="heading">Foo</a></h1>
+       <p class="noindent">Lorem ipsum.<sup id="cha-0_footnote-ref-1" class="footnote"><a href="#cha-0_footnote-1">1</a></sup></p>
+       </div></div>
+
+       <div id="cha-0_footnotes">
+         <div class="footnotes">
+           <div id="cha-0_footnote-1" class="footnote"><a class="footnote-link" href="#cha-0_footnote-ref-1">1.</a> Foo bar.</div>
+         </div>
+       </div><div id="cha-bar" data-tralics-id="cid1" class="chapter" data-number="1"><h1><a href="#cha-bar" class="heading"><span class="number">Chapter 1 </span>Bar</a></h1>
+       <p class="noindent"><a href="#cha-bar" class="hyperref">Chapter <span class="ref">1</span></a>
 </p></div>
       EOS
     end

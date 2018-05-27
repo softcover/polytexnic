@@ -23,24 +23,18 @@ describe 'Polytexnic::Pipeline#to_html' do
     end
 
     let(:output) do <<-'EOS'
-      <div id="cha-foo" data-tralics-id="cid1" class="chapter" data-number="1">
-        <h1><a href="#cha-foo" class="heading"><span class="number">Chapter 1 </span>Foo <em>bar</em></a></h1>
-      </div>
-      <div id="sec-foobar" data-tralics-id="cid2" class="section" data-number="1.1">
-        <h2><a href="#sec-foobar" class="heading"><span class="number">1.1 </span>Foobar</a></h2>
-        <p class="noindent">Lorem ipsum.<sup id="cha-1_footnote-ref-1" class="footnote"><a href="#cha-1_footnote-1">1</a></sup></p>
-      </div>
-      <div id="cha-1_footnotes">
-        <ol class="footnotes">
-          <li id="cha-1_footnote-1">
-            Cicero <a class="arrow" href="#cha-1_footnote-ref-1">↑</a>
-          </li>
-        </ol>
-      </div>
-      <div id="cha-bar" data-tralics-id="cid3" class="chapter" data-number="2">
-        <h1><a href="#cha-bar" class="heading"><span class="number">Chapter 2 </span>Bar</a></h1>
-        <p class="noindent">Dolor sit amet.</p>
-      </div>
+<div id="cha-foo" data-tralics-id="cid1" class="chapter" data-number="1"><h1><a href="#cha-foo" class="heading"><span class="number">Chapter 1 </span>Foo <em>bar</em></a></h1>
+       </div>
+       <div id="sec-foobar" data-tralics-id="cid2" class="section" data-number="1.1"><h2><a href="#sec-foobar" class="heading"><span class="number">1.1 </span>Foobar</a></h2>
+       <p class="noindent">Lorem ipsum.<sup id="cha-1_footnote-ref-1" class="footnote"><a href="#cha-1_footnote-1">1</a></sup></p>
+       </div>
+       <div id="cha-1_footnotes">
+         <div class="footnotes">
+           <div id="cha-1_footnote-1" class="footnote"><a class="footnote-link" href="#cha-1_footnote-ref-1">1.</a> Cicero</div>
+         </div>
+       </div><div id="cha-bar" data-tralics-id="cid3" class="chapter" data-number="2"><h1><a href="#cha-bar" class="heading"><span class="number">Chapter 2 </span>Bar</a></h1>
+       <p class="noindent">Dolor sit amet.
+       </p></div>
       EOS
     end
     it { should resemble output }
@@ -69,35 +63,24 @@ describe 'Polytexnic::Pipeline#to_html' do
     end
 
     let(:output) do <<-'EOS'
-      <div id="cha-foo" data-tralics-id="cid1" class="chapter" data-number="1">
-        <h1><a href="#cha-foo" class="heading"><span class="number">Chapter 1 </span>Foo <em>bar</em></a></h1>
-      </div>
-      <div id="sec-foobar" data-tralics-id="cid2" class="section" data-number="1.1">
-        <h2><a href="#sec-foobar" class="heading"><span class="number">1.1 </span>Foobar</a></h2>
-        <p class="noindent">Lorem ipsum.<sup id="cha-1_footnote-ref-1" class="footnote"><a href="#cha-1_footnote-1">1</a></sup></p>
-      </div>
-      <div id="cha-1_footnotes">
-        <ol class="footnotes">
-          <li id="cha-1_footnote-1">
-            Cicero <a class="arrow" href="#cha-1_footnote-ref-1">↑</a>
-          </li>
-        </ol>
-      </div>
-      <div id="cha-bar" data-tralics-id="cid3" class="chapter" data-number="2">
-        <h1><a href="#cha-bar" class="heading"><span class="number">Chapter 2 </span>Bar</a></h1>
-        <p class="noindent">Dolor sit amet.<sup id="cha-2_footnote-ref-1" class="footnote"><a href="#cha-2_footnote-1">1</a></sup></p>
-        <p>Hey Jude.<sup id="cha-2_footnote-ref-2" class="footnote"><a href="#cha-2_footnote-2">2</a></sup></p>
-      </div>
-      <div id="cha-2_footnotes">
-        <ol class="footnotes">
-          <li id="cha-2_footnote-1">
-            <em>Still</em> Cicero <a class="arrow" href="#cha-2_footnote-ref-1">↑</a>
-          </li>
-          <li id="cha-2_footnote-2">
-            Lennon/McCartney <a class="arrow" href="#cha-2_footnote-ref-2">↑</a>
-          </li>
-        </ol>
-      </div>
+<div id="cha-foo" data-tralics-id="cid1" class="chapter" data-number="1"><h1><a href="#cha-foo" class="heading"><span class="number">Chapter 1 </span>Foo <em>bar</em></a></h1>
+       </div>
+       <div id="sec-foobar" data-tralics-id="cid2" class="section" data-number="1.1"><h2><a href="#sec-foobar" class="heading"><span class="number">1.1 </span>Foobar</a></h2>
+       <p class="noindent">Lorem ipsum.<sup id="cha-1_footnote-ref-1" class="footnote"><a href="#cha-1_footnote-1">1</a></sup></p>
+       </div>
+       <div id="cha-1_footnotes">
+         <div class="footnotes">
+           <div id="cha-1_footnote-1" class="footnote"><a class="footnote-link" href="#cha-1_footnote-ref-1">1.</a> Cicero</div>
+         </div>
+       </div><div id="cha-bar" data-tralics-id="cid3" class="chapter" data-number="2"><h1><a href="#cha-bar" class="heading"><span class="number">Chapter 2 </span>Bar</a></h1>
+       <p class="noindent">Dolor sit amet.<sup id="cha-2_footnote-ref-1" class="footnote"><a href="#cha-2_footnote-1">1</a></sup></p>
+       <p>Hey Jude.<sup id="cha-2_footnote-ref-2" class="footnote"><a href="#cha-2_footnote-2">2</a></sup>
+       </p></div><div id="cha-2_footnotes">
+         <div class="footnotes">
+           <div id="cha-2_footnote-1" class="footnote"><a class="footnote-link" href="#cha-2_footnote-ref-1">1.</a> <em>Still</em> Cicero</div>
+           <div id="cha-2_footnote-2" class="footnote"><a class="footnote-link" href="#cha-2_footnote-ref-2">2.</a> Lennon/McCartney</div>
+         </div>
+       </div>
       EOS
     end
     it { should resemble output }
@@ -124,7 +107,9 @@ describe 'Polytexnic::Pipeline#to_html' do
         \chapter{Bar}
         \label{cha:bar}
 
-        Dolor sit amet.\footnote{\emph{Still} Cicero}
+        Dolor sit amet.\footnote{\emph{Still} Cicero.
+
+        And Catullus.}
 
         Hey Jude!\footnote{Lennon/McCartney} Be afraid.
         \end{document}
@@ -132,36 +117,26 @@ describe 'Polytexnic::Pipeline#to_html' do
     end
 
     let(:output) do <<-'EOS'
-      <div id="cha-foo" data-tralics-id="cid1" class="chapter" data-number="1">
-        <h1><a href="#cha-foo" class="heading"><span class="number">Chapter 1 </span>Foo <em>bar</em></a></h1>
-      </div>
-      <div id="sec-foobar" data-tralics-id="cid2" class="section" data-number="1.1">
-        <h2><a href="#sec-foobar" class="heading"><span class="number">1.1 </span>Foobar</a></h2>
-        <p class="noindent">Lorem ipsum.<sup id="cha-1_footnote-ref-1" class="footnote"><a href="#cha-1_footnote-1">*</a></sup></p>
-      </div>
-      <div id="cha-1_footnotes">
-        <ul class="footnotes nonumbers">
-          <li id="cha-1_footnote-1">
-            <sup>*</sup> Cicero <a class="arrow" href="#cha-1_footnote-ref-1">↑</a>
-          </li>
-        </ul>
-      </div>
-      <div id="cha-bar" data-tralics-id="cid3" class="chapter" data-number="2">
-        <h1><a href="#cha-bar" class="heading"><span class="number">Chapter 2 </span>Bar</a></h1>
-        <p class="noindent">Dolor sit amet.<sup id="cha-2_footnote-ref-1" class="footnote"><a href="#cha-2_footnote-1">*</a></sup></p>
-        <p>Hey Jude!<sup id="cha-2_footnote-ref-2" class="footnote intersentence"><a href="#cha-2_footnote-2">†</a></sup><span class="intersentencespace"></span>
-        Be afraid.<span class="intersentencespace"></span></p>
-      </div>
-      <div id="cha-2_footnotes">
-        <ul class="footnotes nonumbers">
-          <li id="cha-2_footnote-1">
-            <sup>*</sup> <em>Still</em> Cicero <a class="arrow" href="#cha-2_footnote-ref-1">↑</a>
-          </li>
-          <li id="cha-2_footnote-2">
-            <sup>†</sup> Lennon/McCartney <a class="arrow" href="#cha-2_footnote-ref-2">↑</a>
-          </li>
-        </ul>
-      </div>
+<div id="cha-foo" data-tralics-id="cid1" class="chapter" data-number="1"><h1><a href="#cha-foo" class="heading"><span class="number">Chapter 1 </span>Foo <em>bar</em></a></h1>
+       </div>
+       <div id="sec-foobar" data-tralics-id="cid2" class="section" data-number="1.1"><h2><a href="#sec-foobar" class="heading"><span class="number">1.1 </span>Foobar</a></h2>
+       <p class="noindent">Lorem ipsum.<sup id="cha-1_footnote-ref-1" class="footnote"><a href="#cha-1_footnote-1">*</a></sup></p>
+       </div>
+       <div id="cha-1_footnotes">
+         <div class="footnotes nonumbers">
+           <div id="cha-1_footnote-1" class="footnote"><a class="footnote-link" href="#cha-1_footnote-ref-1">&lt;sup&gt;*&lt;/sup&gt;</a> Cicero</div>
+         </div>
+       </div><div id="cha-bar" data-tralics-id="cid3" class="chapter" data-number="2"><h1><a href="#cha-bar" class="heading"><span class="number">Chapter 2 </span>Bar</a></h1>
+       <p class="noindent">Dolor sit amet.<sup id="cha-2_footnote-ref-1" class="footnote"><a href="#cha-2_footnote-1">*</a></sup></p>
+       <p>Hey Jude!<sup id="cha-2_footnote-ref-2" class="footnote intersentence"><a href="#cha-2_footnote-2">†</a></sup><span class="intersentencespace"></span> Be afraid.<span class="intersentencespace"></span> </p></div>
+       <div id="cha-2_footnotes">
+         <div class="footnotes nonumbers">
+           <div id="cha-2_footnote-1" class="footnote"><p><a class="footnote-link" href="#cha-2_footnote-ref-1">&lt;sup&gt;*&lt;/sup&gt;</a> <em>Still</em> Cicero.</p>
+       <p>And Catullus.</p>
+       </div>
+           <div id="cha-2_footnote-2" class="footnote"><a class="footnote-link" href="#cha-2_footnote-ref-2">&lt;sup&gt;†&lt;/sup&gt;</a> Lennon/McCartney</div>
+         </div>
+       </div>
       EOS
     end
     it { should resemble output }
