@@ -31,7 +31,6 @@ module Polytexnic
         headings(doc)
         sout(doc)
         kode(doc)
-        # return '2'
         coloredtext(doc)
         filepath(doc)
         backslash_break(doc)
@@ -46,20 +45,17 @@ module Polytexnic
         codelistings(doc)
         asides(doc)
         make_cross_references(doc)
-        # return '3'
         hrefs(doc)
         graphics_and_figures(doc)
         images_and_imageboxes(doc)
         tables(doc)
         math(doc)
         frontmatter(doc)
-        # return '4'
         mainmatter(doc)
         footnotes(doc)
         table_of_contents(doc)
         add_noindent(doc)
         convert_to_html(doc)
-        # return '5'
       end
 
       private
@@ -339,13 +335,11 @@ module Polytexnic
         # Returns a list of footnotes ready for placement.
         def footnotes_list(footnotes, chapter_number)
           doc = footnotes.values[0][0].document
-          # *** = change to overall div
           footnotes_node = Nokogiri::XML::Node.new('div', doc)
           footnotes_node['class'] = 'footnotes'
           footnotes_node['class'] += ' nonumbers' if footnote_symbols?
           footnotes[chapter_number].each_with_index do |footnote, i|
             n = i + 1
-            # *** change to divs
             note = Nokogiri::XML::Node.new('div', doc)
             note['id'] = footnote_id(chapter_number, n)
             note['class'] = 'footnote'
@@ -357,7 +351,13 @@ module Polytexnic
               reflink.content = "#{n}."
             end
             reflink['href'] = footnote_ref_href(chapter_number, n)
-            html = "#{reflink.to_xhtml} #{footnote.inner_html}"
+            if (first_paragraph = footnote.css('p').first)
+              first_paragraph.inner_html = reflink.to_xhtml + ' ' +
+                                           first_paragraph.inner_html
+              html = footnote.inner_html
+            else
+              html = "#{reflink.to_xhtml} #{footnote.inner_html}"
+            end
             note.inner_html = html
             footnotes_node.add_child note
           end
