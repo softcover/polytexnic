@@ -107,7 +107,9 @@ describe 'Polytexnic::Pipeline#to_html' do
         \chapter{Bar}
         \label{cha:bar}
 
-        Dolor sit amet.\footnote{\emph{Still} Cicero}
+        Dolor sit amet.\footnote{\emph{Still} Cicero.
+
+        And Catullus.}
 
         Hey Jude!\footnote{Lennon/McCartney} Be afraid.
         \end{document}
@@ -129,7 +131,9 @@ describe 'Polytexnic::Pipeline#to_html' do
        <p>Hey Jude!<sup id="cha-2_footnote-ref-2" class="footnote intersentence"><a href="#cha-2_footnote-2">†</a></sup><span class="intersentencespace"></span> Be afraid.<span class="intersentencespace"></span> </p></div>
        <div id="cha-2_footnotes">
          <div class="footnotes nonumbers">
-           <div id="cha-2_footnote-1" class="footnote"><a class="footnote-link" href="#cha-2_footnote-ref-1">&lt;sup&gt;*&lt;/sup&gt;</a> <em>Still</em> Cicero</div>
+           <div id="cha-2_footnote-1" class="footnote"><p><a class="footnote-link" href="#cha-2_footnote-ref-1">&lt;sup&gt;*&lt;/sup&gt;</a> <em>Still</em> Cicero.</p>
+       <p>And Catullus.</p>
+       </div>
            <div id="cha-2_footnote-2" class="footnote"><a class="footnote-link" href="#cha-2_footnote-ref-2">&lt;sup&gt;†&lt;/sup&gt;</a> Lennon/McCartney</div>
          </div>
        </div>
