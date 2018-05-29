@@ -93,6 +93,16 @@ describe 'Polytexnic::Pipeline#to_html' do
           it { should resemble "#{intsp} Bar" }
         end
 
+        context "with a sentence ending with single quote and a paren" do
+          let(:polytex) { "(It 'isn't.') Is it?"}
+          it { should resemble "(It ’isn’t.’)#{intsp} Is it?" }
+        end
+
+        context "with a sentence ending with double quotes and a paren" do
+          let(:polytex) { "(It ''isn't.'') Is it?"}
+          it { should resemble "(It ”isn’t.”)#{intsp} Is it?" }
+        end
+
         context "with a mid-sentence footnote ending with a period" do
           let(:polytex) { 'Lorem\footnote{From \emph{Cicero}.} ipsum.' }
           it { should     include 'ipsum' }
