@@ -93,7 +93,12 @@ describe 'Polytexnic::Pipeline#to_html' do
           it { should resemble "#{intsp} Bar" }
         end
 
-        context "with a sentence ending with single quote and a paren" do
+        context "with a sentence ending with curly braces and a newline" do
+          let(:polytex) { "\\emph{\\textbf{Foo.}}\nBar." }
+          it { should resemble "#{intsp} Bar" }
+        end
+
+        context "with a sentence ending with a single quote and a paren" do
           let(:polytex) { "(It 'isn't.') Is it?"}
           it { should resemble "(It ’isn’t.’)#{intsp} Is it?" }
         end
@@ -103,10 +108,35 @@ describe 'Polytexnic::Pipeline#to_html' do
           it { should resemble "(It ”isn’t.”)#{intsp} Is it?" }
         end
 
+        context "with a sentence ending with a single quote, paren, newline" do
+          let(:polytex) { "(It 'isn't.')\nIs it?"}
+          it { should resemble "(It ’isn’t.’)#{intsp} Is it?" }
+        end
+
+        context "with a sentence ending with double quotes, paren, newline" do
+          let(:polytex) { "(It ''isn't.'')\nIs it?"}
+          it { should resemble "(It ”isn’t.”)#{intsp} Is it?" }
+        end
+
         context "with a mid-sentence footnote ending with a period" do
           let(:polytex) { 'Lorem\footnote{From \emph{Cicero}.} ipsum.' }
           it { should     include 'ipsum' }
           it { should_not include 'intersentencespace' }
+        end
+
+        context "with only a newline" do
+          let(:polytex) { "Lorem ipsum.\nDolor sit amet." }
+          it { should resemble "Lorem ipsum.#{intsp} Dolor sit amet." }
+        end
+
+        context "with a newline and space" do
+          let(:polytex) { "Lorem ipsum.  \n  Dolor sit amet." }
+          it { should resemble "Lorem ipsum.#{intsp} Dolor sit amet." }
+        end
+
+        context "with two newlines" do
+          let(:polytex) { "Lorem ipsum.\n\nDolor sit amet." }
+          it { should_not resemble "Lorem ipsum.#{intsp} Dolor sit amet." }
         end
 
         context "forced inter-sentence override" do

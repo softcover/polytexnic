@@ -68,23 +68,29 @@ module Polytexnic
           end
           not_a_capital = '[^A-Z]'
           # Case of "foo. A"
-          doc.gsub!(/(#{not_a_capital})(#{end_of_sentence})[ ]+([^\s])/) do
+          doc.gsub!(/(#{not_a_capital})(#{end_of_sentence})[ \t]+([^\s])/) do
             $1 + $2 + xmlelement('intersentencespace') + ' ' + $3
           end
-          # Case of "foo.\n A"
-          doc.gsub!(/(#{not_a_capital})(#{end_of_sentence})\n[ ]+([^\s])/) do
-            $1 + $2 + xmlelement('intersentencespace') + ' ' + $3
-          end
-          # Case of "foo.\nA"
-          doc.gsub!(/(#{not_a_capital})(#{end_of_sentence})\n([^\n])/) do
+          # Case of "foo.\nA" or "foo.\n A"
+          doc.gsub!(/(#{not_a_capital})(#{end_of_sentence})[ \t]*\n[ \t]*([^\s])/) do
             $1 + $2 + xmlelement('intersentencespace') + ' ' + $3
           end
           # Case of "foo.} A" or "foo.}} A"
-          doc.gsub!(/(#{not_a_capital})(#{end_of_sentence})(\}+)[ ]+([^\s])/) do
+          doc.gsub!(/(#{not_a_capital})(#{end_of_sentence})(\}+)[ \t]+([^\s])/) do
             $1 + $2 + $3 + xmlelement('intersentencespace') + ' ' + $4
           end
           # Case of "foo.'') A"
-          doc.gsub!(/(#{not_a_capital})(#{end_of_sentence})('+)(\))[ ]+([^\s])/) do
+          doc.gsub!(/(#{not_a_capital})(#{end_of_sentence})('+)(\))[ \t]+([^\s])/) do
+            $1 + $2 + $3 + $4 + xmlelement('intersentencespace') + ' ' + $5
+          end
+          # Case of "foo.}\nA" or "foo.}}\nA"
+          # Matching '.}\n\label' messes up aside boxes, so as a compromise
+          # we detect '.}\n\w', which matches virtually all use cases.
+          doc.gsub!(/(#{not_a_capital})(#{end_of_sentence})(\}+)\n[ \t]*(\w+)/) do
+            $1 + $2 + $3 + xmlelement('intersentencespace') + ' ' + $4
+          end
+          # Case of "foo.')\nA" or "foo.'')\nA"
+          doc.gsub!(/(#{not_a_capital})(#{end_of_sentence})('+)(\))\n([^\s])/) do
             $1 + $2 + $3 + $4 + xmlelement('intersentencespace') + ' ' + $5
           end
           # Handle the manual override to force an intersentence space, '\@',
