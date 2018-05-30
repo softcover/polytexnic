@@ -346,17 +346,19 @@ module Polytexnic
             reflink = Nokogiri::XML::Node.new('a', doc)
             reflink['class'] = 'footnote-link'
             if footnote_symbols?
-              reflink.content = "<sup>#{fnsymbol(i)}</sup>"
+              reflink.content = fnsymbol(i)
             else
               reflink.content = "#{n}."
             end
             reflink['href'] = footnote_ref_href(chapter_number, n)
+            refhtml = reflink.to_xhtml
+            refhtml = "<sup>#{refhtml}</sup>" if footnote_symbols?
             if (first_paragraph = footnote.css('p').first)
-              first_paragraph.inner_html = reflink.to_xhtml + ' ' +
+              first_paragraph.inner_html = refhtml + ' ' +
                                            first_paragraph.inner_html
               html = footnote.inner_html
-            else
-              html = "#{reflink.to_xhtml} #{footnote.inner_html}"
+            elsif
+              html = "#{refhtml} #{footnote.inner_html}"
             end
             note.inner_html = html
             footnotes_node.add_child note
