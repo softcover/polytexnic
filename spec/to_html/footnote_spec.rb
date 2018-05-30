@@ -124,17 +124,17 @@ describe 'Polytexnic::Pipeline#to_html' do
        </div>
        <div id="cha-1_footnotes">
          <div class="footnotes nonumbers">
-           <div id="cha-1_footnote-1" class="footnote"><a class="footnote-link" href="#cha-1_footnote-ref-1">&lt;sup&gt;*&lt;/sup&gt;</a> Cicero</div>
+           <div id="cha-1_footnote-1" class="footnote"><sup><a class="footnote-link" href="#cha-1_footnote-ref-1">*</a></sup> Cicero</div>
          </div>
        </div><div id="cha-bar" data-tralics-id="cid3" class="chapter" data-number="2"><h1><a href="#cha-bar" class="heading"><span class="number">Chapter 2 </span>Bar</a></h1>
        <p class="noindent">Dolor sit amet.<sup id="cha-2_footnote-ref-1" class="footnote"><a href="#cha-2_footnote-1">*</a></sup></p>
        <p>Hey Jude!<sup id="cha-2_footnote-ref-2" class="footnote intersentence"><a href="#cha-2_footnote-2">†</a></sup><span class="intersentencespace"></span> Be afraid.<span class="intersentencespace"></span> </p></div>
        <div id="cha-2_footnotes">
          <div class="footnotes nonumbers">
-           <div id="cha-2_footnote-1" class="footnote"><p><a class="footnote-link" href="#cha-2_footnote-ref-1">&lt;sup&gt;*&lt;/sup&gt;</a> <em>Still</em> Cicero.</p>
+           <div id="cha-2_footnote-1" class="footnote"><p><sup><a class="footnote-link" href="#cha-2_footnote-ref-1">*</a></sup> <em>Still</em> Cicero.</p>
        <p>And Catullus.</p>
        </div>
-           <div id="cha-2_footnote-2" class="footnote"><a class="footnote-link" href="#cha-2_footnote-ref-2">&lt;sup&gt;†&lt;/sup&gt;</a> Lennon/McCartney</div>
+           <div id="cha-2_footnote-2" class="footnote"><sup><a class="footnote-link" href="#cha-2_footnote-ref-2">†</a></sup> Lennon/McCartney</div>
          </div>
        </div>
       EOS
