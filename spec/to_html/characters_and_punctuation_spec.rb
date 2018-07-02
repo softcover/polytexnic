@@ -98,6 +98,11 @@ describe 'Polytexnic::Pipeline#to_html' do
           it { should resemble "#{intsp} Bar" }
         end
 
+        context "with a sentence ending with a square bracket" do
+          let(:polytex) { "[It's foo.] Bar." }
+          it { should resemble "#{intsp} Bar" }
+        end
+
         context "with a sentence ending with a single quote and a paren" do
           let(:polytex) { "(It 'isn't.') Is it?"}
           it { should resemble "(It ’isn’t.’)#{intsp} Is it?" }
