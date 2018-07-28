@@ -80,7 +80,7 @@ module Polytexnic
             $1 + $2 + $3 + xmlelement('intersentencespace') + ' ' + $4
           end
           # Case of "foo.} A" or "foo.}'' A"
-          doc.gsub!(/(#{not_a_capital})(#{end_of_sentence})(\}+)(''|')[ \t]+([^\s])/) do
+          doc.gsub!(/(#{not_a_capital})(#{end_of_sentence})(\}+)(''|')[ \t\n]+([^\s])/) do
             $1 + $2 + $3 + $4 + xmlelement('intersentencespace') + ' ' + $5
           end
           # Case of "foo.] A"

@@ -93,6 +93,11 @@ describe 'Polytexnic::Pipeline#to_html' do
           it { should resemble "“Yes, <em>indeed!</em>”#{intsp} A new sentence." }
         end
 
+        context "with a sentence ending in a curly brace, closing quote, newline" do
+          let(:polytex) { "``Yes, \\emph{indeed!}''\nA new sentence." }
+          it { should resemble "“Yes, <em>indeed!</em>”#{intsp}\nA new sentence." }
+        end
+
         context "with a sentence ending with curly braces" do
           let(:polytex) { "\\emph{\\textbf{Foo.}} Bar." }
           it { should resemble "#{intsp} Bar" }
