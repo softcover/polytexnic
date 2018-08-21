@@ -60,8 +60,8 @@ describe 'Polytexnic::Pipeline#to_html' do
       end
 
       context "with quotes" do
-        let(:polytex) { %(\\kode{'a'.."z"}) }
-        it { should include %(<code>'a'.."z"</code>) }
+        let(:polytex) { %(\\kode{'a'.."z" == "don’t"}) }
+        it { should include %(<code>'a'.."z" == "don’t"</code>) }
       end
     end
 

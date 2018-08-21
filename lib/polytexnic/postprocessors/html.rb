@@ -36,8 +36,8 @@ module Polytexnic
         spaces(doc)
         center(doc)
         title(doc)
-        doc = smart_single_quotes(doc)
         kode(doc)
+        doc = smart_single_quotes(doc)
         tex_logos(doc)
         restore_literal(doc)
         doc = restore_unicode(doc)
@@ -692,9 +692,10 @@ module Polytexnic
         def kode(doc)
           doc.xpath('//kode').each do |node|
             node.name  = 'code'
-            # Undo "smart" quotes in kode.
-            node.content = node.content.gsub("‘", "'")
-            node.content = node.content.gsub("’", "'")
+            # Prevent gsubbing of single quotes.
+            key = digest(node.content)
+            literal_cache[key] = node.content
+            node.content = key
           end
         end
 
@@ -870,6 +871,12 @@ module Polytexnic
             node.content = literal_cache[node.content]
             node.name = 'span'
             node['class'] = 'unicode'
+          end
+          # Restore code
+          doc.css('code').each do |node|
+            if literal_cache[node.content]
+              node.content = literal_cache[node.content]
+            end
           end
         end
 
