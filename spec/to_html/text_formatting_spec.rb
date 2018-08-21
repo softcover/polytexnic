@@ -53,9 +53,18 @@ describe 'Polytexnic::Pipeline#to_html' do
     end
 
     describe "custom kode command" do
-      let(:polytex) { '\kode{function\_name}' }
-      it { should resemble '<code>function_name</code>' }
+
+      context "with an underscore" do
+        let(:polytex) { '\kode{function\_name}' }
+        it { should resemble '<code>function_name</code>' }
+      end
+
+      context "with quotes" do
+        let(:polytex) { %(\\kode{'a'.."z"}) }
+        it { should include %(<code>'a'.."z"</code>) }
+      end
     end
+
 
     context "coloredtext" do
       describe "coloredtext command" do

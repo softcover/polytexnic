@@ -30,7 +30,6 @@ module Polytexnic
         subsubsection(doc)
         headings(doc)
         sout(doc)
-        kode(doc)
         coloredtext(doc)
         filepath(doc)
         backslash_break(doc)
@@ -38,6 +37,7 @@ module Polytexnic
         center(doc)
         title(doc)
         doc = smart_single_quotes(doc)
+        kode(doc)
         tex_logos(doc)
         restore_literal(doc)
         doc = restore_unicode(doc)
@@ -692,6 +692,9 @@ module Polytexnic
         def kode(doc)
           doc.xpath('//kode').each do |node|
             node.name  = 'code'
+            # Undo "smart" quotes in kode.
+            node.content = node.content.gsub("‘", "'")
+            node.content = node.content.gsub("’", "'")
           end
         end
 
