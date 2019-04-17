@@ -37,6 +37,11 @@ describe 'Polytexnic::Pipeline#to_html' do
       it { should resemble '<small>small text</small>' }
     end
 
+    describe "superscript text" do
+      let(:polytex) { '\textsuperscript{test}' }
+      it { should resemble '<sup class="footnote">test</sup>' }
+    end
+
     describe "typewriter text" do
       let(:polytex) { '\texttt{typewriter text}' }
       it { should resemble '<code class="tt">typewriter text</code>' }

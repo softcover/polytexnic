@@ -12,6 +12,7 @@ module Polytexnic
         boldface(doc)
         small_caps(doc)
         small(doc)
+        superscript(doc)
         skips(doc)
         verbatim(doc)
         rule(doc)
@@ -104,6 +105,15 @@ module Polytexnic
         def small(doc)
           doc.xpath('//hi[@rend="small"]').each do |node|
             node.name = 'small'
+            node.remove_attribute('rend')
+          end
+        end
+
+        # Handles \textsuperscript.
+        def superscript(doc)
+          doc.xpath('//hi[@rend="sup"]').each do |node|
+            node.name = 'sup'
+            node['class'] = 'footnote'
             node.remove_attribute('rend')
           end
         end
