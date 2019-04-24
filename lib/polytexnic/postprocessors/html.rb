@@ -1290,6 +1290,7 @@ module Polytexnic
         def restore_figure_quotes!(string)
           figure_quote_cache.each do |key, html|
             string.gsub!(/<p>\s*#{key}\s*<\/p>/m, html)
+            string.gsub!(/<p class="noindent">\s*#{key}\s*<\/p>/m, html)
           end
         end
 
