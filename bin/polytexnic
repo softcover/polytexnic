@@ -1,0 +1,19 @@
+#!/usr/bin/env ruby
+require "polytexnic"
+
+def latex_to_html(latex)
+  Polytexnic::Pipeline.new(latex, article: true).to_html
+end
+
+if ARGV.empty?
+  puts latex_to_html(STDIN.read)
+else
+  filename = ARGV.shift
+  latex = File.read(filename)
+  html  = latex_to_html(latex)
+  if (outfile = ARGV.shift)
+    File.write(outfile, html)
+  else
+    puts html.strip
+  end
+end
