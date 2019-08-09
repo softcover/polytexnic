@@ -53,6 +53,7 @@ module Polytexnic
         math(doc)
         frontmatter(doc)
         mainmatter(doc)
+        backmatter(doc)
         footnotes(doc)
         table_of_contents(doc)
         add_noindent(doc)
@@ -282,6 +283,17 @@ module Polytexnic
             node.name = 'div'
             node['id'] = 'frontmatter'
             node['data-number'] = 0
+          end
+        end
+
+        # Handles backmatter (if any).
+        def backmatter(doc)
+          doc.xpath('//backmatter').each do |node|
+            node.name = 'div'
+            node['id'] = 'backmatter'
+            node['data-number'] = 99999
+            node.parent << node.dup()
+            node.remove
           end
         end
 
@@ -1342,6 +1354,9 @@ module Polytexnic
           toc.remove_attribute 'depth'
           html = []
           current_depth = 0
+          found_backmatter_start = false
+          found_fragment_links = false
+
           doc.css('div').each do |node|
             case node['class']
             when 'chapter'
@@ -1359,6 +1374,16 @@ module Polytexnic
                 current_depth -= 1
               end
               current_depth = 1
+
+              # Handle backmatter table of contents
+              # to track start of backmatter plus 
+              # making sure the links are working
+              if node.parent['data-number'] == "99999"
+                if not found_backmatter_start
+                  node['class'] += ' backmatter-start'
+                  found_backmatter_start = true
+                end
+              end
               insert_li(html, node)
             when 'section'
               html << '<ul>' if article? && current_depth == 0
