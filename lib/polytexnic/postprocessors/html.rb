@@ -1383,6 +1383,7 @@ module Polytexnic
                   node['class'] += ' backmatter-start'
                   found_backmatter_start = true
                 end
+                node['class'] += ' backmatter'
               end
               insert_li(html, node)
             when 'section'
