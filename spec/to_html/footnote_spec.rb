@@ -26,14 +26,14 @@ describe 'Polytexnic::Pipeline#to_html' do
 <div id="cha-foo" data-tralics-id="cid1" class="chapter" data-number="1"><h1><a href="#cha-foo" class="heading"><span class="number">Chapter 1 </span>Foo <em>bar</em></a></h1>
        </div>
        <div id="sec-foobar" data-tralics-id="cid2" class="section" data-number="1.1"><h2><a href="#sec-foobar" class="heading"><span class="number">1.1 </span>Foobar</a></h2>
-       <p class="noindent">Lorem ipsum.<sup id="cha-1_footnote-ref-1" class="footnote"><a href="#cha-1_footnote-1">1</a></sup></p>
+       <p>Lorem ipsum.<sup id="cha-1_footnote-ref-1" class="footnote"><a href="#cha-1_footnote-1">1</a></sup></p>
        </div>
        <div id="cha-1_footnotes">
          <div class="footnotes">
            <div id="cha-1_footnote-1" class="footnote"><a class="footnote-link" href="#cha-1_footnote-ref-1">1.</a> Cicero</div>
          </div>
        </div><div id="cha-bar" data-tralics-id="cid3" class="chapter" data-number="2"><h1><a href="#cha-bar" class="heading"><span class="number">Chapter 2 </span>Bar</a></h1>
-       <p class="noindent">Dolor sit amet.
+       <p>Dolor sit amet.
        </p></div>
       EOS
     end
@@ -66,14 +66,14 @@ describe 'Polytexnic::Pipeline#to_html' do
 <div id="cha-foo" data-tralics-id="cid1" class="chapter" data-number="1"><h1><a href="#cha-foo" class="heading"><span class="number">Chapter 1 </span>Foo <em>bar</em></a></h1>
        </div>
        <div id="sec-foobar" data-tralics-id="cid2" class="section" data-number="1.1"><h2><a href="#sec-foobar" class="heading"><span class="number">1.1 </span>Foobar</a></h2>
-       <p class="noindent">Lorem ipsum.<sup id="cha-1_footnote-ref-1" class="footnote"><a href="#cha-1_footnote-1">1</a></sup></p>
+       <p>Lorem ipsum.<sup id="cha-1_footnote-ref-1" class="footnote"><a href="#cha-1_footnote-1">1</a></sup></p>
        </div>
        <div id="cha-1_footnotes">
          <div class="footnotes">
            <div id="cha-1_footnote-1" class="footnote"><a class="footnote-link" href="#cha-1_footnote-ref-1">1.</a> Cicero</div>
          </div>
        </div><div id="cha-bar" data-tralics-id="cid3" class="chapter" data-number="2"><h1><a href="#cha-bar" class="heading"><span class="number">Chapter 2 </span>Bar</a></h1>
-       <p class="noindent">Dolor sit amet.<sup id="cha-2_footnote-ref-1" class="footnote"><a href="#cha-2_footnote-1">1</a></sup></p>
+       <p>Dolor sit amet.<sup id="cha-2_footnote-ref-1" class="footnote"><a href="#cha-2_footnote-1">1</a></sup></p>
        <p>Hey Jude.<sup id="cha-2_footnote-ref-2" class="footnote"><a href="#cha-2_footnote-2">2</a></sup>
        </p></div><div id="cha-2_footnotes">
          <div class="footnotes">
@@ -120,14 +120,14 @@ describe 'Polytexnic::Pipeline#to_html' do
 <div id="cha-foo" data-tralics-id="cid1" class="chapter" data-number="1"><h1><a href="#cha-foo" class="heading"><span class="number">Chapter 1 </span>Foo <em>bar</em></a></h1>
        </div>
        <div id="sec-foobar" data-tralics-id="cid2" class="section" data-number="1.1"><h2><a href="#sec-foobar" class="heading"><span class="number">1.1 </span>Foobar</a></h2>
-       <p class="noindent">Lorem ipsum.<sup id="cha-1_footnote-ref-1" class="footnote"><a href="#cha-1_footnote-1">*</a></sup></p>
+       <p>Lorem ipsum.<sup id="cha-1_footnote-ref-1" class="footnote"><a href="#cha-1_footnote-1">*</a></sup></p>
        </div>
        <div id="cha-1_footnotes">
          <div class="footnotes nonumbers">
            <div id="cha-1_footnote-1" class="footnote"><sup><a class="footnote-link" href="#cha-1_footnote-ref-1">*</a></sup> Cicero</div>
          </div>
        </div><div id="cha-bar" data-tralics-id="cid3" class="chapter" data-number="2"><h1><a href="#cha-bar" class="heading"><span class="number">Chapter 2 </span>Bar</a></h1>
-       <p class="noindent">Dolor sit amet.<sup id="cha-2_footnote-ref-1" class="footnote"><a href="#cha-2_footnote-1">*</a></sup></p>
+       <p>Dolor sit amet.<sup id="cha-2_footnote-ref-1" class="footnote"><a href="#cha-2_footnote-1">*</a></sup></p>
        <p>Hey Jude!<sup id="cha-2_footnote-ref-2" class="footnote intersentence"><a href="#cha-2_footnote-2">†</a></sup><span class="intersentencespace"></span> Be afraid.<span class="intersentencespace"></span> </p></div>
        <div id="cha-2_footnotes">
          <div class="footnotes nonumbers">

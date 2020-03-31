@@ -40,7 +40,7 @@ Listing~\ref{code:create_gemrc}
             </div>
           </div>
         </div>
-        <p class="noindent"><a href="#code-create_gemrc" class="hyperref">Listing <span class="ref">1.1</span></a></p>
+        <p><a href="#code-create_gemrc" class="hyperref">Listing <span class="ref">1.1</span></a></p>
         </div>
       EOS
     end
