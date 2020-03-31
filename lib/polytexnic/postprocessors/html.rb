@@ -55,7 +55,6 @@ module Polytexnic
         mainmatter(doc)
         footnotes(doc)
         table_of_contents(doc)
-        add_noindent(doc)
         convert_to_html(doc)
       end
 
@@ -1399,27 +1398,34 @@ module Polytexnic
           html << open << link.to_xhtml << '</li>'
         end
 
+
+        # NOTE: The add_noindent method has been superseded by CSS rules as shown in the
+        # softcover gem's epub.css files.
+        # See div.chapter > p:first-of-type and related rules in
+        #   ./lib/softcover/article_template/epub/OEBPS/styles/epub.css
+        # of the softcover gem's source.
+
         # Adds a noindent class where appropriate.
         # The purpose is to give the designer the option to indent all paragraphs but the first
         # one after the beginning of a chapter or section. The method is to add a "noindent" class
         # in the first paragraph after each division (chapter, section, etc.).
-        def add_noindent(doc)
-          divisions = %w[chapter section subsection subsubsection]
-          divisions += divisions.map { |division| "#{division}-star"}
-          divisions.each do |type|
-            doc.css("div.#{type}").each do |node|
-              if (first_paragraph = node.at_css('p'))
-                if first_paragraph['class'] == 'noindent'
-                  next
-                elsif first_paragraph['class'].nil?
-                  first_paragraph['class'] = 'noindent'
-                else
-                  first_paragraph['class'] += ' noindent'
-                end
-              end
-            end
-          end
-        end
+        # def add_noindent(doc)
+        #   divisions = %w[chapter section subsection subsubsection]
+        #   divisions += divisions.map { |division| "#{division}-star"}
+        #   divisions.each do |type|
+        #     doc.css("div.#{type}").each do |node|
+        #       if (first_paragraph = node.at_css('p'))
+        #         if first_paragraph['class'] == 'noindent'
+        #           next
+        #         elsif first_paragraph['class'].nil?
+        #           first_paragraph['class'] = 'noindent'
+        #         else
+        #           first_paragraph['class'] += ' noindent'
+        #         end
+        #       end
+        #     end
+        #   end
+        # end
 
         # Cleans a node by removing all the given attributes.
         def clean_node(node, attributes)

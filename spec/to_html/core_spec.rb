@@ -108,6 +108,25 @@ describe 'Polytexnic::Pipeline#to_html' do
     it { should_not resemble '<unknown>' }
   end
 
+  describe "explicit noindent" do
+    let(:polytex) { '\noindent lorem ipsum' }
+    it { should resemble '<p class="noindent">lorem ipsum</p>' }
+  end
+
+  describe "free span" do
+    let(:polytex) do <<-'EOS'
+\chapter{Basics} % (fold)
+\label{cha:basics}
+
+%= <span class="free"></span>
+      EOS
+    end
+
+    it { should resemble('<span class="free"></span>') }
+    it { should_not resemble('<p><span class="free"></span></p>') }
+  end
+
+
   describe '\maketitle' do
 
     context "with all elements filled out explicitly" do
