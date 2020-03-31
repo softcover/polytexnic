@@ -8,7 +8,7 @@ Gem::Specification.new do |gem|
   gem.version       = Polytexnic::VERSION
   gem.authors       = ["Michael Hartl", "Nick Merwin"]
   gem.email         = ["michael@softcover.io"]
-  gem.description   = %q{Core translation engine for the polytexnic gem}
+  gem.description   = %q{Core translation engine for the softcover gem}
   gem.summary       = %q{Convert from PolyTeX & Markdown to HTML & LaTeX}
   gem.homepage      = "https://polytexnic.org/"
   gem.license       = "MIT"
