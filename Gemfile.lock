@@ -2,7 +2,7 @@ PATH
   remote: .
   specs:
     polytexnic (1.5.15)
-      json (~> 1.8.1)
+      json (~> 2.3.0)
       kramdown (~> 1.17)
       msgpack (~> 1.2.0)
       nokogiri (~> 1.10.8)
@@ -42,7 +42,7 @@ GEM
       guard (~> 2.1)
       guard-compat (~> 1.1)
       rspec (>= 2.99.0, < 4.0)
-    json (1.8.6)
+    json (2.3.0)
     kramdown (1.17.0)
     listen (3.2.1)
       rb-fsevent (~> 0.10, >= 0.10.3)
