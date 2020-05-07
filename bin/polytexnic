@@ -8,6 +8,7 @@ require 'fileutils'
 # using the PolyTeXnic HTML pipeline.
 
 examples = %(Examples:
+    polytexnic example.md example.tex
     polytexnic example.md > example.tex
     polytexnic < example.md > example.tex
     cat example.md | polytexnic > example.tex
@@ -26,27 +27,35 @@ OptionParser.new do |opts|
     options[:outfile] = outfile
   end
 
-  opts.on("-f", "--format", "Use output format [html, latex]") do |format|
+  opts.on("-f", "--format", "Use output format [html, tex]") do |format|
     options[:format] = format
   end
 end.parse!
 
-options[:format] ||= "html"
+# Returns the file format based on extension.
+# Should be 'html' or 'tex'.
+def format(filename)
+  filename.split('.').last
+rescue
+  nil
+end
 
 if (infile = options[:infile] || ARGV.shift)
   input = File.read(infile)
 else
   input = STDIN.read
 end
+outfile  = options[:outfile] || ARGV.shift
 pipeline = Polytexnic::Pipeline.new(input, article: true)
-if options[:format] == "html"
+format   = options[:format] || format(outfile) || "html"
+if format == "html"
   output = pipeline.to_html
-elsif options[:format] == "latex"
-  output = pipeline.to_latex
+elsif format == "tex"
+  output = pipeline.to_polytex
 else
-  raise ArgumentError, "Invalid format: #{options[:format]}"
+  raise ArgumentError, "Invalid format: #{format}"
 end
-if (outfile = options[:outfile])
+if outfile
   File.write(outfile, output)
 else
   puts output.strip
