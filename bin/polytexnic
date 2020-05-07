@@ -6,26 +6,27 @@ require 'fileutils'
 # polytexnic command-line script
 # The polytexnic script converts Markdown to LaTeX
 # using the PolyTeXnic HTML pipeline.
-# usage:
-#   polytexnic example.md > example.tex
-#   polytexnic < example.md > example.tex
-#   cat example.md | polytexnic > example.tex
-#   polytexnic -f example.md > example.tex
-#   polytexnic -f example.md -o example.tex
+
+examples = %(Examples:
+    polytexnic example.md > example.tex
+    polytexnic < example.md > example.tex
+    cat example.md | polytexnic > example.tex
+    polytexnic -f example.md > example.tex
+    polytexnic -f example.md -o example.tex)
 
 options = {}
 OptionParser.new do |opts|
-  opts.banner = "Usage: polytexnic [options]"
+  opts.banner = "Usage: polytexnic [options]\n#{examples}\n\n"
 
-  opts.on("-i", "--input" "Use file input") do |infile|
+  opts.on("-i", "--input", "Use file input") do |infile|
     options[:infile] = infile
   end
 
-  opts.on("-o", "--output" "Use file output") do |outfile|
+  opts.on("-o", "--output", "Use file output") do |outfile|
     options[:outfile] = outfile
   end
 
-  opts.on("-f", "--format" "Use output format [html, latex]") do |format|
+  opts.on("-f", "--format", "Use output format [html, latex]") do |format|
     options[:format] = format
   end
 end.parse!
