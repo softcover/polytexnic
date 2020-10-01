@@ -95,7 +95,7 @@ module Polytexnic
         def small_caps(doc)
           doc.xpath('//hi[@rend="sc"]').each do |node|
             node.name = 'span'
-            node['class'] = 'sc'
+            node['class'] = 'smallcaps'
             node.remove_attribute('rend')
           end
         end
