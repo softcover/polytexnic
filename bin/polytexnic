@@ -1,19 +1,62 @@
 #!/usr/bin/env ruby
 require "polytexnic"
+require 'optparse'
+require 'fileutils'
 
-def latex_to_html(latex)
-  Polytexnic::Pipeline.new(latex, article: true).to_html
+# polytexnic command-line script
+# The polytexnic script converts Markdown to LaTeX
+# using the PolyTeXnic HTML pipeline.
+
+examples = %(Examples:
+    polytexnic example.md example.tex
+    polytexnic example.md > example.tex
+    polytexnic < example.md > example.tex
+    cat example.md | polytexnic > example.tex
+    polytexnic -f example.md > example.tex
+    polytexnic -f example.md -o example.tex)
+
+options = {}
+OptionParser.new do |opts|
+  opts.banner = "Usage: polytexnic [options]\n#{examples}\n\n"
+
+  opts.on("-i", "--input", "Use file input") do |infile|
+    options[:infile] = infile
+  end
+
+  opts.on("-o", "--output", "Use file output") do |outfile|
+    options[:outfile] = outfile
+  end
+
+  opts.on("-f", "--format", "Use output format [html, tex]") do |format|
+    options[:format] = format
+  end
+end.parse!
+
+# Returns the file format based on extension.
+# Should be 'html' or 'tex'.
+def format(filename)
+  filename.split('.').last
+rescue
+  nil
 end
 
-if ARGV.empty?
-  puts latex_to_html(STDIN.read)
+if (infile = options[:infile] || ARGV.shift)
+  input = File.read(infile)
 else
-  filename = ARGV.shift
-  latex = File.read(filename)
-  html  = latex_to_html(latex)
-  if (outfile = ARGV.shift)
-    File.write(outfile, html)
-  else
-    puts html.strip
-  end
+  input = STDIN.read
+end
+outfile  = options[:outfile] || ARGV.shift
+pipeline = Polytexnic::Pipeline.new(input, article: true)
+format   = options[:format] || format(outfile) || "html"
+if format == "html"
+  output = pipeline.to_html
+elsif format == "tex"
+  output = pipeline.to_polytex
+else
+  raise ArgumentError, "Invalid format: #{format}"
+end
+if outfile
+  File.write(outfile, output)
+else
+  puts output.strip
 end

@@ -29,7 +29,7 @@ describe 'Polytexnic::Pipeline#to_html' do
 
     describe "small caps" do
       let(:polytex) { '\textsc{small caps}' }
-      it { should resemble '<span class="sc">small caps</span>' }
+      it { should resemble '<span class="smallcaps">small caps</span>' }
     end
 
     describe "small text" do
