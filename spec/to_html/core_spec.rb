@@ -9,6 +9,15 @@ describe 'Polytexnic::Pipeline#to_html' do
     let(:polytex) { "% A LaTeX comment" }
     it { should eq '' }
 
+    context "occurring a the end of a line" do
+      let(:polytex) do <<-'EOS'
+        lorem ipsum
+        dolor sit amet.%this is a comment
+        EOS
+      end
+      it { should include("amet.") }
+    end
+
     context "with a section and label" do
       let(:polytex) do <<-'EOS'
         % \section{Foo}

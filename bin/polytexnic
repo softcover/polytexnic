@@ -4,26 +4,31 @@ require 'optparse'
 require 'fileutils'
 
 # polytexnic command-line script
-# The polytexnic script converts Markdown to LaTeX
+# The polytexnic script converts Markdown to HTML or LaTeX
 # using the PolyTeXnic HTML pipeline.
 
-examples = %(Examples:
-    polytexnic example.md example.tex
-    polytexnic example.md > example.tex
-    polytexnic < example.md > example.tex
-    cat example.md | polytexnic > example.tex
-    polytexnic -f example.md > example.tex
-    polytexnic -f example.md -o example.tex)
+examples = %(
+The polytexnic script converts Markdown to HTML or LaTeX
+using the PolyTeXnic HTML pipeline.
+
+Examples:
+    polytexnic example.md example.html
+    polytexnic example.md > example.html
+    polytexnic < example.md > example.html
+    cat example.md | polytexnic > example.html
+    polytexnic -i example.md > example.html
+    polytexnic -i example.md -o example.tex
+    polytexnic -f tex example.md)
 
 options = {}
 OptionParser.new do |opts|
   opts.banner = "Usage: polytexnic [options]\n#{examples}\n\n"
 
-  opts.on("-i", "--input", "Use file input") do |infile|
+  opts.on("-i", "--input=INPUT", "Use file input") do |infile|
     options[:infile] = infile
   end
 
-  opts.on("-o", "--output", "Use file output") do |outfile|
+  opts.on("-o", "--output=OUTPUT", "Use file output") do |outfile|
     options[:outfile] = outfile
   end
 
@@ -35,17 +40,31 @@ end.parse!
 # Returns the file format based on extension.
 # Should be 'html' or 'tex'.
 def format(filename)
+  puts '***********'
+  puts '***********'
+  puts '***********'
+  puts '***********'
+  puts '***********'
+  p filename.split('.')
   filename.split('.').last
 rescue
   nil
 end
 
+puts '$$$$$$$$$$$'
+puts '$$$$$$$$$$$'
+puts '$$$$$$$$$$$'
+puts '$$$$$$$$$$$'
+puts '$$$$$$$$$$$'
+p options
 if (infile = options[:infile] || ARGV.shift)
+puts infile
   input = File.read(infile)
 else
   input = STDIN.read
 end
 outfile  = options[:outfile] || ARGV.shift
+puts outfile
 pipeline = Polytexnic::Pipeline.new(input, article: true)
 format   = options[:format] || format(outfile) || "html"
 if format == "html"

@@ -140,7 +140,7 @@ module Polytexnic
         # Removes commented-out lines.
         # Contents of the special sequence `%=` are converted to literal HTML.
         def remove_comments(output)
-          output.gsub!(/[^\\]%[^=].*$/, '')
+          output.gsub!(/([^\\])(%[^=].*$)/, '\1')
           output.gsub!(/[^\\]%=(.*)$/) do
             key = digest($1)
             literal_html_cache[key] = $1
