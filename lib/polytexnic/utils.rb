@@ -206,9 +206,17 @@ module Polytexnic
         # Inline numbers look much better in HTML but are invalid in LaTeX.
         options['linenos'] = 'inline'
       end
-      highlight_cache[key] ||= Pygments.highlight(content, lexer: language,
+      if (lines = options['hl_lines'])
+        content_lines = content.split("\n")
+        if lines.max > content_lines.length
+          err  = "\nHighlight line(s) out of range: #{lines.inspect}\n"
+          err += content
+          raise err
+        end
+      end
+      highlight_cache[key] ||= Pygments.highlight(content, lexer:     language,
                                                            formatter: formatter,
-                                                           options: options)
+                                                           options:   options)
     end
 
     # Adds some verbatim font info (including size).

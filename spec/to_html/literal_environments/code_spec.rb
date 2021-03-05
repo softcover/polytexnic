@@ -161,7 +161,7 @@ describe Polytexnic::Pipeline do
 
   context "with highlight line out of range" do
     let(:polytex) do <<-'EOS'
-      %= lang:ruby, options: "hl_lines": [17], "linenos": true
+      %= lang:ruby, options: "hl_lines": [4], "linenos": true
       \begin{code}
       def foo
         "bar"
@@ -171,7 +171,7 @@ describe Polytexnic::Pipeline do
     end
 
     it "should emit a warning" do
-      skip
+      expect { processed_text }.to raise_error
     end
   end
 
@@ -254,7 +254,7 @@ describe Polytexnic::Pipeline do
 
       context "with custom options" do
         let(:polytex) do <<-'EOS'
-          %= <<(polytexnic_commands.sty, lang: tex, options: "hl_lines": [5])
+          %= <<(polytexnic_commands.sty, lang: tex, options: "hl_lines": [1])
           EOS
         end
         let(:output) do <<-'EOS'
@@ -393,7 +393,17 @@ describe Polytexnic::Pipeline do
 
           context "with repo, tag, lang and options" do
             let(:polytex) do <<-'EOS'
-              %= <<(tagged_file.rb, git: {tag: v0.9.4, repo:"repo_path/.git"}, lang: tex, options: "hl_lines": [5])
+              %= <<(tagged_file.rb, git: {tag: v0.9.4, repo:"repo_path/.git"}, lang: tex, options: "hl_lines": [2])
+              EOS
+            end
+            let(:output) do <<-'EOS'
+              <div class="code">
+                <div class="highlight">
+                  <pre><span></span>Fake data
+                  <span class="hll">second line
+                  </span></pre>
+                </div>
+              </div>
               EOS
             end
             it_behaves_like "an inclusion"
