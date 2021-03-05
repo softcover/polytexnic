@@ -98,7 +98,7 @@ describe Polytexnic::Pipeline do
         <div class="code">
           <div class="highlight">
             <pre>
-              <span></span>            
+              <span></span>
               <span class="k">def</span> <span class="nf">foo</span>
               <span class="s2">"bar"</span>
               <span class="k">end</span>
@@ -126,15 +126,15 @@ describe Polytexnic::Pipeline do
           <div class="highlight">
             <pre>
               <span></span>
-              <span class="lineno">1</span>
               <span class="hll">
+              <span class="linenos">1</span>
                 <span class="k">def</span> <span class="nf">foo</span>
               </span>
-              <span class="lineno">2</span>
               <span class="hll">
+              <span class="linenos">2</span>
                 <span class="s2">"bar"</span>
               </span>
-              <span class="lineno">3</span>
+              <span class="linenos">3</span>
               <span class="k">end</span>
             </pre>
           </div>
@@ -143,9 +143,25 @@ describe Polytexnic::Pipeline do
     end
   end
 
+  context "when highlighting HTML" do
+    let(:polytex) do <<-'EOS'
+      %= lang:html, options: "hl_lines": [3], "linenos": true
+      \begin{code}
+      ---
+      layout: default
+      title: Gallery for Learn Enough JavaScript to Be Dangerous
+      ---
+
+      <div class="gallery col-three">
+        <div class="col col-nav gallery-thumbs" id="gallery-thumbs">
+      \end{code}
+    end
+    it should include('class="linenos"')
+  end
+
   context "with highlight line out of range" do
     let(:polytex) do <<-'EOS'
-      %= lang:ruby, options: "hl_lines": [17], "linenos": true
+      %= lang:ruby, options: "hl_lines": [4], "linenos": true
       \begin{code}
       def foo
         "bar"
@@ -155,7 +171,7 @@ describe Polytexnic::Pipeline do
     end
 
     it "should emit a warning" do
-
+      expect { processed_text }.to raise_error
     end
   end
 
@@ -238,7 +254,7 @@ describe Polytexnic::Pipeline do
 
       context "with custom options" do
         let(:polytex) do <<-'EOS'
-          %= <<(polytexnic_commands.sty, lang: tex, options: "hl_lines": [5])
+          %= <<(polytexnic_commands.sty, lang: tex, options: "hl_lines": [1])
           EOS
         end
         let(:output) do <<-'EOS'
@@ -377,7 +393,17 @@ describe Polytexnic::Pipeline do
 
           context "with repo, tag, lang and options" do
             let(:polytex) do <<-'EOS'
-              %= <<(tagged_file.rb, git: {tag: v0.9.4, repo:"repo_path/.git"}, lang: tex, options: "hl_lines": [5])
+              %= <<(tagged_file.rb, git: {tag: v0.9.4, repo:"repo_path/.git"}, lang: tex, options: "hl_lines": [2])
+              EOS
+            end
+            let(:output) do <<-'EOS'
+              <div class="code">
+                <div class="highlight">
+                  <pre><span></span>Fake data
+                  <span class="hll">second line
+                  </span></pre>
+                </div>
+              </div>
               EOS
             end
             it_behaves_like "an inclusion"
