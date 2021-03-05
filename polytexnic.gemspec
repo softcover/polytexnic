@@ -10,7 +10,7 @@ Gem::Specification.new do |gem|
   gem.email         = ["michael@softcover.io"]
   gem.description   = %q{Core translation engine for the softcover gem}
   gem.summary       = %q{Convert from PolyTeX & Markdown to HTML & LaTeX}
-  gem.homepage      = "https://polytexnic.org/"
+  gem.homepage      = "https://github.com/softcover/polytexnic"
   gem.license       = "MIT"
 
   gem.files         = `git ls-files`.split($/)
@@ -18,8 +18,8 @@ Gem::Specification.new do |gem|
   gem.test_files    = gem.files.grep(%r{^(test|spec|features)/})
   gem.require_paths = ["lib"]
 
-  gem.add_dependency 'nokogiri', '~> 1.10.8'
-  gem.add_dependency 'pygments.rb', '~> 1.2.1'
+  gem.add_dependency 'nokogiri', '>= 1.6.0', '< 2.0'
+  gem.add_dependency 'pygments.rb', '~> 2.1'
   gem.add_dependency 'msgpack', '~> 1.2.0'
   gem.add_dependency 'kramdown', '>= 1.17', '< 3.0'
   gem.add_dependency 'json', '~> 2.3.0'

@@ -98,7 +98,7 @@ describe Polytexnic::Pipeline do
         <div class="code">
           <div class="highlight">
             <pre>
-              <span></span>            
+              <span></span>
               <span class="k">def</span> <span class="nf">foo</span>
               <span class="s2">"bar"</span>
               <span class="k">end</span>
@@ -126,21 +126,37 @@ describe Polytexnic::Pipeline do
           <div class="highlight">
             <pre>
               <span></span>
-              <span class="lineno">1</span>
               <span class="hll">
+              <span class="linenos">1</span>
                 <span class="k">def</span> <span class="nf">foo</span>
               </span>
-              <span class="lineno">2</span>
               <span class="hll">
+              <span class="linenos">2</span>
                 <span class="s2">"bar"</span>
               </span>
-              <span class="lineno">3</span>
+              <span class="linenos">3</span>
               <span class="k">end</span>
             </pre>
           </div>
         </div>
       EOS
     end
+  end
+
+  context "when highlighting HTML" do
+    let(:polytex) do <<-'EOS'
+      %= lang:html, options: "hl_lines": [3], "linenos": true
+      \begin{code}
+      ---
+      layout: default
+      title: Gallery for Learn Enough JavaScript to Be Dangerous
+      ---
+
+      <div class="gallery col-three">
+        <div class="col col-nav gallery-thumbs" id="gallery-thumbs">
+      \end{code}
+    end
+    it should include('class="linenos"')
   end
 
   context "with highlight line out of range" do
@@ -155,7 +171,7 @@ describe Polytexnic::Pipeline do
     end
 
     it "should emit a warning" do
-
+      skip
     end
   end
 
