@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    polytexnic (1.6.2)
+    polytexnic (1.6.3)
       json (~> 2.3.0)
       kramdown (>= 1.17, < 3.0)
       msgpack (~> 1.2.0)
@@ -25,7 +25,7 @@ GEM
       debugger-linecache (~> 1.2.0)
     diff-lcs (1.4.4)
     docile (1.1.5)
-    ffi (1.14.2)
+    ffi (1.15.0)
     formatador (0.2.5)
     growl (1.0.3)
     guard (2.16.2)
