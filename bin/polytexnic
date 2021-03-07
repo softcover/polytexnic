@@ -40,23 +40,26 @@ end.parse!
 # Returns the file format based on extension.
 # Should be 'html' or 'tex'.
 def format(filename)
-  puts '***********'
-  puts '***********'
-  puts '***********'
-  puts '***********'
-  puts '***********'
-  p filename.split('.')
   filename.split('.').last
 rescue
   nil
 end
 
-puts '$$$$$$$$$$$'
-puts '$$$$$$$$$$$'
-puts '$$$$$$$$$$$'
-puts '$$$$$$$$$$$'
-puts '$$$$$$$$$$$'
-p options
+# Defines a valid HTML template.
+def html_template(title, body)
+%(<!DOCTYPE html>
+<html>
+  <head>
+    <title>#{title}</title>
+    <meta charset="utf-8">
+  </head>
+  <body>
+    #{body}
+  </body>
+</html>
+)
+end
+
 if (infile = options[:infile] || ARGV.shift)
 puts infile
   input = File.read(infile)
@@ -68,7 +71,7 @@ puts outfile
 pipeline = Polytexnic::Pipeline.new(input, article: true)
 format   = options[:format] || format(outfile) || "html"
 if format == "html"
-  output = pipeline.to_html
+  output = html_template("HTML output", pipeline.to_html)
 elsif format == "tex"
   output = pipeline.to_polytex
 else
