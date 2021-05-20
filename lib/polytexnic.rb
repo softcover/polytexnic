@@ -112,8 +112,8 @@ module Polytexnic
         {"chapter"=>{"word"=>"Chapter", "order"=>"standard"},
         "section"=>"Section", "table"=>"Table", "figure"=>"Figure",
         "fig"=>"Fig", "aside"=>"Box", "listing"=>"Listing",
-        "equation"=>"Equation", "eq"=>"Eq", "frontmatter"=>"Frontmatter",
-        "contents"=>"Contents"}
+        "equation"=>"Equation", "eq"=>"Eq", "frontmatter"=>"Frontmatter", 
+        "backmatter"=>"Backmatter", "contents"=>"Contents"}
       end
 
       def markdown?
