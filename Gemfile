@@ -22,6 +22,6 @@ group :test do
 end
 
 group :development do
-  gem 'guard-rspec'
+  gem 'guard-rspec', require: false
   gem 'rake'
 end
