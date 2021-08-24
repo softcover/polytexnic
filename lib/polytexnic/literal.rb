@@ -209,6 +209,7 @@ module Polytexnic
     # For completeness, we handle the case where the author neglects to
     # use the nonbreak space ~.
     def hyperrefs(string)
+      part     = language_labels["part"]
       chapter  = language_labels["chapter"]["word"]
       section  = language_labels["section"]
       table    = language_labels["table"]
@@ -218,7 +219,7 @@ module Polytexnic
       listing  = language_labels["listing"]
       equation = language_labels["equation"]
       eq       = language_labels["eq"]
-      linked_item = "(#{chapter}|#{section}|#{table}|#{box}|#{figure}" +
+      linked_item = "(#{part}|#{chapter}|#{section}|#{table}|#{box}|#{figure}" +
                     "|#{fig}\.|#{listing}|#{equation}|#{eq}\.)"
       ref = /(?:#{linked_item}(~| ))*(\\(?:eq)*ref){(.*?)}/i
       string.gsub!(ref) do
