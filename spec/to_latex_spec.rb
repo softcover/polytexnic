@@ -149,11 +149,17 @@ end
 
     describe "hyperref links" do
       let(:polytex) do <<-'EOS'
-        Chapter~\ref{cha:foo}
+        Part~\ref{prt:foo}
+        Chapter~\ref{cha:bar}
+        Section~\ref{sec:baz}
         EOS
       end
-      let(:output) { '\hyperref[cha:foo]{Chapter~\ref{cha:foo}' }
-      it { should resemble output }
+      let(:part_ref)    { '\hyperref[prt:foo]{Part~\ref{prt:foo}' }
+      let(:chapter_ref) { '\hyperref[cha:bar]{Chapter~\ref{cha:bar}' }
+      let(:section_ref) { '\hyperref[sec:baz]{Section~\ref{sec:baz}' }
+      it { should resemble part_ref }
+      it { should resemble chapter_ref }
+      it { should resemble section_ref }
     end
 
     describe "asides" do
