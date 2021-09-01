@@ -152,14 +152,17 @@ end
         Part~\ref{prt:foo}
         Chapter~\ref{cha:bar}
         Section~\ref{sec:baz}
+        Appendix~\ref{cha:quux}
         EOS
       end
-      let(:part_ref)    { '\hyperref[prt:foo]{Part~\ref{prt:foo}' }
-      let(:chapter_ref) { '\hyperref[cha:bar]{Chapter~\ref{cha:bar}' }
-      let(:section_ref) { '\hyperref[sec:baz]{Section~\ref{sec:baz}' }
+      let(:part_ref)     { '\hyperref[prt:foo]{Part~\ref{prt:foo}' }
+      let(:chapter_ref)  { '\hyperref[cha:bar]{Chapter~\ref{cha:bar}' }
+      let(:section_ref)  { '\hyperref[sec:baz]{Section~\ref{sec:baz}' }
+      let(:appendix_ref) { '\hyperref[cha:quux]{Appendix~\ref{cha:quux}' }
       it { should resemble part_ref }
       it { should resemble chapter_ref }
       it { should resemble section_ref }
+      it { should resemble appendix_ref }
     end
 
     describe "asides" do

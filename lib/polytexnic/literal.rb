@@ -212,6 +212,7 @@ module Polytexnic
       part     = language_labels["part"]
       chapter  = language_labels["chapter"]["word"]
       section  = language_labels["section"]
+      appendix = language_labels["appendix"]
       table    = language_labels["table"]
       box      = language_labels["aside"]
       figure   = language_labels["figure"]
@@ -219,7 +220,7 @@ module Polytexnic
       listing  = language_labels["listing"]
       equation = language_labels["equation"]
       eq       = language_labels["eq"]
-      linked_item = "(#{part}|#{chapter}|#{section}|#{table}|#{box}|#{figure}" +
+      linked_item = "(#{part}|#{chapter}|#{section}|#{appendix}|#{table}|#{box}|#{figure}" +
                     "|#{fig}\.|#{listing}|#{equation}|#{eq}\.)"
       ref = /(?:#{linked_item}(~| ))*(\\(?:eq)*ref){(.*?)}/i
       string.gsub!(ref) do

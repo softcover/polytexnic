@@ -110,8 +110,8 @@ module Polytexnic
       # Returns the default labels for 'Chapter', 'Figure', etc.
       def default_language_labels
         {"part"=>"Part","chapter"=>{"word"=>"Chapter", "order"=>"standard"},
-        "section"=>"Section", "table"=>"Table", "figure"=>"Figure",
-        "fig"=>"Fig", "aside"=>"Box", "listing"=>"Listing",
+        "section"=>"Section", "appendix"=>"Appendix", "table"=>"Table",
+        "figure"=>"Figure", "fig"=>"Fig", "aside"=>"Box", "listing"=>"Listing",
         "equation"=>"Equation", "eq"=>"Eq", "frontmatter"=>"Frontmatter",
         "contents"=>"Contents"}
       end
