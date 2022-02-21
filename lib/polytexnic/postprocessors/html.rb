@@ -792,7 +792,9 @@ module Polytexnic
           doc.xpath('//thinspace').each do |node|
             node.name  = 'span'
             node['class'] = 'thinspace'
-            node.inner_html = '&thinsp;'
+            # &#8201; replaces &thinsp;, which stopped working for some reason.
+            # Weirdly, it still works in the corresponding test.
+            node.inner_html = '&#8201;'
           end
           doc.xpath('//normalspace').each do |node|
             node.replace(' ')
