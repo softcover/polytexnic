@@ -33,22 +33,6 @@ describe 'Polytexnic::Pipeline#to_html' do
       end
 
       it { should resemble output }
-
-      context "longtable" do
-
-        let(:polytex) do <<-'EOS'
-          \begin{longtable}{cc}
-          \hline
-          HTTP request & URL \\
-          \hline
-          GET & /users \\
-          GET & /users/1
-          \end{longtable}
-        EOS
-        end
-
-        it { should resemble output }
-      end
     end
 
     context "tabularx environments" do
@@ -193,6 +177,42 @@ describe 'Polytexnic::Pipeline#to_html' do
   end
 
   describe "table environments" do
+
+      context "longtable" do
+
+        let(:polytex) do <<-'EOS'
+
+          \begin{longtable}{cc}
+          \label{table:longtable}
+          HTTP request & URL \\
+          GET & /users \\
+          GET & /users/1
+          \end{longtable}
+
+          Table~\ref{table:longtable}
+
+        EOS
+        end
+
+        let(:output) do <<-'EOS'
+          <div id="table-longtable" data-tralics-id="uid1" data-number="1" class="table">
+          <table class="tabular"><tr><td class="align_center">HTTP request</td>
+          <td class="align_center">URL</td>
+          </tr><tr><td class="align_center">GET</td>
+          <td class="align_center">/users</td>
+          </tr><tr><td class="align_center">GET</td>
+          <td class="align_center">/users/1</td>
+          </tr></table>
+            <div class="caption">
+              <span class="header">Table 1</span>
+            </div>
+          </div>
+          <p><a href="#table-longtable" class="hyperref">Table <span class="ref">1</span></a></p>
+          EOS
+        end
+
+        it { should resemble output }
+      end
 
     context "with a label and a cross-reference" do
       let(:polytex) do <<-'EOS'
