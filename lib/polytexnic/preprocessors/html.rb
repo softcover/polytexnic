@@ -279,15 +279,13 @@ module Polytexnic
         # input documents. The latest update includes support for the tabularx
         # environment
         def convert_longtable(output)
-          output.gsub!(/\\begin\{longtable\}(\{.*?\})\n((?:\\caption|\\label).*?)/m) do
+          output.gsub!(/\\begin\{longtable\}(\{.*?\})\n((?:\\caption|\\label)\S*?$)/m) do
             "\\begin{table}\n#{$2}\n\\begin{tabular}#{$1}"
           end
           output.gsub!(/\\begin\{longtable\}(\{.*?\})/m) do
             "\\begin{table}\n\\begin{tabular}#{$1}"
           end
-          puts output if debug?
-          puts '*' * 50 if debug?
-          output.gsub!(/((?:\\caption|\\label)\S*$)\n\s*\\end\{longtable\}/) do
+          output.gsub!(/((?:\\caption|\\label)\S*?$)\n\s*\\end\{longtable\}/) do
             "\\end{tabular}#{$1}\n\\end{table}"
           end
           output.gsub!('\end{longtable}', "\\end{tabular}\n\\end{table}")
@@ -295,8 +293,9 @@ module Polytexnic
             alignment = $1.gsub('X', 'l')   # X becomes left-justified in HTML
             "\\begin{tabular}{#{alignment}}"
           end
-          puts output if debug?
           output.gsub!('\end{tabularx}', '\end{tabular}')
+          # puts output
+          # puts '+' * 50
         end
 
         # Marks environments with their types.
