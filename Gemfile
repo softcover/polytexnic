@@ -16,7 +16,6 @@ Encoding.default_internal = Encoding::UTF_8
 gemspec
 
 group :test do
-  gem 'debugger2' unless RUBY_VERSION < "2.0"
   gem 'coveralls', require: false
   gem 'growl'
 end
