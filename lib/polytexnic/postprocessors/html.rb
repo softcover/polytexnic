@@ -585,7 +585,7 @@ module Polytexnic
               node['id'] = pipeline_label(label)
               label.remove
             end
-            clean_node node, %w{data-label place width}
+            clean_node node, %w{data-label place width height}
           end
           doc.xpath('//table').each do |node|
             if unexpected = node.at_css('unexpected')
