@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    polytexnic (1.7.2)
+    polytexnic (1.7.3)
       json (~> 2.3.0)
       kramdown (>= 2.0, < 3.0)
       msgpack (~> 1.2.0)
@@ -51,7 +51,7 @@ GEM
     msgpack (1.2.10)
     multi_json (1.15.0)
     nenv (0.3.0)
-    nokogiri (1.13.3-x86_64-darwin)
+    nokogiri (1.13.6-x86_64-darwin)
       racc (~> 1.4)
     notiffany (0.1.3)
       nenv (~> 0.1)
