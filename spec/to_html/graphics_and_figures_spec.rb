@@ -141,12 +141,12 @@ describe 'Polytexnic::Pipeline#to_html' do
         \chapter{The chapter}
 
         \begin{figure}
-        \includegraphics{foo.png}
+        \includegraphics[height="5in"]{foo.png}
         \caption{This is a \emph{caption} with $x$.}
         \end{figure}
 
         \begin{figure}
-        \includegraphics{bar.png}
+        \includegraphics[width="4in"]{bar.png}
         \caption{This is another caption.}
         \end{figure}
          EOS
