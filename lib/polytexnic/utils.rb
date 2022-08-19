@@ -10,7 +10,9 @@ module Polytexnic
     def tralics
       executable = `which tralics`.chomp
       return executable unless executable.empty?
-      filename = if os_x_newer?
+      filename = if apple_silicon?
+                   'tralics-apple-silicon'
+                 elsif os_x_newer?
                    'tralics-os-x-newer'
                  elsif os_x_older?
                    'tralics-os-x-older'
@@ -42,6 +44,11 @@ module Polytexnic
           expand_input!(clean_text, code_function, ext)
         end
       end
+    end
+
+    # Returns true for Apple Silicon.
+    def apple_silicon?
+      RUBY_PLATFORM.match(/arm64/)
     end
 
     # Returns true for OS X Mountain Lion (10.8) and later.
