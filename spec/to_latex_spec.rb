@@ -230,6 +230,7 @@ end
    describe '\input command' do
       let(:external_file) { 'foo.tex' }
       let(:nested_external_file) { 'bar.tex' }
+      let(:tikzstyles_file) { 'test.tikzstyles' }
       let(:input) do <<-'EOS'
   Lorem ipsum
   %= lang:ruby
@@ -252,13 +253,15 @@ end
       before do
         File.write(external_file, input)
         File.write(nested_external_file, nested_input)
+        File.write(tikzstyles_file, "lorem ipsum")
       end
       after do
         File.unlink(external_file)
         File.unlink(nested_external_file)
+        File.unlink(tikzstyles_file)
       end
 
-      let(:polytex) { "\\chapter{Foo}\n\n  \\input{foo}  " }
+      let(:polytex) { "\\chapter{Foo}\n\n  \\input{foo}\n\n  \\input{test.tikzstyles}" }
       let(:foo_latex) do
         '\PY{k}{def} \PY{n+nf}{foo}\PY{p}{;}'
       end
@@ -268,6 +271,7 @@ end
 
       it { should include foo_latex }
       it { should include bar_latex }
+      it { should include '\input{test.tikzstyles}' }
       it { should_not include 'xmlelement' }
     end
   end
