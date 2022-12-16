@@ -35,7 +35,10 @@ module Polytexnic
 
 
     # Expands '\input' command by processing & inserting the target source.
+    # We skip tikzstyles since those don't get inserted into the text.
     def expand_input!(text, code_function, ext = 'md')
+      uuid = "52576c7eb84a49b5afc0d9913891f346"
+      text.gsub!(/\\input\{(.*\.tikzstyles)\}/) { "#{uuid}-#{$1}-#{uuid}" }
       text.gsub!(/^[ \t]*\\input\{(.*?)\}[ \t]*$/) do
         # Prepend a newline for safety.
         included_text = "\n" + File.read("#{$1}.#{ext}")
@@ -44,6 +47,7 @@ module Polytexnic
           expand_input!(clean_text, code_function, ext)
         end
       end
+      text.gsub!(/#{uuid}-(.*)-#{uuid}/) { "\\input{#{$1}}" }
     end
 
     # Returns true for Apple Silicon.
