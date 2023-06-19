@@ -11,6 +11,10 @@ describe Polytexnic::Pipeline do
 
         \[ x^2 \]
 
+        \begin{equation*}
+        y
+        \end{equation*}
+
         \begin{equation}
         \label{eq:foobar}
         x
