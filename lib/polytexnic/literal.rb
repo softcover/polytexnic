@@ -19,16 +19,18 @@ module Polytexnic
     # Note that the custom AMS-TeX environments are supported
     # in addition to the LaTeX defaults.
     def math_environments
-      %w[align align*
-         eqnarray eqnarray* equation equation*
-         gather gather* gathered
-         multline multline*
-        ]
+      %w[align eqnarray equation gather gathered multline] +
+      %w[align* eqnarray* equation* gather* multline*]
+    end
+
+    def math_environments_starred
+      %w[align* eqnarray* equation* gather* multline*]
     end
 
     # Returns a list of all literal types.
     def literal_types
-      %w[verbatim Vertatim code metacode] + math_environments
+      %w[verbatim Vertatim code metacode] +
+      math_environments
     end
 
     # Handles environments that should be passed through the pipeline intact.
@@ -81,8 +83,14 @@ module Polytexnic
           literal_type = line.literal_type
           skip = line.math_environment? || latex
           if line.math_environment? && !latex
+            # puts line
+            # puts "****"
             output << '\begin{xmlelement*}{equation}'
-            output << '\begin{equation}'
+            if line.starred?
+              output << '\begin{equation*}'
+            else
+              output << '\begin{equation}'
+            end
           end
           math = line.math_environment?
           label = nil
@@ -290,6 +298,11 @@ class String
   # Returns true if self matches a valid math environment.
   def math_environment?
     match(/(?:#{math_environment_regex})/)
+  end
+
+  # Returns true if the environment is starred.
+  def starred?
+    self[-2..-1] == '*}'
   end
 
   private

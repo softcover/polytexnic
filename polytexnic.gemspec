@@ -18,12 +18,12 @@ Gem::Specification.new do |gem|
   gem.test_files    = gem.files.grep(%r{^(test|spec|features)/})
   gem.require_paths = ["lib"]
 
-  gem.add_dependency 'nokogiri', '>= 1.6.0', '< 2.0'
-  gem.add_dependency 'pygments.rb', '~> 2.1'
-  gem.add_dependency 'msgpack', '~> 1.2.0'
-  gem.add_dependency 'kramdown', '>= 2.0', '< 3.0'
-  gem.add_dependency 'json', '~> 2.3.0'
+  gem.add_dependency 'nokogiri', '1.13.10'
+  gem.add_dependency 'pygments.rb', '~> 2.3.1'
+  gem.add_dependency 'msgpack', '1.2.10'
+  gem.add_dependency 'kramdown', '2.4.0'
+  gem.add_dependency 'json', '2.3.1'
 
-  gem.add_development_dependency 'rspec', '~> 2.14'
-  gem.add_development_dependency 'simplecov', '~> 0.15.1'
+  gem.add_development_dependency 'rspec', '2.99.0'
+  gem.add_development_dependency 'simplecov', '0.15.1'
 end
