@@ -18,7 +18,7 @@ Gem::Specification.new do |gem|
   gem.test_files    = gem.files.grep(%r{^(test|spec|features)/})
   gem.require_paths = ["lib"]
 
-  gem.add_dependency 'nokogiri', '1.13.10'
+  gem.add_dependency 'nokogiri', '1.15.2'
   gem.add_dependency 'pygments.rb', '~> 2.3.1'
   gem.add_dependency 'msgpack', '1.2.10'
   gem.add_dependency 'kramdown', '2.4.0'
