@@ -541,9 +541,9 @@ module Polytexnic
 
         # Returns the node for a list item (li).
         def item(doc)
-          doc.xpath('//item/p[@noindent="true"]').each do |node|
-            node.replace(node.inner_html)
-          end
+          # doc.xpath('//item/p[@noindent="true"]').each do |node|
+          #   node.replace(node.inner_html)
+          # end
           doc.xpath('//item').each do |node|
             clean_node node, %w{id-text id label}
             node.name = 'li'
