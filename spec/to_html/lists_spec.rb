@@ -17,7 +17,7 @@ describe 'Polytexnic::Pipeline#to_html' do
 
   describe "item" do
     let(:polytex) { '\item foo' }
-    it { should resemble "<li>foo\n</li>"}
+    it { should resemble %(<li><p class="noindent">foo\n</p></li>)}
   end
 
   describe "itemized list" do
@@ -33,8 +33,8 @@ describe 'Polytexnic::Pipeline#to_html' do
       it do
         should resemble <<-'EOS'
           <ul>
-          <li>Foo</li>
-          <li>Bar</li>
+          <li><p class="noindent">Foo</p></li>
+          <li><p class="noindent">Bar</p></li>
           </ul>
         EOS
       end
@@ -54,8 +54,8 @@ describe 'Polytexnic::Pipeline#to_html' do
         should resemble <<-'EOS'
           <p>lorem ipsum</p>
           <ul>
-          <li>Foo</li>
-          <li>Bar</li>
+          <li><p class="noindent">Foo</p></li>
+          <li><p class="noindent">Bar</p></li>
           </ul>
         EOS
       end
@@ -74,8 +74,8 @@ describe 'Polytexnic::Pipeline#to_html' do
       it do
        should resemble <<-'EOS'
           <ul>
-          <li>Foo</li>
-          <li>Bar</li>
+          <li><p class="noindent">Foo</p></li>
+          <li><p class="noindent">Bar</p></li>
           </ul><p>lorem ipsum
           </p>
         EOS
@@ -104,15 +104,15 @@ describe 'Polytexnic::Pipeline#to_html' do
       it do
        should resemble <<-'EOS'
 <ul>
-  <li>foo
+  <li><p class="noindent">foo</p>
     <ul>
-      <li>bar</li>
-      <li>baz</li>
+      <li><p class="noindent">bar</p></li>
+      <li><p class="noindent">baz</p></li>
     </ul>
   </li>
-  <li>quux
+  <li><p class="noindent">quux</p>
     <ul>
-      <li>dude</li>
+      <li><p class="noindent">dude</p></li>
     </ul>
   </li>
 </ul>
@@ -132,8 +132,8 @@ describe 'Polytexnic::Pipeline#to_html' do
     it do
       should resemble <<-'EOS'
         <ol>
-        <li>Foo</li>
-        <li>Bar</li>
+        <li><p class="noindent">Foo</p></li>
+        <li><p class="noindent">Bar</p></li>
         </ol>
       EOS
     end
