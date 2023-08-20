@@ -419,8 +419,10 @@ module Polytexnic
                 node.add_next_sibling(space)
               end
               # Remove spurious intersentence space from mid-sentence notes.
+              closing_paren = after && after.content[0] == ")"
               next_sibling = node.next_sibling
-              if !end_of_sentence && intersentence_space?(next_sibling)
+              if ((!end_of_sentence || closing_paren) &&
+                  intersentence_space?(next_sibling))
                 next_sibling.remove
               end
             end
