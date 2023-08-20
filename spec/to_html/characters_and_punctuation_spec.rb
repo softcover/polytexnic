@@ -139,6 +139,12 @@ describe 'Polytexnic::Pipeline#to_html' do
           it { should_not include 'intersentencespace' }
         end
 
+        context "with parens after a footnote" do
+          let(:polytex) { '(Lorem ipsum.\footnote{From \emph{Cicero}.}) Next' }
+          it { should     include 'ipsum' }
+          it { should_not include 'intersentencespace' }
+        end
+
         context "with only a newline" do
           let(:polytex) { "Lorem ipsum.\nDolor sit amet." }
           it { should resemble "Lorem ipsum.#{intsp} Dolor sit amet." }
