@@ -103,6 +103,19 @@ end
 
       it { should resemble polytex }
 
+      context "align* environment" do
+        let(:polytex) do <<-'EOS'
+          \begin{align*}
+          x &= 1\\
+          y & = 2 \\
+          x + y &= 3
+          \end{align*}
+          EOS
+        end
+
+        it { should resemble polytex }
+      end
+
       context "containing an example of highlighted code" do
         let(:polytex) do <<-'EOS'
           \begin{verbatim}

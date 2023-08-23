@@ -23,14 +23,9 @@ module Polytexnic
       %w[align* eqnarray* equation* gather* multline*]
     end
 
-    def math_environments_starred
-      %w[align* eqnarray* equation* gather* multline*]
-    end
-
     # Returns a list of all literal types.
     def literal_types
-      %w[verbatim Vertatim code metacode] +
-      math_environments
+      %w[verbatim Vertatim code metacode] + math_environments
     end
 
     # Handles environments that should be passed through the pipeline intact.
@@ -83,8 +78,6 @@ module Polytexnic
           literal_type = line.literal_type
           skip = line.math_environment? || latex
           if line.math_environment? && !latex
-            # puts line
-            # puts "****"
             output << '\begin{xmlelement*}{equation}'
             if line.starred?
               output << '\begin{equation*}'
