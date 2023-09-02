@@ -19,23 +19,40 @@ describe 'Polytexnic::Pipeline#to_html' do
     it { should include('<div class="proof">')}
   end
 
-  # describe "aside boxes" do
-  #   let(:polytex) do <<-'EOS'
-  #     \chapter{Foo bar}
+  describe "theorems" do
+    let(:polytex) do <<-'EOS'
+      \chapter{Foo bar}
 
-  #     \begin{aside}
-  #     \heading{Lorem ipsum.}
-  #     \label{aside:lorem}
+      \section{A section}
 
-  #     lorem ipsum
+      \begin{aside}
+      test
+      \end{aside}
 
-  #     dolor sit amet
+      \begin{definition}
+      \label{def:a_definition}
+      foo
+      \end{definition}
 
-  #     \end{aside}
+      \begin{lemma}
+      bar
+      \end{lemma}
 
-  #     Box~\ref{aside:lorem}
-  #     EOS
-  #   end
+      \begin{theorem}
+      \label{th:lorem}
+      baz
+      \end{theorem}
+
+      \begin{corollary}
+      \label{cor:and_also}
+      quux
+      \end{corollary}
+
+      Theorem~\ref{th:lorem}
+      EOS
+    end
+
+    it { should include("lorem") }
 
   #   it do
   #     should resemble <<-'EOS'
@@ -88,5 +105,5 @@ describe 'Polytexnic::Pipeline#to_html' do
   #     let(:polytex) { '\section{A section}' + "\n" + aside }
   #     it { should include ">1<" }
   #   end
-  # end
+  end
 end

@@ -152,6 +152,10 @@ module Polytexnic
       custom_commands = <<-EOS
 \\usepackage{amsthm}
 \\theoremstyle{definition}
+\\newtheorem{theorem}{#{language_labels["theorem"]}}[section]
+\\newtheorem{lemma}[theorem]{#{language_labels["lemma"]}}
+\\newtheorem{corollary}[theorem]{#{language_labels["corollary"]}}
+\\newtheorem{definition}[theorem]{#{language_labels["definition"]}}
 \\newtheorem{codelisting}{#{language_labels["listing"]}}[chapter]
 \\newtheorem{aside}{#{language_labels["aside"]}}[chapter]
       EOS

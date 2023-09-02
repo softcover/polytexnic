@@ -7,6 +7,7 @@ module Polytexnic
       def xml_to_html(xml)
         restore_underscores(xml)
         doc = Nokogiri::XML(xml)
+        raise doc.to_xhtml
         comments(doc)
         emphasis(doc)
         boldface(doc)
