@@ -317,6 +317,16 @@ module Polytexnic
             "#{s}\n\\end{xmlelement*}"
           end
 
+          # Wrap proofs in a 'proof' element.
+          string.gsub! /\\begin{proof}/ do |s|
+            "\\begin{xmlelement*}{proof}\n#{s}"
+          end
+          string.gsub! /\\end{proof}/ do |s|
+            "#{s}\n\\end{xmlelement*}"
+          end
+          string.gsub!(/\\begin{proof}/, '')
+          string.gsub!(/\\end{proof}/, '')
+
           # Wrap asides in an 'aside' element.
           string.gsub! /\\begin{aside}/ do |s|
             "\\begin{xmlelement*}{aside}\n#{s}"

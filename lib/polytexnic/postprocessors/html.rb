@@ -45,6 +45,7 @@ module Polytexnic
         restore_inline_verbatim(doc)
         codelistings(doc)
         asides(doc)
+        proofs(doc)
         make_cross_references(doc)
         hrefs(doc)
         graphics_and_figures(doc)
@@ -811,6 +812,14 @@ module Polytexnic
         def asides(doc)
           doc.xpath('//aside').each do |node|
             build_heading(node, 'aside')
+          end
+        end
+
+        # Processes proofs.
+        def proofs(doc)
+          doc.xpath('//proof').each do |node|
+            node.name = 'div'
+            node['class'] = 'proof'
           end
         end
 
