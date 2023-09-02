@@ -274,7 +274,7 @@ module Polytexnic
         end
 
         # Converts the alt table environments to simple tabular.
-        # This is was originaly because kramdown outputs longtables by default,
+        # This was originally because kramdown outputs longtables by default,
         # but as a side-effect you can also use longtables in PolyTeX
         # input documents. The latest update includes support for the tabularx
         # environment
