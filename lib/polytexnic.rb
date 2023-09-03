@@ -49,6 +49,10 @@ module Polytexnic
       @literal_html_cache = {}
       @maketitle_elements = {}
       @article = options[:article]
+      @supported_theorem_types = %w[theorem lemma corollary proposition
+        conjecture criterion assertion definition condition problem example
+        exercise algorithm question axiom property assumption hypothesis
+        remark note notation claim summary acknowledgment case conclusion]
       @language_labels = if (labels = options[:language_labels]).nil?
                             default_language_labels
                           else
@@ -109,11 +113,15 @@ module Polytexnic
 
       # Returns the default labels for 'Chapter', 'Figure', etc.
       def default_language_labels
+        theorem_labels = @supported_theorem_types.inject({}) do |labels, th|
+                           labels[th] = th.capitalize
+                           labels
+                         end
         {"part"=>"Part","chapter"=>{"word"=>"Chapter", "order"=>"standard"},
         "section"=>"Section", "appendix"=>"Appendix", "table"=>"Table",
         "figure"=>"Figure", "fig"=>"Fig", "aside"=>"Box", "listing"=>"Listing",
         "equation"=>"Equation", "eq"=>"Eq", "frontmatter"=>"Frontmatter",
-        "contents"=>"Contents"}
+        "contents"=>"Contents"}.merge(theorem_labels)
       end
 
       def markdown?

@@ -25,28 +25,28 @@ describe 'Polytexnic::Pipeline#to_html' do
 
       \section{A section}
 
-      \begin{aside}
-      test
-      \end{aside}
+      \begin{theorem}
+      \label{th:lorem}
+      baz
+      \end{theorem}
+
+      \begin{lemma}
+      bar
+      \end{lemma}
+
+      \begin{corollary}
+      \label{cor:and_also}
+      quux
+      \end{corollary}
 
       \begin{definition}
       \label{def:a_definition}
       foo
       \end{definition}
 
-      \begin{lemma}
-      bar
-      \end{lemma}
-
-      \begin{theorem}
-      \label{th:lorem}
-      baz
-      \end{theorem}
-
-      \begin{corollary}
-      \label{cor:and_also}
-      quux
-      \end{corollary}
+      \begin{remark}
+      able
+      \end{remark}
 
       Theorem~\ref{th:lorem}
       EOS
@@ -54,21 +54,12 @@ describe 'Polytexnic::Pipeline#to_html' do
 
     it { should include("lorem") }
 
-  #   it do
-  #     should resemble <<-'EOS'
-  #       <div id="cid1" data-tralics-id="cid1" class="chapter" data-number="1"><h1><a href="#cid1" class="heading"><span class="number">Chapter 1 </span>Foo bar</a></h1>
-  #       <div class="aside" id="aside-lorem" data-tralics-id="uid1" data-number="1.1">
-  #         <div class="heading">
-  #           <span class="number">Box 1.1.</span>
-  #           <span class="description">Lorem ipsum.</span>
-  #         </div>
-  #         <p>lorem ipsum</p>
-  #         <p>dolor sit amet</p>
-  #       </div>
-  #       <p><a href="#aside-lorem" class="hyperref">Box <span class="ref">1.1</span></a></p>
-  #       </div>
-  #     EOS
-  #   end
+    it { should include("Theorem 1.1") }
+    it { should include("Lemma 1.2") }
+    it { should include("Corollary 1.3") }
+    it { should include("Definition 1.4") }
+    it { should include("Remark 1.5") }
+
 
   #   context "with a custom language label" do
   #     before do

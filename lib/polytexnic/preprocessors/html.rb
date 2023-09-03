@@ -335,9 +335,9 @@ module Polytexnic
             "#{s}\n\\end{xmlelement*}"
           end
 
-          # Wrap theorem, etc., in corresponding elements.
-          %w[theorem lemma corollary definition].each do |th|
-          string.gsub! /\\begin{#{th}}/ do |s|
+          # Wrap theorem, lemma, etc., in corresponding elements.
+          @supported_theorem_types.each do |th|
+            string.gsub! /\\begin{#{th}}/ do |s|
               "\\begin{xmlelement*}{#{th}}\n#{s}"
             end
             string.gsub! /\\end{#{th}}/ do |s|

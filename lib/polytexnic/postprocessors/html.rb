@@ -7,7 +7,6 @@ module Polytexnic
       def xml_to_html(xml)
         restore_underscores(xml)
         doc = Nokogiri::XML(xml)
-        raise doc.to_xhtml
         comments(doc)
         emphasis(doc)
         boldface(doc)
@@ -46,6 +45,7 @@ module Polytexnic
         restore_inline_verbatim(doc)
         codelistings(doc)
         asides(doc)
+        theorems_lemmas_etc(doc)
         proofs(doc)
         make_cross_references(doc)
         hrefs(doc)
@@ -813,6 +813,15 @@ module Polytexnic
         def asides(doc)
           doc.xpath('//aside').each do |node|
             build_heading(node, 'aside')
+          end
+        end
+
+        # Processes theorems, lemmas, etc.
+        def theorems_lemmas_etc(doc)
+          @supported_theorem_types.each do |theorem_type|
+            doc.xpath("//#{theorem_type}").each do |node|
+              build_heading(node, theorem_type)
+            end
           end
         end
 

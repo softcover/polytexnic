@@ -149,17 +149,14 @@ module Polytexnic
 \newcommand{\newunicodechar}[2]{}
 \newcommand{\extrafloats}[1]{}
       EOS
-      custom_commands = <<-EOS
+      custom = <<-EOS
 \\usepackage{amsthm}
-\\theoremstyle{definition}
 \\newtheorem{theorem}{#{language_labels["theorem"]}}[section]
-\\newtheorem{lemma}[theorem]{#{language_labels["lemma"]}}
-\\newtheorem{corollary}[theorem]{#{language_labels["corollary"]}}
-\\newtheorem{definition}[theorem]{#{language_labels["definition"]}}
-\\newtheorem{codelisting}{#{language_labels["listing"]}}[chapter]
-\\newtheorem{aside}{#{language_labels["aside"]}}[chapter]
       EOS
-      [base_commands, custom_commands].join("\n")
+      (@supported_theorem_types - ["theorem"]).each do |lab|
+        custom += "\n\\newtheorem{#{lab}}[theorem]{#{language_labels[lab]}}"
+      end
+      [base_commands, custom].join("\n")
     end
 
     # Highlights source code.
