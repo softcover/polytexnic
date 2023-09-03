@@ -50,9 +50,7 @@ module Polytexnic
       @maketitle_elements = {}
       @article = options[:article]
       @supported_theorem_types = %w[theorem lemma corollary proposition
-        conjecture criterion assertion definition condition problem example
-        exercise algorithm question axiom property assumption hypothesis
-        remark notation claim summary acknowledgment case conclusion]
+        conjecture definition axiom remark claim]
       @language_labels = if (labels = options[:language_labels]).nil?
                             default_language_labels
                           else
