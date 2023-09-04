@@ -153,42 +153,24 @@ describe 'Polytexnic::Pipeline#to_html' do
     it { should include('Lemma <a href="#lemma-yet_another" class="hyperref"><span class="ref">7</span></a>')}
   end
 
-  # describe "theorem cross-references" do
-  #   let(:theorems) do <<-'EOS'
-  #     Let's prove (or at least state) a theorem!
+  describe "optional argument" do
+    let(:polytex) do <<-'EOS'
+      \chapter{A chapter}
 
-  #     \begin{theorem}
-  #     \label{th:lorem}
-  #     baz
-  #     \end{theorem}
+      \section{A section}
+      \label{sec:the_section}
 
-  #     Oh, and also a lemma. This probably should have gone first.
+      \begin{theorem}[Fermat's Last Theorem]
+      \label{th:fermat}
+      It's true, I swear it!
+      \end{theorem}
 
-  #     \begin{lemma}
-  #     \label{lemma:ipsum}
-  #     bar
-  #     \end{lemma}
+      \begin{proof}
+      This test is too small to contain it.
+      \end{proof}
+      EOS
+    end
 
-  #     Theorem~\ref{th:lorem} is a theorem. Lemma~\ref{lemma:ipsum} is---you
-  #     guessed it!---a lemma.
-  #     EOS
-  #   end
-
-  #   context "in a chapter" do
-  #     let(:prematerial) { "\\chapter{Foo}\n\n\\section{Bar}" }
-  #     let(:polytex) { prematerial + "\n" + theorems}
-  #     it { should include('Theorem 1.1') }
-  #     it { should include('Lemma 1.2') }
-  #     it { should include('Theorem <a href="#th-lorem" class="hyperref"><span class="ref">1.1</span></a>')}
-  #     it { should include('Lemma <a href="#lemma-ipsum" class="hyperref"><span class="ref">1.2</span></a>')}
-  #   end
-
-  #   context "in an article" do
-  #     let(:polytex) { '\section{Test section}' + "\n" + theorems }
-  #     it { should include('Theorem 1.1') }
-  #     it { should include('Lemma 1.2') }
-  #     it { should include('Theorem <a href="#th-lorem" class="hyperref"><span class="ref">1.1</span></a>')}
-  #     it { should include('Lemma <a href="#lemma-ipsum" class="hyperref"><span class="ref">1.2</span></a>')}
-  #   end
-  # end
+    it { should include("Theorem 1.1 (Fermat’s Last Theorem)") }
+  end
 end
