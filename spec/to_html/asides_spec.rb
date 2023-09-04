@@ -67,7 +67,8 @@ describe 'Polytexnic::Pipeline#to_html' do
       EOS
     end
     context "in a chapter" do
-      let(:polytex) { '\chapter{Foo bar}' + "\n" + aside}
+      let(:prematerial) { "\\chapter{Foo}\n\n\\section{Bar}" }
+      let(:polytex) { prematerial + "\n" + aside}
       it { should include ">1.1<" }
     end
 

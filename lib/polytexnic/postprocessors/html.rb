@@ -465,8 +465,6 @@ module Polytexnic
         # Returns true if node is inside section*.
         def section_star?(node)
           begin
-            # puts (val = node.parent.parent.attributes['class'].value) + '*******'
-            # puts node.parent.parent.parent.parent.children[1] if val == 'section-star'
             node.parent.parent.attributes['class'].value == 'section-star'
           rescue
             false
@@ -931,11 +929,11 @@ module Polytexnic
 
         # Creates linked cross-references.
         def make_cross_references(doc)
-          # build numbering tree
+          # Build numbering tree.
           doc.xpath('//*[@data-tralics-id]').each do |node|
             node['data-number'] = formatted_number(node)
             clean_node node, 'id-text'
-            # Add number span
+            # Add number span.
             if (head = node.css('h1 a, h2 a, h3 a').first)
               el = doc.create_element 'span'
               el.content = section_label(node)
@@ -1022,6 +1020,7 @@ module Polytexnic
             @figure = 0
             @table = 0
             @aside = 0
+            @theorem = 0
             @cha = article? ? nil : node['id-text']
           elsif node['class'] == 'section'
             @sec = node['id-text']
@@ -1047,6 +1046,9 @@ module Polytexnic
           elsif node.name == 'figure'
             @figure = ref_number(node, @cha, @figure)
             label_number(@cha, @figure)
+          elsif @supported_theorem_types.include?(node['class'])
+            @theorem = number_from_id(node['id-text'])
+            label_number(@cha, @theorem)
           end
         end
 

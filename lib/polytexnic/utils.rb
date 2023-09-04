@@ -153,7 +153,7 @@ module Polytexnic
 \\usepackage{amsthm}
 \\newtheorem{codelisting}{#{language_labels["listing"]}}[chapter]
 \\newtheorem{aside}{#{language_labels["aside"]}}[chapter]
-\\newtheorem{theorem}{#{language_labels["theorem"]}}[section]
+\\newtheorem{theorem}{#{language_labels["theorem"]}}[chapter]
       EOS
       (@supported_theorem_types - ["theorem"]).each do |lab|
         custom += "\\newtheorem{#{lab}}[theorem]{#{language_labels[lab]}}\n"
