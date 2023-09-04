@@ -171,6 +171,6 @@ describe 'Polytexnic::Pipeline#to_html' do
       EOS
     end
 
-    it { should include("Theorem 1.1 (Fermat’s Last Theorem)") }
+    it { should include(%(Theorem 1.1 <span class="theorem_description">(Fermat’s Last Theorem)</span>.</span>)) }
   end
 end

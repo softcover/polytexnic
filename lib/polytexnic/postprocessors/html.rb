@@ -543,9 +543,6 @@ module Polytexnic
 
         # Returns the node for a list item (li).
         def item(doc)
-          # doc.xpath('//item/p[@noindent="true"]').each do |node|
-          #   node.replace(node.inner_html)
-          # end
           doc.xpath('//item').each do |node|
             clean_node node, %w{id-text id label}
             node.name = 'li'
@@ -759,13 +756,25 @@ module Polytexnic
           number.content = number.content.sub!('0.', '') if article?
           number.name = 'span'
           number['class'] = 'number'
-          if css_class == 'codelisting'
+          # Handle optional argument to theorems.
+          environment_type = number.content.split.first.downcase
+          if @supported_theorem_types.include?(environment_type)
+            # Add a span to parenthetical content for styling purpsoes.
+            theorem_regex = /(\(.*?\))/
+            number.content.sub(theorem_regex) do
+              theorem_description = Nokogiri::XML::Node.new('span', heading)
+              theorem_description['class'] = 'theorem_description'
+              theorem_description.content = $1
+              number.content = number.content.sub(theorem_regex, '')
+              number << theorem_description
+              number << Nokogiri::XML::Text.new('.', heading)
+            end
+          elsif css_class == 'codelisting'
             description = node.at_css('.description').content
             number.content += ':' unless description.empty?
           else
             number.content += '.'
           end
-
           heading
         end
 
