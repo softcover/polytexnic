@@ -738,8 +738,27 @@ module Polytexnic
         end
 
         # Returns true if the environment type is a theorem, lemma, etc.
-        def theorem_environment?(environment_type)
-          @supported_theorem_types.include?(environment_type)
+        def theorem_environment?(css_classes)
+          return false if css_classes.nil?
+          css_classes.split.each do |css_class|
+            return true if @supported_theorem_types.include?(css_class)
+          end
+          return false
+        end
+
+        def theorem_class(theorem_type)
+          plain_styles = %w[theorem lemma corollary proposition conjecture]
+          definition_styles = %w[definition problem example exercise axiom]
+          remark_styles = %w[remark claim]
+          if plain_styles.include?(theorem_type)
+            "#{theorem_type} plain"
+          elsif definition_styles.include?(theorem_type)
+            "#{theorem_type} definition"
+          elsif remark_styles.include?(theorem_type)
+            "#{theorem_type} remark"
+          else
+            raise ArgumentError, "Unrecognized theorem type '#{theorem_type}'"
+          end
         end
 
         # Builds the full heading for codelisting-like environments.
@@ -747,11 +766,15 @@ module Polytexnic
         # extracted and manipulated to produce the right tags and classes.
         def build_heading(node, css_class)
           node.name  = 'div'
-          node['class'] = css_class
+          if theorem_environment?(css_class)
+            node['class'] = theorem_class(css_class)
+          else
+            node['class'] = css_class
+          end
           # Extract theorem content (if any). This super-hacky.
-          th_regex = /data-tralics-id=".*?"><strong>.*?<\/strong>(.*?)<\/div>/m
-          theorem_content = node.to_xhtml.scan(th_regex).flatten.first
-          theorem_content.gsub!(" \n\n", "<p>") if theorem_content
+          # th_regex = /data-tralics-id=".*?"><strong>.*?<\/strong>(.*?)<\/div>/m
+          # theorem_content = node.to_xhtml.scan(th_regex).flatten.first
+          # theorem_content.gsub!("\n\n", '') if theorem_content
           # raise theorem_content
           heading = node.at_css('p')
           heading.attributes.each do |key, value|
@@ -786,8 +809,8 @@ module Polytexnic
           # E.g., \begin{theorem}[Fermat's Last Theorem]
           environment_type = label.downcase
           if theorem_environment?(environment_type)
-            # Theorem headings should be spans instead of divs.
-            heading.name = 'span'
+            # Theorem headings should be paragraphs instead of divs.
+            heading.name = 'p'
             # This will be nonempty only if there's an optional argument
             # as in \begin{theorem}[optional argument].
             optarg = actual_number_etc[1..-1].join(" ")
@@ -801,6 +824,11 @@ module Polytexnic
               full_number << theorem_description
             end
             full_number << Nokogiri::XML::Text.new('.', heading)
+            # # We remove all paragraphs and append the previously extracted
+            # # theorem content. The desired numbered heading is just the
+            # # first line, so we split on newline and take the first element.
+            # number_html = full_number.to_xhtml.split("\n").first
+            # full_number.inner_html = number_html + theorem_content
           elsif css_class == 'codelisting'
             description = node.at_css('.description').content
             unless description.empty?
@@ -1090,7 +1118,7 @@ module Polytexnic
           elsif node.name == 'figure'
             @figure = ref_number(node, @cha, @figure)
             label_number(@cha, @figure)
-          elsif @supported_theorem_types.include?(node['class'])
+          elsif theorem_environment?(node['class'])
             @theorem = number_from_id(node['id-text'])
             label_number(@cha, @theorem)
           end
