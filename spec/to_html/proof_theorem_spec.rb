@@ -74,7 +74,7 @@ describe 'Polytexnic::Pipeline#to_html' do
     end
 
     it { should include("lorem") }
-    it { should include("Theorem</span> 1.1") }
+    it { should include("Theorem</span> 1.1.</span>") }
     it { should include("Lemma</span> 1.2") }
     it { should include("Corollary</span> 1.3") }
     it { should include("Definition</span> 1.4") }

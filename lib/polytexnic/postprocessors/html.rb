@@ -757,7 +757,7 @@ module Polytexnic
           # E.g., "Theorem 1.1 (Fermat’s Last Theorem)"
           # label = "Theorem"
           # actual_number_etc = ["1.1", "Fermat’s Last Theorem"]
-          full_label_content = full_number.content
+          full_label_content = full_number.content.strip
           full_number.content = ''
           content_array = full_label_content.split
           label, actual_number_etc = content_array.shift, content_array
@@ -778,7 +778,8 @@ module Polytexnic
           environment_type = label.downcase
           # This will be non-nil only if there's an optional argument.
           optarg = actual_number_etc[1..-1].join(" ")
-          if @supported_theorem_types.include?(environment_type) && optarg
+          if (@supported_theorem_types.include?(environment_type) &&
+              !optarg.empty?)
             # Add a span to parenthetical content for styling purpsoes.
             # This handles things like "Theorem 1.1 (Fermat’s Last Theorem)".
             theorem_description = Nokogiri::XML::Node.new('span', heading)
