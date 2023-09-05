@@ -790,7 +790,7 @@ module Polytexnic
           elsif css_class == 'codelisting'
             description = node.at_css('.description').content
             unless description.empty?
-              full_number << Nokogiri::XML::Text.new('.', heading)
+              full_number << Nokogiri::XML::Text.new(':', heading)
             end
           else
             full_number << Nokogiri::XML::Text.new('.', heading)

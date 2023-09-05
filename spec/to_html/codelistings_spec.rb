@@ -28,7 +28,7 @@ Listing~\ref{code:create_gemrc}
         <div id="cid1" data-tralics-id="cid1" class="chapter" data-number="1"><h1><a href="#cid1" class="heading"><span class="number">Chapter 1 </span>Foo bar</a></h1>
         <div class="codelisting" id="code-create_gemrc" data-tralics-id="uid1" data-number="1.1">
           <div class="heading">
-            <span class="number">Listing 1.1:</span>
+            <span class="number"><span class="codelisting_label">Listing</span> 1.1:</span>
             <span class="description">Creating a <code class="tt">gem</code> configuration file.<span class="intersentencespace"></span>
               <span class="break"></span>
               <code class="filepath">path/to/file</code>
@@ -72,8 +72,8 @@ Listing~\ref{code:create_gemrc}
         Listing~\ref{code:create_gemrc}
         EOS
       end
-      it { should     include 'Listing 1.1' }
-      it { should_not include 'Listing 1.1:' }
+      it { should     include 'Listing</span> 1.1' }
+      it { should_not include 'Listing</span> 1.1:' }
     end
 
     context "containing code inclusion with a hyphen and a leading dot" do
