@@ -28,7 +28,9 @@ describe 'Polytexnic::Pipeline#to_html' do
 
       \begin{theorem}
       \label{th:lorem}
-      baz
+      This is a theorem. It might have muliple lines.
+
+      Like this!
       \end{theorem}
 
       \begin{lemma}
@@ -97,7 +99,9 @@ describe 'Polytexnic::Pipeline#to_html' do
 
       \begin{theorem}
       \label{th:lorem}
-      baz
+      This is a theorem. It might have muliple lines.
+
+      Like this!
       \end{theorem}
 
       \begin{lemma}

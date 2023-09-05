@@ -737,13 +737,22 @@ module Polytexnic
           end
         end
 
+        # Returns true if the environment type is a theorem, lemma, etc.
+        def theorem_environment?(environment_type)
+          @supported_theorem_types.include?(environment_type)
+        end
+
         # Builds the full heading for codelisting-like environments.
         # The full heading, such as "Listing 1.1: Foo bars." needs to be
         # extracted and manipulated to produce the right tags and classes.
         def build_heading(node, css_class)
           node.name  = 'div'
           node['class'] = css_class
-
+          # Extract theorem content (if any). This super-hacky.
+          th_regex = /data-tralics-id=".*?"><strong>.*?<\/strong>(.*?)<\/div>/m
+          theorem_content = node.to_xhtml.scan(th_regex).flatten.first
+          theorem_content.gsub!(" \n\n", "<p>") if theorem_content
+          # raise theorem_content
           heading = node.at_css('p')
           heading.attributes.each do |key, value|
             node.set_attribute(key, value)
@@ -776,17 +785,21 @@ module Polytexnic
           # Handle optional argument to theorems.
           # E.g., \begin{theorem}[Fermat's Last Theorem]
           environment_type = label.downcase
-          # This will be non-nil only if there's an optional argument.
-          optarg = actual_number_etc[1..-1].join(" ")
-          if (@supported_theorem_types.include?(environment_type) &&
-              !optarg.empty?)
-            # Add a span to parenthetical content for styling purpsoes.
-            # This handles things like "Theorem 1.1 (Fermat’s Last Theorem)".
-            theorem_description = Nokogiri::XML::Node.new('span', heading)
-            theorem_description['class'] = 'theorem_description'
-            theorem_description.content = optarg
-            full_number << Nokogiri::XML::Text.new(' ', heading)
-            full_number << theorem_description
+          if theorem_environment?(environment_type)
+            # Theorem headings should be spans instead of divs.
+            heading.name = 'span'
+            # This will be nonempty only if there's an optional argument
+            # as in \begin{theorem}[optional argument].
+            optarg = actual_number_etc[1..-1].join(" ")
+            unless optarg.empty?
+              # Add a span to parenthetical content for styling purpsoes.
+              # This handles things like "Theorem 1.1 (Fermat’s Last Theorem)".
+              theorem_description = Nokogiri::XML::Node.new('span', heading)
+              theorem_description['class'] = 'theorem_description'
+              theorem_description.content = optarg
+              full_number << Nokogiri::XML::Text.new(' ', heading)
+              full_number << theorem_description
+            end
             full_number << Nokogiri::XML::Text.new('.', heading)
           elsif css_class == 'codelisting'
             description = node.at_css('.description').content
@@ -796,6 +809,7 @@ module Polytexnic
           else
             full_number << Nokogiri::XML::Text.new('.', heading)
           end
+          # raise heading.to_xhtml
           heading
         end
 
