@@ -793,7 +793,7 @@ module Polytexnic
               full_number << Nokogiri::XML::Text.new('.', heading)
             end
           else
-            number << Nokogiri::XML::Text.new('.', heading)
+            full_number << Nokogiri::XML::Text.new('.', heading)
           end
           heading
         end
