@@ -751,29 +751,49 @@ module Polytexnic
           end
           heading.name = 'div'
           heading['class'] = 'heading'
-
-          number = heading.at_css('strong')
-          number.content = number.content.sub!('0.', '') if article?
-          number.name = 'span'
-          number['class'] = 'number'
+          full_number = heading.at_css('strong')
+          full_number.name = 'span'
+          full_number['class'] = 'number'
+          # E.g., "Theorem 1.1 (Fermat’s Last Theorem)"
+          # label = "Theorem"
+          # actual_number_etc = ["1.1", "Fermat’s Last Theorem"]
+          full_label_content = full_number.content
+          full_number.content = ''
+          content_array = full_label_content.split
+          label, actual_number_etc = content_array.shift, content_array
+          element_label = Nokogiri::XML::Node.new('span', heading)
+          # Make span for element label.
+          # <span class="theorem_label">Theorem</span>
+          element_label['class'] = "#{css_class}_label"
+          if article?
+            actual_number = actual_number_etc.first.sub!('0.', '')
+          else
+            actual_number = actual_number_etc.first
+          end
+          element_label.content = label
+          full_number << element_label
+          full_number << Nokogiri::XML::Text.new(" #{actual_number}", heading)
           # Handle optional argument to theorems.
-          environment_type = number.content.split.first.downcase
-          if @supported_theorem_types.include?(environment_type)
+          # E.g., \begin{theorem}[Fermat's Last Theorem]
+          environment_type = label.downcase
+          # This will be non-nil only if there's an optional argument.
+          optarg = actual_number_etc[1..-1].join(" ")
+          if @supported_theorem_types.include?(environment_type) && optarg
             # Add a span to parenthetical content for styling purpsoes.
-            theorem_regex = /(\(.*?\))/
-            number.content.sub(theorem_regex) do
-              theorem_description = Nokogiri::XML::Node.new('span', heading)
-              theorem_description['class'] = 'theorem_description'
-              theorem_description.content = $1
-              number.content = number.content.sub(theorem_regex, '')
-              number << theorem_description
-              number << Nokogiri::XML::Text.new('.', heading)
-            end
+            # This handles things like "Theorem 1.1 (Fermat’s Last Theorem)".
+            theorem_description = Nokogiri::XML::Node.new('span', heading)
+            theorem_description['class'] = 'theorem_description'
+            theorem_description.content = optarg
+            full_number << Nokogiri::XML::Text.new(' ', heading)
+            full_number << theorem_description
+            full_number << Nokogiri::XML::Text.new('.', heading)
           elsif css_class == 'codelisting'
             description = node.at_css('.description').content
-            number.content += ':' unless description.empty?
+            unless description.empty?
+              full_number << Nokogiri::XML::Text.new('.', heading)
+            end
           else
-            number.content += '.'
+            number << Nokogiri::XML::Text.new('.', heading)
           end
           heading
         end

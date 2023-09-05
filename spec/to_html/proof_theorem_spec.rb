@@ -74,13 +74,13 @@ describe 'Polytexnic::Pipeline#to_html' do
     end
 
     it { should include("lorem") }
-    it { should include("Theorem 1.1") }
-    it { should include("Lemma 1.2") }
-    it { should include("Corollary 1.3") }
-    it { should include("Definition 1.4") }
-    it { should include("Remark 1.5") }
-    it { should include("Theorem 2.1") }
-    it { should include("Lemma 2.2") }
+    it { should include("Theorem</span> 1.1") }
+    it { should include("Lemma</span> 1.2") }
+    it { should include("Corollary</span> 1.3") }
+    it { should include("Definition</span> 1.4") }
+    it { should include("Remark</span> 1.5") }
+    it { should include("Theorem</span> 2.1") }
+    it { should include("Lemma</span> 2.2") }
     it { should include('Theorem <a href="#th-lorem" class="hyperref"><span class="ref">1.1</span></a>')}
     it { should include('Theorem <a href="#th-another" class="hyperref"><span class="ref">2.1</span></a>')}
     it { should include('Lemma <a href="#lemma-yet_another" class="hyperref"><span class="ref">2.2</span></a>')}
@@ -141,13 +141,13 @@ describe 'Polytexnic::Pipeline#to_html' do
     end
 
     it { should include("lorem") }
-    it { should include("Theorem 1") }
-    it { should include("Lemma 2") }
-    it { should include("Corollary 3") }
-    it { should include("Definition 4") }
-    it { should include("Remark 5") }
-    it { should include("Theorem 6") }
-    it { should include("Lemma 7") }
+    it { should include("Theorem</span> 1") }
+    it { should include("Lemma</span> 2") }
+    it { should include("Corollary</span> 3") }
+    it { should include("Definition</span> 4") }
+    it { should include("Remark</span> 5") }
+    it { should include("Theorem</span> 6") }
+    it { should include("Lemma</span> 7") }
     it { should include('Theorem <a href="#th-lorem" class="hyperref"><span class="ref">1</span></a>')}
     it { should include('Theorem <a href="#th-another" class="hyperref"><span class="ref">6</span></a>')}
     it { should include('Lemma <a href="#lemma-yet_another" class="hyperref"><span class="ref">7</span></a>')}
@@ -171,6 +171,11 @@ describe 'Polytexnic::Pipeline#to_html' do
       EOS
     end
 
-    it { should include(%(Theorem 1.1 <span class="theorem_description">(Fermat’s Last Theorem)</span>.</span>)) }
+    let(:theorem_span) do
+      s  = %(<span class="number"><span class="theorem_label">Theorem</span>)
+      s += %( 1.1 <span class="theorem_description">)
+      s += %((Fermat’s Last Theorem)</span>.</span>)
+    end
+    it { should include(theorem_span) }
   end
 end
