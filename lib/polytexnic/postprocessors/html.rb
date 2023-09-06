@@ -773,11 +773,6 @@ module Polytexnic
         def build_heading(node, css_class)
           node.name  = 'div'
           node['class'] = element_class(css_class)
-          # Extract theorem content (if any). This super-hacky.
-          # th_regex = /data-tralics-id=".*?"><strong>.*?<\/strong>(.*?)<\/div>/m
-          # theorem_content = node.to_xhtml.scan(th_regex).flatten.first
-          # theorem_content.gsub!("\n\n", '') if theorem_content
-          # raise theorem_content
           heading = node.at_css('p')
           heading.attributes.each do |key, value|
             node.set_attribute(key, value)
@@ -826,11 +821,6 @@ module Polytexnic
               full_number << theorem_description
             end
             full_number << Nokogiri::XML::Text.new('.', heading)
-            # # We remove all paragraphs and append the previously extracted
-            # # theorem content. The desired numbered heading is just the
-            # # first line, so we split on newline and take the first element.
-            # number_html = full_number.to_xhtml.split("\n").first
-            # full_number.inner_html = number_html + theorem_content
           elsif css_class == 'codelisting'
             description = node.at_css('.description').content
             unless description.empty?
@@ -839,7 +829,6 @@ module Polytexnic
           else
             full_number << Nokogiri::XML::Text.new('.', heading)
           end
-          # raise heading.to_xhtml
           heading
         end
 
