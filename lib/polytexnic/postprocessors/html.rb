@@ -746,18 +746,24 @@ module Polytexnic
           return false
         end
 
-        def theorem_class(theorem_type)
+        # Return the style class associated with an element.
+        # The only trick involves theorem environments.
+        # There are three defined in
+        # http://www.ams.org/arc/tex/amscls/amsthdoc.pdf:
+        # plain, definition, and remark
+        # So that this can be used without modification with other elements,
+        # if the element isn't a theorem we simply return the type itself.
+        def element_class(element_type)
+          return element_type unless theorem_environment?(element_type)
           plain_styles = %w[theorem lemma corollary proposition conjecture]
           definition_styles = %w[definition problem example exercise axiom]
           remark_styles = %w[remark claim]
-          if plain_styles.include?(theorem_type)
-            "#{theorem_type} plain"
-          elsif definition_styles.include?(theorem_type)
-            "#{theorem_type} definition"
-          elsif remark_styles.include?(theorem_type)
-            "#{theorem_type} remark"
-          else
-            raise ArgumentError, "Unrecognized theorem type '#{theorem_type}'"
+          if plain_styles.include?(element_type)
+            "#{element_type} plain"
+          elsif definition_styles.include?(element_type)
+            "#{element_type} definition"
+          elsif remark_styles.include?(element_type)
+            "#{element_type} remark"
           end
         end
 
@@ -766,11 +772,7 @@ module Polytexnic
         # extracted and manipulated to produce the right tags and classes.
         def build_heading(node, css_class)
           node.name  = 'div'
-          if theorem_environment?(css_class)
-            node['class'] = theorem_class(css_class)
-          else
-            node['class'] = css_class
-          end
+          node['class'] = element_class(css_class)
           # Extract theorem content (if any). This super-hacky.
           # th_regex = /data-tralics-id=".*?"><strong>.*?<\/strong>(.*?)<\/div>/m
           # theorem_content = node.to_xhtml.scan(th_regex).flatten.first
@@ -794,9 +796,9 @@ module Polytexnic
           content_array = full_label_content.split
           label, actual_number_etc = content_array.shift, content_array
           element_label = Nokogiri::XML::Node.new('span', heading)
-          # Make span for element label.
-          # <span class="theorem_label">Theorem</span>
-          element_label['class'] = "#{css_class}_label"
+          # Make span for element's style label.
+          # <span class="plain_label">Theorem</span>
+          element_label['class'] = "#{element_class(css_class)}_label"
           if article?
             actual_number = actual_number_etc.first.sub!('0.', '')
           else

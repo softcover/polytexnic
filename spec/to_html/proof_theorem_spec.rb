@@ -176,7 +176,7 @@ describe 'Polytexnic::Pipeline#to_html' do
     end
 
     let(:theorem_span) do
-      s  = %(<span class="number"><span class="theorem_label">Theorem</span>)
+      s  = %(<span class="number"><span class="theorem plain_label">Theorem</span>)
       s += %( 1.1 <span class="theorem_description">)
       s += %((Fermat’s Last Theorem)</span>.</span>)
     end
