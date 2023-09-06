@@ -274,7 +274,7 @@ module Polytexnic
         end
 
         # Converts the alt table environments to simple tabular.
-        # This is was originaly because kramdown outputs longtables by default,
+        # This was originally because kramdown outputs longtables by default,
         # but as a side-effect you can also use longtables in PolyTeX
         # input documents. The latest update includes support for the tabularx
         # environment
@@ -317,12 +317,32 @@ module Polytexnic
             "#{s}\n\\end{xmlelement*}"
           end
 
+          # Wrap proofs in a 'proof' element.
+          string.gsub! /\\begin{proof}/ do |s|
+            "\\begin{xmlelement*}{proof}\n#{s}"
+          end
+          string.gsub! /\\end{proof}/ do |s|
+            "#{s}\n\\end{xmlelement*}"
+          end
+          string.gsub!(/\\begin{proof}/, '')
+          string.gsub!(/\\end{proof}/, '')
+
           # Wrap asides in an 'aside' element.
           string.gsub! /\\begin{aside}/ do |s|
             "\\begin{xmlelement*}{aside}\n#{s}"
           end
           string.gsub! /\\end{aside}/ do |s|
             "#{s}\n\\end{xmlelement*}"
+          end
+
+          # Wrap theorem, lemma, etc., in corresponding elements.
+          @supported_theorem_types.each do |th|
+            string.gsub! /\\begin{#{th}}/ do |s|
+              "\\begin{xmlelement*}{#{th}}\n#{s}"
+            end
+            string.gsub! /\\end{#{th}}/ do |s|
+              "#{s}\n\\end{xmlelement*}"
+            end
           end
 
           # Replace quotations and verse with corresponding XML elements.
