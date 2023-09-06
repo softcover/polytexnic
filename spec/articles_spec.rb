@@ -43,7 +43,7 @@ $ subl .gemrc
   let(:section)   { '<a href="#sec-foo" class="heading"><span class="number">1 </span>' }
   let(:figure)    { '<span class="header">Figure 1</span>' }
   let(:table)     { '<span class="header">Table 1</span>' }
-  let(:listing)   { '<span class="number">Listing 1:</span>' }
+  let(:listing)   { '<span class="number"><span class="codelisting_label">Listing</span> 1:' }
   let(:footnote)  { '<sup id="cha-0_footnote-ref-1" class="footnote"><a href="#cha-0_footnote-1">1</a></sup>' }
 
   let(:sref) { 'Section <span class="ref">1</span>' }

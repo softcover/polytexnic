@@ -45,6 +45,8 @@ module Polytexnic
         restore_inline_verbatim(doc)
         codelistings(doc)
         asides(doc)
+        theorems_lemmas_etc(doc)
+        proofs(doc)
         make_cross_references(doc)
         hrefs(doc)
         graphics_and_figures(doc)
@@ -463,8 +465,6 @@ module Polytexnic
         # Returns true if node is inside section*.
         def section_star?(node)
           begin
-            # puts (val = node.parent.parent.attributes['class'].value) + '*******'
-            # puts node.parent.parent.parent.parent.children[1] if val == 'section-star'
             node.parent.parent.attributes['class'].value == 'section-star'
           rescue
             false
@@ -543,9 +543,6 @@ module Polytexnic
 
         # Returns the node for a list item (li).
         def item(doc)
-          # doc.xpath('//item/p[@noindent="true"]').each do |node|
-          #   node.replace(node.inner_html)
-          # end
           doc.xpath('//item').each do |node|
             clean_node node, %w{id-text id label}
             node.name = 'li'
@@ -740,13 +737,47 @@ module Polytexnic
           end
         end
 
+        # Returns true if the environment type is a theorem, lemma, etc.
+        def theorem_environment?(css_classes)
+          return false if css_classes.nil?
+          css_classes.split.each do |css_class|
+            return true if @supported_theorem_types.include?(css_class)
+          end
+          return false
+        end
+
+        # Return the style class associated with an element.
+        # The only trick involves theorem environments.
+        # There are three defined in
+        # http://www.ams.org/arc/tex/amscls/amsthdoc.pdf:
+        # plain, definition, and remark
+        # So that this can be used without modification with other elements,
+        # if the element isn't a theorem we simply return the type itself.
+        def element_class(element_type)
+          return element_type unless theorem_environment?(element_type)
+          plain_styles = %w[theorem lemma corollary proposition conjecture]
+          definition_styles = %w[definition problem example exercise axiom]
+          remark_styles = %w[remark claim]
+          if plain_styles.include?(element_type)
+            "#{element_type} plain"
+          elsif definition_styles.include?(element_type)
+            "#{element_type} definition"
+          elsif remark_styles.include?(element_type)
+            "#{element_type} remark"
+          end
+        end
+
         # Builds the full heading for codelisting-like environments.
         # The full heading, such as "Listing 1.1: Foo bars." needs to be
         # extracted and manipulated to produce the right tags and classes.
         def build_heading(node, css_class)
           node.name  = 'div'
-          node['class'] = css_class
-
+          node['class'] = element_class(css_class)
+          # Extract theorem content (if any). This super-hacky.
+          # th_regex = /data-tralics-id=".*?"><strong>.*?<\/strong>(.*?)<\/div>/m
+          # theorem_content = node.to_xhtml.scan(th_regex).flatten.first
+          # theorem_content.gsub!("\n\n", '') if theorem_content
+          # raise theorem_content
           heading = node.at_css('p')
           heading.attributes.each do |key, value|
             node.set_attribute(key, value)
@@ -754,18 +785,61 @@ module Polytexnic
           end
           heading.name = 'div'
           heading['class'] = 'heading'
-
-          number = heading.at_css('strong')
-          number.content = number.content.sub!('0.', '') if article?
-          number.name = 'span'
-          number['class'] = 'number'
-          if css_class == 'codelisting'
-            description = node.at_css('.description').content
-            number.content += ':' unless description.empty?
+          full_number = heading.at_css('strong')
+          full_number.name = 'span'
+          full_number['class'] = 'number'
+          # E.g., "Theorem 1.1 (Fermat’s Last Theorem)"
+          # label = "Theorem"
+          # actual_number_etc = ["1.1", "Fermat’s Last Theorem"]
+          full_label_content = full_number.content.strip
+          full_number.content = ''
+          content_array = full_label_content.split
+          label, actual_number_etc = content_array.shift, content_array
+          element_label = Nokogiri::XML::Node.new('span', heading)
+          # Make span for element's style label.
+          # <span class="plain_label">Theorem</span>
+          element_label['class'] = "#{element_class(css_class)}_label"
+          if article?
+            actual_number = actual_number_etc.first.sub!('0.', '')
           else
-            number.content += '.'
+            actual_number = actual_number_etc.first
           end
-
+          element_label.content = label
+          full_number << element_label
+          full_number << Nokogiri::XML::Text.new(" #{actual_number}", heading)
+          # Handle optional argument to theorems.
+          # E.g., \begin{theorem}[Fermat's Last Theorem]
+          environment_type = label.downcase
+          if theorem_environment?(environment_type)
+            # Theorem headings should be paragraphs instead of divs.
+            heading.name = 'p'
+            # This will be nonempty only if there's an optional argument
+            # as in \begin{theorem}[optional argument].
+            optarg = actual_number_etc[1..-1].join(" ")
+            unless optarg.empty?
+              # Add a span to parenthetical content for styling purpsoes.
+              # This handles things like "Theorem 1.1 (Fermat’s Last Theorem)".
+              theorem_description = Nokogiri::XML::Node.new('span', heading)
+              theorem_description['class'] = 'theorem_description'
+              theorem_description.content = optarg
+              full_number << Nokogiri::XML::Text.new(' ', heading)
+              full_number << theorem_description
+            end
+            full_number << Nokogiri::XML::Text.new('.', heading)
+            # # We remove all paragraphs and append the previously extracted
+            # # theorem content. The desired numbered heading is just the
+            # # first line, so we split on newline and take the first element.
+            # number_html = full_number.to_xhtml.split("\n").first
+            # full_number.inner_html = number_html + theorem_content
+          elsif css_class == 'codelisting'
+            description = node.at_css('.description').content
+            unless description.empty?
+              full_number << Nokogiri::XML::Text.new(':', heading)
+            end
+          else
+            full_number << Nokogiri::XML::Text.new('.', heading)
+          end
+          # raise heading.to_xhtml
           heading
         end
 
@@ -811,6 +885,23 @@ module Polytexnic
         def asides(doc)
           doc.xpath('//aside').each do |node|
             build_heading(node, 'aside')
+          end
+        end
+
+        # Processes theorems, lemmas, etc.
+        def theorems_lemmas_etc(doc)
+          @supported_theorem_types.each do |theorem_type|
+            doc.xpath("//#{theorem_type}").each do |node|
+              build_heading(node, theorem_type)
+            end
+          end
+        end
+
+        # Processes proofs.
+        def proofs(doc)
+          doc.xpath('//proof').each do |node|
+            node.name = 'div'
+            node['class'] = 'proof'
           end
         end
 
@@ -912,11 +1003,11 @@ module Polytexnic
 
         # Creates linked cross-references.
         def make_cross_references(doc)
-          # build numbering tree
+          # Build numbering tree.
           doc.xpath('//*[@data-tralics-id]').each do |node|
             node['data-number'] = formatted_number(node)
             clean_node node, 'id-text'
-            # Add number span
+            # Add number span.
             if (head = node.css('h1 a, h2 a, h3 a').first)
               el = doc.create_element 'span'
               el.content = section_label(node)
@@ -1003,6 +1094,7 @@ module Polytexnic
             @figure = 0
             @table = 0
             @aside = 0
+            @theorem = 0
             @cha = article? ? nil : node['id-text']
           elsif node['class'] == 'section'
             @sec = node['id-text']
@@ -1028,6 +1120,9 @@ module Polytexnic
           elsif node.name == 'figure'
             @figure = ref_number(node, @cha, @figure)
             label_number(@cha, @figure)
+          elsif theorem_environment?(node['class'])
+            @theorem = number_from_id(node['id-text'])
+            label_number(@cha, @theorem)
           end
         end
 

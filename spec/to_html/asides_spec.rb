@@ -29,7 +29,7 @@ describe 'Polytexnic::Pipeline#to_html' do
         <div id="cid1" data-tralics-id="cid1" class="chapter" data-number="1"><h1><a href="#cid1" class="heading"><span class="number">Chapter 1 </span>Foo bar</a></h1>
         <div class="aside" id="aside-lorem" data-tralics-id="uid1" data-number="1.1">
           <div class="heading">
-            <span class="number">Box 1.1.</span>
+            <span class="number"><span class="aside_label">Box</span> 1.1.</span>
             <span class="description">Lorem ipsum.</span>
           </div>
           <p>lorem ipsum</p>
@@ -47,7 +47,7 @@ describe 'Polytexnic::Pipeline#to_html' do
                                              "order" => "standard" },
                               "aside" => "Cajón" })
       end
-      it { should include 'Cajón 1.1' }
+      it { should include '<span class="aside_label">Cajón</span> 1.1' }
     end
   end
 
@@ -67,7 +67,8 @@ describe 'Polytexnic::Pipeline#to_html' do
       EOS
     end
     context "in a chapter" do
-      let(:polytex) { '\chapter{Foo bar}' + "\n" + aside}
+      let(:prematerial) { "\\chapter{Foo}\n\n\\section{Bar}" }
+      let(:polytex) { prematerial + "\n" + aside}
       it { should include ">1.1<" }
     end
 
