@@ -889,11 +889,22 @@ module Polytexnic
         # Processes proofs.
         def proofs(doc)
           doc.xpath('//proof').each do |node|
+            # raise node.css('proofoption').inspect
             node.name = 'div'
             node['class'] = 'proof'
-            proof = Nokogiri::XML::Node.new('em', doc)
-            proof.content = 'Proof.'
-            node.children.before(proof)
+            first_paragraph = node.children.first
+            html = first_paragraph.inner_html
+            html = '<em class="proof_label">Proof.</em> ' + html
+            first_paragraph.inner_html = html
+            # raise .inspect
+            # proof = Nokogiri::XML::Node.new('em', doc)
+            # proofoption = node.css('proofoption')
+            # if proofoption.empty?
+            #   proof.content = 'Proof.'
+            # else
+            #   proof.content = proofoption.first.content.strip
+            # end
+            # node.children.before(proof)
           end
         end
 
