@@ -27,7 +27,7 @@ describe 'Polytexnic::Pipeline#to_html' do
         \end{proof}
         EOS
       end
-      it { should include('<div class="proof"><em>Simpler proof.</em>') }
+      it { should include('<div class="proof"><p><em class="proof_label">Simpler proof.</em> Dolor') }
     end
   end
 
