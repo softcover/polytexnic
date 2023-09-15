@@ -16,7 +16,20 @@ describe 'Polytexnic::Pipeline#to_html' do
       EOS
     end
     it { should include("Lorem ipsum.") }
-    it { should include('<div class="proof">')}
+    it { should include('<div class="proof"><em>Proof.</em>')}
+
+    # context "with optional argument" do
+    #   let(:polytex) do <<-'EOS'
+    #     \chapter{Foo bar}
+
+    #     \begin{proof}[Simpler proof.]
+    #     Lorem ipsum.
+    #     \end{proof}
+    #     EOS
+    #   end
+    # end
+
+    # it { should include("Simpler proof.") }
   end
 
   describe "chapter theorems" do

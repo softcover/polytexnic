@@ -891,6 +891,9 @@ module Polytexnic
           doc.xpath('//proof').each do |node|
             node.name = 'div'
             node['class'] = 'proof'
+            proof = Nokogiri::XML::Node.new('em', doc)
+            proof.content = 'Proof.'
+            node.children.before(proof)
           end
         end
 
