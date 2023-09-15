@@ -318,14 +318,22 @@ module Polytexnic
           end
 
           # Wrap proofs in a 'proof' element.
+          # Start with proofs that have options.
+          string.gsub! /(\\begin{proof})\[(.*?)\]/ do
+            "\\begin{xmlelement*}{proof}" +
+            "\\begin{xmlelement*}{proofoption}#{$2}" +
+            "\\end{xmlelement*}"
+          end
+          # string.gsub!(/\\begin{proof}\[.*?\]/, '')
+          # Now do optionless proofs.
           string.gsub! /\\begin{proof}/ do |s|
-            "\\begin{xmlelement*}{proof}\n#{s}"
+            "\\begin{xmlelement*}{proof}"
           end
           string.gsub! /\\end{proof}/ do |s|
             "#{s}\n\\end{xmlelement*}"
           end
-          string.gsub!(/\\begin{proof}/, '')
-          string.gsub!(/\\end{proof}/, '')
+          # string.gsub!(/\\begin{proof}/, '')
+          # string.gsub!(/\\end{proof}/, '')
 
           # Wrap asides in an 'aside' element.
           string.gsub! /\\begin{aside}/ do |s|

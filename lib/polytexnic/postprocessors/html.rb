@@ -891,6 +891,18 @@ module Polytexnic
           doc.xpath('//proof').each do |node|
             node.name = 'div'
             node['class'] = 'proof'
+            proofoption = node.css('proofoption')
+            if proofoption.empty?
+              proof_label = 'Proof.'
+            else
+              proof_label = proofoption.first.content.strip
+            end
+            proofoption.remove
+            node.remove_attribute('proofoption')
+            first_paragraph = node.children.first
+            html = first_paragraph.inner_html
+            html = %(<em class="proof_label">#{proof_label}</em> ) + html
+            first_paragraph.inner_html = html
           end
         end
 
