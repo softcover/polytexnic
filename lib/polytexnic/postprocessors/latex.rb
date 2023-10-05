@@ -18,9 +18,8 @@ module Polytexnic
       # Escapes backslashes even more.
       # Have I mentioned how much I hate backslashes?
       def extra_escape(string)
-        string.gsub('\\', '\\\\\\').
-               gsub("\\'", '\\\\' + "'").
-               gsub('\\\\\\', '\\\\\\')
+        string.gsub("\\'", '\\\\\\\\' + "'")
+        # raise string.inspect
       end
     end
   end

@@ -106,7 +106,7 @@ end
       context "align* environment" do
         let(:polytex) do <<-'EOS'
           \begin{align*}
-          x &= 1\\
+          \lnot \forall x \in A\ P(x) \\
           y & = 2 \\
           x + y &= 3
           \end{align*}
