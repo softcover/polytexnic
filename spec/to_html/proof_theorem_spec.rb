@@ -95,9 +95,9 @@ describe 'Polytexnic::Pipeline#to_html' do
     it { should include("Remark</span> 1.5") }
     it { should include("Theorem</span> 2.1") }
     it { should include("Lemma</span> 2.2") }
-    it { should include('Theorem <a href="#th-lorem" class="hyperref"><span class="ref">1.1</span></a>')}
-    it { should include('Theorem <a href="#th-another" class="hyperref"><span class="ref">2.1</span></a>')}
-    it { should include('Lemma <a href="#lemma-yet_another" class="hyperref"><span class="ref">2.2</span></a>')}
+    it { should include('<a href="#th-lorem" class="hyperref">Theorem <span class="ref">1.1</span></a>')}
+    it { should include('<a href="#th-another" class="hyperref">Theorem <span class="ref">2.1</span></a>')}
+    it { should include('<a href="#lemma-yet_another" class="hyperref">Lemma <span class="ref">2.2</span></a>')}
   end
 
   describe "articles theorems" do
@@ -164,9 +164,9 @@ describe 'Polytexnic::Pipeline#to_html' do
     it { should include("Remark</span> 5") }
     it { should include("Theorem</span> 6") }
     it { should include("Lemma</span> 7") }
-    it { should include('Theorem <a href="#th-lorem" class="hyperref"><span class="ref">1</span></a>')}
-    it { should include('Theorem <a href="#th-another" class="hyperref"><span class="ref">6</span></a>')}
-    it { should include('Lemma <a href="#lemma-yet_another" class="hyperref"><span class="ref">7</span></a>')}
+    it { should include('<a href="#th-lorem" class="hyperref">Theorem <span class="ref">1</span></a>')}
+    it { should include('<a href="#th-another" class="hyperref">Theorem <span class="ref">6</span></a>')}
+    it { should include('<a href="#lemma-yet_another" class="hyperref">Lemma <span class="ref">7</span></a>')}
   end
 
   describe "optional argument" do
