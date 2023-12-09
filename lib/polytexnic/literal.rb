@@ -221,11 +221,19 @@ module Polytexnic
       listing  = language_labels["listing"]
       equation = language_labels["equation"]
       eq       = language_labels["eq"]
-      linked_item = "(#{part}|#{chapter}|#{section}|#{appendix}|#{table}|#{box}|#{figure}" +
-                    "|#{fig}\.|#{listing}|#{equation}|#{eq}\.)"
+      @supported_theorem_types.each do |theorem|
+        eval("#{theorem} = language_labels['#{theorem}']")
+      end
+      theorem_string = @supported_theorem_types.join("|")
+      linked_item = "(#{part}|#{chapter}|#{section}|#{appendix}|#{table}" +
+                    "|#{box}|#{figure}|#{fig}\.|#{listing}|#{equation}" +
+                    "|#{eq}\.|#{theorem_string})"
       ref = /(?:#{linked_item}(~| ))*(\\(?:eq)*ref){(.*?)}/i
       string.gsub!(ref) do
-        "\\hyperref[#{$4}]{#{$1}#{$2}#{$3}{#{$4}}}"
+        # The outermost braces handle the edge case of a ref inside
+        # square-backet args, as in `\proof[Theorem~\ref{th:foo}]`.
+        # See https://tex.stackexchange.com/questions/513460/how-to-add-a-hyperref-inside-theorem-title-or-proof-name
+        "{\\hyperref[#{$4}]{#{$1}#{$2}#{$3}{#{$4}}}}"
       end
     end
 
@@ -307,4 +315,3 @@ class String
       end.join('|')
     end
 end
-
