@@ -224,7 +224,7 @@ module Polytexnic
       @supported_theorem_types.each do |theorem|
         eval("#{theorem} = language_labels['#{theorem}']")
       end
-      theorem_string = @supported_theorem_types.join("|")
+      theorem_string = @supported_theorem_types.map(&:capitalize).join("|")
       linked_item = "(#{part}|#{chapter}|#{section}|#{appendix}|#{table}" +
                     "|#{box}|#{figure}|#{fig}\.|#{listing}|#{equation}" +
                     "|#{eq}\.|#{theorem_string})"
