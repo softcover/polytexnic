@@ -248,13 +248,18 @@ Chapter~\ref{cha:one}
         it { should include 'Chapter~\ref{cha:one}' }
       end
 
-      context "an inline equation" do
+      context "inline math" do
         let(:source) { '\( x \) is a variable' }
         it { should include source }
       end
 
-      context "an inline equation with a newline" do
+      context "inline math with a newline" do
         let(:source) { '\( x' + "\n" + ' + y \) is a sum' }
+        it { should include source }
+      end
+
+      context "an inline math with no spaces" do
+        let(:source) { '\(\mathbb{R}\)'}
         it { should include source }
       end
 

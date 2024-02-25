@@ -150,7 +150,7 @@ module Polytexnic
                           |
                           ~\\eqref\{.*?\}   # eq reference with a tie
                           |
-                          \\[^\s]+\{.*?\}   # command with one arg
+                          \\[^\s(]+\{.*?\}   # command with one arg
                           |
                           \\\w+             # normal command
                           |
