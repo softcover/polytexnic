@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    polytexnic (1.10.6)
+    polytexnic (1.10.7)
       json (= 2.3.1)
       kramdown (= 2.4.0)
       msgpack (= 1.7.2)
