@@ -54,7 +54,7 @@ describe 'Polytexnic::Pipeline#to_html' do
 
     describe "horizontal rule" do
       let(:polytex) { '\hrule' }
-      it { should resemble '<hr />' }
+      it { should resemble '<hr>' }
     end
 
     describe "custom kode command" do

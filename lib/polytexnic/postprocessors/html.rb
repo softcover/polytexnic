@@ -1198,7 +1198,7 @@ module Polytexnic
           if node['file'] && node['extension']
             filename = png_for_pdf(node['file'], node['extension'])
             alt = File.basename(node['file'])
-            img = %(<img src="#{filename}" alt="#{alt}" />)
+            img = %(<img src="#{filename}" alt="#{alt}">)
             graphic = %(<span class="graphics">#{img}</span>)
             graphic_node = Nokogiri::HTML.fragment(graphic)
             if description_node = node.children.first
@@ -1384,6 +1384,11 @@ module Polytexnic
           string.gsub!(/<p>\s*<\/p>/m, '')
         end
 
+        # Standardizes on, e.g., <img ...>, <br>, and <hr>
+        def remove_trailing_slash_tags!(string)
+          string.gsub!(' />', '>')
+        end
+
         # Restores quotes or verse inside figure.
         # This is a terrible hack.
         def restore_figure_quotes!(string)
@@ -1422,6 +1427,7 @@ module Polytexnic
           end
           body = doc.at_css('document').children.to_xhtml
           Nokogiri::HTML.fragment(body).to_xhtml.tap do |html|
+            remove_trailing_slash_tags!(html)
             trim_empty_paragraphs!(html)
             restore_figure_quotes!(html)
             restore_literal_html!(html)
