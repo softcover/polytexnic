@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    polytexnic (1.10.8)
+    polytexnic (1.10.9)
       json (= 2.7.2)
       kramdown (= 2.4.0)
       msgpack (= 1.7.2)
@@ -69,7 +69,7 @@ GEM
       ffi (~> 1.0)
     rest-client (1.6.7)
       mime-types (>= 1.16)
-    rexml (3.3.8)
+    rexml (3.4.1)
     rspec (2.99.0)
       rspec-core (~> 2.99.0)
       rspec-expectations (~> 2.99.0)

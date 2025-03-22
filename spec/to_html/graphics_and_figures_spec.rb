@@ -14,7 +14,7 @@ describe 'Polytexnic::Pipeline#to_html' do
     it do
       should resemble <<-'EOS'
         foo <span><span class="graphics">
-        <img src="foo.png" alt="foo" /></span>
+        <img src="foo.png" alt="foo"></span>
         </span>
       EOS
     end
@@ -30,7 +30,7 @@ describe 'Polytexnic::Pipeline#to_html' do
       it do
         should resemble <<-'EOS'
           <span class="graphics">
-          <img src="foo.png" alt="foo" />
+          <img src="foo.png" alt="foo">
           </span>
         EOS
       end
@@ -126,7 +126,7 @@ describe 'Polytexnic::Pipeline#to_html' do
         should resemble <<-'EOS'
           <div id="fig-foo" data-tralics-id="uid1" data-number="1" class="figure">
           <span class="graphics">
-            <img src="images/foo.png" alt="foo" />
+            <img src="images/foo.png" alt="foo">
           </span>
           <div class="caption">
             <span class="header">Figure 1</span>
@@ -161,7 +161,7 @@ describe 'Polytexnic::Pipeline#to_html' do
           </h1>
           <div id="uid1" data-tralics-id="uid1" data-number="1.1" class="figure">
             <span class="graphics">
-              <img src="foo.png" alt="foo" />
+              <img src="foo.png" alt="foo">
             </span>
             <div class="caption">
               <span class="header">Figure 1.1: </span>
@@ -170,7 +170,7 @@ describe 'Polytexnic::Pipeline#to_html' do
           </div>
           <div id="uid2" data-tralics-id="uid2" data-number="1.2" class="figure">
             <span class="graphics">
-              <img src="bar.png" alt="bar" />
+              <img src="bar.png" alt="bar">
             </span>
             <div class="caption">
               <span class="header">Figure 1.2: </span>
@@ -234,7 +234,7 @@ describe 'Polytexnic::Pipeline#to_html' do
           </h1>
           <div id="fig-foo" data-tralics-id="uid1" data-number="1.1" class="figure">
             <span class="graphics">
-              <img src="foo.png" alt="foo" />
+              <img src="foo.png" alt="foo">
             </span>
             <div class="caption">
               <span class="header">Figure 1.1: </span>
@@ -243,7 +243,7 @@ describe 'Polytexnic::Pipeline#to_html' do
           </div>
           <div id="fig-bar" data-tralics-id="uid2" data-number="1.2" class="figure">
             <span class="graphics">
-              <img src="bar.png" alt="bar" />
+              <img src="bar.png" alt="bar">
             </span>
             <div class="caption">
               <span class="header">Figure 1.2: </span>
@@ -261,7 +261,7 @@ describe 'Polytexnic::Pipeline#to_html' do
           </h1>
           <div id="fig-baz" data-tralics-id="uid3" data-number="2.1" class="figure">
             <span class="graphics">
-              <img src="baz.png" alt="baz" />
+              <img src="baz.png" alt="baz">
             </span>
             <div class="caption">
               <span class="header">Figure 2.1: </span>
@@ -299,7 +299,7 @@ describe 'Polytexnic::Pipeline#to_html' do
             </h1>
             <div class="center figure" id="fig-foo" data-tralics-id="uid1" data-number="1.1">
               <span class="graphics">
-                <img src="foo.png" alt="foo" />
+                <img src="foo.png" alt="foo">
               </span>
               <div class="caption">
                 <span class="header">Figure 1.1: </span>
@@ -331,7 +331,7 @@ describe 'Polytexnic::Pipeline#to_html' do
               </h1>
               <div id="fig-foo" data-tralics-id="uid1" data-number="1.1" class="figure">
                 <div class="graphics image">
-                  <img src="foo_bar.png" alt="foo_bar" />
+                  <img src="foo_bar.png" alt="foo_bar">
                 </div>
                 <div class="caption">
                   <span class="header">Figure 1.1: </span>
@@ -364,7 +364,7 @@ describe 'Polytexnic::Pipeline#to_html' do
               </h1>
               <div id="fig-foo" data-tralics-id="uid1" data-number="1.1" class="figure">
                 <div class="graphics image box">
-                  <img src="foo_bar.png" alt="foo_bar" />
+                  <img src="foo_bar.png" alt="foo_bar">
                 </div>
                 <div class="caption">
                   <span class="header">Figure 1.1: </span>
