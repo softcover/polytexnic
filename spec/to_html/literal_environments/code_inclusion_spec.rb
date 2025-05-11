@@ -102,7 +102,11 @@ describe "full listing" do
       let(:args) { {filename: "badfile"} }
       subject { lambda { CodeInclusion::FullListing::File.new(args).lines } }
 
-      it { should raise_exception(CodeInclusion::RetrievalException) }
+      it "raises CodeInclusion::RetrievalException with correct message" do
+        expect { subject.call }.to raise_error(
+          CodeInclusion::RetrievalException
+        )
+      end
     end
 
   end
@@ -150,10 +154,13 @@ describe "full listing" do
       subject { lambda {
         CodeInclusion::FullListing::GitTag.new(args, FakeGitCmd.new).lines } }
 
-      it { should raise_exception(
-            CodeInclusion::RetrievalException,
-            "Tag 'badtag' does not exist."
-            ) }
+
+      it "raises CodeInclusion::RetrievalException with correct message" do
+        expect { subject.call }.to raise_error(
+          CodeInclusion::RetrievalException,
+          "Tag 'badtag' does not exist."
+        )
+      end        
     end
 
     context "repo does not exist" do
@@ -169,9 +176,12 @@ describe "full listing" do
       subject { lambda {
         CodeInclusion::FullListing::GitTag.new(args, FakeGitCmd.new).lines } }
 
-      it { should raise_exception(
-            CodeInclusion::RetrievalException,
-            "Repository 'baddir/.git' does not exist.") }
+      it "raises CodeInclusion::RetrievalException with correct message" do
+        expect { subject.call }.to raise_error(
+          CodeInclusion::RetrievalException,
+          "Repository 'baddir/.git' does not exist."
+        )
+      end
     end
 
     context "file does not exist" do
@@ -197,9 +207,12 @@ describe "full listing" do
       subject { lambda {
         CodeInclusion::FullListing::GitTag.new(args, FakeGitCmd.new).lines } }
 
-      it { should raise_exception(
-            CodeInclusion::RetrievalException,
-            "fatal: Path 'badfile' does not exist in 'goodtag'") }
+      it "raises CodeInclusion::RetrievalException with correct message" do
+        expect { subject.call }.to raise_error(
+          CodeInclusion::RetrievalException,
+          "fatal: Path 'badfile' does not exist in 'goodtag'"
+        )
+      end            
     end
 
   end
@@ -231,7 +244,11 @@ describe "subset" do
       let(:args) { {section: "missing section name"} }
       subject { lambda {CodeInclusion::Subset::Section.new(input, args).lines} }
 
-      it { should raise_exception(CodeInclusion::SubsetException) }
+      it "raises CodeInclusion::SubsetException with correct message" do
+        expect { subject.call }.to raise_error(
+          CodeInclusion::SubsetException
+        )
+      end
     end
   end
 
