@@ -24,6 +24,6 @@ Gem::Specification.new do |gem|
   gem.add_dependency 'kramdown', '2.4.0'
   gem.add_dependency 'json', '2.7.2'
 
-  gem.add_development_dependency 'rspec', '2.99.0'
+  gem.add_development_dependency 'rspec', '3.13.0'
   gem.add_development_dependency 'simplecov', '0.15.1'
 end
