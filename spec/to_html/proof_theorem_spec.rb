@@ -102,7 +102,7 @@ describe 'Polytexnic::Pipeline#to_html' do
 
   describe "articles theorems" do
     before do
-      pipeline.stub(:article?).and_return(true)
+      allow(pipeline).to receive(:article?).and_return(true)
     end
 
     let(:polytex) do <<-'EOS'

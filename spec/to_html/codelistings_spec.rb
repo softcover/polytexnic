@@ -47,7 +47,7 @@ Listing~\ref{code:create_gemrc}
 
     context "with a custom language label" do
       before do
-        pipeline.stub(:language_labels).
+        allow(pipeline).to receive(:language_labels).
                  and_return({ "chapter" => { "word" => "Chapter",
                                              "order" => "standard" },
                               "listing" => "Código" })

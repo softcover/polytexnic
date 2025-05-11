@@ -42,7 +42,7 @@ describe 'Polytexnic::Pipeline#to_html' do
 
     context "with a custom language label" do
       before do
-        pipeline.stub(:language_labels).
+        allow(pipeline).to receive(:language_labels).
                  and_return({ "chapter" => { "word" => "Chapter",
                                              "order" => "standard" },
                               "aside" => "Cajón" })
